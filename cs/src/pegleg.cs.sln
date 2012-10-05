@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pegleg.cs", "pegleg.cs\pegleg.cs.csproj", "{22B38652-7706-4151-A2F0-31429E3F832A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pegleg.cs.Tests", "pegleg.cs.Tests\pegleg.cs.Tests.csproj", "{015DC042-421B-4F2E-8614-54C61966C5B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22B38652-7706-4151-A2F0-31429E3F832A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22B38652-7706-4151-A2F0-31429E3F832A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22B38652-7706-4151-A2F0-31429E3F832A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22B38652-7706-4151-A2F0-31429E3F832A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{015DC042-421B-4F2E-8614-54C61966C5B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{015DC042-421B-4F2E-8614-54C61966C5B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{015DC042-421B-4F2E-8614-54C61966C5B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{015DC042-421B-4F2E-8614-54C61966C5B5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
