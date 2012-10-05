@@ -1,0 +1,35 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace JFM.DOM {
+	public interface INodeHandler {
+		void Handle(EmphasisNode node);
+		void Handle(EntityNode node);
+		void Handle(HeadingNode node);
+		void Handle(LineBreakNode node);
+		void Handle(MultiLineCommentNode node);
+		void Handle(ParagraphNode node);
+		void Handle(QuotedNode node);
+		void Handle(SingleLineCommentNode node);
+		void Handle(SpaceNode node);
+		void Handle(StrongNode node);
+		void Handle(SymbolNode node);
+		void Handle(TextNode node);
+	}
+	public interface INodeHandler<T> {
+		T Handle(EmphasisNode node);
+		T Handle(EntityNode node);
+		T Handle(HeadingNode node);
+		T Handle(LineBreakNode node);
+		T Handle(MultiLineCommentNode node);
+		T Handle(ParagraphNode node);
+		T Handle(QuotedNode node);
+		T Handle(SingleLineCommentNode node);
+		T Handle(SpaceNode node);
+		T Handle(StrongNode node);
+		T Handle(SymbolNode node);
+		T Handle(TextNode node);
+	}
+}

@@ -1,0 +1,42 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace pegleg.cs.Parsing {
+	public class ExpressionMatch<TProduct> : IExpressionMatch<TProduct> {
+		private readonly IExpressionMatchingContext _context;
+		private readonly IExpression _expression;
+		private readonly TProduct _product;
+		private readonly int _index;
+		private readonly int _length;
+		private readonly SourceRange _matchRange;
+
+		public ExpressionMatch(IExpressionMatchingContext context, IExpression expression, TProduct product, int index, int length, SourceRange matchRange) {
+			CodeContract.ArgumentIsNotNull(() => context, context);
+			CodeContract.ArgumentIsNotNull(() => expression, expression);
+			CodeContract.ArgumentIsNotNull(() => matchRange, matchRange);
+			CodeContract.ArgumentIsValid(() => index, index >= 0, "must be a non-negative integer");
+			CodeContract.ArgumentIsValid(() => length, length >= 0, "must be a non-negative integer");
+
+			_context = context;
+			_expression = expression;
+			_product = product;
+			_index = index;
+			_length = length;
+			_matchRange = matchRange;
+		}
+
+		public SourceRange SourceRange { get { return _matchRange; } }
+
+		public int Index { get { return _matchRange.Index; } }
+
+		public int Length { get { return _matchRange.Length; } }
+
+		public TProduct Product { get { return _product; } }
+
+		public IExpression Expression { get { return _expression; } }
+
+		public string String { get { return _context.Substring(_index, _length); } }
+	}
+}
