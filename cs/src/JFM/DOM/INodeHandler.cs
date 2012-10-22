@@ -8,7 +8,9 @@ namespace JFM.DOM {
 		void Handle(EmphasisNode node);
 		void Handle(EntityNode node);
 		void Handle(HeadingNode node);
+		void Handle(ImageNode node);
 		void Handle(LineBreakNode node);
+		void Handle(LinkNode node);
 		void Handle(MultiLineCommentNode node);
 		void Handle(ParagraphNode node);
 		void Handle(QuotedNode node);
@@ -22,7 +24,9 @@ namespace JFM.DOM {
 		T Handle(EmphasisNode node);
 		T Handle(EntityNode node);
 		T Handle(HeadingNode node);
+		T Handle(ImageNode node);
 		T Handle(LineBreakNode node);
+		T Handle(LinkNode node);
 		T Handle(MultiLineCommentNode node);
 		T Handle(ParagraphNode node);
 		T Handle(QuotedNode node);

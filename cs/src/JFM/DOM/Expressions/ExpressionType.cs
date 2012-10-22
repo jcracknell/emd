@@ -5,9 +5,8 @@ using System.Text;
 
 namespace JFM.DOM.Expressions {
 	public enum ExpressionType {
-		Identifier,
 		Object,
-		Slug,
+		PropertyAssignment,
 		String,
 		Uri
 	}

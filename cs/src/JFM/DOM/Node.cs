@@ -21,10 +21,7 @@ namespace JFM.DOM {
 		public abstract T HandleWith<T>(INodeHandler<T> handler);
 
 		public override int GetHashCode() {
-			return new HashCodeBuilder()
-				.Merge(GetType())
-				.Merge(SourceRange)
-				.GetHashCode();
+			return GetType().GetHashCode() ^ SourceRange.GetHashCode();
 		}
 
 		public override bool Equals(object obj) {

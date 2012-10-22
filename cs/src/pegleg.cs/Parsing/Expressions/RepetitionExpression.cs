@@ -41,6 +41,9 @@ namespace pegleg.cs.Parsing.Expressions {
 			uint iterationCount = 0;
 			var iterationProducts = 0 == _maxOccurs ? new List<object>() : new List<object>((int)_maxOccurs);
 			while(true) {
+				if(iterationCount > 1000)
+					"this would be a good place to put a breakpoint".ToString();
+
 				var iterationContext = context.Clone();
 				var iterationResult = _body.Match(iterationContext);
 

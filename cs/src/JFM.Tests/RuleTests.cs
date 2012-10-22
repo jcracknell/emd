@@ -1,4 +1,5 @@
 ﻿using JFM.DOM;
+using JFM.DOM.Expressions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using pegleg.cs;
 using pegleg.cs.Parsing;
@@ -119,6 +120,18 @@ namespace JFM {
 		}
 
 		[TestMethod]
+		public void StringExpression_matches_single_quoted_string() {
+			var matchResult = Match(Grammar.StringExpression, "'string'");
+
+			Assert.IsTrue(matchResult.Succeeded);
+
+			var stringExpression = matchResult.Product as StringExpression;
+
+			Assert.IsNotNull(stringExpression);
+			Assert.AreEqual("string", stringExpression.Value);
+		}
+
+		[TestMethod]
 		public void Strong_matches_base_case() {
 			var input = new ExpressionMatchingContext("**text**");
 			var expected = new StrongNode(
@@ -144,11 +157,18 @@ namespace JFM {
 		}
 
 		[TestMethod]
+		public void UriExpression_matches_remote_uri() {
+			var matchResult = Match(Grammar.UriExpression, "http://www.google.com");
+
+			Assert.IsTrue(matchResult.Succeeded);
+		}
+
+		[TestMethod]
 		public void Bla() {
 			var input = new ExpressionMatchingContext(
-@"
+@" // This is a single line comment
 # Heading 1
-This is a paragraph with **bold text**.
+This is a [paragraph] with **bold text**.
 
 ## Heading 2
 

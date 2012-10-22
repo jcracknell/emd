@@ -1,0 +1,32 @@
+﻿using pegleg.cs.Parsing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace JFM.DOM {
+	public class LinkNode : CompositeNode {
+		private readonly ReferenceId _referenceId;
+
+		public LinkNode(Node[] children, ReferenceId referenceId, SourceRange sourceRange)
+			: base(children, sourceRange)
+		{
+			_referenceId = referenceId;
+		}
+
+		public override NodeType NodeType { get { return NodeType.Link; } }
+
+		public override void HandleWith(INodeHandler handler) {
+			handler.Handle(this);
+		}
+
+		public override T HandleWith<T>(INodeHandler<T> handler) {
+			return handler.Handle(this);
+		}
+
+		public override bool Equals(object obj) {
+			var other = obj as LinkNode;
+			return base.Equals(other);
+		}
+	}
+}

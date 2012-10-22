@@ -70,6 +70,7 @@ namespace JFM {
 
 		public IExpression<Node[]> Inlines { get; private set; }
 		public IExpression<Node> Inline { get; private set; }
+		public IExpression<LinkNode> Link { get; private set; }
 		public IExpression<StrongNode> Strong { get; private set; }
 		public IExpression<EmphasisNode> Emphasis { get; private set; }
 		public IExpression<QuotedNode> Quoted { get; private set; }
@@ -77,6 +78,9 @@ namespace JFM {
 		public IExpression<TextNode> Text { get; private set; }
 		public IExpression<SpaceNode> Space { get; private set; }
 		public IExpression<EntityNode> Entity { get; private set; }
+
+		public IExpression<ReferenceId> ReferenceId { get; private set; }
+
 		/// <summary>
 		/// A Symbol, an unescaped special character which was not parsed into a valid node.
 		/// </summary>
@@ -85,9 +89,11 @@ namespace JFM {
 
 		public IExpression<Expression> Expression { get; private set; }
 		public IExpression<Expression[]> ParameterList { get; private set; }
-		public IExpression<ObjectExpression> ObjectExpressionBody { get; private set; }
+		public IExpression<ObjectExpression> ObjectExpression { get; private set; }
+		public IExpression<ObjectExpression> ObjectBodyExpression { get; private set; }
 		public IExpression<StringExpression> StringExpression { get; private set; }
 		public IExpression<UriExpression> UriExpression { get; private set; }
+		public IExpression<Node[]> ExpressionWhitespace { get; private set; }
 
 		private IExpression<TProduct> DelimitedInline<TDelimiter, TContent, TProduct>(IExpression<TDelimiter> delimiter, IExpression<TContent> content, Func<IExpressionMatch<object[]>, TContent[], TProduct> matchAction) {
 			return Sequence(
@@ -132,9 +138,9 @@ namespace JFM {
 				Sequence(
 					Reference(() => BlankLines),
 					Choice<Node>(
-						Reference(() => CommentBlock),
 						Reference(() => Heading),
-						Reference(() => Paragraph)),
+						Reference(() => CommentBlock),
+						Reference(() => Paragraph)), // paragraph must come last
 					Reference(() => BlankLines),
 					(match, a, b, c) => b));
 
@@ -149,7 +155,7 @@ namespace JFM {
 				Sequence(
 					Reference(() => SpaceChars),
 					Reference(() => MultiLineComment),
-					Reference(() => BlankLine), // no trailing content
+					Reference(() => BlankLine), // no trailing content (don't match a para w/ starting mlc)
 					Reference(() => BlankLines),
 					(match, a, b, c, d) => b);
 
@@ -190,11 +196,38 @@ namespace JFM {
 					Reference(() => Strong),
 					Reference(() => Emphasis),
 					Reference(() => Quoted),
+					Reference(() => Link),
 					Reference(() => Comment),
 					Reference(() => Entity),
 					Reference(() => LineBreak),
 					Reference(() => Symbol)));
-			
+
+			var linkLabel = 
+				Sequence(
+					Literal("["),
+					AtLeast(0, Sequence(NotAhead(Literal("]")), Reference(() => Inline), (match, a, b) => b)),
+					Literal("]"),
+					(match, s, c, e) => c);
+
+			var linkReferenceId =
+				Optional(
+					Sequence(
+						Reference(() => SpaceChars),
+						Reference(() => ReferenceId),
+						(match, s, i) => i));
+
+			var linkArguments =
+				Optional(
+					Sequence(
+						Reference(() => SpaceChars),
+						Reference(() => ParameterList),
+						(match, s, p) => p));
+
+			Define(() => Link,
+				Sequence(
+					linkLabel, linkReferenceId, linkArguments,
+					(match, l, i, a) => new LinkNode(l, i, match.SourceRange)));
+
 			Define(() => Strong,
 				Sequence(
 					Literal("**"),
@@ -277,6 +310,17 @@ namespace JFM {
 
 			#endregion
 
+			Define(() => ReferenceId,
+				Sequence(
+					Literal("["),
+					AtLeast(0,
+						Sequence(
+							NotAhead(Choice(Literal("]"), Reference(() => NewLine))),
+							Wildcard()),
+							match => match.String),
+					Literal("]"),
+					(match, s, i, e) => new ReferenceId(i)));
+
 			Define(() => Line,
 				Sequence(
 					AtLeast(0,
@@ -352,7 +396,7 @@ namespace JFM {
 
 			Define(() => SpecialChar,
 				Choice(
-					new string[] { "*", "&", "'", "\"", "/", "\\" }
+					new string[] { "*", "&", "'", "\"", "/", "\\", "[", "]" }
 					.Select(Literal).ToArray()));
 
 			Define(() => NormalChar,
@@ -370,34 +414,6 @@ namespace JFM {
 				Choice<Expression>(
 					Reference(() => StringExpression),
 					Reference(() => StringExpression)));
-
-			var parameterSeparator =
-				Sequence(
-					Reference(() => Whitespaces),
-					Literal(","),
-					Reference(() => Whitespaces),
-					(match, a, b, c) => Nil.Value);
-
-			var parameterListStart =
-				Sequence( Literal("("), Reference(() => Whitespaces));
-
-			var paramterListEnd =
-				Sequence( Reference(() => Whitespaces), Literal(")"));
-
-			var parameters =
-				Sequence(
-					Reference(() => Expression, match => new Expression[] { match.Product }),
-					AtLeast(0,
-						Sequence(
-							parameterSeparator,
-							Reference(() => Expression),
-							(match, s, e) => e)),
-					(match, i, s) => ArrayUtils.Combine(i, s));
-
-			Define(() => ParameterList,
-				Sequence(
-					parameterListStart, parameters, paramterListEnd,
-					(match, s, ps, e) => ps));
 
 			var stringPartEscapes =
 				Choice(
@@ -449,29 +465,25 @@ namespace JFM {
 							(match, w, p) => p)),
 					(match, i, p) => new StringExpression(string.Join("", ArrayUtils.Combine(new string[] { i }, p)), match.SourceRange)));
 
-			// TODO: maybe use full URI grammar per https://www.ietf.org/rfc/rfc2396.txt
+			#region Uri
+			
+			var uriReserved = Choice(new string[] { ";", "/", "?", ":", "@", "&", "=", "+", "$", "," }.Select(Literal).ToArray());
+			var uriMark = Choice(new string[] { "-", "_", ".", "!", "~", "*", "'", "(", ")" }.Select(Literal).ToArray());
 			var uriEscaped =
 				Sequence(
-					Literal("%"),
-					Exactly(2, Reference(() => HexDigit)),
-					(match, a, b) => match.String);
-
-			var uriMark =
-				Choice(new string[] { "-", "_", ".", "!", "~", "*", "'", "(", ")" }.Select(m => Literal(m)).ToArray());
-
-			var uriReserved =
-				Choice(new string[] { ";", "/", "?", ":", "@", "&", "=", "+", "$", "," }.Select(m => Literal(m)).ToArray());
-
-			var uriCharacter =
-				Choice(
-					Reference(() => EnglishAlpha, match => match.ToString()),
-					Reference(() => Digit, match => match.ToString()),
-					uriMark,
-					uriReserved,
-					uriEscaped);
+					new IExpression[] { Literal("%"), Exactly(2, Reference(() => HexDigit)) },
+					match => match.String);
+			var uriUnreserved = Choice(Reference(() => EnglishAlpha), Reference(() => Digit), uriMark);
+			var uriCharacter = Choice(uriUnreserved, uriReserved, uriEscaped);
 
 			Define(() => UriExpression,
-				AtLeast(1, uriCharacter, match => new UriExpression(match.String, match.SourceRange)));
+				Sequence(
+					Optional(Literal("<")),
+					AtLeast(1, uriCharacter, match => match.String),
+					Optional(Literal(">")),
+					(match, s, u, e) => new UriExpression(u, match.SourceRange)));
+
+			#endregion
 
 			#endregion
 		}
