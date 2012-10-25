@@ -137,7 +137,7 @@ namespace JFM {
 			Define(() => Block,
 				Sequence(
 					Reference(() => BlankLines),
-					Choice<Node>(
+					OrderedChoice<Node>(
 						Reference(() => Heading),
 						Reference(() => CommentBlock),
 						Reference(() => Paragraph)), // paragraph must come last
@@ -190,7 +190,7 @@ namespace JFM {
 				AtLeast(0, Reference(() => Inline)));
 
 			Define(() => Inline,
-				Choice<Node>(
+				OrderedChoice<Node>(
 					Reference(() => Text),
 					Reference(() => Space),
 					Reference(() => Strong),
@@ -257,7 +257,7 @@ namespace JFM {
 					(match, s, c, e) => new QuotedNode(QuoteType.Double, c, match.SourceRange));
 
 			Define(() => Quoted,
-				Choice(doubleQuoted, singleQuoted));
+				OrderedChoice(doubleQuoted, singleQuoted));
 
 			Define(() => LineBreak,
 				Sequence(
@@ -292,7 +292,7 @@ namespace JFM {
 				});
 
 			Define(() => Entity,
-				Choice(
+				OrderedChoice(
 					decimalHtmlEntity,
 					hexHtmlEntity,
 					namedHtmlEntity));
@@ -315,7 +315,7 @@ namespace JFM {
 					Literal("["),
 					AtLeast(0,
 						Sequence(
-							NotAhead(Choice(Literal("]"), Reference(() => NewLine))),
+							NotAhead(OrderedChoice(Literal("]"), Reference(() => NewLine))),
 							Wildcard()),
 							match => match.String),
 					Literal("]"),
@@ -354,7 +354,7 @@ namespace JFM {
 					match => Nil.Value));
 
 			Define(() => SpaceChar,
-				Choice(
+				OrderedChoice(
 					Literal(" "),
 					Literal("\t")));
 
@@ -378,7 +378,7 @@ namespace JFM {
 				CharacterInRange('0', '9'));
 
 			Define(() => HexDigit,
-				Choice(
+				OrderedChoice(
 					Reference(() => Digit),
 					CharacterInRange('a', 'f'),
 					CharacterInRange('A', 'F')));
@@ -411,19 +411,19 @@ namespace JFM {
 			#region Expressions
 
 			Define(() => Expression,
-				Choice<Expression>(
+				OrderedChoice<Expression>(
 					Reference(() => StringExpression),
 					Reference(() => StringExpression)));
 
 			var stringPartEscapes =
-				Choice(
+				OrderedChoice(
 					Literal(@"\n", match => "\n"),
 					Literal(@"\t", match => "\t"),
 					Literal(@"\r", match => "\r"),
 					Literal(@"\\", match => "\\"));
 
 			var singleQuotedStringPartEscapes =
-				Choice(
+				OrderedChoice(
 					Literal(@"\'", match => "'"),
 					stringPartEscapes);
 
@@ -431,14 +431,14 @@ namespace JFM {
 				Sequence(
 					Literal("'"),
 					AtLeast(0,
-						Choice(
+						OrderedChoice(
 							singleQuotedStringPartEscapes,
 							Sequence(NotAhead(Literal("'")), Wildcard(), (match, a, b) => b.ToString()))),
 					Literal("'"),
 					(match, s, c, e) => string.Join("", c));
 
 			var doubleQuotedStringPartEscapes =
-				Choice(
+				OrderedChoice(
 					Literal("\\\"", match => "\""),
 					stringPartEscapes);
 
@@ -446,14 +446,14 @@ namespace JFM {
 				Sequence(
 					Literal("\""),
 					AtLeast(0,
-						Choice(
+						OrderedChoice(
 							doubleQuotedStringPartEscapes,
 							Sequence(NotAhead(Literal("\"")), Wildcard(), (match, a, b) => b.ToString()))),
 					Literal("\""),
 					(match, s, c, e) => string.Join("", c));
 
 			var stringPart =
-				Choice(singleQuotedStringPart, doubleQuotedStringPart);
+				OrderedChoice(singleQuotedStringPart, doubleQuotedStringPart);
 
 			Define(() => StringExpression,
 				Sequence(
@@ -467,14 +467,14 @@ namespace JFM {
 
 			#region Uri
 			
-			var uriReserved = Choice(new string[] { ";", "/", "?", ":", "@", "&", "=", "+", "$", "," }.Select(Literal).ToArray());
-			var uriMark = Choice(new string[] { "-", "_", ".", "!", "~", "*", "'", "(", ")" }.Select(Literal).ToArray());
+			var uriReserved = OrderedChoice(new string[] { ";", "/", "?", ":", "@", "&", "=", "+", "$", "," }.Select(Literal).ToArray());
+			var uriMark = OrderedChoice(new string[] { "-", "_", ".", "!", "~", "*", "'", "(", ")" }.Select(Literal).ToArray());
 			var uriEscaped =
 				Sequence(
 					new IExpression[] { Literal("%"), Exactly(2, Reference(() => HexDigit)) },
 					match => match.String);
-			var uriUnreserved = Choice(Reference(() => EnglishAlpha), Reference(() => Digit), uriMark);
-			var uriCharacter = Choice(uriUnreserved, uriReserved, uriEscaped);
+			var uriUnreserved = OrderedChoice(Reference(() => EnglishAlpha), Reference(() => Digit), uriMark);
+			var uriCharacter = OrderedChoice(uriUnreserved, uriReserved, uriEscaped);
 
 			Define(() => UriExpression,
 				Sequence(

@@ -135,20 +135,36 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 				match => matchAction(UpcastExpressionMatch(match, product => CastArray<T>(product))));
 		}
 
-		public IExpression<object> Choice(IExpression[] choices) {
-			return Choice(choices, DefaultMatchAction);
+		public IExpression<object> OrderedChoice(IExpression[] choices) {
+			return OrderedChoice(choices, DefaultMatchAction);
 		}
 
-		public IExpression<TProduct> Choice<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public IExpression<TProduct> OrderedChoice<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
 			return new ChoiceExpression<TProduct>(choices, matchAction);
 		}
 
+		public IExpression<TChoice> OrderedChoice<TChoice>(params IExpression<TChoice>[] choices) {
+			return OrderedChoice(choices, DefaultMatchAction);
+		}
+
+		public IExpression<TProduct> OrderedChoice<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
+			return new ChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, product => (TChoice)product)));
+		}
+
+		public IExpression<object> Choice(IExpression[] choices) {
+			return OrderedChoice(choices);
+		}
+
+		public IExpression<TProduct> Choice<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return OrderedChoice(choices, matchAction);
+		}
+
 		public IExpression<TChoice> Choice<TChoice>(params IExpression<TChoice>[] choices) {
-			return Choice(choices, DefaultMatchAction);
+			return OrderedChoice(choices);
 		}
 
 		public IExpression<TProduct> Choice<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
-			return new ChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, product => (TChoice)product)));
+			return OrderedChoice(choices, matchAction);
 		}
 
 		public IExpression<Nil> NotAhead<T>(IExpression<T> expression) {
