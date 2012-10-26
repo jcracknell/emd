@@ -17,5 +17,12 @@ namespace JFM.DOM.Expressions {
 		public string Value { get { return _value; } }
 
 		public override ExpressionType Type { get { return ExpressionType.String; } }
+
+		public override bool Equals(object obj) {
+			var other = obj as StringExpression;
+			return null != other
+				&& this.Value.Equals(other.Value)
+				&& this.SourceRange.Equals(other.SourceRange);
+		}
 	}
 }

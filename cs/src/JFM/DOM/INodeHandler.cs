@@ -5,6 +5,7 @@ using System.Text;
 
 namespace JFM.DOM {
 	public interface INodeHandler {
+		void Handle(AutoLinkNode node);
 		void Handle(EmphasisNode node);
 		void Handle(EntityNode node);
 		void Handle(HeadingNode node);
@@ -19,8 +20,12 @@ namespace JFM.DOM {
 		void Handle(StrongNode node);
 		void Handle(SymbolNode node);
 		void Handle(TextNode node);
+		void Handle(UnorderedListNode node);
+		void Handle(UnorderedListItemNode node);
 	}
+
 	public interface INodeHandler<T> {
+		T Handle(AutoLinkNode node);
 		T Handle(EmphasisNode node);
 		T Handle(EntityNode node);
 		T Handle(HeadingNode node);
@@ -35,5 +40,7 @@ namespace JFM.DOM {
 		T Handle(StrongNode node);
 		T Handle(SymbolNode node);
 		T Handle(TextNode node);
+		T Handle(UnorderedListNode node);
+		T Handle(UnorderedListItemNode node);
 	}
 }

@@ -42,13 +42,14 @@
   <ItemGroup>
     <Compile Include="ArrayUtils.cs" />
     <Compile Include="CodeContract.cs" />
+    <Compile Include="DOM\AutoLinkNode.cs" />
     <Compile Include="DOM\CompositeInlineNode.cs" />
     <Compile Include="DOM\EmphasisNode.cs" />
     <Compile Include="DOM\EntityNode.cs" />
     <Compile Include="DOM\Expressions\Expression.cs" />
     <Compile Include="DOM\Expressions\ExpressionType.cs" />
     <Compile Include="DOM\Expressions\ObjectExpression.cs" />
-    <Compile Include="DOM\Expressions\PropertyAssignmentExpression.cs" />
+    <Compile Include="DOM\Expressions\PropertyAssignment.cs" />
     <Compile Include="DOM\Expressions\StringExpression.cs" />
     <Compile Include="DOM\Expressions\UriExpression.cs" />
     <Compile Include="DOM\HeadingNode.cs" />
@@ -68,6 +69,8 @@
     <Compile Include="DOM\StrongNode.cs" />
     <Compile Include="DOM\SymbolNode.cs" />
     <Compile Include="DOM\TextNode.cs" />
+    <Compile Include="DOM\UnorderedListItemNode.cs" />
+    <Compile Include="DOM\UnorderedListNode.cs" />
     <Compile Include="JfmGrammar.cs" />
     <Compile Include="HashCodeBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

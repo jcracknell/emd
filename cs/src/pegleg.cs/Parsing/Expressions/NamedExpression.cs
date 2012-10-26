@@ -50,7 +50,9 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 
 		public override string ToString() {
-			return this.HandleWith(new BackusNaurishExpressionHandler());
+			// Named expression is a little different in that it is generally not very
+			// useful to display just a single name
+			return _named.HandleWith(new BackusNaurishExpressionHandler());
 		}
 	}
 }

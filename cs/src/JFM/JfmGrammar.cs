@@ -35,6 +35,8 @@ namespace JFM {
 		public IExpression<string> NewLine { get; private set; }
 		public IExpression<string> SpecialChar { get; private set; }
 		public IExpression<string> NormalChar { get; private set; }
+		public IExpression<string> Indent { get; private set; }
+		public IExpression<string> NonIndentSpace { get; private set; }
 		/// <summary>
 		/// A raw line of input, including the newline character.
 		/// </summary>
@@ -42,8 +44,8 @@ namespace JFM {
 		/// <summary>
 		/// A blank line; composed of any number of spaces followed by a line end.
 		/// </summary>
-		public IExpression<Nil> BlankLines { get; private set; }
-		public IExpression<Nil> BlankLine { get; private set; }
+		public IExpression<LineInfo[]> BlankLines { get; private set; }
+		public IExpression<LineInfo> BlankLine { get; private set; }
 		public IExpression<string> Digit { get; private set; }
 		public IExpression<string> HexDigit { get; private set; }
 		public IExpression<string> EnglishLowerAlpha { get; private set; }
@@ -61,15 +63,21 @@ namespace JFM {
 
 		public IExpression<JfmDocument> Document { get; private set; }
 
+		public IExpression<Node[]> Blocks { get; private set; }
 		public IExpression<Node> Block { get; private set; }
 
 		public IExpression<Node> CommentBlock { get; private set; }
 		public IExpression<HeadingNode> Heading { get; private set; }
+		public IExpression<UnorderedListNode> UnorderedList { get; private set; }
+		public IExpression<UnorderedListNode> UnorderedListTight { get; private set; }
+		public IExpression<UnorderedListNode> UnorderedListLoose { get; private set; }
 		public IExpression<ParagraphNode> Paragraph { get; private set; }
+		public IExpression<LineInfo> NonEmptyBlockLine { get; private set; }
 		public IExpression<LineInfo> BlockLine { get; private set; }
 
 		public IExpression<Node[]> Inlines { get; private set; }
 		public IExpression<Node> Inline { get; private set; }
+		public IExpression<AutoLinkNode> AutoLink { get; private set; }
 		public IExpression<LinkNode> Link { get; private set; }
 		public IExpression<StrongNode> Strong { get; private set; }
 		public IExpression<EmphasisNode> Emphasis { get; private set; }
@@ -88,12 +96,12 @@ namespace JFM {
 
 
 		public IExpression<Expression> Expression { get; private set; }
-		public IExpression<Expression[]> ParameterList { get; private set; }
+		public IExpression<Expression[]> ArgumentList { get; private set; }
 		public IExpression<ObjectExpression> ObjectExpression { get; private set; }
 		public IExpression<ObjectExpression> ObjectBodyExpression { get; private set; }
 		public IExpression<StringExpression> StringExpression { get; private set; }
 		public IExpression<UriExpression> UriExpression { get; private set; }
-		public IExpression<Node[]> ExpressionWhitespace { get; private set; }
+		public IExpression<Nil> ExpressionWhitespace { get; private set; }
 
 		private IExpression<TProduct> DelimitedInline<TDelimiter, TContent, TProduct>(IExpression<TDelimiter> delimiter, IExpression<TContent> content, Func<IExpressionMatch<object[]>, TContent[], TProduct> matchAction) {
 			return Sequence(
@@ -106,7 +114,7 @@ namespace JFM {
 		public JfmGrammar() {
 
 			Define(() => Document,
-				AtLeast(0, Reference(() => Block), match => new JfmDocument(match.Product)));
+				Reference(() => Blocks, match => new JfmDocument(match.Product)));
 
 			#region Comments
 
@@ -134,11 +142,15 @@ namespace JFM {
 
 			#region Block Rules
 
+			Define(() => Blocks,
+				AtLeast(0, Reference(() => Block)));
+
 			Define(() => Block,
 				Sequence(
 					Reference(() => BlankLines),
 					OrderedChoice<Node>(
 						Reference(() => Heading),
+						Reference(() => UnorderedList),
 						Reference(() => CommentBlock),
 						Reference(() => Paragraph)), // paragraph must come last
 					Reference(() => BlankLines),
@@ -162,6 +174,95 @@ namespace JFM {
 			Define(() => CommentBlock,
 				Choice<Node>(singleLineCommentBlock, multiLineCommentBlock));
 
+			#region Lists
+			// We define two types of lists, a *tight* list wherein no items are separated by blank
+			// lines which causes each item to be parsed as a single block of inlines, and a
+			// *loose* list, where items may contain multiple blocks separated by blank lines.
+
+			// A list item continues if it is followed by any number of blank lines and an indented line.
+			// The indented line is not empty because BlankLines would have consumed it if it was.
+			var listItemContinues =
+				Sequence(
+					Reference(() => BlankLines),
+					Ahead(Reference(() => Indent)),
+					(match, a, b) => a);
+
+			// We define a custom BlockLine for lists which discards any indent at the beginning of a line
+			var listBlockLine =
+				Sequence(
+					Optional(Reference(() => Indent)),
+					Reference(() => NonEmptyBlockLine),
+					(match, a, b) => b);
+
+			#region Unordered List
+
+			// We first attempt to parse a tight list, because a loose list is defined as 'one that
+			// is not tight'.
+			Define(() => UnorderedList,
+				OrderedChoice(
+					Reference(() => UnorderedListTight),
+					Reference(() => UnorderedListLoose)));
+
+			var bullet =
+				Sequence(
+					Reference(() => NonIndentSpace),
+					Choice(new string[] { "*", "-", "+" }.Select(Literal).ToArray()),
+					Reference(() => SpaceChars));
+
+			var unorderedListBlockLine =
+				Sequence(
+					NotAhead(bullet), listBlockLine,
+					(match, a, b) => b);
+
+			var unorderedListBlockLines = AtLeast(0, unorderedListBlockLine);
+
+			var unorderedListItemInitialBlock =
+				Sequence(
+					bullet, Reference(() => BlockLine), // Allow for an empty list item
+					unorderedListBlockLines,
+					(match, b, fl, ls) => ArrayUtils.Prepend(fl, ls));
+
+			var unorderedListItemSubsequentBlock =
+				Sequence(
+					listItemContinues,
+					unorderedListBlockLines,
+					Reference(() => BlankLines),
+					(match, a, b, c) => ArrayUtils.Combine(a, b, c));
+
+			var unorderedListItemTight =
+				Reference(
+					() => unorderedListItemInitialBlock,
+					match => new UnorderedListItemNode(ParseLines(Inlines, match.Product), match.SourceRange));
+
+			var unorderedListItemLoose =
+				Sequence(
+					unorderedListItemInitialBlock,
+					AtLeast(0, unorderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
+					Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
+					(match, a, b, c) => new UnorderedListItemNode(ParseLines(Blocks, ArrayUtils.Combine(a, b)), match.SourceRange));
+
+			var unorderedListContinuesLoose =
+				Choice(new IExpression[] {
+					 Sequence(Reference(() => BlankLines), bullet),
+					 listItemContinues });;
+
+			Define(() => UnorderedListTight,
+				Sequence(
+					Reference(() => BlankLines),
+					AtLeast(1, unorderedListItemTight),
+					NotAhead(unorderedListContinuesLoose),
+					(match, a, lis, c) => new UnorderedListNode(lis, match.SourceRange)));
+
+			Define(() => UnorderedListLoose,
+				Sequence(
+					Reference(() => BlankLines),
+					AtLeast(1, unorderedListItemLoose),
+					(match, a, lis) => new UnorderedListNode(lis, match.SourceRange)));
+
+			#endregion
+
+			#endregion
+
 			Define(() => Heading,
 				Sequence(
 					Reference(() => SpaceChars),
@@ -172,13 +273,19 @@ namespace JFM {
 
 			Define(() => Paragraph,
 				AtLeast(1,
-					Reference(() => BlockLine),
+					Reference(() => NonEmptyBlockLine),
 					match => new ParagraphNode(ParseLines(Inlines, match.Product), match.SourceRange)));
+
+			Define(() => NonEmptyBlockLine,
+				Sequence(
+					NotAhead(Reference(() => BlankLine)),
+					Reference(() => BlockLine),
+					(match, a, b) => b));
 
 			Define(() => BlockLine,
 				Sequence(
 					new IExpression[] {
-						AtLeast(1, // must consume something (no empty line)
+						AtLeast(0, // must consume something (no empty line)
 							Sequence(NotAhead(Reference(() => NewLine)), Wildcard())),
 						Optional(Reference(() => NewLine))
 					}, match => new LineInfo(match.String, match.SourceRange)));
@@ -197,36 +304,38 @@ namespace JFM {
 					Reference(() => Emphasis),
 					Reference(() => Quoted),
 					Reference(() => Link),
+					Reference(() => AutoLink),
 					Reference(() => Comment),
 					Reference(() => Entity),
 					Reference(() => LineBreak),
 					Reference(() => Symbol)));
 
-			var linkLabel = 
+			#region Link
+
+			Define(() => AutoLink,
+				Sequence(
+					Sequence(
+						Ahead(Literal("<")), // do not match undelimited UriExpression
+						Reference(() => UriExpression),
+						(match, a, u) => u),
+					Optional(Reference(() => ArgumentList)),
+					(match, u, args) => new AutoLinkNode(u, args ?? new Expression[0], match.SourceRange)));
+
+			var linkLabel =
 				Sequence(
 					Literal("["),
 					AtLeast(0, Sequence(NotAhead(Literal("]")), Reference(() => Inline), (match, a, b) => b)),
 					Literal("]"),
 					(match, s, c, e) => c);
 
-			var linkReferenceId =
-				Optional(
-					Sequence(
-						Reference(() => SpaceChars),
-						Reference(() => ReferenceId),
-						(match, s, i) => i));
-
-			var linkArguments =
-				Optional(
-					Sequence(
-						Reference(() => SpaceChars),
-						Reference(() => ParameterList),
-						(match, s, p) => p));
-
 			Define(() => Link,
 				Sequence(
-					linkLabel, linkReferenceId, linkArguments,
-					(match, l, i, a) => new LinkNode(l, i, match.SourceRange)));
+					linkLabel,
+					Reference(() => SpaceChars),
+					Optional(Reference(() => ArgumentList)),
+					(match, l, s, a) => new LinkNode(l, null, match.SourceRange)));
+
+			#endregion
 
 			Define(() => Strong,
 				Sequence(
@@ -332,17 +441,17 @@ namespace JFM {
 
 			Define(() => BlankLines,
 				Sequence(
-					new IExpression[] {
-						AtLeast(0,
-							Sequence(
-								AtLeast(0, Reference(() => SpaceChar)),
-								Reference(() => NewLine))),
-						Optional(
-							Sequence(
-								AtLeast(0, Reference(() => SpaceChar)),
-								EndOfInput()))
-					},
-					match => Nil.Value));
+					AtLeast(0,
+						Sequence(
+							AtLeast(0, Reference(() => SpaceChar)),
+							Reference(() => NewLine),
+							(match, a, b) => new LineInfo(match.String, match.SourceRange))),
+					Optional(
+						Sequence(
+							AtLeast(0, Reference(() => SpaceChar)),
+							EndOfInput(),
+							(match, a, b) => new LineInfo[] { new LineInfo(match.String, match.SourceRange) })),
+					(match, ls, ll) => ArrayUtils.Combine(ls, ll ?? new LineInfo[0])));
 
 			// NEVER EVER EVER USE THIS IN A REPETITION CONTEXT
 			Define(() => BlankLine,
@@ -351,7 +460,13 @@ namespace JFM {
 						AtLeast(0, Reference(() => SpaceChar)),
 						Choice(
 							new IExpression[] { Reference(() => NewLine), EndOfInput() }) },
-					match => Nil.Value));
+					match => new LineInfo(match.String, match.SourceRange)));
+
+			Define(() => Indent,
+				Choice(Literal("\t"), Literal("    ")));
+
+			Define(() => NonIndentSpace,
+				AtMost(3, Literal(" "), match => match.String));
 
 			Define(() => SpaceChar,
 				OrderedChoice(
@@ -409,81 +524,184 @@ namespace JFM {
 					(match, a, b) => b.ToString()));
 
 			#region Expressions
+			// # Expressions
+			//
+			// JFM uses an expression syntax which is *suspiciously similar* to Javascript (in fact
+			// it is designed to emulate javascript for its succinctness, familiarity, and simplicity.
+			// Given the primary use cases for JFM, the addition of URI literals to the expression
+			// language is a no-brainer. As a result, expression syntax differs from javascript in
+			// a few key areas in order to disambiguate URI expressions from everything else.
+			//
+			//  * Non-literal expressions begin with `@` (conversely a URI literal can never begin with `@`,
+			//    which seems like a reasonable limitation).
+			//  * Object property assignment is performed using the right arrow symbol (`=>`), as in
+			//    `{ foo => 'bar' }`
+			// 
+			// This allows us to use expressions as arguments to constructs co-opted from Markdown, e.g.
+			// `[link text](http://server)` as `(http://server)` is a valid argument list.
+			// Also consider: `[link text](some/relative/path, title => 'a link')`.
 
+			// Ordering here is important, we rely on several assumptions in order to
+			// implement URI literals:
+			// * `StringExpression` gets first crack at quotes
+			// * `UriExpression` does not start with `@`
 			Define(() => Expression,
 				OrderedChoice<Expression>(
 					Reference(() => StringExpression),
-					Reference(() => StringExpression)));
+					Reference(() => ObjectExpression),
+					Reference(() => UriExpression)));
+			
+			var argumentSeparator =
+				Sequence(
+					Reference(() => ExpressionWhitespace),
+					Literal(","),
+					Reference(() => ExpressionWhitespace));
 
-			var stringPartEscapes =
-				OrderedChoice(
+			// TODO: argument list accepts optional final object body expression
+			var argumentListArguments =
+				Optional(
+					Sequence(
+						Reference(() => Expression),
+						AtLeast(0, Sequence( argumentSeparator, Reference(() => Expression), (match, s, e) => e)),
+						(match, e, es) => ArrayUtils.Prepend(e, es)));
+
+			Define(() => ArgumentList,
+				Sequence(
+					Sequence(Literal("("), Reference(() => ExpressionWhitespace)),
+					argumentListArguments,
+					Sequence(Reference(() => ExpressionWhitespace), Literal(")")),
+					(match, s, es, e) => es ?? new Expression[0]));
+
+			#region StringExpression
+			
+			var stringExpressionEscapes =
+				Choice(
 					Literal(@"\n", match => "\n"),
-					Literal(@"\t", match => "\t"),
 					Literal(@"\r", match => "\r"),
+					Literal(@"\t", match => "\t"),
 					Literal(@"\\", match => "\\"));
 
-			var singleQuotedStringPartEscapes =
-				OrderedChoice(
-					Literal(@"\'", match => "'"),
-					stringPartEscapes);
+			var singleQuotedStringExpressionContent =
+				AtLeast(0,
+					Choice(
+						Literal(@"\'", match => "'"),
+						stringExpressionEscapes,
+						Sequence(
+							NotAhead(Choice(Literal("'"), Reference(() => NewLine))),
+							Wildcard(),
+							(match, a, c) => c)),
+					match => string.Join("", match.Product));
 
-			var singleQuotedStringPart =
+			var doubleQuotedStringExpressionContent =
+				AtLeast(0,
+					Choice(
+						Literal("\\\"", match => "\""),
+						stringExpressionEscapes,
+						Sequence(
+							NotAhead(Choice(Literal("\""), Reference(() => NewLine))),
+							Wildcard(),
+							(match, a, c) => c)),
+					match => string.Join("", match.Product));
+
+			var singleQuotedStringExpression =
 				Sequence(
-					Literal("'"),
-					AtLeast(0,
-						OrderedChoice(
-							singleQuotedStringPartEscapes,
-							Sequence(NotAhead(Literal("'")), Wildcard(), (match, a, b) => b.ToString()))),
-					Literal("'"),
-					(match, s, c, e) => string.Join("", c));
+					Literal("'"), singleQuotedStringExpressionContent, Literal("'"),
+					(match, s, c, e) => new StringExpression(c, match.SourceRange));
 
-			var doubleQuotedStringPartEscapes =
-				OrderedChoice(
-					Literal("\\\"", match => "\""),
-					stringPartEscapes);
-
-			var doubleQuotedStringPart =
+			var doubleQuotedStringExpression =
 				Sequence(
-					Literal("\""),
-					AtLeast(0,
-						OrderedChoice(
-							doubleQuotedStringPartEscapes,
-							Sequence(NotAhead(Literal("\"")), Wildcard(), (match, a, b) => b.ToString()))),
-					Literal("\""),
-					(match, s, c, e) => string.Join("", c));
-
-			var stringPart =
-				OrderedChoice(singleQuotedStringPart, doubleQuotedStringPart);
+					Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
+					(match, s, c, e) => new StringExpression(c, match.SourceRange));
 
 			Define(() => StringExpression,
-				Sequence(
-					stringPart,
-					AtLeast(0,
-						Sequence(
-							AtLeast(0, Reference(() => Whitespace)),
-							stringPart,
-							(match, w, p) => p)),
-					(match, i, p) => new StringExpression(string.Join("", ArrayUtils.Combine(new string[] { i }, p)), match.SourceRange)));
+				Choice(
+					singleQuotedStringExpression,
+					doubleQuotedStringExpression));
 
-			#region Uri
+			#endregion
+
+			#region ObjectExpression
+
+			var objectPropertyAssignment =
+				Sequence(
+					Reference(() => StringExpression), // TODO: Identifier / String / Uri
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Literal("=>"),
+						Reference(() => ExpressionWhitespace)),
+					Reference(() => Expression),
+					(match, n, a, v) => new PropertyAssignment(n, v, match.SourceRange));
+
+			var objectPropertyAssignments =
+				Optional(
+					Sequence(
+						objectPropertyAssignment,
+						AtLeast(0, Sequence(argumentSeparator, objectPropertyAssignment, (match, s, p) => p)),
+						(match, pa, pas) => ArrayUtils.Prepend(pa, pas)));
+
+			var objectExpressionStart =
+				Sequence( Literal("{"), Reference(() => ExpressionWhitespace));
+
+			var objectExpressionEnd =
+				Sequence( Reference(() => ExpressionWhitespace), Literal("}"));
+
+			Define(() => ObjectExpression,
+				Sequence(
+					objectExpressionStart, objectPropertyAssignments, objectExpressionEnd,
+					(match, s, pas, e) => new ObjectExpression(pas ?? new PropertyAssignment[0], match.SourceRange)));
+
+			Define(() => ObjectBodyExpression,
+				Reference(() => objectPropertyAssignments, match => new ObjectExpression(match.Product, match.SourceRange)));
+
+			#endregion
+
+			#region UriExpression
 			
-			var uriReserved = OrderedChoice(new string[] { ";", "/", "?", ":", "@", "&", "=", "+", "$", "," }.Select(Literal).ToArray());
-			var uriMark = OrderedChoice(new string[] { "-", "_", ".", "!", "~", "*", "'", "(", ")" }.Select(Literal).ToArray());
+			// TODO: handle URIs with spaces (spaces must be followed by some sensible character)
+
 			var uriEscaped =
 				Sequence(
 					new IExpression[] { Literal("%"), Exactly(2, Reference(() => HexDigit)) },
 					match => match.String);
-			var uriUnreserved = OrderedChoice(Reference(() => EnglishAlpha), Reference(() => Digit), uriMark);
-			var uriCharacter = OrderedChoice(uriUnreserved, uriReserved, uriEscaped);
+
+			var bareUriExpressionCharacter =
+				OrderedChoice(
+					Reference(() => EnglishAlpha),
+					Reference(() => Digit),
+					Choice(
+						new string[] { ";", "/", "?", ":", "@", "&", "=", "?", "+", "$", "-", "_", ".", "!", "~", "*", "'" }
+						.Select(Literal).ToArray()),
+					uriEscaped);
+			
+			var bareUriExpression =
+				Sequence(
+					NotAhead(Literal("@")), // may as well make this explicit
+					AtLeast(1, bareUriExpressionCharacter, match => new UriExpression(match.String, match.SourceRange)),
+					(match, a, b) => b);
+
+			var delimitedUriExpressionCharacter =
+				Choice(
+					bareUriExpressionCharacter,
+					Choice(new string[] { ",", "(", ")" }.Select(Literal).ToArray()));
+
+			var delimitedUriExpression =
+				Sequence(
+					Literal("<"), AtLeast(1, delimitedUriExpressionCharacter, match => match.String), Literal(">"),
+					(match, s, v, e) => new UriExpression(v, match.SourceRange));
+
 
 			Define(() => UriExpression,
-				Sequence(
-					Optional(Literal("<")),
-					AtLeast(1, uriCharacter, match => match.String),
-					Optional(Literal(">")),
-					(match, s, u, e) => new UriExpression(u, match.SourceRange)));
+				Choice(delimitedUriExpression, bareUriExpression));
 
 			#endregion
+
+			Define(() => ExpressionWhitespace,
+				AtLeast(0,
+					Choice(new IExpression[] {
+						Reference(() => Whitespace),
+						Reference(() => Comment)
+					}),
+					match => Nil.Value));
 
 			#endregion
 		}

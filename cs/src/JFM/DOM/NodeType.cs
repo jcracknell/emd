@@ -5,6 +5,7 @@ using System.Text;
 
 namespace JFM.DOM {
 	public enum NodeType {
+		AutoLink,
 		Emphasis,
 		Entity,
 		Heading,
@@ -16,9 +17,11 @@ namespace JFM.DOM {
 		Quoted,
 		Section,
 		SingleLineComment,
+		Space,
 		Strong,
 		Symbol,
 		Text,
-		Space
+		UnorderedList,
+		UnorderedListItem
 	}
 }

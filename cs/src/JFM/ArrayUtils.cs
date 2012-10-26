@@ -12,7 +12,19 @@ namespace JFM {
 			return dest;
 		}
 
+		public static T[] Prepend<T>(T first, T[] others) {
+			return Combine(new T[] { first }, others);
+		}
+
+		public static T[] Append<T>(T[] others, T last) {
+			return Combine(others, new T[] { last });
+		}
+
 		public static T[] Combine<T>(params T[][] sources) {
+			return Flatten(sources);
+		}
+
+		public static T[] Flatten<T>(T[][] sources) {
 			int sourceCount = sources.Length;
 
 			var destLength = 0;

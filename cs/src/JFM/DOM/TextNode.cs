@@ -43,5 +43,9 @@ namespace JFM.DOM {
 				&& this.SourceRange.Equals(other.SourceRange)
 				&& this.Text.Equals(other.Text, StringComparison.Ordinal);
 		}
+
+		public override string ToString() {
+			return string.Concat(this.GetType().FullName, "(", _text, ")");
+		}
 	}
 }
