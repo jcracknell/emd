@@ -47,6 +47,7 @@ namespace pegleg.cs.Parsing {
 			_sourceLineIndex = sourceLineIndex;
 		}
 
+		// mostly for debugging purposes
 		public string Unconsumed { get { return _consumable.Substring(_consumed); } }
 
 		public SourceLocation SourceLocation { get { return new SourceLocation(_sourceIndex, _sourceLine, _sourceLineIndex); } }

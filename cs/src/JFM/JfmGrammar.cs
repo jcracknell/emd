@@ -18,6 +18,12 @@ namespace JFM {
 				SourceRange = sourceRange;
 			}
 		}
+
+		public struct EnumeratorInfo {
+			public readonly int Start;
+			public readonly int Increment;
+			public readonly OrderedListStyle Style;
+		}
 		
 		/// <summary>
 		/// A tab or a space.
@@ -46,6 +52,7 @@ namespace JFM {
 		/// </summary>
 		public IExpression<LineInfo[]> BlankLines { get; private set; }
 		public IExpression<LineInfo> BlankLine { get; private set; }
+		public IExpression<LineInfo> NonTerminalBlankLine { get; private set; }
 		public IExpression<string> Digit { get; private set; }
 		public IExpression<string> HexDigit { get; private set; }
 		public IExpression<string> EnglishLowerAlpha { get; private set; }
@@ -67,6 +74,9 @@ namespace JFM {
 		public IExpression<Node> Block { get; private set; }
 
 		public IExpression<Node> CommentBlock { get; private set; }
+		public IExpression<TableNode> Table { get; private set; }
+		public IExpression<TableRowNode> TableRow { get; private set; }
+		public IExpression<LineInfo> TableRowSeparator { get; private set; }
 		public IExpression<HeadingNode> Heading { get; private set; }
 		public IExpression<UnorderedListNode> UnorderedList { get; private set; }
 		public IExpression<UnorderedListNode> UnorderedListTight { get; private set; }
@@ -74,6 +84,9 @@ namespace JFM {
 		public IExpression<ParagraphNode> Paragraph { get; private set; }
 		public IExpression<LineInfo> NonEmptyBlockLine { get; private set; }
 		public IExpression<LineInfo> BlockLine { get; private set; }
+		public IExpression<Nil> BlockLineAtomic { get; private set; }
+		public IExpression<Nil> Bullet { get; private set; }
+		public IExpression<EnumeratorInfo> Enumerator { get; private set; }
 
 		public IExpression<Node[]> Inlines { get; private set; }
 		public IExpression<Node> Inline { get; private set; }
@@ -145,11 +158,16 @@ namespace JFM {
 			Define(() => Blocks,
 				AtLeast(0, Reference(() => Block)));
 
+
+			// Ordering notes:
+			//   * Paragraph must come last, because it will sweep up just about anything
+			//   * Table must precede unordered list, because of fancy row separators starting with +/-
 			Define(() => Block,
 				Sequence(
 					Reference(() => BlankLines),
 					OrderedChoice<Node>(
 						Reference(() => Heading),
+						Reference(() => Table),
 						Reference(() => UnorderedList),
 						Reference(() => CommentBlock),
 						Reference(() => Paragraph)), // paragraph must come last
@@ -203,22 +221,24 @@ namespace JFM {
 					Reference(() => UnorderedListTight),
 					Reference(() => UnorderedListLoose)));
 
-			var bullet =
+			Define(() => Bullet,
 				Sequence(
 					Reference(() => NonIndentSpace),
 					Choice(new string[] { "*", "-", "+" }.Select(Literal).ToArray()),
-					Reference(() => SpaceChars));
+					Reference(() => SpaceChars),
+					(match, a, b, c) => Nil.Value));
 
 			var unorderedListBlockLine =
 				Sequence(
-					NotAhead(bullet), listBlockLine,
+					NotAhead(Reference(() => Bullet)), listBlockLine,
 					(match, a, b) => b);
 
 			var unorderedListBlockLines = AtLeast(0, unorderedListBlockLine);
 
 			var unorderedListItemInitialBlock =
 				Sequence(
-					bullet, Reference(() => BlockLine), // Allow for an empty list item
+					Reference(() => Bullet),
+					Reference(() => BlockLine), // Allow for an empty list item
 					unorderedListBlockLines,
 					(match, b, fl, ls) => ArrayUtils.Prepend(fl, ls));
 
@@ -243,7 +263,7 @@ namespace JFM {
 
 			var unorderedListContinuesLoose =
 				Choice(new IExpression[] {
-					 Sequence(Reference(() => BlankLines), bullet),
+					 Sequence(Reference(() => BlankLines), Reference(() => Bullet)),
 					 listItemContinues });;
 
 			Define(() => UnorderedListTight,
@@ -258,6 +278,27 @@ namespace JFM {
 					Reference(() => BlankLines),
 					AtLeast(1, unorderedListItemLoose),
 					(match, a, lis) => new UnorderedListNode(lis, match.SourceRange)));
+
+			#endregion
+
+			#region Ordered List
+
+			// To avoid tedious mental gymnastics, you can specify a specify a combination of style
+			// any value for the initial item in a list using the form `style@value`, e.g. `a@7`.
+			var enumeratorValue =
+				Sequence(
+					Literal("@"),
+					AtLeast(1, Reference(() => Digit), match => { int v; return int.TryParse(match.String, out v) ? v : 1; }),
+					(match, a, b) => b);
+
+			// You can also specify an increment using the form `style@value+/-increment`, e.g. `a@8-1`.
+			var enumeratorIncrement =
+				Sequence(
+					Choice(
+						Literal("+", match => 1),
+						Literal("-", match => -1)),
+					AtLeast(1, Reference(() => Digit), match => match.String),
+					(match, s, i) => { int v; return int.TryParse(i, out v) ? s * v : 1; });
 
 			#endregion
 
@@ -284,11 +325,132 @@ namespace JFM {
 
 			Define(() => BlockLine,
 				Sequence(
-					new IExpression[] {
-						AtLeast(0, // must consume something (no empty line)
-							Sequence(NotAhead(Reference(() => NewLine)), Wildcard())),
-						Optional(Reference(() => NewLine))
-					}, match => new LineInfo(match.String, match.SourceRange)));
+					AtLeast(0, Reference(() => BlockLineAtomic)),
+					Optional(Reference(() => NewLine)),
+					(match, a, b) => new LineInfo(match.String, match.SourceRange)));
+
+			// TODO: multi-line atomics - comments, expressions
+			Define(() => BlockLineAtomic,
+				Sequence(
+					NotAhead(Reference(() => NewLine)),
+					Wildcard(),
+					(match, a, b) => Nil.Value));
+
+			#region Tables
+
+			Define(() => Table,
+				AtLeast(1,
+					Sequence(
+						AtLeast(0, Reference(() => TableRowSeparator)),
+						Reference(() => TableRow),
+						AtLeast(0, Reference(() => TableRowSeparator)),
+						(match, a, b, c) => b),
+					match => new TableNode(match.Product, match.SourceRange)));
+
+			var tableCellContents =
+				AtLeast(0,
+					OrderedChoice(
+						Literal(@"\|"),
+						Sequence(
+							NotAhead(Literal("|")),
+							Reference(() => BlockLineAtomic))),
+					match => new LineInfo(match.String, match.SourceRange));
+
+			var tableCellRowSpan =
+				Sequence(
+					AtLeast(1, Reference(() => Digit), match => match.String),
+					Choice(Literal("r"), Literal("R")),
+					(match, ds, r) => ds);
+
+			var tableCellColumnSpan =
+				Sequence(
+					AtLeast(1, Reference(() => Digit), match => match.String),
+					Choice(Literal("c"), Literal("C")),
+					(match, ds, c) => ds);
+
+			var tableCellAnnouncement =
+				Sequence(
+					Literal("|"),
+					Optional(tableCellColumnSpan),
+					Optional(tableCellRowSpan),
+					(match, a, cs, rs) => {
+						int v;
+						return Tuple.Create(
+							int.TryParse(cs, out v) ? v : 1,
+							int.TryParse(rs, out v) ? v : 1);
+					});
+
+			var tableHeaderCellAnnouncement =
+				Sequence(
+					tableCellAnnouncement,
+					Literal("="),
+					Reference(() => SpaceChars),
+					(match, a, b, c) => a);
+
+			var tableDataCellAnnouncemnt =
+				Sequence(
+					tableCellAnnouncement,
+					Reference(() => SpaceChars),
+					(match, a, b) => a);
+
+			var tableHeaderCell =
+				Sequence(
+					tableHeaderCellAnnouncement,
+					tableCellContents,
+					(match, a, c) => {
+						var children = ParseLines(Inlines, new LineInfo[] { c });
+						return new TableHeaderCellNode(a.Item1, a.Item2, children, match.SourceRange);
+					});
+
+			var tableDataCell =
+				Sequence(
+					tableDataCellAnnouncemnt,
+					tableCellContents,
+					(match, a, c) => {
+						var children = ParseLines(Inlines, new LineInfo[] { c });
+						return new TableDataCellNode(a.Item1, a.Item2, children, match.SourceRange);
+					});
+
+			var tableRowEnd =
+				Sequence(
+					Optional(Literal("|")),
+					Reference(() => BlankLine));
+
+			var tableCell =
+				Sequence(
+					NotAhead(tableRowEnd),
+					OrderedChoice<TableCellNode>(
+						tableHeaderCell,
+						tableDataCell),
+					(match, a, b) => b);
+
+			var tableUnannouncedDataCell =
+				Sequence(
+					tableCellContents,
+					Ahead(Literal("|")),
+					(match, c, a) => {
+						var childern = ParseLines(Inlines, new LineInfo[] { c });
+						return new TableDataCellNode(1, 1, childern, match.SourceRange);
+					});
+
+			Define(() => TableRow,
+				Sequence(
+					Reference(() => SpaceChars),
+					AtLeast(1, Reference(() => tableCell)),
+					tableRowEnd,
+					(match, a, cs, re) => new TableRowNode(cs, match.SourceRange)));
+
+			Define(() => TableRowSeparator,
+				Sequence(
+					AtLeast(1,
+						Sequence(
+							Reference(() => SpaceChars),
+							Choice(new string[] { "-", "=", "+" }.Select(Literal).ToArray()))),
+					Reference(() => BlankLine),
+					(match, a, b) => new LineInfo(match.String, match.SourceRange)));
+
+			#endregion
+
 			#endregion
 
 			#region Inline Rules
@@ -373,6 +535,8 @@ namespace JFM {
 					new IExpression[] { Literal(@"\\"), Reference(() => SpaceChars), Reference(() => NewLine) },
 					match => new LineBreakNode(match.SourceRange)));
 
+			#region Entities
+
 			var decimalHtmlEntity =
 				Sequence(
 					Literal("&#"),
@@ -405,6 +569,8 @@ namespace JFM {
 					decimalHtmlEntity,
 					hexHtmlEntity,
 					namedHtmlEntity));
+
+			#endregion 
 
 			Define(() => Text,
 				AtLeast(1,
@@ -452,6 +618,7 @@ namespace JFM {
 							EndOfInput(),
 							(match, a, b) => new LineInfo[] { new LineInfo(match.String, match.SourceRange) })),
 					(match, ls, ll) => ArrayUtils.Combine(ls, ll ?? new LineInfo[0])));
+
 
 			// NEVER EVER EVER USE THIS IN A REPETITION CONTEXT
 			Define(() => BlankLine,
@@ -511,7 +678,7 @@ namespace JFM {
 
 			Define(() => SpecialChar,
 				Choice(
-					new string[] { "*", "&", "'", "\"", "/", "\\", "[", "]" }
+					new string[] { "*", "&", "'", "\"", "/", "\\", "[", "]", "|", "(", ")" }
 					.Select(Literal).ToArray()));
 
 			Define(() => NormalChar,

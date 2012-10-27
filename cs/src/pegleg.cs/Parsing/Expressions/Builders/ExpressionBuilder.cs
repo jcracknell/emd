@@ -135,7 +135,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 				match => matchAction(UpcastExpressionMatch(match, product => CastArray<T>(product))));
 		}
 
-		public IExpression<object> OrderedChoice(IExpression[] choices) {
+		public IExpression<object> OrderedChoice(params IExpression[] choices) {
 			return OrderedChoice(choices, DefaultMatchAction);
 		}
 
@@ -151,7 +151,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new ChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, product => (TChoice)product)));
 		}
 
-		public IExpression<object> Choice(IExpression[] choices) {
+		public IExpression<object> Choice(params IExpression[] choices) {
 			return OrderedChoice(choices);
 		}
 

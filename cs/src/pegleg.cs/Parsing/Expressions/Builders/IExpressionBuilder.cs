@@ -68,12 +68,12 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		IExpression<T[]> Exactly<T>(uint occurs, IExpression<T> expression);
 		IExpression<TProduct> Exactly<T, TProduct>(uint occurs, IExpression<T> expression, Func<IExpressionMatch<T[]>, TProduct> matchAction);
 
-		IExpression<object> OrderedChoice(IExpression[] choices);
+		IExpression<object> OrderedChoice(params IExpression[] choices);
 		IExpression<TProduct> OrderedChoice<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction);
 		IExpression<TChoice> OrderedChoice<TChoice>(params IExpression<TChoice>[] choices);
 		IExpression<TProduct> OrderedChoice<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction);
 
-		IExpression<object> Choice(IExpression[] choices);
+		IExpression<object> Choice(params IExpression[] choices);
 		IExpression<TProduct> Choice<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction);
 		IExpression<TChoice> Choice<TChoice>(params IExpression<TChoice>[] choices);
 		IExpression<TProduct> Choice<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction);

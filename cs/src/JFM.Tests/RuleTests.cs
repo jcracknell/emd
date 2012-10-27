@@ -247,6 +247,14 @@ across several lines.
 
 Yet another.
 
++==============+
+|2c= The Title |
++=======+======+
+|=   a  |=  b  |
++=======+======+
+|     1 |    2 |
++-------+------+
+
 * Loose item 1.
 * Loose item 2.
 
