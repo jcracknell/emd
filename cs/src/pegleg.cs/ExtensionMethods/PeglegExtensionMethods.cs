@@ -10,7 +10,16 @@ namespace pegleg.cs.ExtensionMethods {
 		}
 
 		public static string Join(this IEnumerable<string> parts, string separator) {
-			return string.Join(separator, parts.ToArray());
+			var sb = new StringBuilder();
+			var enumerator = parts.GetEnumerator();
+
+			if(enumerator.MoveNext())
+				sb.Append(enumerator.Current);
+
+			while(enumerator.MoveNext())
+				sb.Append(separator).Append(enumerator.Current);
+
+			return sb.ToString();
 		}
 
 		public static int ParseDefault(this string s, int otherwise) {

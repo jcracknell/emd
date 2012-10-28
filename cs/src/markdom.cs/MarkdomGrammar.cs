@@ -19,6 +19,10 @@ namespace markdom.cs {
 				LineString = lineString;
 				SourceRange = sourceRange;
 			}
+
+			public static LineInfo FromMatch(IExpressionMatch match) {
+				return new LineInfo(match.String, match.SourceRange);
+			}
 		}
 
 		public struct EnumeratorInfo {
@@ -148,7 +152,7 @@ namespace markdom.cs {
 				Sequence(
 					Literal("//"),
 					Reference(() => Line),
-					match => new LineInfo(match.String, match.SourceRange)));
+					match => LineInfo.FromMatch(match)));
 
 			Define(() => MultiLineComment,
 				Sequence(
@@ -157,7 +161,7 @@ namespace markdom.cs {
 						Sequence( NotAhead(Literal("*/")), Wildcard() ),
 						match => match.String),
 					Literal("*/"),
-					match => new LineInfo(match.String, match.SourceRange)));
+					match => LineInfo.FromMatch(match)));
 
 			#endregion
 
@@ -340,7 +344,7 @@ namespace markdom.cs {
 				Sequence(
 					AtLeast(0, Reference(() => BlockLineAtomic)),
 					Optional(Reference(() => NewLine)),
-					match => new LineInfo(match.String, match.SourceRange)));
+					match => LineInfo.FromMatch(match)));
 
 			// TODO: multi-line atomics - comments, expressions
 			Define(() => BlockLineAtomic,
@@ -367,7 +371,7 @@ namespace markdom.cs {
 						Sequence(
 							NotAhead(Literal("|")),
 							Reference(() => BlockLineAtomic))),
-					match => new LineInfo(match.String, match.SourceRange));
+					match => LineInfo.FromMatch(match));
 
 			var tableCellRowSpan =
 				Sequence(
@@ -455,7 +459,7 @@ namespace markdom.cs {
 							Reference(() => SpaceChars),
 							ChoiceUnordered(new string[] { "-", "=", "+" }.Select(Literal).ToArray()))),
 					Reference(() => BlankLine),
-					match => new LineInfo(match.String, match.SourceRange)));
+					match => LineInfo.FromMatch(match)));
 
 			#endregion
 
@@ -485,15 +489,16 @@ namespace markdom.cs {
 
 			Define(() => AutoLink,
 				Sequence(
-					Sequence(
-						Ahead(Literal("<")), // do not match undelimited UriExpression
-						Reference(() => UriExpression),
-						match => match.Product.Of2),
+					Literal("<"),
+					Reference(() => SpaceChars),
+					Reference(() => UriExpression),
+					Reference(() => SpaceChars),
+					Literal(">"),
 					Optional(
 						Reference(() => ArgumentList),
 						match => match.Product,
 						noMatch => new Expression[0]),
-					match => new AutoLinkNode(match.Product.Of1, match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
+					match => new AutoLinkNode(match.Product.Of3, match.Product.Of6, MarkdomSourceRange.FromMatch(match))));
 
 			var linkLabel =
 				Sequence(
@@ -597,144 +602,6 @@ namespace markdom.cs {
 
 			#endregion
 
-			Define(() => ReferenceId,
-				Sequence(
-					Literal("["),
-					AtLeast(0,
-						Sequence(
-							NotAhead(ChoiceOrdered(Literal("]"), Reference(() => NewLine))),
-							Wildcard()),
-							match => match.String),
-					Literal("]"),
-					match => new ReferenceId(match.Product.Of2)));
-
-			#region Roman Numerals
-
-			Define(() => UpperRomanNumeral,
-				Sequence(
-					Ahead(ChoiceUnordered("IVXLCDM".Select(Literal).ToArray())),
-					Reference(() => RomanNumeral),
-					match => match.Product.Of2));
-
-			Define(() => LowerRomanNumeral,
-				Sequence(
-					Ahead(ChoiceUnordered("ivxlcdm".Select(Literal).ToArray())),
-					Reference(() => RomanNumeral),
-					match => match.Product.Of2));
-
-			var romanNumeralI = ChoiceUnordered(Literal("i", m => 1), Literal("I", m => 1));
-			var romanNumeralV = ChoiceUnordered(Literal("v", m => 5), Literal("V", m => 5));
-			var romanNumeralX = ChoiceUnordered(Literal("x", m => 10), Literal("X", m => 10));
-			var romanNumeralL = ChoiceUnordered(Literal("l", m => 50), Literal("L", m => 50));
-			var romanNumeralC = ChoiceUnordered(Literal("c", m => 100), Literal("C", m => 100));
-			var romanNumeralD = ChoiceUnordered(Literal("d", m => 500), Literal("D", m => 500));
-			var romanNumeralM = ChoiceUnordered(Literal("m", m => 1000), Literal("M", m => 1000));
-
-			Define(() => RomanNumeral,
-				Sequence(
-					AtMost(3, romanNumeralM, match => match.Product.Sum()),
-					RomanNumeralDecade(romanNumeralM, romanNumeralD, romanNumeralC),
-					RomanNumeralDecade(romanNumeralC, romanNumeralL, romanNumeralX),
-					RomanNumeralDecade(romanNumeralX, romanNumeralV, romanNumeralI),
-					match => match.Product.Of1 + match.Product.Of2 + match.Product.Of3 + match.Product.Of4));
-
-			#endregion
-
-			Define(() => Line,
-				Sequence(
-					AtLeast(0,
-						Sequence(
-							NotAhead(Reference(() => NewLine)),
-							Wildcard())),
-					Optional(Reference(() => NewLine)),
-					match => new LineInfo(match.String, match.SourceRange)));
-
-			Define(() => BlankLines,
-				Sequence(
-					AtLeast(0,
-						Sequence(
-							AtLeast(0, Reference(() => SpaceChar)),
-							Reference(() => NewLine),
-							match => new LineInfo(match.String, match.SourceRange))),
-					Optional(
-						Sequence(
-							AtLeast(0, Reference(() => SpaceChar)),
-							EndOfInput(),
-							match => new LineInfo(match.String, match.SourceRange).InArray()),
-						match => match.Product,
-						noMatch => new LineInfo[0]),
-					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2)));
-
-			// NEVER EVER EVER USE THIS IN A REPETITION CONTEXT
-			Define(() => BlankLine,
-				Sequence(
-					new IExpression[] {
-						AtLeast(0, Reference(() => SpaceChar)),
-						ChoiceUnordered(
-							new IExpression[] { Reference(() => NewLine), EndOfInput() }) },
-					match => new LineInfo(match.String, match.SourceRange)));
-
-			Define(() => Indent,
-				ChoiceUnordered(Literal("\t"), Literal("    ")));
-
-			Define(() => NonIndentSpace,
-				AtMost(3, Literal(" "), match => match.String));
-
-			Define(() => SpaceChar,
-				ChoiceOrdered(
-					Literal(" "),
-					Literal("\t")));
-
-			Define(() => SpaceChars,
-				AtLeast(0, Reference(() => SpaceChar), match => match.String));
-
-			Define(() => NewLine,
-				ChoiceUnordered(
-					Literal("\n"),
-					Literal("\r\n")));
-
-			Define(() => Whitespace,
-				ChoiceUnordered(
-					Reference(() => SpaceChar),
-					Reference(() => NewLine)));
-
-			Define(() => Whitespaces,
-				AtLeast(0, Reference(() => Whitespace), match => match.String));
-
-			Define(() => Digit,
-				CharacterInRange('0', '9'));
-
-			Define(() => HexDigit,
-				ChoiceOrdered(
-					Reference(() => Digit),
-					CharacterInRange('a', 'f'),
-					CharacterInRange('A', 'F')));
-
-			Define(() => EnglishLowerAlpha,
-				CharacterInRange('a', 'z'));
-
-			Define(() => EnglishUpperAlpha,
-				CharacterInRange('A', 'Z'));
-
-			Define(() => EnglishAlpha,
-				ChoiceUnordered(
-					Reference(() => EnglishLowerAlpha),
-					Reference(() => EnglishUpperAlpha)));
-
-			Define(() => SpecialChar,
-				ChoiceUnordered(
-					new string[] { "*", "&", "'", "\"", "/", "\\", "[", "]", "|", "(", ")" }
-					.Select(Literal).ToArray()));
-
-			Define(() => NormalChar,
-				Sequence(
-					NotAhead(
-						ChoiceUnordered(
-							Reference(() => Whitespace),
-							Reference(() => SpecialChar))),
-					Wildcard(),
-					match => match.Product.Of2));
-
 			#region Expressions
 			// # Expressions
 			//
@@ -837,12 +704,11 @@ namespace markdom.cs {
 			var objectPropertyAssignment =
 				Sequence(
 					Reference(() => StringExpression), // TODO: Identifier / String / Uri
-					Sequence(
-						Reference(() => ExpressionWhitespace),
-						Literal("=>"),
-						Reference(() => ExpressionWhitespace)),
+					Reference(() => ExpressionWhitespace),
+					Literal(":"),
+					Reference(() => ExpressionWhitespace),
 					Reference(() => Expression),
-					match => new PropertyAssignment(match.Product.Of1, match.Product.Of3, MarkdomSourceRange.FromMatch(match)));
+					match => new PropertyAssignment(match.Product.Of1, match.Product.Of5, MarkdomSourceRange.FromMatch(match)));
 
 			var objectPropertyAssignments =
 				Optional(
@@ -868,42 +734,47 @@ namespace markdom.cs {
 			#endregion
 
 			#region UriExpression
-			
-			// TODO: handle URIs with spaces (spaces must be followed by some sensible character)
+			//   * Cannot contain `,` (commas), which are ordinarily legal URI characters.
+			//     This is to disambiguate URI expressions in argument lists
+			//   * Parentheses inside of a URI expression must be balanced
+			//   * Cannot start with `@`
 
-			var uriEscaped =
-				Sequence(
-					new IExpression[] { Literal("%"), Exactly(2, Reference(() => HexDigit)) },
-					match => match.String);
+			IExpression<object[]> uriExpressionPart = null;
+			IExpression<object[]> uriExpressionRegularPart = null;
+			IExpression<object[]> uriExpressionParenthesizedPart = null;
 
-			var bareUriExpressionCharacter =
-				ChoiceUnordered(
-					Reference(() => EnglishAlpha),
-					Reference(() => Digit),
+			uriExpressionPart = 
+				Named("UriExpressionPart",
+					ChoiceOrdered(
+						Reference(() => uriExpressionRegularPart),
+						Reference(() => uriExpressionParenthesizedPart)));
+
+			uriExpressionRegularPart =
+				AtLeast(1, 
 					ChoiceUnordered(
-						new string[] { ";", "/", "?", ":", "@", "&", "=", "?", "+", "$", "-", "_", ".", "!", "~", "*", "'" }
-						.Select(Literal).ToArray()),
-					uriEscaped);
-			
-			var bareUriExpression =
+						Reference(() => EnglishAlpha),
+						Reference(() => Digit),
+						ChoiceUnordered(new string[] { "/", "?", ":", "@", "&", "=", "?", "+", "$", "-", "_", "!", "~", "*", "'", ".", ";" } .Select(Literal).ToArray()),
+						Sequence(
+							Literal("%"),
+							Exactly(2, Reference(() => HexDigit)))));
+
+			uriExpressionParenthesizedPart =
 				Sequence(
-					NotAhead(Literal("@")), // may as well make this explicit
-					AtLeast(1, bareUriExpressionCharacter, match => new UriExpression(match.String, MarkdomSourceRange.FromMatch(match))),
-					match => match.Product.Of2);
+					Literal("("),
+					AtLeast(0, Reference(() => uriExpressionPart)),
+					Literal(")"));
 
-			var delimitedUriExpressionCharacter =
-				ChoiceUnordered(
-					bareUriExpressionCharacter,
-					ChoiceUnordered(new string[] { ",", "(", ")" }.Select(Literal).ToArray()));
-
-			var delimitedUriExpression =
+			var uriExpressionFirstPart =
 				Sequence(
-					Literal("<"), AtLeast(1, delimitedUriExpressionCharacter, match => match.String), Literal(">"),
-					match => new UriExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
-
+					NotAhead(Literal("@")),
+					Reference(() => uriExpressionPart));
 
 			Define(() => UriExpression,
-				ChoiceUnordered(delimitedUriExpression, bareUriExpression));
+				Sequence(
+					uriExpressionFirstPart,
+					AtLeast(0, uriExpressionPart),
+					match => new UriExpression(match.String, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -916,12 +787,142 @@ namespace markdom.cs {
 					match => Nil.Value));
 
 			#endregion
+
+			#region Roman Numerals
+
+			Define(() => UpperRomanNumeral,
+				Sequence(
+					Ahead(ChoiceUnordered("IVXLCDM".Select(Literal).ToArray())),
+					Reference(() => RomanNumeral),
+					match => match.Product.Of2));
+
+			Define(() => LowerRomanNumeral,
+				Sequence(
+					Ahead(ChoiceUnordered("ivxlcdm".Select(Literal).ToArray())),
+					Reference(() => RomanNumeral),
+					match => match.Product.Of2));
+
+			var romanNumeralI = ChoiceUnordered(Literal("i", m => 1), Literal("I", m => 1));
+			var romanNumeralV = ChoiceUnordered(Literal("v", m => 5), Literal("V", m => 5));
+			var romanNumeralX = ChoiceUnordered(Literal("x", m => 10), Literal("X", m => 10));
+			var romanNumeralL = ChoiceUnordered(Literal("l", m => 50), Literal("L", m => 50));
+			var romanNumeralC = ChoiceUnordered(Literal("c", m => 100), Literal("C", m => 100));
+			var romanNumeralD = ChoiceUnordered(Literal("d", m => 500), Literal("D", m => 500));
+			var romanNumeralM = ChoiceUnordered(Literal("m", m => 1000), Literal("M", m => 1000));
+
+			Define(() => RomanNumeral,
+				Sequence(
+					AtMost(3, romanNumeralM, match => match.Product.Sum()),
+					RomanNumeralDecade(romanNumeralM, romanNumeralD, romanNumeralC),
+					RomanNumeralDecade(romanNumeralC, romanNumeralL, romanNumeralX),
+					RomanNumeralDecade(romanNumeralX, romanNumeralV, romanNumeralI),
+					match => match.Product.Of1 + match.Product.Of2 + match.Product.Of3 + match.Product.Of4));
+
+			#endregion
+
+			#region Text, Character Classes, etc
+
+			Define(() => Line,
+				Sequence(
+					AtLeast(0,
+						Sequence(
+							NotAhead(Reference(() => NewLine)),
+							Wildcard())),
+					Optional(Reference(() => NewLine)),
+					match => LineInfo.FromMatch(match)));
+
+			Define(() => BlankLines,
+				Sequence(
+					AtLeast(0,
+						Sequence(
+							AtLeast(0, Reference(() => SpaceChar)),
+							Reference(() => NewLine),
+							match => LineInfo.FromMatch(match))),
+					Optional(
+						Sequence(
+							AtLeast(0, Reference(() => SpaceChar)),
+							EndOfInput(),
+							match => LineInfo.FromMatch(match).InArray()),
+						match => match.Product,
+						noMatch => new LineInfo[0]),
+					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2)));
+
+			// NEVER EVER EVER USE THIS IN A REPETITION CONTEXT
+			Define(() => BlankLine,
+				Sequence(
+					new IExpression[] {
+						AtLeast(0, Reference(() => SpaceChar)),
+						ChoiceUnordered(
+							new IExpression[] { Reference(() => NewLine), EndOfInput() }) },
+					match => LineInfo.FromMatch(match)));
+
+			Define(() => Indent,
+				ChoiceUnordered(Literal("\t"), Literal("    ")));
+
+			Define(() => NonIndentSpace,
+				AtMost(3, Literal(" "), match => match.String));
+
+			Define(() => SpaceChar,
+				ChoiceOrdered(
+					Literal(" "),
+					Literal("\t")));
+
+			Define(() => SpaceChars,
+				AtLeast(0, Reference(() => SpaceChar), match => match.String));
+
+			Define(() => NewLine,
+				ChoiceUnordered(
+					Literal("\n"),
+					Literal("\r\n")));
+
+			Define(() => Whitespace,
+				ChoiceUnordered(
+					Reference(() => SpaceChar),
+					Reference(() => NewLine)));
+
+			Define(() => Whitespaces,
+				AtLeast(0, Reference(() => Whitespace), match => match.String));
+
+			Define(() => Digit,
+				CharacterInRange('0', '9'));
+
+			Define(() => HexDigit,
+				ChoiceOrdered(
+					Reference(() => Digit),
+					CharacterInRange('a', 'f'),
+					CharacterInRange('A', 'F')));
+
+			Define(() => EnglishLowerAlpha,
+				CharacterInRange('a', 'z'));
+
+			Define(() => EnglishUpperAlpha,
+				CharacterInRange('A', 'Z'));
+
+			Define(() => EnglishAlpha,
+				ChoiceUnordered(
+					Reference(() => EnglishLowerAlpha),
+					Reference(() => EnglishUpperAlpha)));
+
+			Define(() => SpecialChar,
+				ChoiceUnordered(
+					new string[] { "*", "&", "'", "\"", "/", "\\", "[", "]", "|", "(", ")" }
+					.Select(Literal).ToArray()));
+
+			Define(() => NormalChar,
+				Sequence(
+					NotAhead(
+						ChoiceUnordered(
+							Reference(() => Whitespace),
+							Reference(() => SpecialChar))),
+					Wildcard(),
+					match => match.Product.Of2));
+			#endregion
 		}
 
 		private T ParseLines<T>(IExpression<T> expression, LineInfo[] lines) {
 			var expressionMatchingContext =
 				new ExpressionMatchingContext(
-					string.Join("", lines.Select(line => line.LineString).ToArray()),
+					lines.Select(line => line.LineString).Join(),
 					lines.Select(line => line.SourceRange).ToArray());
 			
 			var expressionMatchingResult = expression.Match(expressionMatchingContext);
@@ -930,13 +931,6 @@ namespace markdom.cs {
 				return default(T);
 
 			return (T)expressionMatchingResult.Product;
-		}
-
-		private int ParseDefault(string s, int d) {
-			int value;
-			return int.TryParse(s, out value)
-				? value
-				: d;
 		}
 
 		private IExpression<int> RomanNumeralDecade(IExpression<int> decem, IExpression<int> quintum, IExpression<int> unit) {

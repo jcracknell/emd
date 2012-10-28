@@ -135,38 +135,6 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 				match => matchAction(UpcastExpressionMatch(match, product => CastArray<T>(product))));
 		}
 
-		public IExpression<object> ChoiceOrdered(params IExpression[] choices) {
-			return ChoiceOrdered(choices, DefaultMatchAction);
-		}
-
-		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
-			return new OrderedChoiceExpression<TProduct>(choices, matchAction);
-		}
-
-		public IExpression<TChoice> ChoiceOrdered<TChoice>(params IExpression<TChoice>[] choices) {
-			return ChoiceOrdered(choices, DefaultMatchAction);
-		}
-
-		public IExpression<TProduct> ChoiceOrdered<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
-			return new OrderedChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, product => (TChoice)product)));
-		}
-
-		public IExpression<object> ChoiceUnordered(params IExpression[] choices) {
-			return new FrequencyOptimizingUnorderedChoiceExpression<object>(choices, null);
-		}
-
-		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
-			return new FrequencyOptimizingUnorderedChoiceExpression<TProduct>(choices, matchAction);
-		}
-
-		public IExpression<TChoice> ChoiceUnordered<TChoice>(params IExpression<TChoice>[] choices) {
-			return new FrequencyOptimizingUnorderedChoiceExpression<TChoice>(choices, null);
-		}
-
-		public IExpression<TProduct> ChoiceUnordered<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
-			return new FrequencyOptimizingUnorderedChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, p => (TChoice)p)));
-		}
-
 		public IExpression<Nil> NotAhead<T>(IExpression<T> expression) {
 			return NotAhead(expression, DefaultMatchAction);	
 		}
@@ -218,6 +186,168 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		public IExpression<TProduct> CharacterInRange<TProduct>(char rangeStart, char rangeEnd, Func<IExpressionMatch<string>, TProduct> matchAction) {
 			return new CharacterRangeExpression<TProduct>(rangeStart, rangeEnd, matchAction);
 		}
+
+		#region ChoiceOrdered
+
+		public IExpression<object> ChoiceOrdered(params IExpression[] choices) {
+			return ChoiceOrdered(choices, DefaultMatchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return new OrderedChoiceExpression<TProduct>(choices, matchAction);
+		}
+
+		public IExpression<TChoice> ChoiceOrdered<TChoice>(params IExpression<TChoice>[] choices) {
+			return ChoiceOrdered(choices, DefaultMatchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
+			return new OrderedChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, product => (TChoice)product)));
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, IExpression e12, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, IExpression e12, IExpression e13, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, IExpression e12, IExpression e13, IExpression e14, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, IExpression e12, IExpression e13, IExpression e14, IExpression e15, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, IExpression e12, IExpression e13, IExpression e14, IExpression e15, IExpression e16, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16 }, matchAction);
+		}
+
+		#endregion
+
+		#region ChoiceUnordered
+
+		public IExpression<object> ChoiceUnordered(params IExpression[] choices) {
+			return new FrequencyOptimizingUnorderedChoiceExpression<object>(choices, null);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return new FrequencyOptimizingUnorderedChoiceExpression<TProduct>(choices, matchAction);
+		}
+
+		public IExpression<TChoice> ChoiceUnordered<TChoice>(params IExpression<TChoice>[] choices) {
+			return new FrequencyOptimizingUnorderedChoiceExpression<TChoice>(choices, null);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
+			return new FrequencyOptimizingUnorderedChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, p => (TChoice)p)));
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, IExpression e12, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, IExpression e12, IExpression e13, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, IExpression e12, IExpression e13, IExpression e14, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, IExpression e12, IExpression e13, IExpression e14, IExpression e15, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15 }, matchAction);
+		}
+
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression e1, IExpression e2, IExpression e3, IExpression e4, IExpression e5, IExpression e6, IExpression e7, IExpression e8, IExpression e9, IExpression e10, IExpression e11, IExpression e12, IExpression e13, IExpression e14, IExpression e15, IExpression e16, Func<IExpressionMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16 }, matchAction);
+		}
+
+		#endregion
+
+		#region Sequence
 
 		public IExpression<object[]> Sequence(params IExpression[] sequence) {
 			return new SequenceExpression<object[]>(sequence, match => match.Product.ToArray());
@@ -317,5 +447,6 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16>())));
 		}
 
+		#endregion
 	}
 }

@@ -27,7 +27,7 @@ namespace markdom.cs {
 		[TestMethod]
 		public void AutoLink_matches_uri_only() {
 			var expected = new AutoLinkNode(
-				new UriExpression("http://www.google.com", new MarkdomSourceRange(0, 23, 1, 0)),
+				new UriExpression("http://www.google.com", new MarkdomSourceRange(1, 21, 1, 1)),
 				new Expression[0],
 				new MarkdomSourceRange(0, 23, 1, 0));
 
@@ -43,7 +43,7 @@ namespace markdom.cs {
 		[TestMethod]
 		public void AutoLink_matches_with_arguments() {
 			var expected = new AutoLinkNode(
-				new UriExpression("http://slashdot.org", new MarkdomSourceRange(0, 21, 1, 0)),
+				new UriExpression("http://slashdot.org", new MarkdomSourceRange(1, 19, 1, 1)),
 				new Expression[] { new StringExpression("title", new MarkdomSourceRange(22, 7, 1, 22)) },
 				new MarkdomSourceRange(0, 30, 1, 0)); 
 
@@ -141,11 +141,11 @@ namespace markdom.cs {
 				new PropertyAssignment[] {
 					new PropertyAssignment(
 						new StringExpression("a", new MarkdomSourceRange(2, 3, 1, 2)),
-						new StringExpression("foo", new MarkdomSourceRange(9, 5, 1, 9)),
-						new MarkdomSourceRange(2, 12, 1, 2)) },
-				new MarkdomSourceRange(0, 16, 1, 0));  
+						new StringExpression("foo", new MarkdomSourceRange(8, 5, 1, 8)),
+						new MarkdomSourceRange(2, 11, 1, 2)) },
+				new MarkdomSourceRange(0, 15, 1, 0));  
 
-			var matchResult = Match(Grammar.ObjectExpression, "{ 'a' => 'foo' }");
+			var matchResult = Match(Grammar.ObjectExpression, "{ 'a' : 'foo' }");
 
 			Assert.IsTrue(matchResult.Succeeded);
 			Assert.AreEqual(expected, matchResult.Product);
@@ -237,6 +237,30 @@ namespace markdom.cs {
 		}
 
 		[TestMethod]
+		public void UriExpression_matches_uri_with_balanced_parentheses() {
+			var matchResult = Match(Grammar.UriExpression, "http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx");
+
+			Assert.IsTrue(matchResult.Succeeded);
+
+			var uriExpression = matchResult.Product as UriExpression;
+
+			Assert.IsNotNull(uriExpression);
+			Assert.AreEqual("http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx", uriExpression.Value);
+		}
+
+		[TestMethod]
+		public void UriExpression_discards_characters_following_unbalanced_parentheses() {
+			var matchResult = Match(Grammar.UriExpression, "http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71).aspx");
+
+			Assert.IsTrue(matchResult.Succeeded);
+
+			var uriExpression = matchResult.Product as UriExpression;
+
+			Assert.IsNotNull(uriExpression);
+			Assert.AreEqual("http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71", uriExpression.Value);
+		}
+
+		[TestMethod]
 		public void Bla() {
 			var input = @" // This is a single line comment
 # Heading 1
@@ -271,15 +295,6 @@ Yet another.
 
 			stopwatch.Start();
 			var matchResult = Match(Grammar.Document, input);
-			stopwatch.Stop();
-
-			var first = stopwatch.Elapsed;
-
-
-			for(int i = 0; i < 100; i++) {
-				stopwatch.Restart();
-				matchResult = Match(Grammar.Document, input);
-			}
 			stopwatch.Stop();
 
 			stopwatch.ToString();
