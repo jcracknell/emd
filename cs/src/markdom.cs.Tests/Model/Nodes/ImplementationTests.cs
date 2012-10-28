@@ -5,48 +5,71 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
+using markdom.cs.ExtensionMethods;
 
 namespace markdom.cs.Model.Nodes {
 	[TestClass]
 	public class ImplementationTests {
-		private bool IsNodeType(Type candidate) {
-			if(typeof(Node).Equals(candidate))
-				return true;
 
-			if(null == candidate.BaseType) return false;
 
-			return IsNodeType(candidate.BaseType);
-		}
+		[TestMethod]
+		public void All_fields_on_INode_implementations_are_readonly() {
+			var nodeTypeFieldsWhichAreNotReadOnly =
+				typeof(INode).Assembly.GetTypes()
+				.Where(ReflectionHelpers.IsNodeClass)
+				.SelectMany(nodeType => nodeType.GetFields(BindingFlags.GetField | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
+				.Where(field => !field.IsInitOnly);
 
-		private bool IsInstantiableNodeType(Type candidate) {
-			return candidate.IsClass && !candidate.IsAbstract && IsNodeType(candidate);
-		}
-
-		private bool MethodIsEqualsOverride(MethodInfo method) {
-			return method.Name.Equals("Equals")
-				&& method.ReturnType.Equals(typeof(bool))
-				&& method.GetParameters().Length.Equals(1)
-				&& method.GetParameters()[0].ParameterType.Equals(typeof(object));
-		}
-
-		private bool TypeDoesNotDeclareEqualsOverride(Type candidate) {
-			return !candidate
-				.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.Instance)
-				.Any(MethodIsEqualsOverride);
+			if(nodeTypeFieldsWhichAreNotReadOnly.Any())
+				Assert.Fail(
+					nodeTypeFieldsWhichAreNotReadOnly
+					.Select(f => "Field " + f.DeclaringType.FullName + "::" + f.Name + " is not readonly.")
+					.Join("\n"));
 		}
 
 		[TestMethod]
-		public void All_Node_implementations_override_Equals() {
-			var nodeImplementationsWithoutEqualsOverride =
-				typeof(Node).Assembly.GetTypes()
-				.Where(IsInstantiableNodeType)
-				.Where(TypeDoesNotDeclareEqualsOverride);
+		public void No_fields_on_INode_implementors_are_public() {
+			var nodeTypeFieldsWhichArePublic =
+				typeof(INode).Assembly.GetTypes()
+				.Where(ReflectionHelpers.IsNodeClass)
+				.SelectMany(nodeType => nodeType.GetFields(BindingFlags.GetField | BindingFlags.Instance | BindingFlags.Static | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.NonPublic))
+				.Where(field => field.IsPublic);
 
-			if(nodeImplementationsWithoutEqualsOverride.Any())
+			if(nodeTypeFieldsWhichArePublic.Any())
 				Assert.Fail(
-					string.Concat(
-						"The following instantiable node types do not declare an override for Equals: ",
-						string.Join(", ", nodeImplementationsWithoutEqualsOverride.Select(t => t.FullName).ToArray())));
+					nodeTypeFieldsWhichArePublic
+					.Select(f => "Field " + f.DeclaringType.FullName + "::" + f.Name + " is public.")
+					.Join("\n"));
+		}
+
+		[TestMethod]
+		public void No_public_properties_on_INode_implementors_declare_setters() {
+			var publicNodePropertiesDeclaringSetters =
+				typeof(INode).Assembly.GetTypes()
+				.Where(ReflectionHelpers.IsNodeClass)
+				.SelectMany(nodeType => nodeType.GetProperties())
+				.Where(property => null != property.GetSetMethod());
+			
+			if(publicNodePropertiesDeclaringSetters.Any())
+				Assert.Fail(
+					publicNodePropertiesDeclaringSetters
+					.Select(p => "Property " + p.DeclaringType.FullName + "::" + p.Name + " declares a public setter.")
+					.Join("\n"));
+		}
+
+		[TestMethod]
+		public void No_INode_implementors_expose_arrays() {
+			var publicNodePropertiesWithArrayType =
+				typeof(INode).Assembly.GetTypes()
+				.Where(ReflectionHelpers.IsNodeClass)
+				.SelectMany(nodeType => nodeType.GetProperties())
+				.Where(property => property.PropertyType.IsArray);
+
+			if(publicNodePropertiesWithArrayType.Any())
+				Assert.Fail(
+					publicNodePropertiesWithArrayType
+					.Select(p => "Property " + p.DeclaringType.FullName + "::" + p.Name + " has array type.")
+					.Join("\n"));
 		}
 	}
 }

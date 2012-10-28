@@ -10,40 +10,33 @@ namespace markdom.cs.Model.Nodes{
 		Single
 	}
 
-	public class QuotedNode : CompositeNode {
+	public class QuotedNode : IPlainInlineNode {
 		private readonly QuoteType _quoteType;
+		private readonly IInlineNode[] _children;
+		private readonly SourceRange _sourceRange;
 
-		public QuotedNode(QuoteType quoteType, Node[] children, SourceRange sourceRange)
-			: base(children, sourceRange)
-		{
+		public QuotedNode(QuoteType quoteType, IInlineNode[] children, SourceRange sourceRange) {
+			CodeContract.ArgumentIsNotNull(() => children, children);
+			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+
 			_quoteType = quoteType;
+			_children = children;
 		}
 
 		public QuoteType QuoteType { get { return _quoteType; } }
 
-		public override NodeType NodeType { get { return NodeType.Quoted; } }
+		public IEnumerable<IInlineNode> Children { get { return _children; } }
 
-		public override void HandleWith(INodeHandler handler) {
+		public NodeType NodeType { get { return NodeType.Quoted; } }
+
+		public SourceRange SourceRange { get { return _sourceRange; } }
+
+		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);
 		}
 
-		public override T HandleWith<T>(INodeHandler<T> handler) {
+		public T HandleWith<T>(INodeHandler<T> handler) {
 			return handler.Handle(this);
-		}
-
-		public override int GetHashCode() {
-			return new HashCodeBuilder()
-				.Merge(QuoteType)
-				.Merge(SourceRange)
-				.MergeAll(Children)
-				.GetHashCode();
-		}
-
-		public override bool Equals(object obj) {
-			var other = obj as QuotedNode;
-			return null != other
-				&& this.QuoteType.Equals(other.QuoteType)
-				&& base.Equals(other);
 		}
 	}
 }

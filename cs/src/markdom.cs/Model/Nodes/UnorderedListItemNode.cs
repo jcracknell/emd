@@ -5,25 +5,30 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Nodes{
-	public class UnorderedListItemNode : CompositeNode {
-		public UnorderedListItemNode(Node[] children, SourceRange sourceRange)
-			: base(children, sourceRange)
-		{ }
+	public class UnorderedListItemNode : INode {
+		private readonly INode[] _children;
+		private readonly SourceRange _sourceRange;
 
-		public override NodeType NodeType { get { return NodeType.UnorderedListItem; } }
+		public UnorderedListItemNode(INode[] children, SourceRange sourceRange) {
+			CodeContract.ArgumentIsNotNull(() => children, children);
+			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
-		public override void HandleWith(INodeHandler handler) {
+			_children = children;
+			_sourceRange = sourceRange;
+		}
+
+		public IEnumerable<INode> Children { get { return _children; } }
+
+		public NodeType NodeType { get { return NodeType.UnorderedListItem; } }
+
+		public SourceRange SourceRange { get { return _sourceRange; } }
+
+		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);
 		}
 
-		public override T HandleWith<T>(INodeHandler<T> handler) {
+		public T HandleWith<T>(INodeHandler<T> handler) {
 			return handler.Handle(this);
-		}
-
-		public override bool Equals(object obj) {
-			var other = obj as UnorderedListItemNode;
-			return null != other
-				&& base.Equals(other);
 		}
 	}
 }

@@ -6,14 +6,14 @@ using System.Text;
 
 namespace markdom.cs.Model {
 	public class MarkdomDocument {
-		private readonly Node[] _content;
+		private readonly IBlockNode[] _content;
 
-		public MarkdomDocument(Node[] content) {
+		public MarkdomDocument(IBlockNode[] content) {
 			CodeContract.ArgumentIsNotNull(() => content, content);
 
 			_content = content;
 		}
 
-		public IEnumerable<Node> Content { get { return _content; } }
+		public IEnumerable<IBlockNode> Content { get { return _content; } }
 	}
 }

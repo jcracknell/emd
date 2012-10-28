@@ -1,4 +1,5 @@
-﻿using markdom.cs.Model;
+﻿using markdom.cs.ExtensionMethods;
+using markdom.cs.Model;
 using markdom.cs.Model.Expressions;
 using markdom.cs.Model.Nodes;
 using pegleg.cs;
@@ -59,22 +60,22 @@ namespace markdom.cs {
 		public IExpression<string> EnglishLowerAlpha { get; private set; }
 		public IExpression<string> EnglishUpperAlpha { get; private set; }
 		public IExpression<string> EnglishAlpha { get; private set; }
-		public IExpression<Node> Comment { get; private set; }
+		public IExpression<LineInfo> Comment { get; private set; }
 		/// <summary>
 		/// A C-style multi-line comment.
 		/// </summary>
-		public IExpression<MultiLineCommentNode> MultiLineComment { get; private set; }
+		public IExpression<LineInfo> MultiLineComment { get; private set; }
 		/// <summary>
 		/// A C-style single line comment. Does not consume the end of the line
 		/// </summary>
-		public IExpression<SingleLineCommentNode> SingleLineComment { get; private set; }
+		public IExpression<LineInfo> SingleLineComment { get; private set; }
 
 		public IExpression<MarkdomDocument> Document { get; private set; }
 
-		public IExpression<Node[]> Blocks { get; private set; }
-		public IExpression<Node> Block { get; private set; }
+		public IExpression<IBlockNode[]> Blocks { get; private set; }
+		public IExpression<IBlockNode> Block { get; private set; }
 
-		public IExpression<Node> CommentBlock { get; private set; }
+		public IExpression<LineInfo> CommentBlock { get; private set; }
 		public IExpression<TableNode> Table { get; private set; }
 		public IExpression<TableRowNode> TableRow { get; private set; }
 		public IExpression<LineInfo> TableRowSeparator { get; private set; }
@@ -89,8 +90,8 @@ namespace markdom.cs {
 		public IExpression<Nil> Bullet { get; private set; }
 		public IExpression<EnumeratorInfo> Enumerator { get; private set; }
 
-		public IExpression<Node[]> Inlines { get; private set; }
-		public IExpression<Node> Inline { get; private set; }
+		public IExpression<IInlineNode[]> Inlines { get; private set; }
+		public IExpression<IInlineNode> Inline { get; private set; }
 		public IExpression<AutoLinkNode> AutoLink { get; private set; }
 		public IExpression<LinkNode> Link { get; private set; }
 		public IExpression<StrongNode> Strong { get; private set; }
@@ -133,7 +134,7 @@ namespace markdom.cs {
 			#region Comments
 
 			Define(() => Comment,
-				Choice<Node>(
+				Choice<LineInfo>(
 					Reference(() => SingleLineComment),
 					Reference(() => MultiLineComment)));
 
@@ -141,7 +142,7 @@ namespace markdom.cs {
 				Sequence(
 					Literal("//"),
 					Reference(() => Line),
-					(match, s, l) => new SingleLineCommentNode(l.LineString, match.SourceRange)));
+					(match, s, l) => new LineInfo(match.String, match.SourceRange)));
 
 			Define(() => MultiLineComment,
 				Sequence(
@@ -150,15 +151,19 @@ namespace markdom.cs {
 						Sequence( NotAhead(Literal("*/")), Wildcard() ),
 						match => match.String),
 					Literal("*/"),
-					(match, s, c, e) => new MultiLineCommentNode(c, match.SourceRange)));
+					(match, s, c, e) => new LineInfo(match.String, match.SourceRange)));
 
 			#endregion
 
 			#region Block Rules
 
 			Define(() => Blocks,
-				AtLeast(0, Reference(() => Block)));
-
+				AtLeast(0,
+					Sequence(
+						AtLeast(0, Reference(() => CommentBlock)),
+						Reference(() => Block),
+						AtLeast(0, Reference(() => CommentBlock)),
+						(match, a, b, c) => b)));
 
 			// Ordering notes:
 			//   * Paragraph must come last, because it will sweep up just about anything
@@ -166,11 +171,10 @@ namespace markdom.cs {
 			Define(() => Block,
 				Sequence(
 					Reference(() => BlankLines),
-					OrderedChoice<Node>(
+					OrderedChoice<IBlockNode>(
 						Reference(() => Heading),
 						Reference(() => Table),
 						Reference(() => UnorderedList),
-						Reference(() => CommentBlock),
 						Reference(() => Paragraph)), // paragraph must come last
 					Reference(() => BlankLines),
 					(match, a, b, c) => b));
@@ -191,7 +195,9 @@ namespace markdom.cs {
 					(match, a, b, c, d) => b);
 
 			Define(() => CommentBlock,
-				Choice<Node>(singleLineCommentBlock, multiLineCommentBlock));
+				Choice<LineInfo>(
+					singleLineCommentBlock,
+					multiLineCommentBlock));
 
 			#region Lists
 			// We define two types of lists, a *tight* list wherein no items are separated by blank
@@ -460,7 +466,7 @@ namespace markdom.cs {
 				AtLeast(0, Reference(() => Inline)));
 
 			Define(() => Inline,
-				OrderedChoice<Node>(
+				OrderedChoice<IInlineNode>(
 					Reference(() => Text),
 					Reference(() => Space),
 					Reference(() => Strong),
@@ -468,7 +474,6 @@ namespace markdom.cs {
 					Reference(() => Quoted),
 					Reference(() => Link),
 					Reference(() => AutoLink),
-					Reference(() => Comment),
 					Reference(() => Entity),
 					Reference(() => LineBreak),
 					Reference(() => Symbol)));

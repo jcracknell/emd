@@ -5,40 +5,30 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Nodes{
-	public class EntityNode : Node {
+	public class EntityNode : IPlainInlineNode {
 		private readonly int _value;
+		private readonly SourceRange _sourceRange;
 
-		public EntityNode(int value, SourceRange sourceRange)
-			: base(sourceRange)
-		{
+		public EntityNode(int value, SourceRange sourceRange) {
 			CodeContract.ArgumentIsValid(() => value, value >= 0, "must be a non-negative integer");
+			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_value = value;
+			_sourceRange = sourceRange;
 		}
 
 		public int Value { get { return _value; } }
 
-		public override NodeType NodeType { get { return NodeType.Entity; } }
+		public NodeType NodeType { get { return NodeType.Entity; } }
 
-		public override void HandleWith(INodeHandler handler) {
+		public SourceRange SourceRange { get { return _sourceRange; } }
+
+		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);
 		}
 
-		public override T HandleWith<T>(INodeHandler<T> handler) {
+		public T HandleWith<T>(INodeHandler<T> handler) {
 			return handler.Handle(this);
-		}
-
-		public override int GetHashCode() {
-			return this.Value;
-		}
-
-		public override bool Equals(object obj) {
-			if(this == obj) return true;
-
-			var other = obj as EntityNode;
-			return null != other
-				&& this.Value.Equals(other.Value)
-				&& base.Equals(other);
 		}
 
 		public static bool IsEntityName(string name) {

@@ -5,34 +5,30 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Nodes{
-	public class TableRowNode : Node {
+	public class TableRowNode : INode {
 		private readonly TableCellNode[] _cells;
+		private readonly SourceRange _sourceRange;
 
-		public TableRowNode(TableCellNode[] cells, SourceRange sourceRange)
-			: base(sourceRange)
-		{
+		public TableRowNode(TableCellNode[] cells, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => cells, cells);
+			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_cells = cells;
+			_sourceRange = sourceRange;
 		}
 
 		public IEnumerable<TableCellNode> Cells { get { return _cells; } }
 
-		public override NodeType NodeType { get { return NodeType.TableRow; } }
+		public NodeType NodeType { get { return NodeType.TableRow; } }
 
-		public override void HandleWith(INodeHandler handler) {
+		public SourceRange SourceRange { get { return _sourceRange; } }
+
+		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);
 		}
 
-		public override T HandleWith<T>(INodeHandler<T> handler) {
+		public T HandleWith<T>(INodeHandler<T> handler) {
 			return handler.Handle(this);
-		}
-
-		public override bool Equals(object obj) {
-			var other = obj as TableRowNode;
-			return null != other
-				&& base.Equals(other)
-				&& Enumerable.SequenceEqual(this.Cells, other.Cells);
 		}
 	}
 }

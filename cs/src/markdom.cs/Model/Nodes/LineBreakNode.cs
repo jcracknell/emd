@@ -5,24 +5,25 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Nodes{
-	public class LineBreakNode : Node {
-		public LineBreakNode(SourceRange sourceRange)
-			: base(sourceRange)
-		{ }
+	public class LineBreakNode : IFormattedInlineNode {
+		private readonly SourceRange _sourceRange;
+		
+		public LineBreakNode(SourceRange sourceRange) {
+			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
-		public override NodeType NodeType { get { return NodeType.LineBreak; } }
+			_sourceRange = sourceRange;
+		}
 
-		public override void HandleWith(INodeHandler handler) {
+		public NodeType NodeType { get { return NodeType.LineBreak; } }
+
+		public SourceRange SourceRange { get { return _sourceRange; } }
+
+		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);
 		}
 
-		public override T HandleWith<T>(INodeHandler<T> handler) {
+		public T HandleWith<T>(INodeHandler<T> handler) {
 			return handler.Handle(this);
-		}
-
-		public override bool Equals(object obj) {
-			var other = obj as LineBreakNode;
-			return base.Equals(other);
 		}
 	}
 }

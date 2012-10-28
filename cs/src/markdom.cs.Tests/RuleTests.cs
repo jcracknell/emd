@@ -20,6 +20,10 @@ namespace markdom.cs {
 			return expression.Match(context);
 		}
 
+		private void AssertNodesAreEqual(INode expected, object actual) {
+			((INode)actual).HandleWith(new NodeEqualityTestingHandler(expected));
+		}
+
 		[TestMethod]
 		public void AutoLink_matches_uri_only() {
 			var expected = new AutoLinkNode(
@@ -33,7 +37,7 @@ namespace markdom.cs {
 					@"<http://www.google.com>");
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+			AssertNodesAreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
@@ -49,28 +53,23 @@ namespace markdom.cs {
 					@"<http://slashdot.org>('title')");
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+			AssertNodesAreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
 		public void CommentBlock_matches_single_line_comment() {
-			var expected = new SingleLineCommentNode(" text", new SourceRange(0, 7, 1, 0));
-
 			var matchResult = Match(Grammar.CommentBlock, "// text");
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
 		public void CommentBlock_matches_indented_single_line_comment() {
-			var expected = new SingleLineCommentNode(" text", new SourceRange(4, 7, 1, 4));
 			var matchResult =
 				Match(Grammar.CommentBlock,
 					"    // text");
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
@@ -90,7 +89,7 @@ namespace markdom.cs {
 			var matchResult = Match(Grammar.Entity, "&#233;");
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+			AssertNodesAreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
@@ -99,7 +98,7 @@ namespace markdom.cs {
 			var matchResult = Match(Grammar.Entity, "&#xE9;");
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+			AssertNodesAreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
@@ -109,21 +108,21 @@ namespace markdom.cs {
 			var matchResult = Match(Grammar.Entity, "&eacute;");
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+			AssertNodesAreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
 		public void Emphasis_matches_base_case() {
 			var input = new ExpressionMatchingContext("*text*");
 			var expected = new EmphasisNode(
-				new Node[] {
+				new IInlineNode[] {
 					new TextNode("text", new SourceRange(1, 4, 1, 1)) },
 				new SourceRange(0, 6, 1, 0));
 
 			var matchResult = Grammar.Emphasis.Match(input);
 			
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+			AssertNodesAreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
@@ -157,25 +156,23 @@ namespace markdom.cs {
 			var input = new ExpressionMatchingContext("'text'");
 			var expected = new QuotedNode(
 				QuoteType.Single,
-				new Node[] {
+				new IInlineNode[] {
 					new TextNode("text", new SourceRange(1, 4, 1, 1)) },
 				new SourceRange(0, 6, 1, 0));
 
 			var matchResult = Grammar.Quoted.Match(input);
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+			AssertNodesAreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
 		public void SingleLineComment_matches_base_case() {
 			var input = new ExpressionMatchingContext("// text");
-			var expected = new SingleLineCommentNode(" text", new SourceRange(0, 7, 1, 0));
 
 			var matchResult = Grammar.SingleLineComment.Match(input);
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
@@ -203,14 +200,14 @@ namespace markdom.cs {
 		public void Strong_matches_base_case() {
 			var input = new ExpressionMatchingContext("**text**");
 			var expected = new StrongNode(
-				new Node[] {
+				new IInlineNode[] {
 					new TextNode("text", new SourceRange(2, 4, 1, 2)) },
 				new SourceRange(0, 8, 1, 0));
 
 			var matchResult = Grammar.Strong.Match(input);
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+			AssertNodesAreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]
@@ -221,7 +218,7 @@ namespace markdom.cs {
 			var matchResult = Grammar.Symbol.Match(input);
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+			AssertNodesAreEqual(expected, matchResult.Product);
 		}
 
 		[TestMethod]

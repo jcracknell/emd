@@ -5,47 +5,35 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Nodes{
-	public class TextNode : Node {
+	public class TextNode : IPlainInlineNode {
 		private readonly string _text;
+		private readonly SourceRange _sourceRange;
 
-		public TextNode(string text, SourceRange sourceRange)
-			: base(sourceRange)
-		{
+		public TextNode(string text, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => text, text);
+			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			CodeContract.ArgumentIsValid(() => text, !string.IsNullOrEmpty(text), "cannot be empty");
 
 			_text = text;
+			_sourceRange = sourceRange;
 		}
 
 		public string Text { get { return _text; } }
 
-		public override NodeType NodeType { get { return NodeType.Text; } }
+		public NodeType NodeType { get { return NodeType.Text; } }
 
-		public override void HandleWith(INodeHandler handler) {
+		public SourceRange SourceRange { get { return _sourceRange; } }
+
+		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);
 		}
 
-		public override T HandleWith<T>(INodeHandler<T> handler) {
+		public T HandleWith<T>(INodeHandler<T> handler) {
 			return handler.Handle(this);
 		}
 
-		public override int GetHashCode() {
-			return new HashCodeBuilder()
-				.Merge(SourceRange)
-				.Merge(Text)
-				.GetHashCode();
-		}
-
-		public override bool Equals(object obj) {
-			if(this == obj) return true;
-
-			var other = obj as TextNode;
-			return null != other
-				&& this.SourceRange.Equals(other.SourceRange)
-				&& this.Text.Equals(other.Text, StringComparison.Ordinal);
-		}
-
 		public override string ToString() {
-			return string.Concat(this.GetType().FullName, "(", _text, ")");
+			return "(" + _text + ")";
 		}
 	}
 }

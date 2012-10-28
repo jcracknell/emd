@@ -42,8 +42,9 @@
   <ItemGroup>
     <Compile Include="ArrayUtils.cs" />
     <Compile Include="CodeContract.cs" />
+    <Compile Include="ExtensionMethods\MarkdomExtensionMethods.cs" />
+    <Compile Include="Model\INode.cs" />
     <Compile Include="Model\Nodes\AutoLinkNode.cs" />
-    <Compile Include="Model\Nodes\CompositeInlineNode.cs" />
     <Compile Include="Model\Nodes\EmphasisNode.cs" />
     <Compile Include="Model\Nodes\EntityNode.cs" />
     <Compile Include="Model\Expressions\Expression.cs" />
@@ -53,13 +54,13 @@
     <Compile Include="Model\Expressions\StringExpression.cs" />
     <Compile Include="Model\Expressions\UriExpression.cs" />
     <Compile Include="Model\Nodes\HeadingNode.cs" />
+    <Compile Include="Model\Nodes\IBlockNode.cs" />
+    <Compile Include="Model\Nodes\IInlineNode.cs" />
     <Compile Include="Model\Nodes\ImageNode.cs" />
     <Compile Include="Model\INodeHandler.cs" />
     <Compile Include="Model\MarkdomDocument.cs" />
     <Compile Include="Model\Nodes\LineBreakNode.cs" />
     <Compile Include="Model\Nodes\LinkNode.cs" />
-    <Compile Include="Model\Nodes\MultiLineCommentNode.cs" />
-    <Compile Include="Model\Nodes\Node.cs" />
     <Compile Include="Model\NodeType.cs" />
     <Compile Include="Model\Nodes\OrderedListItemNode.cs" />
     <Compile Include="Model\Nodes\OrderedListNode.cs" />
@@ -67,7 +68,6 @@
     <Compile Include="Model\Nodes\ParagraphNode.cs" />
     <Compile Include="Model\Nodes\QuotedNode.cs" />
     <Compile Include="Model\Nodes\ReferenceId.cs" />
-    <Compile Include="Model\Nodes\SingleLineCommentNode.cs" />
     <Compile Include="Model\Nodes\SpaceNode.cs" />
     <Compile Include="Model\Nodes\StrongNode.cs" />
     <Compile Include="Model\Nodes\SymbolNode.cs" />

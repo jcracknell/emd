@@ -5,28 +5,32 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Nodes{
-	public class LinkNode : CompositeNode {
+	public class LinkNode : IRichInlineNode {
 		private readonly ReferenceId _referenceId;
+		private readonly IInlineNode[] _children;
+		private readonly SourceRange _sourceRange;
 
-		public LinkNode(Node[] children, ReferenceId referenceId, SourceRange sourceRange)
-			: base(children, sourceRange)
-		{
+		public LinkNode(IInlineNode[] children, ReferenceId referenceId, SourceRange sourceRange) {
+			CodeContract.ArgumentIsNotNull(() => children, children);
+			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+
+			_children = children;
 			_referenceId = referenceId;
+			_sourceRange = sourceRange;
 		}
 
-		public override NodeType NodeType { get { return NodeType.Link; } }
+		public NodeType NodeType { get { return NodeType.Link; } }
 
-		public override void HandleWith(INodeHandler handler) {
+		public IEnumerable<IInlineNode> Children { get { return _children; } }
+
+		public SourceRange SourceRange { get { return _sourceRange; } }
+
+		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);
 		}
 
-		public override T HandleWith<T>(INodeHandler<T> handler) {
+		public T HandleWith<T>(INodeHandler<T> handler) {
 			return handler.Handle(this);
-		}
-
-		public override bool Equals(object obj) {
-			var other = obj as LinkNode;
-			return base.Equals(other);
 		}
 	}
 }
