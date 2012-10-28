@@ -12,7 +12,7 @@ namespace markdom.cs.Model.Nodes{
 			_sourceRange = sourceRange;
 		}
 
-		public NodeType NodeType { get { return NodeType.LineBreak; } }
+		public NodeKind Kind { get { return NodeKind.LineBreak; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

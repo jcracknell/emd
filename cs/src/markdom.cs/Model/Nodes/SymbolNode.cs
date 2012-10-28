@@ -19,7 +19,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public string Symbol { get { return _symbol; } }
 
-		public NodeType NodeType { get { return NodeType.Symbol; } }
+		public NodeKind Kind { get { return NodeKind.Symbol; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

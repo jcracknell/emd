@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public class SuccessfulExpressionMatchingResult : IExpressionMatchingResult {
+	public class SuccessfulMatchingResult : IMatchingResult {
 		private readonly object _product;
 
-		public SuccessfulExpressionMatchingResult(object product) {
+		public SuccessfulMatchingResult(object product) {
 			_product = product;
 		}
 

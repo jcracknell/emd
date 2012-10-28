@@ -24,7 +24,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public int Level { get { return _level; } }
 
-		public NodeType NodeType { get { return NodeType.Heading; } }
+		public NodeKind Kind { get { return NodeKind.Heading; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

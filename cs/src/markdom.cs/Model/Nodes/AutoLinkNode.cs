@@ -25,7 +25,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public IEnumerable<Expression> Arguments { get { return _arguments; } }
 
-		public NodeType NodeType { get { return NodeType.AutoLink; } }
+		public NodeKind Kind { get { return NodeKind.AutoLink; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

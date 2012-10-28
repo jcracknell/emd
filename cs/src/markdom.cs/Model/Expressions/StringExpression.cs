@@ -16,7 +16,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public string Value { get { return _value; } }
 
-		public override ExpressionType Type { get { return ExpressionType.String; } }
+		public override ExpressionKind Kind { get { return ExpressionKind.String; } }
 
 		public override bool Equals(object obj) {
 			var other = obj as StringExpression;

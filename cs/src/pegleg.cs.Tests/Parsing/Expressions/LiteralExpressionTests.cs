@@ -10,22 +10,22 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class LiteralExpressionTests {
 		[TestMethod]
 		public void LiteralExpression_constructor_works_as_expected() {
-			var literalExpression = new LiteralExpression<string>("cat", c => "match");
+			var literalExpression = new LiteralParsingExpression<string>("cat", c => "match");
 
 			Assert.AreEqual("cat", literalExpression.Literal);
-			Assert.AreEqual(ExpressionType.Literal, literalExpression.ExpressionType);
+			Assert.AreEqual(ParsingExpressionKind.Literal, literalExpression.Kind);
 		}
 
 		[TestMethod]
 		public void LiteralExpression_accepts_exact_string() {
-			var literalExpression = new LiteralExpression<string>("cat", matchContext => {
+			var literalExpression = new LiteralParsingExpression<string>("cat", matchContext => {
 				Assert.AreEqual(0, matchContext.SourceRange.Index);
 				Assert.AreEqual(3, matchContext.SourceRange.Length);
 
 				return "match";
 			});
 
-			var matchingContext = new ExpressionMatchingContext("cat");
+			var matchingContext = new MatchingContext("cat");
 			
 			var matchingResult = literalExpression.Match(matchingContext);
 
@@ -36,14 +36,14 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void LiteralExpression_accepts_start() {
-			var literalExpression = new LiteralExpression<string>("cat", matchContext => {
+			var literalExpression = new LiteralParsingExpression<string>("cat", matchContext => {
 				Assert.AreEqual(0, matchContext.SourceRange.Index);
 				Assert.AreEqual(3, matchContext.SourceRange.Length);
 
 				return "match";
 			});
 
-			var matchingContext = new ExpressionMatchingContext("catatonic");
+			var matchingContext = new MatchingContext("catatonic");
 
 			var applicationResult = literalExpression.Match(matchingContext);
 
@@ -53,12 +53,12 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void LiteralExpression_rejects_invalid() {
-			var literalExpression = new LiteralExpression<string>("cat", matchContext => {
+			var literalExpression = new LiteralParsingExpression<string>("cat", matchContext => {
 				Assert.Fail("action called");
 				return "";
 			});
 
-			var matchingContext = new ExpressionMatchingContext("bat");
+			var matchingContext = new MatchingContext("bat");
 			var matchingResult = literalExpression.Match(matchingContext);
 
 			Assert.IsFalse(matchingResult.Succeeded);
@@ -66,12 +66,12 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void LiteralExpression_rejects_short_input() {
-			var literalExpression = new LiteralExpression<string>("cat", matchContext => {
+			var literalExpression = new LiteralParsingExpression<string>("cat", matchContext => {
 				Assert.Fail("action called");
 				return "";
 			});
 
-			var matchingContext = new ExpressionMatchingContext("ca");
+			var matchingContext = new MatchingContext("ca");
 			var applicationResult = literalExpression.Match(matchingContext);
 
 			Assert.IsFalse(applicationResult.Succeeded);

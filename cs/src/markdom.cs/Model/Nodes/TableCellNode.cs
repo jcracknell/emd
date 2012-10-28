@@ -31,7 +31,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
-		public abstract NodeType NodeType { get; }
+		public abstract NodeKind Kind { get; }
 
 		public abstract void HandleWith(INodeHandler handler);
 

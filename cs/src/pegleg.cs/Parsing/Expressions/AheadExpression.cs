@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface AheadExpression : IExpression {
-		IExpression Body { get; }
+	public interface AheadExpression : IParsingExpression {
+		IParsingExpression Body { get; }
 	}
 
-	public class AheadExpression<TProduct> : AheadExpression, IExpression<TProduct> {
-		private readonly IExpression _body;
+	public class AheadExpression<TProduct> : AheadExpression, IParsingExpression<TProduct> {
+		private readonly IParsingExpression _body;
 		private readonly Func<IExpressionMatch<object>, TProduct> _matchAction;
 
-		public AheadExpression(IExpression body, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public AheadExpression(IParsingExpression body, Func<IExpressionMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
 		
@@ -20,24 +20,24 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public IExpression Body { get { return _body; } }
+		public IParsingExpression Body { get { return _body; } }
 
-		public ExpressionType ExpressionType { get { return ExpressionType.Lookahead; } }
+		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Lookahead; } }
 
-		public IExpressionMatchingResult Match(IExpressionMatchingContext context) {
+		public IMatchingResult Match(IMatchingContext context) {
 			var bodyMatchingContext = context.Clone();
 			var bodyMatchingResult = _body.Match(bodyMatchingContext);
 
 			if(bodyMatchingResult.Succeeded) {
 				var product = _matchAction(context.StartMatch().CompleteMatch(this, bodyMatchingResult.Product));
 
-				return new SuccessfulExpressionMatchingResult(product);
+				return new SuccessfulMatchingResult(product);
 			} else {
-				return new UnsuccessfulExpressionMatchingResult();
+				return new UnsuccessfulMatchingResult();
 			}
 		}
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
+		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 

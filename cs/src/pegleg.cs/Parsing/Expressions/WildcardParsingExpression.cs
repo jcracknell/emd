@@ -4,43 +4,43 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface WildcardExpression : IExpression {
+	public interface WildcardParsingExpression : IParsingExpression {
 	}
 
-	public class WildcardExpression<TProduct> : WildcardExpression, IExpression<TProduct> {
+	public class WildcardParsingExpression<TProduct> : WildcardParsingExpression, IParsingExpression<TProduct> {
 		private readonly Func<IExpressionMatch<string>, TProduct> _matchAction = null;
 
-		public WildcardExpression(Func<IExpressionMatch<string>, TProduct> matchAction) {
+		public WildcardParsingExpression(Func<IExpressionMatch<string>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
 
 			_matchAction = matchAction;			
 		}
 
-		public ExpressionType ExpressionType { get { return ExpressionType.Wildcard; } }
+		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Wildcard; } }
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
+		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 
-		public IExpressionMatchingResult Match(IExpressionMatchingContext context) {
+		public IMatchingResult Match(IMatchingContext context) {
 			if(context.AtEndOfInput)
-				return new UnsuccessfulExpressionMatchingResult();
+				return new UnsuccessfulMatchingResult();
 
 			char c;
 			if(null != _matchAction) {
 				var matchBuilder = context.StartMatch();
 
 				if(!context.TryConsumeAnyCharacter(out c))
-					return new UnsuccessfulExpressionMatchingResult();
+					return new UnsuccessfulMatchingResult();
 
 				var product = _matchAction(matchBuilder.CompleteMatch(this, c.ToString()));
 
-				return new SuccessfulExpressionMatchingResult(product);
+				return new SuccessfulMatchingResult(product);
 			} else {
 				if(!context.TryConsumeAnyCharacter(out c))
-					return new UnsuccessfulExpressionMatchingResult();
+					return new UnsuccessfulMatchingResult();
 
-				return new SuccessfulExpressionMatchingResult(c.ToString());
+				return new SuccessfulMatchingResult(c.ToString());
 			}
 		}
 

@@ -19,7 +19,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public IEnumerable<TableRowNode> Rows { get { return _rows; } }
 
-		public NodeType NodeType { get { return NodeType.Table; } }
+		public NodeKind Kind { get { return NodeKind.Table; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

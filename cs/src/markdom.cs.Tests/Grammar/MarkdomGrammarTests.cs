@@ -12,8 +12,8 @@ namespace markdom.cs.Grammar {
 	public class MarkdomGrammarTests {
 		private readonly MarkdomGrammar Grammar = new MarkdomGrammar();
 
-		private IExpressionMatchingResult Match(IExpression expression, string s) {
-			var matchContext = new ExpressionMatchingContext(s);
+		private IMatchingResult Match(IParsingExpression expression, string s) {
+			var matchContext = new MatchingContext(s);
 			return expression.Match(matchContext);
 		}
 

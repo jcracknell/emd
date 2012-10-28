@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface OrderedChoiceExpression : IExpression {
-		IEnumerable<IExpression> Choices { get; }
+	public interface OrderedChoiceParsingExpression : IParsingExpression {
+		IEnumerable<IParsingExpression> Choices { get; }
 	}
 
-	public class OrderedChoiceExpression<TProduct> : OrderedChoiceExpression, IExpression<TProduct> {
-		private IExpression[] _choices;
+	public class OrderedChoiceParsingExpression<TProduct> : OrderedChoiceParsingExpression, IParsingExpression<TProduct> {
+		private IParsingExpression[] _choices;
 		private Func<IExpressionMatch<object>, TProduct> _matchAction;
 
-		public OrderedChoiceExpression(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public OrderedChoiceParsingExpression(IParsingExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
 			CodeContract.ArgumentIsValid(() => choices, choices.Length >= 2, "must have length of at least two");
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
@@ -21,11 +21,11 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public ExpressionType ExpressionType { get { return ExpressionType.OrderedChoice; } }
+		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.OrderedChoice; } }
 
-		public IEnumerable<IExpression> Choices { get { return _choices; } }
+		public IEnumerable<IParsingExpression> Choices { get { return _choices; } }
 
-		public IExpressionMatchingResult Match(IExpressionMatchingContext context) {
+		public IMatchingResult Match(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			foreach(var choice in _choices) {
@@ -37,18 +37,18 @@ namespace pegleg.cs.Parsing.Expressions {
 
 					var product = _matchAction(matchBuilder.CompleteMatch(this, choiceMatchingResult.Product));
 
-					return new SuccessfulExpressionMatchingResult(product);
+					return new SuccessfulMatchingResult(product);
 				}
 			}
 
-			return new UnsuccessfulExpressionMatchingResult();
+			return new UnsuccessfulMatchingResult();
 		}
 
 		public override string ToString() {
 			return this.HandleWith(new BackusNaurishExpressionHandler());
 		}
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
+		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 	}

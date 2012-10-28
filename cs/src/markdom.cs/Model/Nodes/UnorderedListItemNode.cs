@@ -18,7 +18,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public IEnumerable<INode> Children { get { return _children; } }
 
-		public NodeType NodeType { get { return NodeType.UnorderedListItem; } }
+		public NodeKind Kind { get { return NodeKind.UnorderedListItem; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

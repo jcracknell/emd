@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface UnorderedChoiceExpression : IExpression {
-		IEnumerable<IExpression> Choices { get; }
+	public interface UnorderedChoiceParsingExpression : IParsingExpression {
+		IEnumerable<IParsingExpression> Choices { get; }
 	}
 
-	public class FrequencyOptimizingUnorderedChoiceExpression<TProduct> : UnorderedChoiceExpression, IExpression<TProduct> {
-		private readonly IExpression[] _choices;
+	public class UnorderedChoiceParsingExpression<TProduct> : UnorderedChoiceParsingExpression, IParsingExpression<TProduct> {
+		private readonly IParsingExpression[] _choices;
 		private readonly int _choiceCount;
 		private readonly int[] _choiceOrder;
 		private readonly uint[] _choiceHits;
 		private readonly Func<IExpressionMatch<object>, TProduct> _matchAction;
 
-		public FrequencyOptimizingUnorderedChoiceExpression(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public UnorderedChoiceParsingExpression(IParsingExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
 			CodeContract.ArgumentIsValid(() => choices, choices.Length >= 2, "must have length of at least two");
 			
@@ -29,19 +29,19 @@ namespace pegleg.cs.Parsing.Expressions {
 				_choiceOrder[i] = i;
 		}
 
-		public ExpressionType ExpressionType { get { return ExpressionType.UnorderedChoice; } }
+		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.UnorderedChoice; } }
 
-		public IEnumerable<IExpression> Choices { get { return _choices; } }
+		public IEnumerable<IParsingExpression> Choices { get { return _choices; } }
 
 		/// <summary>
 		/// The current ordering of choices by success count.
 		/// Mostly for inspection while debugging.
 		/// </summary>
-		public IEnumerable<Tuple<uint, IExpression>> CurrentChoiceOrder {
+		public IEnumerable<Tuple<uint, IParsingExpression>> CurrentChoiceOrder {
 			get { return _choiceOrder.Select(i => Tuple.Create(_choiceHits[i], _choices[i])).ToArray(); }
 		}
 
-		public IExpressionMatchingResult Match(IExpressionMatchingContext context) {
+		public IMatchingResult Match(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			for(var i = 0; i != _choiceCount; i++) {
@@ -55,7 +55,7 @@ namespace pegleg.cs.Parsing.Expressions {
 					UpdateChoiceOrder(i);
 
 					context.Assimilate(choiceMatchingContext);
-					return new SuccessfulExpressionMatchingResult(
+					return new SuccessfulMatchingResult(
 						null != _matchAction
 							? _matchAction(matchBuilder.CompleteMatch(this, choiceMatchingResult.Product))
 							: choiceMatchingResult.Product
@@ -63,7 +63,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				}
 			}
 
-			return new UnsuccessfulExpressionMatchingResult();
+			return new UnsuccessfulMatchingResult();
 		}
 
 		private void UpdateChoiceOrder(int i) {
@@ -101,7 +101,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			return this.HandleWith(new BackusNaurishExpressionHandler());
 		}
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
+		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 	}

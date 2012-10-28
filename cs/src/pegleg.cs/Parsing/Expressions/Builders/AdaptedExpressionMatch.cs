@@ -35,7 +35,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			}
 		}
 
-		public IExpression Expression { get { return _source.Expression; } }
+		public IParsingExpression Expression { get { return _source.Expression; } }
 
 		public string String { get { return _source.String; } }
 	}

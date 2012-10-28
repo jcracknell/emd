@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public class UnsuccessfulExpressionMatchingResult : IExpressionMatchingResult {
+	public class UnsuccessfulMatchingResult : IMatchingResult {
 
 		public bool Succeeded { get { return false; } }
 
 		public object Product {
 			get {
-				throw new InvalidOperationException("Attempt to access Product of " + typeof(UnsuccessfulExpressionMatchingResult).Name);
+				throw new InvalidOperationException("Attempt to access Product of " + typeof(UnsuccessfulMatchingResult).Name);
 			}
 		}
 	}

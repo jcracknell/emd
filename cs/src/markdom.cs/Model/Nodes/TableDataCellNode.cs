@@ -10,7 +10,7 @@ namespace markdom.cs.Model.Nodes{
 			: base(columnSpan, rowSpan, children, sourceRange)
 		{ }
 
-		public override NodeType NodeType { get { return NodeType.TableDataCell; } }
+		public override NodeKind Kind { get { return NodeKind.TableDataCell; } }
 
 		public override void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

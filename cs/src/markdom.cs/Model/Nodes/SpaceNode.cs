@@ -12,7 +12,7 @@ namespace markdom.cs.Model.Nodes{
 			_sourceRange = sourceRange;
 		}
 
-		public NodeType NodeType { get { return NodeType.Space; } }
+		public NodeKind Kind { get { return NodeKind.Space; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

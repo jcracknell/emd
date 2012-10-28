@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface ReferenceExpression : IExpression {
-		IExpression Referenced { get; }
+	public interface ReferenceParsingExpression : IParsingExpression {
+		IParsingExpression Referenced { get; }
 	}
 
-	public class ReferenceExpression<TProduct> : ReferenceExpression, IExpression<TProduct> {
-		private readonly Func<IExpression> _reference;
+	public class ReferenceParsingExpression<TProduct> : ReferenceParsingExpression, IParsingExpression<TProduct> {
+		private readonly Func<IParsingExpression> _reference;
 		private readonly Func<IExpressionMatch<object>, TProduct> _matchAction;
 
-		public ReferenceExpression(Func<IExpression> reference, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public ReferenceParsingExpression(Func<IParsingExpression> reference, Func<IExpressionMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => reference, reference);
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
 
@@ -20,17 +20,17 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public IExpression Referenced {
+		public IParsingExpression Referenced {
 			get { return _reference(); }
 		}
 
-		public ExpressionType ExpressionType { get { return ExpressionType.Reference; } }
+		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Reference; } }
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
+		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 
-		public IExpressionMatchingResult Match(IExpressionMatchingContext context) {
+		public IMatchingResult Match(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			var referencedExpression = _reference();
@@ -41,7 +41,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 			var product = _matchAction(matchBuilder.CompleteMatch(this, referenceMatchResult.Product));
 
-			return new SuccessfulExpressionMatchingResult(product);
+			return new SuccessfulMatchingResult(product);
 		}
 
 		public override string ToString() {

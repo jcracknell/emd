@@ -10,19 +10,19 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class RepetitionExpressionTests {
 		[TestMethod]
 		public void RepetitionExpression_constructor_works_as_expected() {
-			var literalExpression = new LiteralExpression<string>("a", m => m.Product);
-			var repetitionExpression = new RepetitionExpression<string>(42, 0, literalExpression, m => "match");
+			var literalExpression = new LiteralParsingExpression<string>("a", m => m.Product);
+			var repetitionExpression = new RepetitionParsingExpression<string>(42, 0, literalExpression, m => "match");
 
-			Assert.AreEqual(ExpressionType.Repetition, repetitionExpression.ExpressionType);
+			Assert.AreEqual(ParsingExpressionKind.Repetition, repetitionExpression.Kind);
 			Assert.AreEqual(42u, repetitionExpression.MinOccurs);
 			Assert.AreEqual(literalExpression, repetitionExpression.Body);
 		}
 
 		[TestMethod]
 		public void RepetitionExpression_matches_nothing_with_minOccurs_0() {
-			var repetitionExpression = new RepetitionExpression<string>(
+			var repetitionExpression = new RepetitionParsingExpression<string>(
 				0, 0,
-				new LiteralExpression<string>("abcd", m => m.Product),
+				new LiteralParsingExpression<string>("abcd", m => m.Product),
 				match => {
 					Assert.AreEqual(0, match.SourceRange.Index);
 					Assert.AreEqual(0, match.SourceRange.Length);
@@ -30,7 +30,7 @@ namespace pegleg.cs.Parsing.Expressions {
 					return "match";
 				});
 
-			var matchingContext = new ExpressionMatchingContext("");
+			var matchingContext = new MatchingContext("");
 			var matchResult = repetitionExpression.Match(matchingContext);
 
 			Assert.IsTrue(matchResult.Succeeded);

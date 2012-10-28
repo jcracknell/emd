@@ -12,15 +12,15 @@ namespace pegleg.cs.Parsing.Expressions {
 		[TestMethod]
 		public void RegexExpression_constructor_works_as_expected() {
 			var regex = new Regex("abc");
-			var regexExpression = new RegexExpression<string>(regex, (matchContext) => "match");
+			var regexExpression = new RegexParsingExpression<string>(regex, (matchContext) => "match");
 
-			Assert.AreEqual(ExpressionType.Regex, regexExpression.ExpressionType);
+			Assert.AreEqual(ParsingExpressionKind.Regex, regexExpression.Kind);
 			Assert.AreEqual(regex, regexExpression.Regex);
 		}
 
 		[TestMethod]
 		public void RegexExpression_accepts_trivial_match() {
-			var regexExpression = new RegexExpression<string>(
+			var regexExpression = new RegexParsingExpression<string>(
 				new Regex(@"cat"),
 				(matchContext) => {
 					Assert.AreEqual(0, matchContext.SourceRange.Index);
@@ -32,7 +32,7 @@ namespace pegleg.cs.Parsing.Expressions {
 					return "match";
 				});
 
-			var matchingContext = new ExpressionMatchingContext("cat");
+			var matchingContext = new MatchingContext("cat");
 			var matchingResult = regexExpression.Match(matchingContext);
 
 			Assert.IsTrue(matchingResult.Succeeded);
@@ -41,14 +41,14 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void RegexExpression_rejects_when_match_not_at_start() { 
-			var regexExpression = new RegexExpression<string>(
+			var regexExpression = new RegexParsingExpression<string>(
 				new Regex(@"[0-9]+"),
 				matchContext => {
 					Assert.Fail("action called");
 					return "match";
 				});
 
-			var matchingContext = new ExpressionMatchingContext("abc123def");
+			var matchingContext = new MatchingContext("abc123def");
 			var matchingResult = regexExpression.Match(matchingContext);
 
 			Assert.IsFalse(matchingResult.Succeeded);

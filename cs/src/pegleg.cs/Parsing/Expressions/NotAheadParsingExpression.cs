@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface NotAheadExpression : IExpression {
-		IExpression Body { get; }
+	public interface NotAheadParsingExpression : IParsingExpression {
+		IParsingExpression Body { get; }
 	}
 
-	public class NotAheadExpression<TProduct> : NotAheadExpression, IExpression<TProduct> {
-		private readonly IExpression _body;
+	public class NotAheadParsingExpression<TProduct> : NotAheadParsingExpression, IParsingExpression<TProduct> {
+		private readonly IParsingExpression _body;
 		private readonly Func<IExpressionMatch<Nil>, TProduct> _matchAction;
 
-		public NotAheadExpression(IExpression body, Func<IExpressionMatch<Nil>, TProduct> matchAction) {
+		public NotAheadParsingExpression(IParsingExpression body, Func<IExpressionMatch<Nil>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
 
@@ -20,24 +20,24 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public IExpression Body { get { return _body; } }
+		public IParsingExpression Body { get { return _body; } }
 
-		public ExpressionType ExpressionType { get { return ExpressionType.NegativeLookahead; } }
+		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.NegativeLookahead; } }
 
-		public IExpressionMatchingResult Match(IExpressionMatchingContext context) {
+		public IMatchingResult Match(IMatchingContext context) {
 			var bodyMatchingContext = context.Clone();
 			var bodyMatchingResult = _body.Match(bodyMatchingContext);
 
 			if(bodyMatchingResult.Succeeded) {
-				return new UnsuccessfulExpressionMatchingResult();
+				return new UnsuccessfulMatchingResult();
 			} else {
 				var product = _matchAction(context.StartMatch().CompleteMatch(this, Nil.Value));
 
-				return new SuccessfulExpressionMatchingResult(product);
+				return new SuccessfulMatchingResult(product);
 			}
 		}
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
+		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 

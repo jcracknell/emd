@@ -4,16 +4,16 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface NamedExpression : IExpression {
+	public interface NamedParsingExpression : IParsingExpression {
 		string Name { get; }
-		IExpression Named { get; }
+		IParsingExpression Named { get; }
 	}
 
-	public class NamedExpression<TProduct> : NamedExpression, IExpression<TProduct> {
+	public class NamedParsingExpression<TProduct> : NamedParsingExpression, IParsingExpression<TProduct> {
 		private readonly string _name;
-		private readonly IExpression _named;
+		private readonly IParsingExpression _named;
 
-		public NamedExpression(string name, IExpression<TProduct> named) {
+		public NamedParsingExpression(string name, IParsingExpression<TProduct> named) {
 			CodeContract.ArgumentIsNotNull(() => name, name);
 			CodeContract.ArgumentIsNotNull(() => named, named);
 
@@ -21,7 +21,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_named = named;
 		}
 
-		public IExpressionMatchingResult Match(IExpressionMatchingContext context) {
+		public IMatchingResult Match(IMatchingContext context) {
 			var namedApplicationResult = _named.Match(context);
 			if(namedApplicationResult.Succeeded)
 				return namedApplicationResult;
@@ -30,7 +30,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			return namedApplicationResult;
 		}
 
-		public NamedExpression(string name, IExpression named) {
+		public NamedParsingExpression(string name, IParsingExpression named) {
 			CodeContract.ArgumentIsNotNull(() => name, name);
 			CodeContract.ArgumentIsNotNull(() => named, named);
 			
@@ -40,12 +40,12 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public string Name { get { return _name; } }
 
-		public IExpression Named { get { return _named; } }
+		public IParsingExpression Named { get { return _named; } }
 
-		public ExpressionType ExpressionType { get { return ExpressionType.Named; } }
+		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Named; } }
 
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
+		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 

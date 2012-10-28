@@ -30,7 +30,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public IEnumerable<OrderedListItemNode> Items { get { return _items; } }
 
-		public NodeType NodeType { get { return NodeType.OrderedList; } }
+		public NodeKind Kind { get { return NodeKind.OrderedList; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

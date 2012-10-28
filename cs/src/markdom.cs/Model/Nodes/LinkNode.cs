@@ -18,7 +18,7 @@ namespace markdom.cs.Model.Nodes{
 			_sourceRange = sourceRange;
 		}
 
-		public NodeType NodeType { get { return NodeType.Link; } }
+		public NodeKind Kind { get { return NodeKind.Link; } }
 
 		public IEnumerable<IInlineNode> Children { get { return _children; } }
 

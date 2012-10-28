@@ -16,7 +16,7 @@ namespace markdom.cs.Model.Nodes{
 			_sourceRange = sourceRange;
 		}
 
-		public NodeType NodeType { get { return NodeType.Strong; } }
+		public NodeKind Kind { get { return NodeKind.Strong; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

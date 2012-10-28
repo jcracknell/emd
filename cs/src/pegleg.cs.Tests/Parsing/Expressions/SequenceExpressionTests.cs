@@ -10,11 +10,11 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class SequenceExpressionTests {
 		[TestMethod]
 		public void SequenceExpression_constructor_works_as_expected() {
-			var literalExpressionA = new LiteralExpression<string>("a", c => "A");
-			var literalExpressionB = new LiteralExpression<string>("b", c => "B");
+			var literalExpressionA = new LiteralParsingExpression<string>("a", c => "A");
+			var literalExpressionB = new LiteralParsingExpression<string>("b", c => "B");
 
-			var sequenceExpression = new SequenceExpression<string>(
-				new IExpression[] { literalExpressionA, literalExpressionB },
+			var sequenceExpression = new SequenceParsingExpression<string>(
+				new IParsingExpression[] { literalExpressionA, literalExpressionB },
 				matchContext => "seq");
 
 			Assert.AreEqual(2, sequenceExpression.Sequence.Count());
@@ -22,11 +22,11 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void SequenceExpression_accepts_sequence_of_literals() {
-			var literalExpressionA = new LiteralExpression<string>("a", c => "A");
-			var literalExpressionB = new LiteralExpression<string>("b", c => "B");
+			var literalExpressionA = new LiteralParsingExpression<string>("a", c => "A");
+			var literalExpressionB = new LiteralParsingExpression<string>("b", c => "B");
 
-			var sequenceExpression = new SequenceExpression<string>(
-				new IExpression[] { literalExpressionA, literalExpressionB },
+			var sequenceExpression = new SequenceParsingExpression<string>(
+				new IParsingExpression[] { literalExpressionA, literalExpressionB },
 				matchContext => {
 					Assert.AreEqual("A", matchContext.Product[0]);
 					Assert.AreEqual("B", matchContext.Product[1]);
@@ -34,7 +34,7 @@ namespace pegleg.cs.Parsing.Expressions {
 					return "seq";
 				});
 
-			var matchingContext = new ExpressionMatchingContext("abcdef");
+			var matchingContext = new MatchingContext("abcdef");
 			var matchingResult = sequenceExpression.Match(matchingContext);
 
 			Assert.IsTrue(matchingResult.Succeeded);

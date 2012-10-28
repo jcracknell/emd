@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace pegleg.cs.Parsing {
-	public class ExpressionMatchingContext : IExpressionMatchingContext {
+	public class MatchingContext : IMatchingContext {
 		private readonly string _consumable;
 		private readonly SourceRange[] _parts;
 		private int _consumed;
@@ -15,11 +15,11 @@ namespace pegleg.cs.Parsing {
 		private int _part;
 		private int _partEnd;
 
-		public ExpressionMatchingContext(string source)
+		public MatchingContext(string source)
 			: this(source, new SourceRange[] { new SourceRange(0, source.Length, 1, 0) })
 		{ }
 
-		public ExpressionMatchingContext(string source, SourceRange[] parts) {
+		public MatchingContext(string source, SourceRange[] parts) {
 			CodeContract.ArgumentIsNotNull(() => source, source);
 			CodeContract.ArgumentIsNotNull(() => parts, parts);
 
@@ -33,7 +33,7 @@ namespace pegleg.cs.Parsing {
 			_sourceLineIndex = _parts[_part].LineIndex;
 		}
 
-		private ExpressionMatchingContext(
+		private MatchingContext(
 			string source, SourceRange[] parts, int consumed, int part, int partEnd,
 			int sourceIndex, int sourceLine, int sourceLineIndex)
 		{
@@ -129,17 +129,17 @@ namespace pegleg.cs.Parsing {
 
 		public bool AtEndOfInput { get { return _consumable.Length == _consumed; } }
 
-		public IExpressionMatchingContext Clone() {
-			return new ExpressionMatchingContext(
+		public IMatchingContext Clone() {
+			return new MatchingContext(
 				_consumable, _parts, _consumed, _part, _partEnd, _sourceIndex, _sourceLine, _sourceLineIndex);
 		}
 
-		public void Assimilate(IExpressionMatchingContext clone) {
+		public void Assimilate(IMatchingContext clone) {
 			Consume(clone.Consumed - _consumed);
 		}
 
-		public IExpressionMatchBuilder StartMatch() {
-			return new ExpressionMatchBuilder(this);
+		public IMatchBuilder StartMatch() {
+			return new MatchBuilder(this);
 		}
 
 

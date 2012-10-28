@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public interface IExpressionMatch {
+	public interface IMatch {
 		SourceRange SourceRange { get; }
 		int Index { get; }
 		int Length { get; }
 		/// <summary>
-		/// The <see cref="IExpression"/> which was matched.
+		/// The <see cref="IParsingExpression"/> which was matched.
 		/// </summary>
-		IExpression Expression { get; }
+		IParsingExpression Expression { get; }
 
 		/// <summary>
 		/// The section of raw input matched by the expression.
@@ -26,7 +26,7 @@ namespace pegleg.cs.Parsing {
 	/// This interface uses methods instead of properties in order to improve syntactical
 	/// compatibility with languages which do not support properties.
 	/// </remarks>
-	public interface IExpressionMatch<out TProduct> : IExpressionMatch {
+	public interface IExpressionMatch<out TProduct> : IMatch {
 		TProduct Product { get; }
 	}
 }

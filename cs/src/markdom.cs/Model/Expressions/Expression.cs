@@ -14,6 +14,6 @@ namespace markdom.cs.Model.Expressions {
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
-		public abstract ExpressionType Type { get; }
+		public abstract ExpressionKind Kind { get; }
 	}
 }

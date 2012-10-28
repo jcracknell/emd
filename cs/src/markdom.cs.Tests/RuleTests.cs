@@ -15,8 +15,8 @@ namespace markdom.cs {
 	public class RuleTests {
 		private readonly MarkdomGrammar Grammar = new MarkdomGrammar();
 
-		private IExpressionMatchingResult Match(IExpression expression, params string[] input) {
-			var context = new ExpressionMatchingContext(string.Join("", input));
+		private IMatchingResult Match(IParsingExpression expression, params string[] input) {
+			var context = new MatchingContext(string.Join("", input));
 			return expression.Match(context);
 		}
 
@@ -113,7 +113,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void Emphasis_matches_base_case() {
-			var input = new ExpressionMatchingContext("*text*");
+			var input = new MatchingContext("*text*");
 			var expected = new EmphasisNode(
 				new IInlineNode[] {
 					new TextNode("text", new MarkdomSourceRange(1, 4, 1, 1)) },
@@ -153,7 +153,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void Quoted_matches_single_quoted() {
-			var input = new ExpressionMatchingContext("'text'");
+			var input = new MatchingContext("'text'");
 			var expected = new QuotedNode(
 				QuoteType.Single,
 				new IInlineNode[] {
@@ -176,7 +176,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void SingleLineComment_matches_base_case() {
-			var input = new ExpressionMatchingContext("// text");
+			var input = new MatchingContext("// text");
 
 			var matchResult = Grammar.SingleLineComment.Match(input);
 
@@ -206,7 +206,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void Strong_matches_base_case() {
-			var input = new ExpressionMatchingContext("**text**");
+			var input = new MatchingContext("**text**");
 			var expected = new StrongNode(
 				new IInlineNode[] {
 					new TextNode("text", new MarkdomSourceRange(2, 4, 1, 2)) },
@@ -220,7 +220,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void Symbol_matches_asterix() {
-			var input = new ExpressionMatchingContext("*");
+			var input = new MatchingContext("*");
 			var expected = new SymbolNode("*", new MarkdomSourceRange(0, 1, 1, 0));
 
 			var matchResult = Grammar.Symbol.Match(input);

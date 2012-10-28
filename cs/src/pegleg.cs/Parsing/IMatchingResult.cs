@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public interface IExpressionMatchingResult {
+	public interface IMatchingResult {
 		bool Succeeded { get; }
 		object Product { get; }
 	}

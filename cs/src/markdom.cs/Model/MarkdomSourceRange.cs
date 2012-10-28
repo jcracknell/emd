@@ -24,7 +24,7 @@ namespace markdom.cs.Model {
 			LineIndex = lineIndex;
 		}
 
-		public static MarkdomSourceRange FromMatch(IExpressionMatch match) {
+		public static MarkdomSourceRange FromMatch(IMatch match) {
 			return new MarkdomSourceRange(
 				match.SourceRange.Index,
 				match.SourceRange.Length,

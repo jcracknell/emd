@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model {
-	public enum NodeType {
+	public enum NodeKind {
 		AutoLink,
 		Emphasis,
 		Entity,

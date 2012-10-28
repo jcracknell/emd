@@ -4,20 +4,20 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface RepetitionExpression : IExpression {
+	public interface RepetitionParsingExpression : IParsingExpression {
 		uint MinOccurs { get; }
 		uint MaxOccurs { get; }
-		IExpression Body { get; }
+		IParsingExpression Body { get; }
 	}
 
-	public class RepetitionExpression<TProduct> : RepetitionExpression, IExpression<TProduct> {
+	public class RepetitionParsingExpression<TProduct> : RepetitionParsingExpression, IParsingExpression<TProduct> {
 		public const uint UNBOUNDED = 0;
 		private readonly uint _minOccurs;
 		private readonly uint _maxOccurs;
-		private readonly IExpression _body;
+		private readonly IParsingExpression _body;
 		private readonly Func<IExpressionMatch<object[]>, TProduct> _matchAction;
 
-		public RepetitionExpression(uint minOccurs, uint maxOccurs, IExpression body, Func<IExpressionMatch<object[]>, TProduct> matchAction) {
+		public RepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression body, Func<IExpressionMatch<object[]>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 			CodeContract.ArgumentIsValid(() => maxOccurs, UNBOUNDED == maxOccurs || maxOccurs >= minOccurs, "must be greater than or equal to minOccurs");
 
@@ -31,11 +31,11 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public uint MaxOccurs { get { return _maxOccurs; } }
 
-		public IExpression Body { get { return _body; } }
+		public IParsingExpression Body { get { return _body; } }
 
-		public ExpressionType ExpressionType { get { return ExpressionType.Repetition; } }
+		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Repetition; } }
 
-		public IExpressionMatchingResult Match(IExpressionMatchingContext context) {
+		public IMatchingResult Match(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 			
 			uint iterationCount = 0;
@@ -58,15 +58,15 @@ namespace pegleg.cs.Parsing.Expressions {
 					if(_minOccurs <= iterationCount)
 						break;
 
-					return new UnsuccessfulExpressionMatchingResult();
+					return new UnsuccessfulMatchingResult();
 				}
 			}
 
 			var product = _matchAction(matchBuilder.CompleteMatch(this, iterationProducts.ToArray()));
-			return new SuccessfulExpressionMatchingResult(product);
+			return new SuccessfulMatchingResult(product);
 		}
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
+		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 

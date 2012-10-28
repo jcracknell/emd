@@ -26,7 +26,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public IEnumerable<IInlineNode> Children { get { return _children; } }
 
-		public NodeType NodeType { get { return NodeType.Quoted; } }
+		public NodeKind Kind { get { return NodeKind.Quoted; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

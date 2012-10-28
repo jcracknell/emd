@@ -10,14 +10,14 @@ using System.Text;
 
 namespace pegleg.cs {
 	public abstract class Grammar<TProduct> : ExpressionBuilder {
-		private IExpression<TProduct> _start = null;
+		private IParsingExpression<TProduct> _start = null;
 
-		protected IExpression<TProduct> Start {
+		protected IParsingExpression<TProduct> Start {
 			get { return _start; }
 			set { _start = value; }
 		}
 
-		protected void Define<T>(Expression<Func<IExpression<T>>> reference, IExpression<T> expression) {
+		protected void Define<T>(Expression<Func<IParsingExpression<T>>> reference, IParsingExpression<T> expression) {
 			var member = ReflectionUtils.GetMemberFrom(reference);
 			
 			var namedExpression = Named(member.Name, expression);
@@ -35,11 +35,11 @@ namespace pegleg.cs {
 			}
 		}
 
-		private void DefineField(FieldInfo field, IExpression expression) {
+		private void DefineField(FieldInfo field, IParsingExpression expression) {
 			field.SetValue(this, expression);
 		}
 
-		private void DefineProperty(PropertyInfo property, IExpression expression) {
+		private void DefineProperty(PropertyInfo property, IParsingExpression expression) {
 			property.SetValue(this, expression, null);
 		}
 

@@ -20,7 +20,7 @@ namespace markdom.cs {
 				SourceRange = sourceRange;
 			}
 
-			public static LineInfo FromMatch(IExpressionMatch match) {
+			public static LineInfo FromMatch(IMatch match) {
 				return new LineInfo(match.String, match.SourceRange);
 			}
 		}
@@ -44,97 +44,97 @@ namespace markdom.cs {
 		/// <summary>
 		/// A tab or a space.
 		/// </summary>
-		public IExpression<string> SpaceChar { get; private set; }
-		public IExpression<string> SpaceChars { get; private set; }
+		public IParsingExpression<string> SpaceChar { get; private set; }
+		public IParsingExpression<string> SpaceChars { get; private set; }
 		/// <summary>
 		/// A whitespace character; space, tab or newline.
 		/// </summary>
-		public IExpression<string> Whitespace { get; private set; }
-		public IExpression<string> Whitespaces { get; private set; }
+		public IParsingExpression<string> Whitespace { get; private set; }
+		public IParsingExpression<string> Whitespaces { get; private set; }
 		/// <summary>
 		/// A newline character.
 		/// </summary>
-		public IExpression<string> NewLine { get; private set; }
-		public IExpression<string> SpecialChar { get; private set; }
-		public IExpression<string> NormalChar { get; private set; }
-		public IExpression<string> Indent { get; private set; }
-		public IExpression<string> NonIndentSpace { get; private set; }
+		public IParsingExpression<string> NewLine { get; private set; }
+		public IParsingExpression<string> SpecialChar { get; private set; }
+		public IParsingExpression<string> NormalChar { get; private set; }
+		public IParsingExpression<string> Indent { get; private set; }
+		public IParsingExpression<string> NonIndentSpace { get; private set; }
 		/// <summary>
 		/// A raw line of input, including the newline character.
 		/// </summary>
-		public IExpression<LineInfo> Line { get; private set; }
+		public IParsingExpression<LineInfo> Line { get; private set; }
 		/// <summary>
 		/// A blank line; composed of any number of spaces followed by a line end.
 		/// </summary>
-		public IExpression<LineInfo[]> BlankLines { get; private set; }
-		public IExpression<LineInfo> BlankLine { get; private set; }
-		public IExpression<LineInfo> NonTerminalBlankLine { get; private set; }
-		public IExpression<string> Digit { get; private set; }
-		public IExpression<string> HexDigit { get; private set; }
-		public IExpression<string> EnglishLowerAlpha { get; private set; }
-		public IExpression<string> EnglishUpperAlpha { get; private set; }
-		public IExpression<string> EnglishAlpha { get; private set; }
-		public IExpression<LineInfo> Comment { get; private set; }
+		public IParsingExpression<LineInfo[]> BlankLines { get; private set; }
+		public IParsingExpression<LineInfo> BlankLine { get; private set; }
+		public IParsingExpression<LineInfo> NonTerminalBlankLine { get; private set; }
+		public IParsingExpression<string> Digit { get; private set; }
+		public IParsingExpression<string> HexDigit { get; private set; }
+		public IParsingExpression<string> EnglishLowerAlpha { get; private set; }
+		public IParsingExpression<string> EnglishUpperAlpha { get; private set; }
+		public IParsingExpression<string> EnglishAlpha { get; private set; }
+		public IParsingExpression<LineInfo> Comment { get; private set; }
 		/// <summary>
 		/// A C-style multi-line comment.
 		/// </summary>
-		public IExpression<LineInfo> MultiLineComment { get; private set; }
+		public IParsingExpression<LineInfo> MultiLineComment { get; private set; }
 		/// <summary>
 		/// A C-style single line comment. Does not consume the end of the line
 		/// </summary>
-		public IExpression<LineInfo> SingleLineComment { get; private set; }
+		public IParsingExpression<LineInfo> SingleLineComment { get; private set; }
 
-		public IExpression<MarkdomDocument> Document { get; private set; }
+		public IParsingExpression<MarkdomDocument> Document { get; private set; }
 
-		public IExpression<IBlockNode[]> Blocks { get; private set; }
-		public IExpression<IBlockNode> Block { get; private set; }
+		public IParsingExpression<IBlockNode[]> Blocks { get; private set; }
+		public IParsingExpression<IBlockNode> Block { get; private set; }
 
-		public IExpression<LineInfo> CommentBlock { get; private set; }
-		public IExpression<TableNode> Table { get; private set; }
-		public IExpression<TableRowNode> TableRow { get; private set; }
-		public IExpression<LineInfo> TableRowSeparator { get; private set; }
-		public IExpression<HeadingNode> Heading { get; private set; }
-		public IExpression<UnorderedListNode> UnorderedList { get; private set; }
-		public IExpression<UnorderedListNode> UnorderedListTight { get; private set; }
-		public IExpression<UnorderedListNode> UnorderedListLoose { get; private set; }
-		public IExpression<ParagraphNode> Paragraph { get; private set; }
-		public IExpression<LineInfo> NonEmptyBlockLine { get; private set; }
-		public IExpression<LineInfo> BlockLine { get; private set; }
-		public IExpression<Nil> BlockLineAtomic { get; private set; }
-		public IExpression<Nil> Bullet { get; private set; }
-		public IExpression<EnumeratorInfo> Enumerator { get; private set; }
+		public IParsingExpression<LineInfo> CommentBlock { get; private set; }
+		public IParsingExpression<TableNode> Table { get; private set; }
+		public IParsingExpression<TableRowNode> TableRow { get; private set; }
+		public IParsingExpression<LineInfo> TableRowSeparator { get; private set; }
+		public IParsingExpression<HeadingNode> Heading { get; private set; }
+		public IParsingExpression<UnorderedListNode> UnorderedList { get; private set; }
+		public IParsingExpression<UnorderedListNode> UnorderedListTight { get; private set; }
+		public IParsingExpression<UnorderedListNode> UnorderedListLoose { get; private set; }
+		public IParsingExpression<ParagraphNode> Paragraph { get; private set; }
+		public IParsingExpression<LineInfo> NonEmptyBlockLine { get; private set; }
+		public IParsingExpression<LineInfo> BlockLine { get; private set; }
+		public IParsingExpression<Nil> BlockLineAtomic { get; private set; }
+		public IParsingExpression<Nil> Bullet { get; private set; }
+		public IParsingExpression<EnumeratorInfo> Enumerator { get; private set; }
 
-		public IExpression<IInlineNode[]> Inlines { get; private set; }
-		public IExpression<IInlineNode> Inline { get; private set; }
-		public IExpression<AutoLinkNode> AutoLink { get; private set; }
-		public IExpression<LinkNode> Link { get; private set; }
-		public IExpression<StrongNode> Strong { get; private set; }
-		public IExpression<EmphasisNode> Emphasis { get; private set; }
-		public IExpression<QuotedNode> Quoted { get; private set; }
-		public IExpression<LineBreakNode> LineBreak { get; private set; }
-		public IExpression<TextNode> Text { get; private set; }
-		public IExpression<SpaceNode> Space { get; private set; }
-		public IExpression<EntityNode> Entity { get; private set; }
+		public IParsingExpression<IInlineNode[]> Inlines { get; private set; }
+		public IParsingExpression<IInlineNode> Inline { get; private set; }
+		public IParsingExpression<AutoLinkNode> AutoLink { get; private set; }
+		public IParsingExpression<LinkNode> Link { get; private set; }
+		public IParsingExpression<StrongNode> Strong { get; private set; }
+		public IParsingExpression<EmphasisNode> Emphasis { get; private set; }
+		public IParsingExpression<QuotedNode> Quoted { get; private set; }
+		public IParsingExpression<LineBreakNode> LineBreak { get; private set; }
+		public IParsingExpression<TextNode> Text { get; private set; }
+		public IParsingExpression<SpaceNode> Space { get; private set; }
+		public IParsingExpression<EntityNode> Entity { get; private set; }
 
-		public IExpression<ReferenceId> ReferenceId { get; private set; }
+		public IParsingExpression<ReferenceId> ReferenceId { get; private set; }
 
 		/// <summary>
 		/// A Symbol, an unescaped special character which was not parsed into a valid node.
 		/// </summary>
-		public IExpression<SymbolNode> Symbol { get; private set; }
+		public IParsingExpression<SymbolNode> Symbol { get; private set; }
 
 
-		public IExpression<Expression> Expression { get; private set; }
-		public IExpression<Expression[]> ArgumentList { get; private set; }
-		public IExpression<ObjectExpression> ObjectExpression { get; private set; }
-		public IExpression<ObjectExpression> ObjectBodyExpression { get; private set; }
-		public IExpression<StringExpression> StringExpression { get; private set; }
-		public IExpression<UriExpression> UriExpression { get; private set; }
-		public IExpression<Nil> ExpressionWhitespace { get; private set; }
+		public IParsingExpression<Expression> Expression { get; private set; }
+		public IParsingExpression<Expression[]> ArgumentList { get; private set; }
+		public IParsingExpression<ObjectExpression> ObjectExpression { get; private set; }
+		public IParsingExpression<ObjectExpression> ObjectBodyExpression { get; private set; }
+		public IParsingExpression<StringExpression> StringExpression { get; private set; }
+		public IParsingExpression<UriExpression> UriExpression { get; private set; }
+		public IParsingExpression<Nil> ExpressionWhitespace { get; private set; }
 
-		public IExpression<int> LowerRomanNumeral { get; private set; }
-		public IExpression<int> UpperRomanNumeral { get; private set; }
-		public IExpression<int> RomanNumeral { get; private set; }
+		public IParsingExpression<int> LowerRomanNumeral { get; private set; }
+		public IParsingExpression<int> UpperRomanNumeral { get; private set; }
+		public IParsingExpression<int> RomanNumeral { get; private set; }
 
 		public MarkdomGrammar() {
 
@@ -279,7 +279,7 @@ namespace markdom.cs {
 					match => new UnorderedListItemNode(ParseLines(Blocks, ArrayUtils.Combine(match.Product.Of1, match.Product.Of2)), MarkdomSourceRange.FromMatch(match)));
 
 			var unorderedListContinuesLoose =
-				ChoiceUnordered(new IExpression[] {
+				ChoiceUnordered(new IParsingExpression[] {
 					 Sequence(Reference(() => BlankLines), Reference(() => Bullet)),
 					 listItemContinues });;
 
@@ -549,7 +549,7 @@ namespace markdom.cs {
 
 			Define(() => LineBreak,
 				Sequence(
-					new IExpression[] { Literal(@"\\"), Reference(() => SpaceChars), Reference(() => NewLine) },
+					new IParsingExpression[] { Literal(@"\\"), Reference(() => SpaceChars), Reference(() => NewLine) },
 					match => new LineBreakNode(MarkdomSourceRange.FromMatch(match))));
 
 			#region Entities
@@ -739,9 +739,9 @@ namespace markdom.cs {
 			//   * Parentheses inside of a URI expression must be balanced
 			//   * Cannot start with `@`
 
-			IExpression<object[]> uriExpressionPart = null;
-			IExpression<object[]> uriExpressionRegularPart = null;
-			IExpression<object[]> uriExpressionParenthesizedPart = null;
+			IParsingExpression<object[]> uriExpressionPart = null;
+			IParsingExpression<object[]> uriExpressionRegularPart = null;
+			IParsingExpression<object[]> uriExpressionParenthesizedPart = null;
 
 			uriExpressionPart = 
 				Named("UriExpressionPart",
@@ -780,7 +780,7 @@ namespace markdom.cs {
 
 			Define(() => ExpressionWhitespace,
 				AtLeast(0,
-					ChoiceUnordered(new IExpression[] {
+					ChoiceUnordered(new IParsingExpression[] {
 						Reference(() => Whitespace),
 						Reference(() => Comment)
 					}),
@@ -850,10 +850,10 @@ namespace markdom.cs {
 			// NEVER EVER EVER USE THIS IN A REPETITION CONTEXT
 			Define(() => BlankLine,
 				Sequence(
-					new IExpression[] {
+					new IParsingExpression[] {
 						AtLeast(0, Reference(() => SpaceChar)),
 						ChoiceUnordered(
-							new IExpression[] { Reference(() => NewLine), EndOfInput() }) },
+							new IParsingExpression[] { Reference(() => NewLine), EndOfInput() }) },
 					match => LineInfo.FromMatch(match)));
 
 			Define(() => Indent,
@@ -919,9 +919,9 @@ namespace markdom.cs {
 			#endregion
 		}
 
-		private T ParseLines<T>(IExpression<T> expression, LineInfo[] lines) {
+		private T ParseLines<T>(IParsingExpression<T> expression, LineInfo[] lines) {
 			var expressionMatchingContext =
-				new ExpressionMatchingContext(
+				new MatchingContext(
 					lines.Select(line => line.LineString).Join(),
 					lines.Select(line => line.SourceRange).ToArray());
 			
@@ -933,7 +933,7 @@ namespace markdom.cs {
 			return (T)expressionMatchingResult.Product;
 		}
 
-		private IExpression<int> RomanNumeralDecade(IExpression<int> decem, IExpression<int> quintum, IExpression<int> unit) {
+		private IParsingExpression<int> RomanNumeralDecade(IParsingExpression<int> decem, IParsingExpression<int> quintum, IParsingExpression<int> unit) {
 			return ChoiceOrdered(
 				Sequence(unit, decem, match => match.Product.Of2 - match.Product.Of1),
 				Sequence(unit, quintum, match => match.Product.Of2 - match.Product.Of1),

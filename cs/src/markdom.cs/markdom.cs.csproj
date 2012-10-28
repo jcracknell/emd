@@ -49,7 +49,7 @@
     <Compile Include="Model\Nodes\EmphasisNode.cs" />
     <Compile Include="Model\Nodes\EntityNode.cs" />
     <Compile Include="Model\Expressions\Expression.cs" />
-    <Compile Include="Model\Expressions\ExpressionType.cs" />
+    <Compile Include="Model\ExpressionKind.cs" />
     <Compile Include="Model\Expressions\ObjectExpression.cs" />
     <Compile Include="Model\Expressions\PropertyAssignment.cs" />
     <Compile Include="Model\Expressions\StringExpression.cs" />
@@ -61,7 +61,7 @@
     <Compile Include="Model\MarkdomDocument.cs" />
     <Compile Include="Model\Nodes\LineBreakNode.cs" />
     <Compile Include="Model\Nodes\LinkNode.cs" />
-    <Compile Include="Model\NodeType.cs" />
+    <Compile Include="Model\NodeKind.cs" />
     <Compile Include="Model\Nodes\OrderedListItemNode.cs" />
     <Compile Include="Model\Nodes\OrderedListNode.cs" />
     <Compile Include="Model\Nodes\OrderedListStyle.cs" />

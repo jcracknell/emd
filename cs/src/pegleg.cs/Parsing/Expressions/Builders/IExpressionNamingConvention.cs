@@ -6,6 +6,6 @@ using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions.Builders {
 	public interface IExpressionNamingConvention {
-		string Apply(string name, IExpression expression);
+		string Apply(string name, IParsingExpression expression);
 	}
 }

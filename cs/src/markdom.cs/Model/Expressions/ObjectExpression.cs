@@ -18,7 +18,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public IEnumerable<PropertyAssignment> PropertyAssignments { get { return _propertyAssignments; } }
 
-		public override ExpressionType Type { get { return ExpressionType.Object; } }
+		public override ExpressionKind Kind { get { return ExpressionKind.Object; } }
 
 		public override bool Equals(object obj) {
 			var other = obj as ObjectExpression;

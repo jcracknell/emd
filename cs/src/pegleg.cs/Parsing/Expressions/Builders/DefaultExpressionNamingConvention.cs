@@ -6,7 +6,7 @@ using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions.Builders {
 	public class DefaultExpressionNamingConvention : IExpressionNamingConvention {
-		public string Apply(string name, IExpression expression) {
+		public string Apply(string name, IParsingExpression expression) {
 			return name;
 		}
 	}

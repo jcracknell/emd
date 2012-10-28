@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace pegleg.cs.Parsing {
-	public interface IExpressionMatchingContext {
+	public interface IMatchingContext {
 		SourceLocation SourceLocation { get; }
 		int Consumed { get; }	
 		string Substring(int index, int length);
@@ -14,8 +14,8 @@ namespace pegleg.cs.Parsing {
 		bool TryConsumeMatching(Regex regex, out Match match);
 		bool TryConsumeMatchingCharInRange(char start, char end, out char matched);
 		bool AtEndOfInput { get; }
-		IExpressionMatchingContext Clone();
-		void Assimilate(IExpressionMatchingContext clone);
-		IExpressionMatchBuilder StartMatch();
+		IMatchingContext Clone();
+		void Assimilate(IMatchingContext clone);
+		IMatchBuilder StartMatch();
 	}
 }

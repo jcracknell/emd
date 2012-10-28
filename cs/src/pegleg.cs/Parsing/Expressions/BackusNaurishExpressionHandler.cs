@@ -4,25 +4,25 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public class BackusNaurishExpressionHandler : IExpressionHandler<string> {
-		public class PrecedenceExpressionHandler : IExpressionHandler<int> {
-			public int Handle(DynamicExpression expression) { return 100; }
-			public int Handle(ReferenceExpression expression) { return 100; }
-			public int Handle(PredicateExpression expression) { return 4; }
-			public int Handle(CharacterRangeExpression expression) { return 4; }
-			public int Handle(LiteralExpression expression) { return 4; }
-			public int Handle(NothingExpression expression) { return 4; }
-			public int Handle(EndOfInputExpression expression) { return 4; }
-			public int Handle(WildcardExpression expression) { return 4; }
-			public int Handle(RegexExpression expression) { return 4; }
-			public int Handle(NamedExpression expression) { return 4; }
+	public class BackusNaurishExpressionHandler : IParsingExpressionHandler<string> {
+		public class PrecedenceExpressionHandler : IParsingExpressionHandler<int> {
+			public int Handle(DynamicParsingExpression expression) { return 100; }
+			public int Handle(ReferenceParsingExpression expression) { return 100; }
+			public int Handle(PredicateParsingExpression expression) { return 4; }
+			public int Handle(CharacterRangeParsingExpression expression) { return 4; }
+			public int Handle(LiteralParsingExpression expression) { return 4; }
+			public int Handle(NothingParsingExpression expression) { return 4; }
+			public int Handle(EndOfInputParsingExpression expression) { return 4; }
+			public int Handle(WildcardParsingExpression expression) { return 4; }
+			public int Handle(RegexParsingExpression expression) { return 4; }
+			public int Handle(NamedParsingExpression expression) { return 4; }
 			public int Handle(AheadExpression expression) { return 3; }
-			public int Handle(NotAheadExpression expression) { return 3; }
-			public int Handle(OptionalExpression expression) { return 2; }
-			public int Handle(RepetitionExpression expression) { return 2; }
-			public int Handle(SequenceExpression expression) { return 1; }
-			public int Handle(OrderedChoiceExpression expression) { return 0; }
-			public int Handle(UnorderedChoiceExpression expression) { return 0; }
+			public int Handle(NotAheadParsingExpression expression) { return 3; }
+			public int Handle(OptionalParsingExpression expression) { return 2; }
+			public int Handle(RepetitionParsingExpression expression) { return 2; }
+			public int Handle(SequenceParsingExpression expression) { return 1; }
+			public int Handle(OrderedChoiceParsingExpression expression) { return 0; }
+			public int Handle(UnorderedChoiceParsingExpression expression) { return 0; }
 		}
 
 		private readonly PrecedenceExpressionHandler _precedenceHandler = new PrecedenceExpressionHandler();
@@ -31,11 +31,11 @@ namespace pegleg.cs.Parsing.Expressions {
 			return string.Concat("( ", s, " )");
 		}
 
-		private int PrecedenceOf(IExpression expression) {
+		private int PrecedenceOf(IParsingExpression expression) {
 			return expression.HandleWith(_precedenceHandler);
 		}
 
-		public string Handle(OrderedChoiceExpression expression) {
+		public string Handle(OrderedChoiceParsingExpression expression) {
 			var precedence = expression.HandleWith(_precedenceHandler);
 			var choiceStrings = expression.Choices.Select(childExpression => {
 				var childPrecedence = childExpression.HandleWith(_precedenceHandler);
@@ -49,7 +49,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			return string.Join(" / ", choiceStrings.ToArray());
 		}
 
-		public string Handle(UnorderedChoiceExpression expression) {
+		public string Handle(UnorderedChoiceParsingExpression expression) {
 			var precedence = expression.HandleWith(_precedenceHandler);
 			var choiceStrings = expression.Choices.Select(childExpression => {
 				var childPrecedence = childExpression.HandleWith(_precedenceHandler);
@@ -63,15 +63,15 @@ namespace pegleg.cs.Parsing.Expressions {
 			return string.Join(" | ", choiceStrings.ToArray());
 		}
 
-		public string Handle(LiteralExpression expression) {
+		public string Handle(LiteralParsingExpression expression) {
 			return StringUtils.LiteralEncode(expression.Literal);
 		}
 
-		public string Handle(NothingExpression expression) {
+		public string Handle(NothingParsingExpression expression) {
 			return "<0>";
 		}
 
-		public string Handle(OptionalExpression expression) {
+		public string Handle(OptionalParsingExpression expression) {
 			var precedence = expression.HandleWith(_precedenceHandler);
 			var childPrecedence = expression.Body.HandleWith(_precedenceHandler);
 			var childString = expression.Body.HandleWith(this);
@@ -81,11 +81,11 @@ namespace pegleg.cs.Parsing.Expressions {
 				: string.Concat(childString, "?");
 		}
 
-		public string Handle(RegexExpression expression) {
+		public string Handle(RegexParsingExpression expression) {
 			return string.Concat("/", expression.Regex.ToString(), "/");
 		}
 
-		public string Handle(SequenceExpression expression) {
+		public string Handle(SequenceParsingExpression expression) {
 			var precedence = expression.HandleWith(_precedenceHandler);
 			var childStrings = expression.Sequence.Select(childExpression => {
 				var childPrecedence = childExpression.HandleWith(_precedenceHandler);
@@ -109,7 +109,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 
 
-		public string Handle(NotAheadExpression expression) {
+		public string Handle(NotAheadParsingExpression expression) {
 			var childString = expression.Body.HandleWith(this);
 
 			if(PrecedenceOf(expression) > PrecedenceOf(expression.Body))
@@ -118,11 +118,11 @@ namespace pegleg.cs.Parsing.Expressions {
 			return string.Concat("!", childString);
 		}
 
-		public string Handle(NamedExpression expression) {
+		public string Handle(NamedParsingExpression expression) {
 			return string.Concat(expression.Name);
 		}
 
-		public string Handle(RepetitionExpression expression) {
+		public string Handle(RepetitionParsingExpression expression) {
 			var childString = expression.Body.HandleWith(this);
 
 			if(PrecedenceOf(expression) > PrecedenceOf(expression.Body))
@@ -137,23 +137,23 @@ namespace pegleg.cs.Parsing.Expressions {
 			return string.Concat(childString, "{", expression.MinOccurs, ",", expression.MaxOccurs, "}");
 		}
 
-		public string Handle(DynamicExpression expression) {
+		public string Handle(DynamicParsingExpression expression) {
 			return "<DYNAMIC>";
 		}
 
-		public string Handle(ReferenceExpression expression) {
+		public string Handle(ReferenceParsingExpression expression) {
 			return expression.Referenced.HandleWith(this);
 		}
 
-		public string Handle(EndOfInputExpression expression) {
+		public string Handle(EndOfInputParsingExpression expression) {
 			return "<EOF>";
 		}
 
-		public string Handle(WildcardExpression expression) {
+		public string Handle(WildcardParsingExpression expression) {
 			return "<.>";
 		}
 
-		public string Handle(CharacterRangeExpression expression) {
+		public string Handle(CharacterRangeParsingExpression expression) {
 			return string.Concat(Charcode(expression.RangeStart), "-", Charcode(expression.RangeEnd));
 		}
 
@@ -163,7 +163,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			return string.Concat("\\", (int)c);
 		}
 
-		public string Handle(PredicateExpression expression) {
+		public string Handle(PredicateParsingExpression expression) {
 			return "<PREDICATE>";
 		}
 	}

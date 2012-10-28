@@ -7,15 +7,15 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface LiteralExpression : IExpression {
+	public interface LiteralParsingExpression : IParsingExpression {
 		string Literal { get; }
 	}
 
-	public class LiteralExpression<TProduct> : LiteralExpression, IExpression<TProduct> {
+	public class LiteralParsingExpression<TProduct> : LiteralParsingExpression, IParsingExpression<TProduct> {
 		private readonly string _literal;
 		private readonly Func<IExpressionMatch<string>, TProduct> _matchAction;
 
-		public LiteralExpression(string literal, Func<IExpressionMatch<string>, TProduct> matchAction)
+		public LiteralParsingExpression(string literal, Func<IExpressionMatch<string>, TProduct> matchAction)
 		{
 			CodeContract.ArgumentIsNotNull(() => literal, literal);
 
@@ -23,32 +23,32 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public IExpressionMatchingResult Match(IExpressionMatchingContext context) {
+		public IMatchingResult Match(IMatchingContext context) {
 			if(null != _matchAction) {
 				var matchBuilder = context.StartMatch();
 
 				if(!context.TryConsumeMatching(_literal))
-					return new UnsuccessfulExpressionMatchingResult();
+					return new UnsuccessfulMatchingResult();
 
 				var product = _matchAction(matchBuilder.CompleteMatch(this, _literal));
 
-				return new SuccessfulExpressionMatchingResult(product);
+				return new SuccessfulMatchingResult(product);
 			} else {
 				if(!context.TryConsumeMatching(_literal))
-					return new UnsuccessfulExpressionMatchingResult();
-				return new SuccessfulExpressionMatchingResult(_literal);
+					return new UnsuccessfulMatchingResult();
+				return new SuccessfulMatchingResult(_literal);
 			}
 		}
 
 		public string Literal { get { return _literal; } }
 
-		public ExpressionType ExpressionType { get { return ExpressionType.Literal; } }
+		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Literal; } }
 
 		public override string ToString() {
 			return this.HandleWith(new BackusNaurishExpressionHandler());
 		}
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
+		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 	}

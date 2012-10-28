@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface SequenceExpression : IExpression {
-		IEnumerable<IExpression> Sequence { get; }
+	public interface SequenceParsingExpression : IParsingExpression {
+		IEnumerable<IParsingExpression> Sequence { get; }
 	}
 
-	public class SequenceExpression<TProduct> : SequenceExpression, IExpression<TProduct> {
-		private IExpression[] _sequence;
+	public class SequenceParsingExpression<TProduct> : SequenceParsingExpression, IParsingExpression<TProduct> {
+		private IParsingExpression[] _sequence;
 		private readonly Func<IExpressionMatch<SequenceProducts>, TProduct> _matchAction;
 
-		public SequenceExpression(IExpression[] sequence, Func<IExpressionMatch<SequenceProducts>, TProduct> matchAction) {
+		public SequenceParsingExpression(IParsingExpression[] sequence, Func<IExpressionMatch<SequenceProducts>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => sequence, sequence);
 			CodeContract.ArgumentIsValid(() => sequence, sequence.Length >= 2, "must have length of at least two");
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
@@ -21,7 +21,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public IExpressionMatchingResult Match(IExpressionMatchingContext context) {
+		public IMatchingResult Match(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			var expressionProducts = new object[_sequence.Length];
@@ -38,18 +38,18 @@ namespace pegleg.cs.Parsing.Expressions {
 
 			var product = _matchAction(matchBuilder.CompleteMatch(this, new SequenceProducts(expressionProducts)));
 
-			return new SuccessfulExpressionMatchingResult(product);
+			return new SuccessfulMatchingResult(product);
 		}
 
-		public IEnumerable<IExpression> Sequence { get { return _sequence; } }
+		public IEnumerable<IParsingExpression> Sequence { get { return _sequence; } }
 
-		public ExpressionType ExpressionType { get { return ExpressionType.Sequence; } }
+		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Sequence; } }
 
 		public override string ToString() {
 			return this.HandleWith(new BackusNaurishExpressionHandler());
 		}
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
+		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 	}

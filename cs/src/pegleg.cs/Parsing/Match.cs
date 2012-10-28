@@ -5,14 +5,14 @@ using System.Text;
 
 namespace pegleg.cs.Parsing {
 	public class ExpressionMatch<TProduct> : IExpressionMatch<TProduct> {
-		private readonly IExpressionMatchingContext _context;
-		private readonly IExpression _expression;
+		private readonly IMatchingContext _context;
+		private readonly IParsingExpression _expression;
 		private readonly TProduct _product;
 		private readonly int _index;
 		private readonly int _length;
 		private readonly SourceRange _matchRange;
 
-		public ExpressionMatch(IExpressionMatchingContext context, IExpression expression, TProduct product, int index, int length, SourceRange matchRange) {
+		public ExpressionMatch(IMatchingContext context, IParsingExpression expression, TProduct product, int index, int length, SourceRange matchRange) {
 			CodeContract.ArgumentIsNotNull(() => context, context);
 			CodeContract.ArgumentIsNotNull(() => expression, expression);
 			CodeContract.ArgumentIsValid(() => index, index >= 0, "must be a non-negative integer");
@@ -34,7 +34,7 @@ namespace pegleg.cs.Parsing {
 
 		public TProduct Product { get { return _product; } }
 
-		public IExpression Expression { get { return _expression; } }
+		public IParsingExpression Expression { get { return _expression; } }
 
 		public string String { get { return _context.Substring(_index, _length); } }
 	}

@@ -18,7 +18,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public int Value { get { return _value; } }
 
-		public NodeType NodeType { get { return NodeType.Entity; } }
+		public NodeKind Kind { get { return NodeKind.Entity; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
