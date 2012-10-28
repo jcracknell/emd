@@ -8,10 +8,10 @@ using System.Text;
 namespace markdom.cs.Model.Nodes{
 	public class AutoLinkNode : IRichInlineNode {
 		private readonly UriExpression _uri;
-		private readonly Expression[] _arguments;
+		private readonly IExpression[] _arguments;
 		private readonly MarkdomSourceRange _sourceRange;
 
-		public AutoLinkNode(UriExpression uri, Expression[] arguments, MarkdomSourceRange sourceRange)
+		public AutoLinkNode(UriExpression uri, IExpression[] arguments, MarkdomSourceRange sourceRange)
 		{
 			CodeContract.ArgumentIsNotNull(() => uri, uri);
 			CodeContract.ArgumentIsNotNull(() => arguments, arguments);
@@ -23,7 +23,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public UriExpression Uri { get { return _uri; } }
 
-		public IEnumerable<Expression> Arguments { get { return _arguments; } }
+		public IEnumerable<IExpression> Arguments { get { return _arguments; } }
 
 		public NodeKind Kind { get { return NodeKind.AutoLink; } }
 

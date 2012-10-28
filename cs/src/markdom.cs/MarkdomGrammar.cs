@@ -124,8 +124,8 @@ namespace markdom.cs {
 		public IParsingExpression<SymbolNode> Symbol { get; private set; }
 
 
-		public IParsingExpression<Expression> Expression { get; private set; }
-		public IParsingExpression<Expression[]> ArgumentList { get; private set; }
+		public IParsingExpression<IExpression> Expression { get; private set; }
+		public IParsingExpression<IExpression[]> ArgumentList { get; private set; }
 		public IParsingExpression<ObjectExpression> ObjectExpression { get; private set; }
 		public IParsingExpression<ObjectExpression> ObjectBodyExpression { get; private set; }
 		public IParsingExpression<StringExpression> StringExpression { get; private set; }
@@ -497,7 +497,7 @@ namespace markdom.cs {
 					Optional(
 						Reference(() => ArgumentList),
 						match => match.Product,
-						noMatch => new Expression[0]),
+						noMatch => new IExpression[0]),
 					match => new AutoLinkNode(match.Product.Of3, match.Product.Of6, MarkdomSourceRange.FromMatch(match))));
 
 			var linkLabel =
@@ -625,7 +625,7 @@ namespace markdom.cs {
 			// * `StringExpression` gets first crack at quotes
 			// * `UriExpression` does not start with `@`
 			Define(() => Expression,
-				ChoiceOrdered<Expression>(
+				ChoiceOrdered<IExpression>(
 					Reference(() => StringExpression),
 					Reference(() => ObjectExpression),
 					Reference(() => UriExpression)));
@@ -649,7 +649,7 @@ namespace markdom.cs {
 					Sequence(Literal("("), Reference(() => ExpressionWhitespace)),
 					argumentListArguments,
 					Sequence(Reference(() => ExpressionWhitespace), Literal(")")),
-					match => match.Product.Of2 ?? new Expression[0]));
+					match => match.Product.Of2 ?? new IExpression[0]));
 
 			#region StringExpression
 			

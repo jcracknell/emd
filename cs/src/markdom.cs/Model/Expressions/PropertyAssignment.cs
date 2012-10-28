@@ -6,11 +6,11 @@ using System.Text;
 
 namespace markdom.cs.Model.Expressions {
 	public class PropertyAssignment {
-		private readonly Expression _propertyName;
-		private readonly Expression _propertyValue;
+		private readonly IExpression _propertyName;
+		private readonly IExpression _propertyValue;
 		private readonly MarkdomSourceRange _sourceRange;
 
-		public PropertyAssignment(Expression propertyName, Expression propertyValue, MarkdomSourceRange sourceRange) {
+		public PropertyAssignment(IExpression propertyName, IExpression propertyValue, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => propertyName, propertyName);
 			CodeContract.ArgumentIsNotNull(() => propertyValue, propertyValue);
 
@@ -19,9 +19,9 @@ namespace markdom.cs.Model.Expressions {
 			_sourceRange = sourceRange;
 		}
 
-		public Expression PropertyName { get { return _propertyName; } }
+		public IExpression PropertyName { get { return _propertyName; } }
 
-		public Expression PropertyValue { get { return _propertyValue; } }
+		public IExpression PropertyValue { get { return _propertyValue; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

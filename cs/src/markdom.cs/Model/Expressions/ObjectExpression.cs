@@ -5,26 +5,29 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Expressions {
-	public class ObjectExpression : Expression {
+	public class ObjectExpression : IExpression {
 		private readonly PropertyAssignment[] _propertyAssignments;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public ObjectExpression(PropertyAssignment[] propertyAssignments, MarkdomSourceRange sourceRange)
-			: base(sourceRange)
-		{
+		public ObjectExpression(PropertyAssignment[] propertyAssignments, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => propertyAssignments, propertyAssignments);
 
 			_propertyAssignments = propertyAssignments;
+			_sourceRange = sourceRange;
 		}
 
 		public IEnumerable<PropertyAssignment> PropertyAssignments { get { return _propertyAssignments; } }
 
-		public override ExpressionKind Kind { get { return ExpressionKind.Object; } }
+		public ExpressionKind Kind { get { return ExpressionKind.Object; } }
 
-		public override bool Equals(object obj) {
-			var other = obj as ObjectExpression;
-			return null != other
-				&& this.SourceRange.Equals(other.SourceRange)
-				&& Enumerable.SequenceEqual(this.PropertyAssignments, other.PropertyAssignments);
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+
+		public void HandleWith(IExpressionHandler handler) {
+			handler.Handle(this);
+		}
+
+		public T HandleWith<T>(IExpressionHandler<T> handler) {
+			return handler.Handle(this);
 		}
 	}
 }
