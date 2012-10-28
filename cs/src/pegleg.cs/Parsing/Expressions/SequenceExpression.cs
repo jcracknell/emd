@@ -10,9 +10,9 @@ namespace pegleg.cs.Parsing.Expressions {
 
 	public class SequenceExpression<TProduct> : SequenceExpression, IExpression<TProduct> {
 		private IExpression[] _sequence;
-		private readonly Func<IExpressionMatch<object[]>, TProduct> _matchAction;
+		private readonly Func<IExpressionMatch<SequenceProducts>, TProduct> _matchAction;
 
-		public SequenceExpression(IExpression[] sequence, Func<IExpressionMatch<object[]>, TProduct> matchAction) {
+		public SequenceExpression(IExpression[] sequence, Func<IExpressionMatch<SequenceProducts>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => sequence, sequence);
 			CodeContract.ArgumentIsValid(() => sequence, sequence.Length >= 2, "must have length of at least two");
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
@@ -36,7 +36,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				expressionProducts[i] = currentExpressionApplicationResult.Product;
 			}
 
-			var product = _matchAction(matchBuilder.CompleteMatch(this, expressionProducts));
+			var product = _matchAction(matchBuilder.CompleteMatch(this, new SequenceProducts(expressionProducts)));
 
 			return new SuccessfulExpressionMatchingResult(product);
 		}

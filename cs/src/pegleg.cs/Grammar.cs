@@ -42,5 +42,6 @@ namespace pegleg.cs {
 		private void DefineProperty(PropertyInfo property, IExpression expression) {
 			property.SetValue(this, expression, null);
 		}
+
 	}
 }

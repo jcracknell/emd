@@ -1,9 +1,9 @@
-﻿using markdom.cs.ExtensionMethods;
-using markdom.cs.Model;
+﻿using markdom.cs.Model;
 using markdom.cs.Model.Expressions;
 using markdom.cs.Model.Nodes;
 using pegleg.cs;
 using pegleg.cs.Parsing;
+using pegleg.cs.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +25,16 @@ namespace markdom.cs {
 			public readonly int Start;
 			public readonly int Increment;
 			public readonly OrderedListStyle Style;
+		}
+
+		public struct TableCellSpanningInfo {
+			public readonly int ColumnSpan;
+			public readonly int RowSpan;
+
+			public TableCellSpanningInfo(int columnSpan, int rowSpan) {
+				ColumnSpan = columnSpan;
+				RowSpan = rowSpan;
+			}
 		}
 		
 		/// <summary>
@@ -118,14 +128,6 @@ namespace markdom.cs {
 		public IExpression<UriExpression> UriExpression { get; private set; }
 		public IExpression<Nil> ExpressionWhitespace { get; private set; }
 
-		private IExpression<TProduct> DelimitedInline<TDelimiter, TContent, TProduct>(IExpression<TDelimiter> delimiter, IExpression<TContent> content, Func<IExpressionMatch<object[]>, TContent[], TProduct> matchAction) {
-			return Sequence(
-				delimiter,
-				AtLeast(0, Sequence(NotAhead(delimiter), content, (match, a, b) => b)),
-				delimiter,
-				(match, s, c, e) => matchAction(match, c));
-		}
-
 		public MarkdomGrammar() {
 
 			Define(() => Document,
@@ -142,7 +144,7 @@ namespace markdom.cs {
 				Sequence(
 					Literal("//"),
 					Reference(() => Line),
-					(match, s, l) => new LineInfo(match.String, match.SourceRange)));
+					match => new LineInfo(match.String, match.SourceRange)));
 
 			Define(() => MultiLineComment,
 				Sequence(
@@ -151,7 +153,7 @@ namespace markdom.cs {
 						Sequence( NotAhead(Literal("*/")), Wildcard() ),
 						match => match.String),
 					Literal("*/"),
-					(match, s, c, e) => new LineInfo(match.String, match.SourceRange)));
+					match => new LineInfo(match.String, match.SourceRange)));
 
 			#endregion
 
@@ -163,7 +165,7 @@ namespace markdom.cs {
 						AtLeast(0, Reference(() => CommentBlock)),
 						Reference(() => Block),
 						AtLeast(0, Reference(() => CommentBlock)),
-						(match, a, b, c) => b)));
+						match => match.Product.Of2)));
 
 			// Ordering notes:
 			//   * Paragraph must come last, because it will sweep up just about anything
@@ -177,14 +179,14 @@ namespace markdom.cs {
 						Reference(() => UnorderedList),
 						Reference(() => Paragraph)), // paragraph must come last
 					Reference(() => BlankLines),
-					(match, a, b, c) => b));
+					match => match.Product.Of2));
 
 			var singleLineCommentBlock =
 				Sequence(
 					Reference(() => SpaceChars),
 					Reference(() => SingleLineComment),
 					Reference(() => BlankLines),
-					(match, a, b, c) => b);
+					match => match.Product.Of2);
 
 			var multiLineCommentBlock =
 				Sequence(
@@ -192,7 +194,7 @@ namespace markdom.cs {
 					Reference(() => MultiLineComment),
 					Reference(() => BlankLine), // no trailing content (don't match a para w/ starting mlc)
 					Reference(() => BlankLines),
-					(match, a, b, c, d) => b);
+					match => match.Product.Of2);
 
 			Define(() => CommentBlock,
 				Choice<LineInfo>(
@@ -210,14 +212,14 @@ namespace markdom.cs {
 				Sequence(
 					Reference(() => BlankLines),
 					Ahead(Reference(() => Indent)),
-					(match, a, b) => a);
+					match => match.Product.Of1);
 
 			// We define a custom BlockLine for lists which discards any indent at the beginning of a line
 			var listBlockLine =
 				Sequence(
 					Optional(Reference(() => Indent)),
 					Reference(() => NonEmptyBlockLine),
-					(match, a, b) => b);
+					match => match.Product.Of2);
 
 			#region Unordered List
 
@@ -233,12 +235,12 @@ namespace markdom.cs {
 					Reference(() => NonIndentSpace),
 					Choice(new string[] { "*", "-", "+" }.Select(Literal).ToArray()),
 					Reference(() => SpaceChars),
-					(match, a, b, c) => Nil.Value));
+					match => Nil.Value));
 
 			var unorderedListBlockLine =
 				Sequence(
 					NotAhead(Reference(() => Bullet)), listBlockLine,
-					(match, a, b) => b);
+					match => match.Product.Of2);
 
 			var unorderedListBlockLines = AtLeast(0, unorderedListBlockLine);
 
@@ -247,14 +249,14 @@ namespace markdom.cs {
 					Reference(() => Bullet),
 					Reference(() => BlockLine), // Allow for an empty list item
 					unorderedListBlockLines,
-					(match, b, fl, ls) => ArrayUtils.Prepend(fl, ls));
+					match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
 
 			var unorderedListItemSubsequentBlock =
 				Sequence(
 					listItemContinues,
 					unorderedListBlockLines,
 					Reference(() => BlankLines),
-					(match, a, b, c) => ArrayUtils.Combine(a, b, c));
+					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2, match.Product.Of3));
 
 			var unorderedListItemTight =
 				Reference(
@@ -266,7 +268,7 @@ namespace markdom.cs {
 					unorderedListItemInitialBlock,
 					AtLeast(0, unorderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
 					Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
-					(match, a, b, c) => new UnorderedListItemNode(ParseLines(Blocks, ArrayUtils.Combine(a, b)), MarkdomSourceRange.FromMatch(match)));
+					match => new UnorderedListItemNode(ParseLines(Blocks, ArrayUtils.Combine(match.Product.Of1, match.Product.Of2)), MarkdomSourceRange.FromMatch(match)));
 
 			var unorderedListContinuesLoose =
 				Choice(new IExpression[] {
@@ -278,13 +280,13 @@ namespace markdom.cs {
 					Reference(() => BlankLines),
 					AtLeast(1, unorderedListItemTight),
 					NotAhead(unorderedListContinuesLoose),
-					(match, a, lis, c) => new UnorderedListNode(lis, MarkdomSourceRange.FromMatch(match))));
+					match => new UnorderedListNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => UnorderedListLoose,
 				Sequence(
 					Reference(() => BlankLines),
 					AtLeast(1, unorderedListItemLoose),
-					(match, a, lis) => new UnorderedListNode(lis, MarkdomSourceRange.FromMatch(match))));
+					match => new UnorderedListNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -296,7 +298,7 @@ namespace markdom.cs {
 				Sequence(
 					Literal("@"),
 					AtLeast(1, Reference(() => Digit), match => { int v; return int.TryParse(match.String, out v) ? v : 1; }),
-					(match, a, b) => b);
+					match => match.Product.Of2);
 
 			// You can also specify an increment using the form `style@value+/-increment`, e.g. `a@8-1`.
 			var enumeratorIncrement =
@@ -305,7 +307,7 @@ namespace markdom.cs {
 						Literal("+", match => 1),
 						Literal("-", match => -1)),
 					AtLeast(1, Reference(() => Digit), match => match.String),
-					(match, s, i) => { int v; return int.TryParse(i, out v) ? s * v : 1; });
+					match => match.Product.Of1 * match.Product.Of2.ParseDefault(1));
 
 			#endregion
 
@@ -317,7 +319,7 @@ namespace markdom.cs {
 					AtLeast(1, Literal("#"), match => match.Product.Length),
 					Reference(() => SpaceChars),
 					Reference(() => BlockLine),
-					(match, s, l, s2, c) => new HeadingNode(c.LineString, l, MarkdomSourceRange.FromMatch(match))));
+					match => new HeadingNode(match.Product.Of4.LineString, match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => Paragraph,
 				AtLeast(1,
@@ -328,20 +330,20 @@ namespace markdom.cs {
 				Sequence(
 					NotAhead(Reference(() => BlankLine)),
 					Reference(() => BlockLine),
-					(match, a, b) => b));
+					match => match.Product.Of2));
 
 			Define(() => BlockLine,
 				Sequence(
 					AtLeast(0, Reference(() => BlockLineAtomic)),
 					Optional(Reference(() => NewLine)),
-					(match, a, b) => new LineInfo(match.String, match.SourceRange)));
+					match => new LineInfo(match.String, match.SourceRange)));
 
 			// TODO: multi-line atomics - comments, expressions
 			Define(() => BlockLineAtomic,
 				Sequence(
 					NotAhead(Reference(() => NewLine)),
 					Wildcard(),
-					(match, a, b) => Nil.Value));
+					match => Nil.Value));
 
 			#region Tables
 
@@ -351,7 +353,7 @@ namespace markdom.cs {
 						AtLeast(0, Reference(() => TableRowSeparator)),
 						Reference(() => TableRow),
 						AtLeast(0, Reference(() => TableRowSeparator)),
-						(match, a, b, c) => b),
+						match => match.Product.Of2),
 					match => new TableNode(match.Product, MarkdomSourceRange.FromMatch(match))));
 
 			var tableCellContents =
@@ -367,56 +369,54 @@ namespace markdom.cs {
 				Sequence(
 					AtLeast(1, Reference(() => Digit), match => match.String),
 					Choice(Literal("r"), Literal("R")),
-					(match, ds, r) => ds);
+					match => match.Product.Of1);
 
 			var tableCellColumnSpan =
 				Sequence(
 					AtLeast(1, Reference(() => Digit), match => match.String),
 					Choice(Literal("c"), Literal("C")),
-					(match, ds, c) => ds);
+					match => match.Product.Of1);
 
 			var tableCellAnnouncement =
 				Sequence(
 					Literal("|"),
 					Optional(tableCellColumnSpan),
 					Optional(tableCellRowSpan),
-					(match, a, cs, rs) => {
-						int v;
-						return Tuple.Create(
-							int.TryParse(cs, out v) ? v : 1,
-							int.TryParse(rs, out v) ? v : 1);
-					});
+					match => new TableCellSpanningInfo(match.Product.Of2.ParseDefault(1), match.Product.Of3.ParseDefault(1)));
 
 			var tableHeaderCellAnnouncement =
 				Sequence(
 					tableCellAnnouncement,
 					Literal("="),
 					Reference(() => SpaceChars),
-					(match, a, b, c) => a);
+					match => match.Product.Of1);
 
 			var tableDataCellAnnouncemnt =
 				Sequence(
 					tableCellAnnouncement,
 					Reference(() => SpaceChars),
-					(match, a, b) => a);
+					match => match.Product.Of1);
 
 			var tableHeaderCell =
 				Sequence(
 					tableHeaderCellAnnouncement,
 					tableCellContents,
-					(match, a, c) => {
-						var children = ParseLines(Inlines, new LineInfo[] { c });
-						return new TableHeaderCellNode(a.Item1, a.Item2, children, MarkdomSourceRange.FromMatch(match));
-					});
+					match =>
+						new TableHeaderCellNode(
+							match.Product.Of1.ColumnSpan,
+							match.Product.Of1.RowSpan,
+							ParseLines(Inlines, match.Product.Of2.InArray()),
+							MarkdomSourceRange.FromMatch(match)));
 
 			var tableDataCell =
 				Sequence(
 					tableDataCellAnnouncemnt,
 					tableCellContents,
-					(match, a, c) => {
-						var children = ParseLines(Inlines, new LineInfo[] { c });
-						return new TableDataCellNode(a.Item1, a.Item2, children, MarkdomSourceRange.FromMatch(match));
-					});
+					match => new TableDataCellNode(
+						match.Product.Of1.ColumnSpan,
+						match.Product.Of1.RowSpan,
+						ParseLines(Inlines, match.Product.Of2.InArray()),
+						MarkdomSourceRange.FromMatch(match)));
 
 			var tableRowEnd =
 				Sequence(
@@ -429,23 +429,20 @@ namespace markdom.cs {
 					OrderedChoice<TableCellNode>(
 						tableHeaderCell,
 						tableDataCell),
-					(match, a, b) => b);
+					match => match.Product.Of2);
 
 			var tableUnannouncedDataCell =
 				Sequence(
 					tableCellContents,
 					Ahead(Literal("|")),
-					(match, c, a) => {
-						var childern = ParseLines(Inlines, new LineInfo[] { c });
-						return new TableDataCellNode(1, 1, childern, MarkdomSourceRange.FromMatch(match));
-					});
+					match => new TableDataCellNode(1, 1, ParseLines(Inlines, match.Product.Of1.InArray()), MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => TableRow,
 				Sequence(
 					Reference(() => SpaceChars),
 					AtLeast(1, Reference(() => tableCell)),
 					tableRowEnd,
-					(match, a, cs, re) => new TableRowNode(cs, MarkdomSourceRange.FromMatch(match))));
+					match => new TableRowNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => TableRowSeparator,
 				Sequence(
@@ -454,7 +451,7 @@ namespace markdom.cs {
 							Reference(() => SpaceChars),
 							Choice(new string[] { "-", "=", "+" }.Select(Literal).ToArray()))),
 					Reference(() => BlankLine),
-					(match, a, b) => new LineInfo(match.String, match.SourceRange)));
+					match => new LineInfo(match.String, match.SourceRange)));
 
 			#endregion
 
@@ -485,53 +482,53 @@ namespace markdom.cs {
 					Sequence(
 						Ahead(Literal("<")), // do not match undelimited UriExpression
 						Reference(() => UriExpression),
-						(match, a, u) => u),
+						match => match.Product.Of2),
 					Optional(Reference(() => ArgumentList)),
-					(match, u, args) => new AutoLinkNode(u, args ?? new Expression[0], MarkdomSourceRange.FromMatch(match))));
+					match => new AutoLinkNode(match.Product.Of1, match.Product.Of2 ?? new Expression[0], MarkdomSourceRange.FromMatch(match))));
 
 			var linkLabel =
 				Sequence(
 					Literal("["),
-					AtLeast(0, Sequence(NotAhead(Literal("]")), Reference(() => Inline), (match, a, b) => b)),
+					AtLeast(0, Sequence(NotAhead(Literal("]")), Reference(() => Inline), match => match.Product.Of2)),
 					Literal("]"),
-					(match, s, c, e) => c);
+					match => match.Product.Of2);
 
 			Define(() => Link,
 				Sequence(
 					linkLabel,
 					Reference(() => SpaceChars),
 					Optional(Reference(() => ArgumentList)),
-					(match, l, s, a) => new LinkNode(l, null, MarkdomSourceRange.FromMatch(match))));
+					match => new LinkNode(match.Product.Of1, null, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
 			Define(() => Strong,
 				Sequence(
 					Literal("**"),
-					AtLeast(0, Sequence(NotAhead(Literal("**")), Reference(() => Inline), (match, a, b) => b)),
+					AtLeast(0, Sequence(NotAhead(Literal("**")), Reference(() => Inline), match => match.Product.Of2)),
 					Optional(Literal("**")),
-					(match, s, c, e) => new StrongNode(c, MarkdomSourceRange.FromMatch(match))));	
+					match => new StrongNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => Emphasis,
 				Sequence(
 					Literal("*"),
-					AtLeast(0, Sequence(NotAhead(Literal("*")), Reference(() => Inline), (match, a, b) => b)),
+					AtLeast(0, Sequence(NotAhead(Literal("*")), Reference(() => Inline), match => match.Product.Of2)),
 					Optional(Literal("*")),
-					(match, s, c, e) => new EmphasisNode(c, MarkdomSourceRange.FromMatch(match))));
+					match => new EmphasisNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
 			var singleQuoted =
 				Sequence(
 					Literal("'"),
-					AtLeast(0, Sequence(NotAhead(Literal("'")), Reference(() => Inline), (match, a, b) => b)),
+					AtLeast(0, Sequence(NotAhead(Literal("'")), Reference(() => Inline), match => match.Product.Of2)),
 					Literal("'"),
-					(match, s, c, e) => new QuotedNode(QuoteType.Single, c, MarkdomSourceRange.FromMatch(match)));
+					match => new QuotedNode(QuoteType.Single, match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			var doubleQuoted =
 				Sequence(
 					Literal("\""),
-					AtLeast(0, Sequence(NotAhead(Literal("\"")), Reference(() => Inline), (match, a, b) => b)),
+					AtLeast(0, Sequence(NotAhead(Literal("\"")), Reference(() => Inline), match => match.Product.Of2)),
 					Literal("\""),
-					(match, s, c, e) => new QuotedNode(QuoteType.Double, c, MarkdomSourceRange.FromMatch(match)));
+					match => new QuotedNode(QuoteType.Double, match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => Quoted,
 				OrderedChoice(doubleQuoted, singleQuoted));
@@ -548,14 +545,14 @@ namespace markdom.cs {
 					Literal("&#"),
 					Between(1, 6, Reference(() => Digit), match => match.String),
 					Literal(";"),
-					(match, s, v, e) => new EntityNode(int.Parse(v), MarkdomSourceRange.FromMatch(match)));
+					match => new EntityNode(int.Parse(match.Product.Of2), MarkdomSourceRange.FromMatch(match)));
 
 			var hexHtmlEntity =
 				Sequence(
 					Literal("&#x"),
 					Between(1, 6, Reference(() => HexDigit), match => match.String),
 					Literal(";"),
-					(match, s, v, e) => new EntityNode(Convert.ToInt32(v, 16), MarkdomSourceRange.FromMatch(match)));
+					match => new EntityNode(Convert.ToInt32(match.Product.Of2, 16), MarkdomSourceRange.FromMatch(match)));
 
 			// Because of the large number of named entities it is much faster to use a dynamic
 			// expression with an assertion to match valid entity names
@@ -567,7 +564,7 @@ namespace markdom.cs {
 						Between(1, 32, Reference(() => EnglishAlpha), match => { return entityName = match.String; }),
 						Assert(() => EntityNode.IsEntityName(entityName)),
 						Literal(";"),
-						(match, s, n, a, e) => new EntityNode(EntityNode.GetNamedEntityValue(entityName), MarkdomSourceRange.FromMatch(match)));
+						match => new EntityNode(EntityNode.GetNamedEntityValue(entityName), MarkdomSourceRange.FromMatch(match)));
 				});
 
 			Define(() => Entity,
@@ -600,7 +597,7 @@ namespace markdom.cs {
 							Wildcard()),
 							match => match.String),
 					Literal("]"),
-					(match, s, i, e) => new ReferenceId(i)));
+					match => new ReferenceId(match.Product.Of2)));
 
 			Define(() => Line,
 				Sequence(
@@ -609,7 +606,7 @@ namespace markdom.cs {
 							NotAhead(Reference(() => NewLine)),
 							Wildcard())),
 					Optional(Reference(() => NewLine)),
-					(match, a, b) => new LineInfo(match.String, match.SourceRange)));
+					match => new LineInfo(match.String, match.SourceRange)));
 
 			Define(() => BlankLines,
 				Sequence(
@@ -617,14 +614,13 @@ namespace markdom.cs {
 						Sequence(
 							AtLeast(0, Reference(() => SpaceChar)),
 							Reference(() => NewLine),
-							(match, a, b) => new LineInfo(match.String, match.SourceRange))),
+							match => new LineInfo(match.String, match.SourceRange))),
 					Optional(
 						Sequence(
 							AtLeast(0, Reference(() => SpaceChar)),
 							EndOfInput(),
-							(match, a, b) => new LineInfo[] { new LineInfo(match.String, match.SourceRange) })),
-					(match, ls, ll) => ArrayUtils.Combine(ls, ll ?? new LineInfo[0])));
-
+							match => new LineInfo(match.String, match.SourceRange).InArray())),
+					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2 ?? new LineInfo[0])));
 
 			// NEVER EVER EVER USE THIS IN A REPETITION CONTEXT
 			Define(() => BlankLine,
@@ -694,7 +690,7 @@ namespace markdom.cs {
 							Reference(() => Whitespace),
 							Reference(() => SpecialChar))),
 					Wildcard(),
-					(match, a, b) => b.ToString()));
+					match => match.Product.Of2));
 
 			#region Expressions
 			// # Expressions
@@ -735,15 +731,15 @@ namespace markdom.cs {
 				Optional(
 					Sequence(
 						Reference(() => Expression),
-						AtLeast(0, Sequence( argumentSeparator, Reference(() => Expression), (match, s, e) => e)),
-						(match, e, es) => ArrayUtils.Prepend(e, es)));
+						AtLeast(0, Sequence( argumentSeparator, Reference(() => Expression), match => match.Product.Of2)),
+						match => ArrayUtils.Prepend(match.Product.Of1, match.Product.Of2)));
 
 			Define(() => ArgumentList,
 				Sequence(
 					Sequence(Literal("("), Reference(() => ExpressionWhitespace)),
 					argumentListArguments,
 					Sequence(Reference(() => ExpressionWhitespace), Literal(")")),
-					(match, s, es, e) => es ?? new Expression[0]));
+					match => match.Product.Of2 ?? new Expression[0]));
 
 			#region StringExpression
 			
@@ -762,8 +758,8 @@ namespace markdom.cs {
 						Sequence(
 							NotAhead(Choice(Literal("'"), Reference(() => NewLine))),
 							Wildcard(),
-							(match, a, c) => c)),
-					match => string.Join("", match.Product));
+							match => match.Product.Of2)),
+					match => match.Product.Join());
 
 			var doubleQuotedStringExpressionContent =
 				AtLeast(0,
@@ -773,18 +769,18 @@ namespace markdom.cs {
 						Sequence(
 							NotAhead(Choice(Literal("\""), Reference(() => NewLine))),
 							Wildcard(),
-							(match, a, c) => c)),
-					match => string.Join("", match.Product));
+							match => match.Product.Of2)),
+					match => match.Product.Join());
 
 			var singleQuotedStringExpression =
 				Sequence(
 					Literal("'"), singleQuotedStringExpressionContent, Literal("'"),
-					(match, s, c, e) => new StringExpression(c, MarkdomSourceRange.FromMatch(match)));
+					match => new StringExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			var doubleQuotedStringExpression =
 				Sequence(
 					Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
-					(match, s, c, e) => new StringExpression(c, MarkdomSourceRange.FromMatch(match)));
+					match => new StringExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => StringExpression,
 				Choice(
@@ -803,14 +799,14 @@ namespace markdom.cs {
 						Literal("=>"),
 						Reference(() => ExpressionWhitespace)),
 					Reference(() => Expression),
-					(match, n, a, v) => new PropertyAssignment(n, v, MarkdomSourceRange.FromMatch(match)));
+					match => new PropertyAssignment(match.Product.Of1, match.Product.Of3, MarkdomSourceRange.FromMatch(match)));
 
 			var objectPropertyAssignments =
 				Optional(
 					Sequence(
 						objectPropertyAssignment,
-						AtLeast(0, Sequence(argumentSeparator, objectPropertyAssignment, (match, s, p) => p)),
-						(match, pa, pas) => ArrayUtils.Prepend(pa, pas)));
+						AtLeast(0, Sequence(argumentSeparator, objectPropertyAssignment, match => match.Product.Of2)),
+						match => ArrayUtils.Combine(match.Product.Of1.InArray(), match.Product.Of2)));
 
 			var objectExpressionStart =
 				Sequence( Literal("{"), Reference(() => ExpressionWhitespace));
@@ -821,7 +817,7 @@ namespace markdom.cs {
 			Define(() => ObjectExpression,
 				Sequence(
 					objectExpressionStart, objectPropertyAssignments, objectExpressionEnd,
-					(match, s, pas, e) => new ObjectExpression(pas ?? new PropertyAssignment[0], MarkdomSourceRange.FromMatch(match))));
+					match => new ObjectExpression(match.Product.Of2 ?? new PropertyAssignment[0], MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => ObjectBodyExpression,
 				Reference(() => objectPropertyAssignments, match => new ObjectExpression(match.Product, MarkdomSourceRange.FromMatch(match))));
@@ -850,7 +846,7 @@ namespace markdom.cs {
 				Sequence(
 					NotAhead(Literal("@")), // may as well make this explicit
 					AtLeast(1, bareUriExpressionCharacter, match => new UriExpression(match.String, MarkdomSourceRange.FromMatch(match))),
-					(match, a, b) => b);
+					match => match.Product.Of2);
 
 			var delimitedUriExpressionCharacter =
 				Choice(
@@ -860,7 +856,7 @@ namespace markdom.cs {
 			var delimitedUriExpression =
 				Sequence(
 					Literal("<"), AtLeast(1, delimitedUriExpressionCharacter, match => match.String), Literal(">"),
-					(match, s, v, e) => new UriExpression(v, MarkdomSourceRange.FromMatch(match)));
+					match => new UriExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 
 			Define(() => UriExpression,
@@ -891,6 +887,13 @@ namespace markdom.cs {
 				return default(T);
 
 			return (T)expressionMatchingResult.Product;
+		}
+
+		private int ParseDefault(string s, int d) {
+			int value;
+			return int.TryParse(s, out value)
+				? value
+				: d;
 		}
 	}
 }

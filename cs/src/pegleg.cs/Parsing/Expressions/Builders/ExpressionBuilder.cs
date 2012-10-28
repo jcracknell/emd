@@ -199,68 +199,6 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new NothingExpression<TProduct>(matchAction);
 		}
 
-		public IExpression<object[]> Sequence(params IExpression[] sequence) {
-			return Sequence(sequence, DefaultMatchAction);
-		}
-
-		public IExpression<TProduct> Sequence<TProduct>(IExpression[] sequence, Func<IExpressionMatch<object[]>, TProduct> matchAction) {
-			return new SequenceExpression<TProduct>(sequence, matchAction);
-		}
-
-		public IExpression<TSequence[]> Sequence<TSequence>(params IExpression<TSequence>[] sequence) {
-			return Sequence(sequence, DefaultMatchAction);
-		}
-
-		public IExpression<TProduct> Sequence<T, TProduct>(IExpression<T>[] sequence, Func<IExpressionMatch<T[]>, TProduct> matchAction) {
-			return new SequenceExpression<TProduct>(
-				sequence,
-				match =>
-					matchAction(UpcastExpressionMatch(match, product => product.Cast<T>().ToArray())));
-		}
-
-		public IExpression<TProduct> Sequence<T1, T2, TProduct>(IExpression<T1> e1, IExpression<T2> e2, Func<IExpressionMatch<object[]>, T1, T2, TProduct> matchAction) {
-			return Sequence(
-				new IExpression[] { e1, e2 },
-				match =>
-					matchAction(match, (T1)match.Product[0], (T2)match.Product[1]));
-		}
-
-		public IExpression<TProduct> Sequence<T1, T2, T3, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, Func<IExpressionMatch<object[]>, T1, T2, T3, TProduct> matchAction) {
-			return Sequence(
-				new IExpression[] { e1, e2, e3 },
-				match => matchAction(match, (T1)match.Product[0], (T2)match.Product[1], (T3)match.Product[2]));
-		}
-
-		public IExpression<TProduct> Sequence<T1, T2, T3, T4, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, Func<IExpressionMatch<object[]>, T1, T2, T3, T4, TProduct> matchAction) {
-			return Sequence(
-				new IExpression[] { e1, e2, e3, e4 },
-				match => matchAction(match, (T1)match.Product[0], (T2)match.Product[1], (T3)match.Product[2], (T4)match.Product[3]));
-		}
-
-		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, Func<IExpressionMatch<object[]>, T1, T2, T3, T4, T5, TProduct> matchAction) {
-			return Sequence(
-				new IExpression[] { e1, e2, e3, e4, e5 },
-				match => matchAction(match, (T1)match.Product[0], (T2)match.Product[1], (T3)match.Product[2], (T4)match.Product[3], (T5)match.Product[4]));
-		}
-
-		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, Func<IExpressionMatch<object[]>, T1, T2, T3, T4, T5, T6, TProduct> matchAction) {
-			return Sequence(
-				new IExpression[] { e1, e2, e3, e4, e5, e6 },
-				match => matchAction(match, (T1)match.Product[0], (T2)match.Product[1], (T3)match.Product[2], (T4)match.Product[3], (T5)match.Product[4], (T6)match.Product[5]));
-		}
-
-		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, Func<IExpressionMatch<object[]>, T1, T2, T3, T4, T5, T6, T7, TProduct> matchAction) {
-			return Sequence(
-				new IExpression[] { e1, e2, e3, e4, e5, e6, e7 },
-				match => matchAction(match, (T1)match.Product[0], (T2)match.Product[1], (T3)match.Product[2], (T4)match.Product[3], (T5)match.Product[4], (T6)match.Product[5], (T7)match.Product[6]));
-		}
-
-		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, T8, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, IExpression<T8> e8, Func<IExpressionMatch<object[]>, T1, T2, T3, T4, T5, T6, T7, T8, TProduct> matchAction) {
-			return Sequence(
-				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8 },
-				match => matchAction(match, (T1)match.Product[0], (T2)match.Product[1], (T3)match.Product[2], (T4)match.Product[3], (T5)match.Product[4], (T6)match.Product[5], (T7)match.Product[6], (T8)match.Product[7]));
-		}
-
 		public IExpression<string> Wildcard() {
 			return Wildcard(DefaultMatchAction);
 		}
@@ -269,13 +207,110 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new WildcardExpression<TProduct>(matchAction);
 		}
 
-
 		public IExpression<string> CharacterInRange(char rangeStart, char rangeEnd) {
 			return new CharacterRangeExpression<string>(rangeStart, rangeEnd, null);
 		}
 
 		public IExpression<TProduct> CharacterInRange<TProduct>(char rangeStart, char rangeEnd, Func<IExpressionMatch<string>, TProduct> matchAction) {
 			return new CharacterRangeExpression<TProduct>(rangeStart, rangeEnd, matchAction);
+		}
+
+		public IExpression<object[]> Sequence(params IExpression[] sequence) {
+			return new SequenceExpression<object[]>(sequence, match => match.Product.ToArray());
+		}
+
+		public IExpression<TProduct> Sequence<TProduct>(IExpression[] sequence, Func<IExpressionMatch<SequenceProducts>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(sequence, matchAction);
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, TProduct>(IExpression<T1> e1, IExpression<T2> e2, Func<IExpressionMatch<SequenceProducts<T1, T2>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, Func<IExpressionMatch<SequenceProducts<T1, T2, T3>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6, T7>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6, e7 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, T8, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, IExpression<T8> e8, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6, T7, T8>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, T8, T9, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, IExpression<T8> e8, IExpression<T9> e9, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6, T7, T8, T9>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, IExpression<T8> e8, IExpression<T9> e9, IExpression<T10> e10, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, IExpression<T8> e8, IExpression<T9> e9, IExpression<T10> e10, IExpression<T11> e11, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, IExpression<T8> e8, IExpression<T9> e9, IExpression<T10> e10, IExpression<T11> e11, IExpression<T12> e12, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, IExpression<T8> e8, IExpression<T9> e9, IExpression<T10> e10, IExpression<T11> e11, IExpression<T12> e12, IExpression<T13> e13, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, IExpression<T8> e8, IExpression<T9> e9, IExpression<T10> e10, IExpression<T11> e11, IExpression<T12> e12, IExpression<T13> e13, IExpression<T14> e14, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, IExpression<T8> e8, IExpression<T9> e9, IExpression<T10> e10, IExpression<T11> e11, IExpression<T12> e12, IExpression<T13> e13, IExpression<T14> e14, IExpression<T15> e15, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15>())));
+		}
+
+		public IExpression<TProduct> Sequence<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16, TProduct>(IExpression<T1> e1, IExpression<T2> e2, IExpression<T3> e3, IExpression<T4> e4, IExpression<T5> e5, IExpression<T6> e6, IExpression<T7> e7, IExpression<T8> e8, IExpression<T9> e9, IExpression<T10> e10, IExpression<T11> e11, IExpression<T12> e12, IExpression<T13> e13, IExpression<T14> e14, IExpression<T15> e15, IExpression<T16> e16, Func<IExpressionMatch<SequenceProducts<T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T12, T13, T14, T15, T16>>, TProduct> matchAction) {
+			return new SequenceExpression<TProduct>(
+				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16 },
+				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16>())));
 		}
 	}
 }
