@@ -167,6 +167,14 @@ namespace markdom.cs {
 		}
 
 		[TestMethod]
+		public void RomanNumeral_matches_base_case() { 
+			var matchResult = Match(Grammar.RomanNumeral, "MCMXIV");
+
+			Assert.IsTrue(matchResult.Succeeded);
+			Assert.AreEqual(1914, matchResult.Product);
+		}
+
+		[TestMethod]
 		public void SingleLineComment_matches_base_case() {
 			var input = new ExpressionMatchingContext("// text");
 

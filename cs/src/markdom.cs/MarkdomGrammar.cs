@@ -128,6 +128,10 @@ namespace markdom.cs {
 		public IExpression<UriExpression> UriExpression { get; private set; }
 		public IExpression<Nil> ExpressionWhitespace { get; private set; }
 
+		public IExpression<int> LowerRomanNumeral { get; private set; }
+		public IExpression<int> UpperRomanNumeral { get; private set; }
+		public IExpression<int> RomanNumeral { get; private set; }
+
 		public MarkdomGrammar() {
 
 			Define(() => Document,
@@ -602,6 +606,38 @@ namespace markdom.cs {
 					Literal("]"),
 					match => new ReferenceId(match.Product.Of2)));
 
+			#region Roman Numerals
+
+			Define(() => UpperRomanNumeral,
+				Sequence(
+					Ahead(Choice("IVXLCDM".Select(Literal).ToArray())),
+					Reference(() => RomanNumeral),
+					match => match.Product.Of2));
+
+			Define(() => LowerRomanNumeral,
+				Sequence(
+					Ahead(Choice("ivxlcdm".Select(Literal).ToArray())),
+					Reference(() => RomanNumeral),
+					match => match.Product.Of2));
+
+			var romanNumeralI = Choice(Literal("i", m => 1), Literal("I", m => 1));
+			var romanNumeralV = Choice(Literal("v", m => 5), Literal("V", m => 5));
+			var romanNumeralX = Choice(Literal("x", m => 10), Literal("X", m => 10));
+			var romanNumeralL = Choice(Literal("l", m => 50), Literal("L", m => 50));
+			var romanNumeralC = Choice(Literal("c", m => 100), Literal("C", m => 100));
+			var romanNumeralD = Choice(Literal("d", m => 500), Literal("D", m => 500));
+			var romanNumeralM = Choice(Literal("m", m => 1000), Literal("M", m => 1000));
+
+			Define(() => RomanNumeral,
+				Sequence(
+					AtMost(3, romanNumeralM, match => match.Product.Sum()),
+					RomanNumeralDecade(romanNumeralM, romanNumeralD, romanNumeralC),
+					RomanNumeralDecade(romanNumeralC, romanNumeralL, romanNumeralX),
+					RomanNumeralDecade(romanNumeralX, romanNumeralV, romanNumeralI),
+					match => match.Product.Of1 + match.Product.Of2 + match.Product.Of3 + match.Product.Of4));
+
+			#endregion
+
 			Define(() => Line,
 				Sequence(
 					AtLeast(0,
@@ -899,6 +935,14 @@ namespace markdom.cs {
 			return int.TryParse(s, out value)
 				? value
 				: d;
+		}
+
+		private IExpression<int> RomanNumeralDecade(IExpression<int> decem, IExpression<int> quintum, IExpression<int> unit) {
+			return OrderedChoice(
+				Sequence(unit, decem, match => match.Product.Of2 - match.Product.Of1),
+				Sequence(unit, quintum, match => match.Product.Of2 - match.Product.Of1),
+				Sequence(quintum, AtMost(3, unit), match => match.Product.Of1 + match.Product.Of2.Sum()),
+				AtMost(3, unit, match => match.Product.Sum()));
 		}
 	}
 }
