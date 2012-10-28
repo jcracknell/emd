@@ -12,18 +12,18 @@ namespace pegleg.cs.Parsing.Expressions {
 		public void ChoiceExpression_constructor_works_as_expected() {
 			var literalExpressionA = new LiteralExpression<string>("a", m => "A");
 			var literalExpressionB = new LiteralExpression<string>("b", m => "B");
-			var choiceExpression = new ChoiceExpression<string>(
+			var choiceExpression = new OrderedChoiceExpression<string>(
 				new IExpression[] { literalExpressionA, literalExpressionB },
 				match => "match");
 
-			Assert.AreEqual(ExpressionType.Choice, choiceExpression.ExpressionType);
+			Assert.AreEqual(ExpressionType.OrderedChoice, choiceExpression.ExpressionType);
 			Assert.AreEqual(literalExpressionA, choiceExpression.Choices.ElementAt(0));
 			Assert.AreEqual(literalExpressionB, choiceExpression.Choices.ElementAt(1));
 		}
 
 		[TestMethod]
 		public void ChoiceExpression_matches_first_choice() {
-			var choiceExpression = new ChoiceExpression<string>(
+			var choiceExpression = new OrderedChoiceExpression<string>(
 				new IExpression[] {
 					new LiteralExpression<string>("a", m => "A"),
 					new LiteralExpression<string>("b", m => { Assert.Fail(); return "B"; }) },
@@ -41,7 +41,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void ChoiceExpression_matches_second_choice() {
-			var choiceExpression = new ChoiceExpression<string>(
+			var choiceExpression = new OrderedChoiceExpression<string>(
 				new IExpression[] {
 					new LiteralExpression<string>("a", m => "A"),
 					new LiteralExpression<string>("b", m => "B") },
@@ -60,7 +60,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void ChoiceExpression_order_implies_precedence() {
-			var choiceExpression = new ChoiceExpression<string>(
+			var choiceExpression = new OrderedChoiceExpression<string>(
 				new IExpression[] {
 					new LiteralExpression<string>("aa", m => m.Product),
 					new LiteralExpression<string>("a", m => m.Product) },
@@ -78,7 +78,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void ChoiceExpression_rejects_when_no_choice_matches() {
-			var choiceExpression = new ChoiceExpression<string>(
+			var choiceExpression = new OrderedChoiceExpression<string>(
 				new IExpression[] {
 					new LiteralExpression<string>("a", m => { Assert.Fail(); return m.Product; }),
 					new LiteralExpression<string>("b", m => { Assert.Fail(); return m.Product; }) },

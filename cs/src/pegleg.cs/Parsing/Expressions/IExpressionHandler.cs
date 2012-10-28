@@ -6,7 +6,8 @@ using System.Text;
 namespace pegleg.cs.Parsing.Expressions {
 	public interface IExpressionHandler<T> {
 		T Handle(CharacterRangeExpression expression);
-		T Handle(ChoiceExpression expression);
+		T Handle(UnorderedChoiceExpression expression);
+		T Handle(OrderedChoiceExpression expression);
 		T Handle(DynamicExpression expression);
 		T Handle(LiteralExpression expression);
 		T Handle(AheadExpression expression);

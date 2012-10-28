@@ -468,15 +468,17 @@ namespace markdom.cs {
 
 			Define(() => Inline,
 				OrderedChoice<IInlineNode>(
-					Reference(() => Text),
-					Reference(() => Space),
-					Reference(() => Strong),
-					Reference(() => Emphasis),
-					Reference(() => Quoted),
-					Reference(() => Link),
-					Reference(() => AutoLink),
-					Reference(() => Entity),
-					Reference(() => LineBreak),
+					Choice<IInlineNode>(
+						Reference(() => Text),
+						Reference(() => Space),
+						OrderedChoice<IInlineNode>(
+							Reference(() => Strong),
+							Reference(() => Emphasis)),
+						Reference(() => Quoted),
+						Reference(() => Link),
+						Reference(() => AutoLink),
+						Reference(() => Entity),
+						Reference(() => LineBreak)),
 					Reference(() => Symbol)));
 
 			#region Link
@@ -875,7 +877,7 @@ namespace markdom.cs {
 					match => match.String);
 
 			var bareUriExpressionCharacter =
-				OrderedChoice(
+				Choice(
 					Reference(() => EnglishAlpha),
 					Reference(() => Digit),
 					Choice(

@@ -140,7 +140,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IExpression<TProduct> OrderedChoice<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
-			return new ChoiceExpression<TProduct>(choices, matchAction);
+			return new OrderedChoiceExpression<TProduct>(choices, matchAction);
 		}
 
 		public IExpression<TChoice> OrderedChoice<TChoice>(params IExpression<TChoice>[] choices) {
@@ -148,23 +148,23 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IExpression<TProduct> OrderedChoice<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
-			return new ChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, product => (TChoice)product)));
+			return new OrderedChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, product => (TChoice)product)));
 		}
 
 		public IExpression<object> Choice(params IExpression[] choices) {
-			return OrderedChoice(choices);
+			return new FrequencyOptimizingUnorderedChoiceExpression<object>(choices, null);
 		}
 
 		public IExpression<TProduct> Choice<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
-			return OrderedChoice(choices, matchAction);
+			return new FrequencyOptimizingUnorderedChoiceExpression<TProduct>(choices, matchAction);
 		}
 
 		public IExpression<TChoice> Choice<TChoice>(params IExpression<TChoice>[] choices) {
-			return OrderedChoice(choices);
+			return new FrequencyOptimizingUnorderedChoiceExpression<TChoice>(choices, null);
 		}
 
 		public IExpression<TProduct> Choice<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
-			return OrderedChoice(choices, matchAction);
+			return new FrequencyOptimizingUnorderedChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, p => (TChoice)p)));
 		}
 
 		public IExpression<Nil> NotAhead<T>(IExpression<T> expression) {

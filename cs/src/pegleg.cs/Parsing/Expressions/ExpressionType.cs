@@ -6,7 +6,6 @@ using System.Text;
 namespace pegleg.cs.Parsing.Expressions {
 	public enum ExpressionType {
 		CharacterRange,
-		Choice,
 		Closure,
 		EndOfInput,
 		Literal,
@@ -15,11 +14,13 @@ namespace pegleg.cs.Parsing.Expressions {
 		Named,
 		Nothing,
 		Optional,
+		OrderedChoice,
 		Predicate,
 		Reference,
 		Regex,
 		Repetition,
 		Sequence,
+		UnorderedChoice,
 		Wildcard
 	}
 }

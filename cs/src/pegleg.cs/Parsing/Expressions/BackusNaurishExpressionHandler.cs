@@ -21,7 +21,8 @@ namespace pegleg.cs.Parsing.Expressions {
 			public int Handle(OptionalExpression expression) { return 2; }
 			public int Handle(RepetitionExpression expression) { return 2; }
 			public int Handle(SequenceExpression expression) { return 1; }
-			public int Handle(ChoiceExpression expression) { return 0; }
+			public int Handle(OrderedChoiceExpression expression) { return 0; }
+			public int Handle(UnorderedChoiceExpression expression) { return 0; }
 		}
 
 		private readonly PrecedenceExpressionHandler _precedenceHandler = new PrecedenceExpressionHandler();
@@ -34,13 +35,27 @@ namespace pegleg.cs.Parsing.Expressions {
 			return expression.HandleWith(_precedenceHandler);
 		}
 
-		public string Handle(ChoiceExpression expression) {
+		public string Handle(OrderedChoiceExpression expression) {
 			var precedence = expression.HandleWith(_precedenceHandler);
 			var choiceStrings = expression.Choices.Select(childExpression => {
 				var childPrecedence = childExpression.HandleWith(_precedenceHandler);
 				var childString = childExpression.HandleWith(this);
 
-				return precedence > childPrecedence
+				return precedence >= childPrecedence
+					? Parenthesized(childString)
+					: childString;
+			});
+
+			return string.Join(" / ", choiceStrings.ToArray());
+		}
+
+		public string Handle(UnorderedChoiceExpression expression) {
+			var precedence = expression.HandleWith(_precedenceHandler);
+			var choiceStrings = expression.Choices.Select(childExpression => {
+				var childPrecedence = childExpression.HandleWith(_precedenceHandler);
+				var childString = childExpression.HandleWith(this);
+				
+				return precedence >= childPrecedence
 					? Parenthesized(childString)
 					: childString;
 			});

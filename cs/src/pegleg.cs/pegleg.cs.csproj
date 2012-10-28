@@ -48,6 +48,7 @@
     <Compile Include="Parsing\Expressions\Builders\IExpressionNamingConvention.cs" />
     <Compile Include="Parsing\Expressions\Builders\ExpressionBuilder.cs" />
     <Compile Include="Parsing\Expressions\AheadExpression.cs" />
+    <Compile Include="Parsing\Expressions\UnorderedChoiceExpression.cs" />
     <Compile Include="Parsing\Expressions\SequenceProducts.cs" />
     <Compile Include="Parsing\Expressions\CharacterRangeExpression.cs" />
     <Compile Include="Parsing\Expressions\DynamicExpression.cs" />
@@ -61,7 +62,7 @@
     <Compile Include="Parsing\Expressions\RepetitionExpression.cs" />
     <Compile Include="Parsing\IExpressionMatch.cs" />
     <Compile Include="Parsing\ExpressionMatch.cs" />
-    <Compile Include="Parsing\Expressions\ChoiceExpression.cs" />
+    <Compile Include="Parsing\Expressions\OrderedChoiceExpression.cs" />
     <Compile Include="Parsing\Expressions\ExpressionType.cs" />
     <Compile Include="IExpression.cs" />
     <Compile Include="Parsing\Expressions\IExpressionHandler.cs" />

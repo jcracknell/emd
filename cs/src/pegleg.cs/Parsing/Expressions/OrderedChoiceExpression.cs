@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface ChoiceExpression : IExpression {
+	public interface OrderedChoiceExpression : IExpression {
 		IEnumerable<IExpression> Choices { get; }
 	}
 
-	public class ChoiceExpression<TProduct> : ChoiceExpression, IExpression<TProduct> {
+	public class OrderedChoiceExpression<TProduct> : OrderedChoiceExpression, IExpression<TProduct> {
 		private IExpression[] _choices;
 		private Func<IExpressionMatch<object>, TProduct> _matchAction;
 
-		public ChoiceExpression(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public OrderedChoiceExpression(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
 			CodeContract.ArgumentIsValid(() => choices, choices.Length >= 2, "must have length of at least two");
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
@@ -21,7 +21,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public ExpressionType ExpressionType { get { return ExpressionType.Choice; } }
+		public ExpressionType ExpressionType { get { return ExpressionType.OrderedChoice; } }
 
 		public IEnumerable<IExpression> Choices { get { return _choices; } }
 

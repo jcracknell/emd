@@ -238,8 +238,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void Bla() {
-			var input = new ExpressionMatchingContext(
-@" // This is a single line comment
+			var input = @" // This is a single line comment
 # Heading 1
 This is a [paragraph] with **bold text**.
 
@@ -266,11 +265,21 @@ Yet another.
 
 * Loose item 3.
 
-    With a second paragraph.");
+    With a second paragraph.";
 			
 			var stopwatch = new System.Diagnostics.Stopwatch();
+
 			stopwatch.Start();
-			var matchResult = Grammar.Document.Match(input);
+			var matchResult = Match(Grammar.Document, input);
+			stopwatch.Stop();
+
+			var first = stopwatch.Elapsed;
+
+
+			for(int i = 0; i < 100; i++) {
+				stopwatch.Restart();
+				matchResult = Match(Grammar.Document, input);
+			}
 			stopwatch.Stop();
 
 			stopwatch.ToString();
