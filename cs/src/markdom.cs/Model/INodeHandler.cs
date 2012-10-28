@@ -10,6 +10,7 @@ namespace markdom.cs.Model{
 		void Handle(EmphasisNode node);
 		void Handle(EntityNode node);
 		void Handle(HeadingNode node);
+		void Handle(InlineExpressionNode node);
 		void Handle(LineBreakNode node);
 		void Handle(LinkNode node);
 		void Handle(OrderedListNode node);
@@ -33,6 +34,7 @@ namespace markdom.cs.Model{
 		T Handle(EmphasisNode node);
 		T Handle(EntityNode node);
 		T Handle(HeadingNode node);
+		T Handle(InlineExpressionNode node);
 		T Handle(LineBreakNode node);
 		T Handle(LinkNode node);
 		T Handle(OrderedListNode node);

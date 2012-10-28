@@ -102,6 +102,7 @@ namespace markdom.cs {
 		public IParsingExpression<LineInfo> NonEmptyBlockLine { get; private set; }
 		public IParsingExpression<LineInfo> BlockLine { get; private set; }
 		public IParsingExpression<Nil> BlockLineAtomic { get; private set; }
+		public IParsingExpression<Nil> Atomic { get; private set; }
 		public IParsingExpression<Nil> Bullet { get; private set; }
 		public IParsingExpression<EnumeratorInfo> Enumerator { get; private set; }
 
@@ -111,6 +112,7 @@ namespace markdom.cs {
 		public IParsingExpression<LinkNode> Link { get; private set; }
 		public IParsingExpression<StrongNode> Strong { get; private set; }
 		public IParsingExpression<EmphasisNode> Emphasis { get; private set; }
+		public IParsingExpression<InlineExpressionNode> InlineExpression { get; private set; }
 		public IParsingExpression<QuotedNode> Quoted { get; private set; }
 		public IParsingExpression<LineBreakNode> LineBreak { get; private set; }
 		public IParsingExpression<TextNode> Text { get; private set; }
@@ -126,12 +128,14 @@ namespace markdom.cs {
 
 
 		public IParsingExpression<IExpression> Expression { get; private set; }
+		public IParsingExpression<IExpression> LiteralExpression { get; private set; }
 		public IParsingExpression<IExpression[]> ArgumentList { get; private set; }
-		public IParsingExpression<ObjectExpression> ObjectExpression { get; private set; }
-		public IParsingExpression<ObjectExpression> ObjectBodyExpression { get; private set; }
-		public IParsingExpression<NumericLiteralExpression> NumericLiteral { get; private set; }
-		public IParsingExpression<StringLiteralExpression> StringLiteral { get; private set; }
-		public IParsingExpression<UriLiteralExpression> UriLiteral { get; private set; }
+		public IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression { get; private set; }
+		public IParsingExpression<ObjectLiteralExpression> ObjectBodyExpression { get; private set; }
+		public IParsingExpression<NumericLiteralExpression> NumericLiteralExpression { get; private set; }
+		public IParsingExpression<StringLiteralExpression> StringLiteralExpression { get; private set; }
+		public IParsingExpression<UriLiteralExpression> UriLiteralExpression { get; private set; }
+		public IParsingExpression<DocumentLiteralExpression> DocumentLiteralExpression { get; private set; }
 		public IParsingExpression<Nil> ExpressionWhitespace { get; private set; }
 
 		public IParsingExpression<int> LowerRomanNumeral { get; private set; }
@@ -244,7 +248,7 @@ namespace markdom.cs {
 				Sequence(
 					Reference(() => NonIndentSpace),
 					ChoiceUnordered(new string[] { "*", "-", "+" }.Select(Literal).ToArray()),
-					Reference(() => SpaceChars),
+					AtLeast(1, Reference(() => SpaceChar)),
 					match => Nil.Value));
 
 			var unorderedListBlockLine =
@@ -348,10 +352,18 @@ namespace markdom.cs {
 					Optional(Reference(() => NewLine)),
 					match => LineInfo.FromMatch(match)));
 
-			// TODO: multi-line atomics - comments, expressions
 			Define(() => BlockLineAtomic,
 				Sequence(
 					NotAhead(Reference(() => NewLine)),
+					Reference(() => Atomic),
+					match => Nil.Value));
+
+			Define(() => Atomic,
+				ChoiceOrdered(
+					ChoiceUnordered(
+						Reference(() => SingleLineComment),
+						Reference(() => MultiLineComment),
+						Reference(() => InlineExpression)),
 					Wildcard(),
 					match => Nil.Value));
 
@@ -484,6 +496,7 @@ namespace markdom.cs {
 						Reference(() => Link),
 						Reference(() => AutoLink),
 						Reference(() => Entity),
+						Reference(() => InlineExpression),
 						Reference(() => LineBreak)),
 					Reference(() => Symbol)));
 
@@ -493,7 +506,7 @@ namespace markdom.cs {
 				Sequence(
 					Literal("<"),
 					Reference(() => SpaceChars),
-					Reference(() => UriLiteral),
+					Reference(() => UriLiteralExpression),
 					Reference(() => SpaceChars),
 					Literal(">"),
 					Optional(
@@ -517,6 +530,13 @@ namespace markdom.cs {
 					match => new LinkNode(match.Product.Of1, null, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
+
+			Define(() => InlineExpression,
+				Sequence(
+					Literal("@"),
+					Reference(() => Expression),
+					Optional(Literal(";")),
+					match => new InlineExpressionNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => Strong,
 				Sequence(
@@ -599,39 +619,37 @@ namespace markdom.cs {
 			Define(() => Space,
 				AtLeast(1, Reference(() => Whitespace), match => new SpaceNode(MarkdomSourceRange.FromMatch(match))));
 
+			Define(() => NormalChar,
+				Sequence(
+					NotAhead(
+						ChoiceUnordered(
+							Reference(() => Whitespace),
+							Reference(() => SpecialChar))),
+					Wildcard(),
+					match => match.Product.Of2));
+
 			Define(() => Symbol,
 				Reference(() => SpecialChar, match => new SymbolNode(match.String, MarkdomSourceRange.FromMatch(match))));
+
+			Define(() => SpecialChar,
+				ChoiceUnordered(
+					new string[] { "*", "&", "'", "\"", "/", "\\", "[", "]", "|", "(", ")", "@", ";" }
+					.Select(Literal).ToArray()));
 
 			#endregion
 
 			#region Expressions
-			// # Expressions
-			//
-			// markdom.cs uses an expression syntax which is *suspiciously similar* to Javascript (in fact
-			// it is designed to emulate javascript for its succinctness, familiarity, and simplicity.
-			// Given the primary use cases for markdom.cs, the addition of URI literals to the expression
-			// language is a no-brainer. As a result, expression syntax differs from javascript in
-			// a few key areas in order to disambiguate URI expressions from everything else.
-			//
-			//  * Non-literal expressions begin with `@` (conversely a URI literal can never begin with `@`,
-			//    which seems like a reasonable limitation).
-			//  * Object property assignment is performed using the right arrow symbol (`=>`), as in
-			//    `{ foo => 'bar' }`
-			// 
-			// This allows us to use expressions as arguments to constructs co-opted from Markdown, e.g.
-			// `[link text](http://server)` as `(http://server)` is a valid argument list.
-			// Also consider: `[link text](some/relative/path, title => 'a link')`.
 
-			// Ordering here is important, we rely on several assumptions in order to
-			// implement URI literals:
-			// * `StringExpression` gets first crack at quotes
-			// * `UriExpression` does not start with `@`
 			Define(() => Expression,
+				Reference(() => LiteralExpression));
+
+			Define(() => LiteralExpression,
 				ChoiceOrdered<IExpression>(
-					Reference(() => NumericLiteral),
-					Reference(() => StringLiteral),
-					Reference(() => ObjectExpression),
-					Reference(() => UriLiteral)));
+					Reference(() => NumericLiteralExpression),
+					Reference(() => StringLiteralExpression),
+					Reference(() => ObjectLiteralExpression),
+					Reference(() => UriLiteralExpression),
+					Reference(() => DocumentLiteralExpression)));
 			
 			var argumentSeparator =
 				Sequence(
@@ -722,7 +740,7 @@ namespace markdom.cs {
 							m.Product.Of1 * m.Product.Of2,
 							MarkdomSourceRange.FromMatch(m))));
 
-			Define(() => NumericLiteral,
+			Define(() => NumericLiteralExpression,
 				ChoiceOrdered<NumericLiteralExpression>(
 					hexIntegerLiteral,
 					decimalLiteral));
@@ -770,7 +788,7 @@ namespace markdom.cs {
 					Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
 					match => new StringLiteralExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
-			Define(() => StringLiteral,
+			Define(() => StringLiteralExpression,
 				ChoiceUnordered(
 					singleQuotedStringExpression,
 					doubleQuotedStringExpression));
@@ -781,7 +799,7 @@ namespace markdom.cs {
 
 			var objectPropertyAssignment =
 				Sequence(
-					Reference(() => StringLiteral), // TODO: Identifier / String / Uri
+					Reference(() => StringLiteralExpression), // TODO: Identifier / String / Uri
 					Reference(() => ExpressionWhitespace),
 					Literal(":"),
 					Reference(() => ExpressionWhitespace),
@@ -801,13 +819,13 @@ namespace markdom.cs {
 			var objectExpressionEnd =
 				Sequence( Reference(() => ExpressionWhitespace), Literal("}"));
 
-			Define(() => ObjectExpression,
+			Define(() => ObjectLiteralExpression,
 				Sequence(
 					objectExpressionStart, objectPropertyAssignments, objectExpressionEnd,
-					match => new ObjectExpression(match.Product.Of2 ?? new PropertyAssignment[0], MarkdomSourceRange.FromMatch(match))));
+					match => new ObjectLiteralExpression(match.Product.Of2 ?? new PropertyAssignment[0], MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => ObjectBodyExpression,
-				Reference(() => objectPropertyAssignments, match => new ObjectExpression(match.Product, MarkdomSourceRange.FromMatch(match))));
+				Reference(() => objectPropertyAssignments, match => new ObjectLiteralExpression(match.Product, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -815,7 +833,7 @@ namespace markdom.cs {
 			//   * Cannot contain `,` (commas), which are ordinarily legal URI characters.
 			//     This is to disambiguate URI expressions in argument lists
 			//   * Parentheses inside of a URI expression must be balanced
-			//   * Cannot start with `@`
+			//   * Cannot start with `@`, `'`, or `"'
 
 			IParsingExpression<object[]> uriExpressionPart = null;
 			IParsingExpression<object[]> uriExpressionRegularPart = null;
@@ -845,14 +863,32 @@ namespace markdom.cs {
 
 			var uriExpressionFirstPart =
 				Sequence(
-					NotAhead(Literal("@")),
+					NotAhead(ChoiceUnordered(new string[] { "@", "\"", "'" }.Select(Literal).ToArray())),
 					Reference(() => uriExpressionPart));
 
-			Define(() => UriLiteral,
+			Define(() => UriLiteralExpression,
 				Sequence(
 					uriExpressionFirstPart,
 					AtLeast(0, uriExpressionPart),
 					match => new UriLiteralExpression(match.String, MarkdomSourceRange.FromMatch(match))));
+
+			#endregion
+
+			#region MarkdomExpression
+
+			Define(() => DocumentLiteralExpression,
+				Dynamic(() => {
+					IParsingExpression<string> endBraces = null;
+					return Sequence(
+						AtLeast(2, Literal("{"), m => { endBraces = Literal("".PadLeft(m.Length, '}')); return Nil.Value; }),
+						AtLeast(0,
+							Sequence(NotAhead(Reference(() => endBraces)), Reference(() => Atomic)),
+							match => LineInfo.FromMatch(match)),
+						Reference(() => endBraces),
+						match => new DocumentLiteralExpression(
+							ParseLines(Blocks, match.Product.Of2.InArray()),
+							MarkdomSourceRange.FromMatch(match)));
+				}));
 
 			#endregion
 
@@ -984,19 +1020,6 @@ namespace markdom.cs {
 					Reference(() => EnglishLowerAlpha),
 					Reference(() => EnglishUpperAlpha)));
 
-			Define(() => SpecialChar,
-				ChoiceUnordered(
-					new string[] { "*", "&", "'", "\"", "/", "\\", "[", "]", "|", "(", ")" }
-					.Select(Literal).ToArray()));
-
-			Define(() => NormalChar,
-				Sequence(
-					NotAhead(
-						ChoiceUnordered(
-							Reference(() => Whitespace),
-							Reference(() => SpecialChar))),
-					Wildcard(),
-					match => match.Product.Of2));
 			#endregion
 		}
 

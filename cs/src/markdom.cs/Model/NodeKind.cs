@@ -10,6 +10,7 @@ namespace markdom.cs.Model {
 		Entity,
 		Heading,
 		Image,
+		InlineExpression,
 		LineBreak,
 		Link,
 		OrderedList,

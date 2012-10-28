@@ -171,5 +171,9 @@ namespace markdom.cs.Model.Nodes {
 		public void Handle(UnorderedListItemNode node) {
 			AssertNodeIsAsExpected(node);
 		}
+
+		public void Handle(InlineExpressionNode node) {
+			AssertNodeIsAsExpected(node);
+		}
 	}
 }

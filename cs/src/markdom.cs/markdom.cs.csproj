@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ArrayUtils.cs" />
     <Compile Include="CodeContract.cs" />
+    <Compile Include="Model\Expressions\DocumentLiteralExpression.cs" />
     <Compile Include="Model\Expressions\NumericLiteralExpression.cs" />
     <Compile Include="Model\Expressions\UriLiteralExpression.cs" />
     <Compile Include="Model\IExpressionHandler.cs" />
@@ -52,7 +53,7 @@
     <Compile Include="Model\Nodes\EntityNode.cs" />
     <Compile Include="Model\IExpression.cs" />
     <Compile Include="Model\ExpressionKind.cs" />
-    <Compile Include="Model\Expressions\ObjectExpression.cs" />
+    <Compile Include="Model\Expressions\ObjectLiteralExpression.cs" />
     <Compile Include="Model\Expressions\PropertyAssignment.cs" />
     <Compile Include="Model\Expressions\StringLiteralExpression.cs" />
     <Compile Include="Model\Nodes\HeadingNode.cs" />
@@ -61,6 +62,7 @@
     <Compile Include="Model\Nodes\ImageNode.cs" />
     <Compile Include="Model\INodeHandler.cs" />
     <Compile Include="Model\MarkdomDocument.cs" />
+    <Compile Include="Model\Nodes\InlineExpressionNode.cs" />
     <Compile Include="Model\Nodes\LineBreakNode.cs" />
     <Compile Include="Model\Nodes\LinkNode.cs" />
     <Compile Include="Model\NodeKind.cs" />

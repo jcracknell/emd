@@ -5,11 +5,11 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Expressions {
-	public class ObjectExpression : IExpression {
+	public class ObjectLiteralExpression : IExpression {
 		private readonly PropertyAssignment[] _propertyAssignments;
 		private readonly MarkdomSourceRange _sourceRange;
 
-		public ObjectExpression(PropertyAssignment[] propertyAssignments, MarkdomSourceRange sourceRange) {
+		public ObjectLiteralExpression(PropertyAssignment[] propertyAssignments, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => propertyAssignments, propertyAssignments);
 
 			_propertyAssignments = propertyAssignments;
@@ -18,7 +18,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public IEnumerable<PropertyAssignment> PropertyAssignments { get { return _propertyAssignments; } }
 
-		public ExpressionKind Kind { get { return ExpressionKind.Object; } }
+		public ExpressionKind Kind { get { return ExpressionKind.ObjectLiteral; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
