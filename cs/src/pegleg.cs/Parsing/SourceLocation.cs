@@ -4,43 +4,24 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public class SourceLocation : IComparable<SourceLocation> {
-		private readonly int _index;
-		private readonly int _line;
-		private readonly int _lineIndex;
+	public struct SourceLocation {
+		public readonly int Index;
+		public readonly int Line;
+		public readonly int LineIndex;
 
 		public SourceLocation(int index, int line, int lineIndex) {
 			CodeContract.ArgumentIsValid(() => index, index >= 0, "must be a non-negative integer");
-			CodeContract.ArgumentIsValid(() => line, line > 0, "must be a positive integer");	
+			CodeContract.ArgumentIsValid(() => line, line >= 1, "must be a positive integer");
 			CodeContract.ArgumentIsValid(() => lineIndex, lineIndex >= 0, "must be a non-negative integer");
+			CodeContract.ArgumentIsValid(() => lineIndex, lineIndex <= index, "must be less than index");
 
-			_index = index;
-			_line = line;
-			_lineIndex = lineIndex;
-		}
-
-		public int Index { get { return _index; } }
-
-		public int Line { get { return _line; } }
-
-		public int LineIndex { get { return _lineIndex; } }
-
-		public int CompareTo(SourceLocation other) {
-			return this.Index.CompareTo(other.Index);
-		}
-
-		public override int GetHashCode() {
-			return _index;
-		}
-
-		public override bool Equals(object obj) {
-			if(this == obj) return true;
-			var other = obj as SourceLocation;
-			return null != other && this.Index == other.Index;
+			Index = index;
+			Line = line;
+			LineIndex = lineIndex;
 		}
 
 		public override string ToString() {
-			return string.Concat("{ Index:", _index, ", Line:", _line, ", LineIndex:", _lineIndex, " }");
+			return string.Concat("{ Index:", Index, ", Line:", Line, ", LineIndex:", LineIndex, " }");
 		}
 	}
 }

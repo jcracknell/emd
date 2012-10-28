@@ -15,7 +15,6 @@ namespace pegleg.cs.Parsing {
 		public ExpressionMatch(IExpressionMatchingContext context, IExpression expression, TProduct product, int index, int length, SourceRange matchRange) {
 			CodeContract.ArgumentIsNotNull(() => context, context);
 			CodeContract.ArgumentIsNotNull(() => expression, expression);
-			CodeContract.ArgumentIsNotNull(() => matchRange, matchRange);
 			CodeContract.ArgumentIsValid(() => index, index >= 0, "must be a non-negative integer");
 			CodeContract.ArgumentIsValid(() => length, length >= 0, "must be a non-negative integer");
 
