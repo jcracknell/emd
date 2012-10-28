@@ -176,11 +176,15 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IExpression<T> Optional<T>(IExpression<T> expression) {
-			return Optional(expression, DefaultMatchAction);
+			return new OptionalExpression<T>(expression, null, null);
 		}
 
 		public IExpression<TProduct> Optional<T, TProduct>(IExpression<T> expression, Func<IExpressionMatch<T>, TProduct> matchAction) {
-			return new OptionalExpression<TProduct>(expression, match => matchAction(UpcastExpressionMatch(match, product => (T)product)));
+			return new OptionalExpression<TProduct>(expression, match => matchAction(UpcastExpressionMatch(match, product => (T)product)), null);
+		}
+
+		public IExpression<TProduct> Optional<T, TProduct>(IExpression<T> expression, Func<IExpressionMatch<T>, TProduct> matchAction, Func<IExpressionMatch<Nil>, TProduct> noMatchAction) {
+			return new OptionalExpression<TProduct>(expression, match => matchAction(UpcastExpressionMatch(match, product => (T)product)), noMatchAction);
 		}
 
 		public IExpression<T> Reference<T>(Func<IExpression<T>> reference) {
@@ -312,5 +316,6 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 				new IExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16 },
 				match => matchAction(UpcastExpressionMatch(match, p => p.Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16>())));
 		}
+
 	}
 }

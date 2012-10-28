@@ -83,6 +83,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 
 		IExpression<T> Optional<T>(IExpression<T> expression);
 		IExpression<TProduct> Optional<T, TProduct>(IExpression<T> expression, Func<IExpressionMatch<T>, TProduct> matchAction);
+		IExpression<TProduct> Optional<T, TProduct>(IExpression<T> expression, Func<IExpressionMatch<T>, TProduct> matchAction, Func<IExpressionMatch<Nil>, TProduct> noMatchAction);
 
 		IExpression<T> Reference<T>(Func<IExpression<T>> reference);
 		IExpression<TProduct> Reference<T, TProduct>(Func<IExpression<T>> reference, Func<IExpressionMatch<T>, TProduct> matchAction);

@@ -483,8 +483,11 @@ namespace markdom.cs {
 						Ahead(Literal("<")), // do not match undelimited UriExpression
 						Reference(() => UriExpression),
 						match => match.Product.Of2),
-					Optional(Reference(() => ArgumentList)),
-					match => new AutoLinkNode(match.Product.Of1, match.Product.Of2 ?? new Expression[0], MarkdomSourceRange.FromMatch(match))));
+					Optional(
+						Reference(() => ArgumentList),
+						match => match.Product,
+						noMatch => new Expression[0]),
+					match => new AutoLinkNode(match.Product.Of1, match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
 			var linkLabel =
 				Sequence(
@@ -619,8 +622,10 @@ namespace markdom.cs {
 						Sequence(
 							AtLeast(0, Reference(() => SpaceChar)),
 							EndOfInput(),
-							match => new LineInfo(match.String, match.SourceRange).InArray())),
-					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2 ?? new LineInfo[0])));
+							match => new LineInfo(match.String, match.SourceRange).InArray()),
+						match => match.Product,
+						noMatch => new LineInfo[0]),
+					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2)));
 
 			// NEVER EVER EVER USE THIS IN A REPETITION CONTEXT
 			Define(() => BlankLine,
