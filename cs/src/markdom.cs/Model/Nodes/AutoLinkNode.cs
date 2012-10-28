@@ -9,13 +9,12 @@ namespace markdom.cs.Model.Nodes{
 	public class AutoLinkNode : IRichInlineNode {
 		private readonly UriExpression _uri;
 		private readonly Expression[] _arguments;
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public AutoLinkNode(UriExpression uri, Expression[] arguments, SourceRange sourceRange)
+		public AutoLinkNode(UriExpression uri, Expression[] arguments, MarkdomSourceRange sourceRange)
 		{
 			CodeContract.ArgumentIsNotNull(() => uri, uri);
 			CodeContract.ArgumentIsNotNull(() => arguments, arguments);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 			
 			_uri = uri;
 			_arguments = arguments;	
@@ -28,7 +27,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeType NodeType { get { return NodeType.AutoLink; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

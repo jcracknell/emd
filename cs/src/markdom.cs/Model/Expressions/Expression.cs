@@ -6,15 +6,13 @@ using System.Text;
 
 namespace markdom.cs.Model.Expressions {
 	public abstract class Expression {
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public Expression(SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
-
+		public Expression(MarkdomSourceRange sourceRange) {
 			_sourceRange = sourceRange;
 		}
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public abstract ExpressionType Type { get; }
 	}

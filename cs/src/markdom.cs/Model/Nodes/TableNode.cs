@@ -7,12 +7,10 @@ using System.Text;
 namespace markdom.cs.Model.Nodes{
 	public class TableNode : IBlockNode {
 		private readonly TableRowNode[] _rows;
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public TableNode(TableRowNode[] rows, SourceRange sourceRange)
-		{
+		public TableNode(TableRowNode[] rows, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => rows, rows);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 			CodeContract.ArgumentIsValid(() => rows, rows.Length > 0, "cannot be empty");
 
 			_rows = rows;
@@ -23,7 +21,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeType NodeType { get { return NodeType.Table; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

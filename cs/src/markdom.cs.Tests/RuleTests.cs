@@ -27,9 +27,9 @@ namespace markdom.cs {
 		[TestMethod]
 		public void AutoLink_matches_uri_only() {
 			var expected = new AutoLinkNode(
-				new UriExpression("http://www.google.com", new SourceRange(0, 23, 1, 0)),
+				new UriExpression("http://www.google.com", new MarkdomSourceRange(0, 23, 1, 0)),
 				new Expression[0],
-				new SourceRange(0, 23, 1, 0));
+				new MarkdomSourceRange(0, 23, 1, 0));
 
 			var matchResult =
 				Match(Grammar.AutoLink,
@@ -43,9 +43,9 @@ namespace markdom.cs {
 		[TestMethod]
 		public void AutoLink_matches_with_arguments() {
 			var expected = new AutoLinkNode(
-				new UriExpression("http://slashdot.org", new SourceRange(0, 21, 1, 0)),
-				new Expression[] { new StringExpression("title", new SourceRange(22, 7, 1, 22)) },
-				new SourceRange(0, 30, 1, 0)); 
+				new UriExpression("http://slashdot.org", new MarkdomSourceRange(0, 21, 1, 0)),
+				new Expression[] { new StringExpression("title", new MarkdomSourceRange(22, 7, 1, 22)) },
+				new MarkdomSourceRange(0, 30, 1, 0)); 
 
 			var matchResult =
 				Match(Grammar.AutoLink,
@@ -84,7 +84,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void Entity_matches_decimal_html_entity() {
-			var expected = new EntityNode(233, new SourceRange(0, 6, 1, 0));
+			var expected = new EntityNode(233, new MarkdomSourceRange(0, 6, 1, 0));
 
 			var matchResult = Match(Grammar.Entity, "&#233;");
 
@@ -94,7 +94,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void Entity_matches_hexadecimal_html_entity() {
-			var expected = new EntityNode(233, new SourceRange(0, 6, 1, 0));
+			var expected = new EntityNode(233, new MarkdomSourceRange(0, 6, 1, 0));
 			var matchResult = Match(Grammar.Entity, "&#xE9;");
 
 			Assert.IsTrue(matchResult.Succeeded);
@@ -103,7 +103,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void Entity_matches_named_html_entity() {
-			var expected = new EntityNode(233, new SourceRange(0, 8, 1, 0));
+			var expected = new EntityNode(233, new MarkdomSourceRange(0, 8, 1, 0));
 
 			var matchResult = Match(Grammar.Entity, "&eacute;");
 
@@ -116,8 +116,8 @@ namespace markdom.cs {
 			var input = new ExpressionMatchingContext("*text*");
 			var expected = new EmphasisNode(
 				new IInlineNode[] {
-					new TextNode("text", new SourceRange(1, 4, 1, 1)) },
-				new SourceRange(0, 6, 1, 0));
+					new TextNode("text", new MarkdomSourceRange(1, 4, 1, 1)) },
+				new MarkdomSourceRange(0, 6, 1, 0));
 
 			var matchResult = Grammar.Emphasis.Match(input);
 			
@@ -127,7 +127,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void ObjectExpression_matches_empty_object() {
-			var expected = new ObjectExpression(new PropertyAssignment[0], new SourceRange(0, 2, 1, 0));
+			var expected = new ObjectExpression(new PropertyAssignment[0], new MarkdomSourceRange(0, 2, 1, 0));
 
 			var matchResult = Match(Grammar.ObjectExpression, "{}");
 
@@ -140,10 +140,10 @@ namespace markdom.cs {
 			var expected = new ObjectExpression(
 				new PropertyAssignment[] {
 					new PropertyAssignment(
-						new StringExpression("a", new SourceRange(2, 3, 1, 2)),
-						new StringExpression("foo", new SourceRange(9, 5, 1, 9)),
-						new SourceRange(2, 12, 1, 2)) },
-				new SourceRange(0, 16, 1, 0));  
+						new StringExpression("a", new MarkdomSourceRange(2, 3, 1, 2)),
+						new StringExpression("foo", new MarkdomSourceRange(9, 5, 1, 9)),
+						new MarkdomSourceRange(2, 12, 1, 2)) },
+				new MarkdomSourceRange(0, 16, 1, 0));  
 
 			var matchResult = Match(Grammar.ObjectExpression, "{ 'a' => 'foo' }");
 
@@ -157,8 +157,8 @@ namespace markdom.cs {
 			var expected = new QuotedNode(
 				QuoteType.Single,
 				new IInlineNode[] {
-					new TextNode("text", new SourceRange(1, 4, 1, 1)) },
-				new SourceRange(0, 6, 1, 0));
+					new TextNode("text", new MarkdomSourceRange(1, 4, 1, 1)) },
+				new MarkdomSourceRange(0, 6, 1, 0));
 
 			var matchResult = Grammar.Quoted.Match(input);
 
@@ -189,7 +189,7 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void StringExpression_matches_double_quoted_string() {
-			var expected = new StringExpression("string", new SourceRange(0, 8, 1, 0));
+			var expected = new StringExpression("string", new MarkdomSourceRange(0, 8, 1, 0));
 			var matchResult = Match(Grammar.StringExpression, @"""string""");
 
 			Assert.IsTrue(matchResult.Succeeded);
@@ -201,8 +201,8 @@ namespace markdom.cs {
 			var input = new ExpressionMatchingContext("**text**");
 			var expected = new StrongNode(
 				new IInlineNode[] {
-					new TextNode("text", new SourceRange(2, 4, 1, 2)) },
-				new SourceRange(0, 8, 1, 0));
+					new TextNode("text", new MarkdomSourceRange(2, 4, 1, 2)) },
+				new MarkdomSourceRange(0, 8, 1, 0));
 
 			var matchResult = Grammar.Strong.Match(input);
 
@@ -213,7 +213,7 @@ namespace markdom.cs {
 		[TestMethod]
 		public void Symbol_matches_asterix() {
 			var input = new ExpressionMatchingContext("*");
-			var expected = new SymbolNode("*", new SourceRange(0, 1, 1, 0));
+			var expected = new SymbolNode("*", new MarkdomSourceRange(0, 1, 1, 0));
 
 			var matchResult = Grammar.Symbol.Match(input);
 

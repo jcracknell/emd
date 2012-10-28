@@ -8,7 +8,7 @@ namespace markdom.cs.Model.Expressions {
 	public class UriExpression : Expression {
 		private readonly string _value;
 
-		public UriExpression(string value, SourceRange sourceRange)
+		public UriExpression(string value, MarkdomSourceRange sourceRange)
 			: base(sourceRange)
 		{
 			_value = value;

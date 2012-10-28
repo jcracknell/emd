@@ -6,17 +6,15 @@ using System.Text;
 
 namespace markdom.cs.Model.Nodes{
 	public class LineBreakNode : IFormattedInlineNode {
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 		
-		public LineBreakNode(SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
-
+		public LineBreakNode(MarkdomSourceRange sourceRange) {
 			_sourceRange = sourceRange;
 		}
 
 		public NodeType NodeType { get { return NodeType.LineBreak; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

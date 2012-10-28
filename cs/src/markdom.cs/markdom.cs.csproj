@@ -44,6 +44,7 @@
     <Compile Include="CodeContract.cs" />
     <Compile Include="ExtensionMethods\MarkdomExtensionMethods.cs" />
     <Compile Include="Model\INode.cs" />
+    <Compile Include="Model\MarkdomSourceRange.cs" />
     <Compile Include="Model\Nodes\AutoLinkNode.cs" />
     <Compile Include="Model\Nodes\EmphasisNode.cs" />
     <Compile Include="Model\Nodes\EntityNode.cs" />

@@ -7,11 +7,10 @@ using System.Text;
 namespace markdom.cs.Model.Nodes{
 	public class EmphasisNode : IFormattedInlineNode {
 		private readonly IInlineNode[] _children;
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public EmphasisNode(IInlineNode[] children, SourceRange sourceRange) {
+		public EmphasisNode(IInlineNode[] children, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => children, children);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 			
 			_children = children;
 			_sourceRange = sourceRange;
@@ -21,7 +20,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeType NodeType { get { return NodeType.Emphasis; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

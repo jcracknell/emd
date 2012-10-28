@@ -259,14 +259,14 @@ namespace markdom.cs {
 			var unorderedListItemTight =
 				Reference(
 					() => unorderedListItemInitialBlock,
-					match => new UnorderedListItemNode(ParseLines(Inlines, match.Product), match.SourceRange));
+					match => new UnorderedListItemNode(ParseLines(Inlines, match.Product), MarkdomSourceRange.FromMatch(match)));
 
 			var unorderedListItemLoose =
 				Sequence(
 					unorderedListItemInitialBlock,
 					AtLeast(0, unorderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
 					Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
-					(match, a, b, c) => new UnorderedListItemNode(ParseLines(Blocks, ArrayUtils.Combine(a, b)), match.SourceRange));
+					(match, a, b, c) => new UnorderedListItemNode(ParseLines(Blocks, ArrayUtils.Combine(a, b)), MarkdomSourceRange.FromMatch(match)));
 
 			var unorderedListContinuesLoose =
 				Choice(new IExpression[] {
@@ -278,13 +278,13 @@ namespace markdom.cs {
 					Reference(() => BlankLines),
 					AtLeast(1, unorderedListItemTight),
 					NotAhead(unorderedListContinuesLoose),
-					(match, a, lis, c) => new UnorderedListNode(lis, match.SourceRange)));
+					(match, a, lis, c) => new UnorderedListNode(lis, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => UnorderedListLoose,
 				Sequence(
 					Reference(() => BlankLines),
 					AtLeast(1, unorderedListItemLoose),
-					(match, a, lis) => new UnorderedListNode(lis, match.SourceRange)));
+					(match, a, lis) => new UnorderedListNode(lis, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -317,12 +317,12 @@ namespace markdom.cs {
 					AtLeast(1, Literal("#"), match => match.Product.Length),
 					Reference(() => SpaceChars),
 					Reference(() => BlockLine),
-					(match, s, l, s2, c) => new HeadingNode(c.LineString, l, match.SourceRange)));
+					(match, s, l, s2, c) => new HeadingNode(c.LineString, l, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => Paragraph,
 				AtLeast(1,
 					Reference(() => NonEmptyBlockLine),
-					match => new ParagraphNode(ParseLines(Inlines, match.Product), match.SourceRange)));
+					match => new ParagraphNode(ParseLines(Inlines, match.Product), MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => NonEmptyBlockLine,
 				Sequence(
@@ -352,7 +352,7 @@ namespace markdom.cs {
 						Reference(() => TableRow),
 						AtLeast(0, Reference(() => TableRowSeparator)),
 						(match, a, b, c) => b),
-					match => new TableNode(match.Product, match.SourceRange)));
+					match => new TableNode(match.Product, MarkdomSourceRange.FromMatch(match))));
 
 			var tableCellContents =
 				AtLeast(0,
@@ -406,7 +406,7 @@ namespace markdom.cs {
 					tableCellContents,
 					(match, a, c) => {
 						var children = ParseLines(Inlines, new LineInfo[] { c });
-						return new TableHeaderCellNode(a.Item1, a.Item2, children, match.SourceRange);
+						return new TableHeaderCellNode(a.Item1, a.Item2, children, MarkdomSourceRange.FromMatch(match));
 					});
 
 			var tableDataCell =
@@ -415,7 +415,7 @@ namespace markdom.cs {
 					tableCellContents,
 					(match, a, c) => {
 						var children = ParseLines(Inlines, new LineInfo[] { c });
-						return new TableDataCellNode(a.Item1, a.Item2, children, match.SourceRange);
+						return new TableDataCellNode(a.Item1, a.Item2, children, MarkdomSourceRange.FromMatch(match));
 					});
 
 			var tableRowEnd =
@@ -437,7 +437,7 @@ namespace markdom.cs {
 					Ahead(Literal("|")),
 					(match, c, a) => {
 						var childern = ParseLines(Inlines, new LineInfo[] { c });
-						return new TableDataCellNode(1, 1, childern, match.SourceRange);
+						return new TableDataCellNode(1, 1, childern, MarkdomSourceRange.FromMatch(match));
 					});
 
 			Define(() => TableRow,
@@ -445,7 +445,7 @@ namespace markdom.cs {
 					Reference(() => SpaceChars),
 					AtLeast(1, Reference(() => tableCell)),
 					tableRowEnd,
-					(match, a, cs, re) => new TableRowNode(cs, match.SourceRange)));
+					(match, a, cs, re) => new TableRowNode(cs, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => TableRowSeparator,
 				Sequence(
@@ -487,7 +487,7 @@ namespace markdom.cs {
 						Reference(() => UriExpression),
 						(match, a, u) => u),
 					Optional(Reference(() => ArgumentList)),
-					(match, u, args) => new AutoLinkNode(u, args ?? new Expression[0], match.SourceRange)));
+					(match, u, args) => new AutoLinkNode(u, args ?? new Expression[0], MarkdomSourceRange.FromMatch(match))));
 
 			var linkLabel =
 				Sequence(
@@ -501,7 +501,7 @@ namespace markdom.cs {
 					linkLabel,
 					Reference(() => SpaceChars),
 					Optional(Reference(() => ArgumentList)),
-					(match, l, s, a) => new LinkNode(l, null, match.SourceRange)));
+					(match, l, s, a) => new LinkNode(l, null, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -510,28 +510,28 @@ namespace markdom.cs {
 					Literal("**"),
 					AtLeast(0, Sequence(NotAhead(Literal("**")), Reference(() => Inline), (match, a, b) => b)),
 					Optional(Literal("**")),
-					(match, s, c, e) => new StrongNode(c, match.SourceRange)));	
+					(match, s, c, e) => new StrongNode(c, MarkdomSourceRange.FromMatch(match))));	
 
 			Define(() => Emphasis,
 				Sequence(
 					Literal("*"),
 					AtLeast(0, Sequence(NotAhead(Literal("*")), Reference(() => Inline), (match, a, b) => b)),
 					Optional(Literal("*")),
-					(match, s, c, e) => new EmphasisNode(c, match.SourceRange)));
+					(match, s, c, e) => new EmphasisNode(c, MarkdomSourceRange.FromMatch(match))));
 
 			var singleQuoted =
 				Sequence(
 					Literal("'"),
 					AtLeast(0, Sequence(NotAhead(Literal("'")), Reference(() => Inline), (match, a, b) => b)),
 					Literal("'"),
-					(match, s, c, e) => new QuotedNode(QuoteType.Single, c, match.SourceRange));
+					(match, s, c, e) => new QuotedNode(QuoteType.Single, c, MarkdomSourceRange.FromMatch(match)));
 
 			var doubleQuoted =
 				Sequence(
 					Literal("\""),
 					AtLeast(0, Sequence(NotAhead(Literal("\"")), Reference(() => Inline), (match, a, b) => b)),
 					Literal("\""),
-					(match, s, c, e) => new QuotedNode(QuoteType.Double, c, match.SourceRange));
+					(match, s, c, e) => new QuotedNode(QuoteType.Double, c, MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => Quoted,
 				OrderedChoice(doubleQuoted, singleQuoted));
@@ -539,7 +539,7 @@ namespace markdom.cs {
 			Define(() => LineBreak,
 				Sequence(
 					new IExpression[] { Literal(@"\\"), Reference(() => SpaceChars), Reference(() => NewLine) },
-					match => new LineBreakNode(match.SourceRange)));
+					match => new LineBreakNode(MarkdomSourceRange.FromMatch(match))));
 
 			#region Entities
 
@@ -548,14 +548,14 @@ namespace markdom.cs {
 					Literal("&#"),
 					Between(1, 6, Reference(() => Digit), match => match.String),
 					Literal(";"),
-					(match, s, v, e) => new EntityNode(int.Parse(v), match.SourceRange));
+					(match, s, v, e) => new EntityNode(int.Parse(v), MarkdomSourceRange.FromMatch(match)));
 
 			var hexHtmlEntity =
 				Sequence(
 					Literal("&#x"),
 					Between(1, 6, Reference(() => HexDigit), match => match.String),
 					Literal(";"),
-					(match, s, v, e) => new EntityNode(Convert.ToInt32(v, 16), match.SourceRange));
+					(match, s, v, e) => new EntityNode(Convert.ToInt32(v, 16), MarkdomSourceRange.FromMatch(match)));
 
 			// Because of the large number of named entities it is much faster to use a dynamic
 			// expression with an assertion to match valid entity names
@@ -567,7 +567,7 @@ namespace markdom.cs {
 						Between(1, 32, Reference(() => EnglishAlpha), match => { return entityName = match.String; }),
 						Assert(() => EntityNode.IsEntityName(entityName)),
 						Literal(";"),
-						(match, s, n, a, e) => new EntityNode(EntityNode.GetNamedEntityValue(entityName), match.SourceRange));
+						(match, s, n, a, e) => new EntityNode(EntityNode.GetNamedEntityValue(entityName), MarkdomSourceRange.FromMatch(match)));
 				});
 
 			Define(() => Entity,
@@ -581,13 +581,13 @@ namespace markdom.cs {
 			Define(() => Text,
 				AtLeast(1,
 					Reference(() => NormalChar),
-					match => new TextNode(match.String, match.SourceRange)));
+					match => new TextNode(match.String, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => Space,
-				AtLeast(1, Reference(() => Whitespace), match => new SpaceNode(match.SourceRange)));
+				AtLeast(1, Reference(() => Whitespace), match => new SpaceNode(MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => Symbol,
-				Reference(() => SpecialChar, match => new SymbolNode(match.String, match.SourceRange)));
+				Reference(() => SpecialChar, match => new SymbolNode(match.String, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -779,12 +779,12 @@ namespace markdom.cs {
 			var singleQuotedStringExpression =
 				Sequence(
 					Literal("'"), singleQuotedStringExpressionContent, Literal("'"),
-					(match, s, c, e) => new StringExpression(c, match.SourceRange));
+					(match, s, c, e) => new StringExpression(c, MarkdomSourceRange.FromMatch(match)));
 
 			var doubleQuotedStringExpression =
 				Sequence(
 					Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
-					(match, s, c, e) => new StringExpression(c, match.SourceRange));
+					(match, s, c, e) => new StringExpression(c, MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => StringExpression,
 				Choice(
@@ -803,7 +803,7 @@ namespace markdom.cs {
 						Literal("=>"),
 						Reference(() => ExpressionWhitespace)),
 					Reference(() => Expression),
-					(match, n, a, v) => new PropertyAssignment(n, v, match.SourceRange));
+					(match, n, a, v) => new PropertyAssignment(n, v, MarkdomSourceRange.FromMatch(match)));
 
 			var objectPropertyAssignments =
 				Optional(
@@ -821,10 +821,10 @@ namespace markdom.cs {
 			Define(() => ObjectExpression,
 				Sequence(
 					objectExpressionStart, objectPropertyAssignments, objectExpressionEnd,
-					(match, s, pas, e) => new ObjectExpression(pas ?? new PropertyAssignment[0], match.SourceRange)));
+					(match, s, pas, e) => new ObjectExpression(pas ?? new PropertyAssignment[0], MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => ObjectBodyExpression,
-				Reference(() => objectPropertyAssignments, match => new ObjectExpression(match.Product, match.SourceRange)));
+				Reference(() => objectPropertyAssignments, match => new ObjectExpression(match.Product, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -849,7 +849,7 @@ namespace markdom.cs {
 			var bareUriExpression =
 				Sequence(
 					NotAhead(Literal("@")), // may as well make this explicit
-					AtLeast(1, bareUriExpressionCharacter, match => new UriExpression(match.String, match.SourceRange)),
+					AtLeast(1, bareUriExpressionCharacter, match => new UriExpression(match.String, MarkdomSourceRange.FromMatch(match))),
 					(match, a, b) => b);
 
 			var delimitedUriExpressionCharacter =
@@ -860,7 +860,7 @@ namespace markdom.cs {
 			var delimitedUriExpression =
 				Sequence(
 					Literal("<"), AtLeast(1, delimitedUriExpressionCharacter, match => match.String), Literal(">"),
-					(match, s, v, e) => new UriExpression(v, match.SourceRange));
+					(match, s, v, e) => new UriExpression(v, MarkdomSourceRange.FromMatch(match)));
 
 
 			Define(() => UriExpression,

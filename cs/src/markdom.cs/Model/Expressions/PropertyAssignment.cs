@@ -8,12 +8,11 @@ namespace markdom.cs.Model.Expressions {
 	public class PropertyAssignment {
 		private readonly Expression _propertyName;
 		private readonly Expression _propertyValue;
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public PropertyAssignment(Expression propertyName, Expression propertyValue, SourceRange sourceRange) {
+		public PropertyAssignment(Expression propertyName, Expression propertyValue, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => propertyName, propertyName);
 			CodeContract.ArgumentIsNotNull(() => propertyValue, propertyValue);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_propertyName = propertyName;
 			_propertyValue = propertyValue;
@@ -24,7 +23,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public Expression PropertyValue { get { return _propertyValue; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public override bool Equals(object obj) {
 			var other = obj as PropertyAssignment;

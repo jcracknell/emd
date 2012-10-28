@@ -8,11 +8,10 @@ namespace markdom.cs.Model.Nodes{
 	public class LinkNode : IRichInlineNode {
 		private readonly ReferenceId _referenceId;
 		private readonly IInlineNode[] _children;
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public LinkNode(IInlineNode[] children, ReferenceId referenceId, SourceRange sourceRange) {
+		public LinkNode(IInlineNode[] children, ReferenceId referenceId, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => children, children);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_children = children;
 			_referenceId = referenceId;
@@ -23,7 +22,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public IEnumerable<IInlineNode> Children { get { return _children; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

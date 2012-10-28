@@ -8,9 +8,9 @@ namespace markdom.cs.Model.Nodes{
 	public class HeadingNode : IBlockNode {
 		private readonly int _level;
 		private readonly string _text;
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public HeadingNode(string text, int level, SourceRange sourceRange)
+		public HeadingNode(string text, int level, MarkdomSourceRange sourceRange)
 		{
 			CodeContract.ArgumentIsNotNull(() => text, text);
 			CodeContract.ArgumentIsValid(() => level, level >= 0, "must be a non-negative integer");
@@ -26,7 +26,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeType NodeType { get { return NodeType.Heading; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

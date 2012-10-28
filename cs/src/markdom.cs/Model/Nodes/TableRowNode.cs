@@ -7,11 +7,10 @@ using System.Text;
 namespace markdom.cs.Model.Nodes{
 	public class TableRowNode : INode {
 		private readonly TableCellNode[] _cells;
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public TableRowNode(TableCellNode[] cells, SourceRange sourceRange) {
+		public TableRowNode(TableCellNode[] cells, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => cells, cells);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_cells = cells;
 			_sourceRange = sourceRange;
@@ -21,7 +20,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeType NodeType { get { return NodeType.TableRow; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

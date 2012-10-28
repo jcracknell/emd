@@ -13,11 +13,10 @@ namespace markdom.cs.Model.Nodes{
 	public class QuotedNode : IPlainInlineNode {
 		private readonly QuoteType _quoteType;
 		private readonly IInlineNode[] _children;
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public QuotedNode(QuoteType quoteType, IInlineNode[] children, SourceRange sourceRange) {
+		public QuotedNode(QuoteType quoteType, IInlineNode[] children, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => children, children);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_quoteType = quoteType;
 			_children = children;
@@ -29,7 +28,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeType NodeType { get { return NodeType.Quoted; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

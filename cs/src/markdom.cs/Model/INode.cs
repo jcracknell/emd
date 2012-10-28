@@ -7,7 +7,7 @@ using System.Text;
 namespace markdom.cs.Model {
 	public interface INode {
 		NodeType NodeType { get; }
-		SourceRange SourceRange { get; }
+		MarkdomSourceRange SourceRange { get; }
 		void HandleWith(INodeHandler handler);
 		T HandleWith<T>(INodeHandler<T> handler);
 	}

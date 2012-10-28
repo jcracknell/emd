@@ -7,11 +7,10 @@ using System.Text;
 namespace markdom.cs.Model.Nodes{
 	public class UnorderedListNode : IBlockNode {
 		private readonly UnorderedListItemNode[] _items;
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public UnorderedListNode(UnorderedListItemNode[] items, SourceRange sourceRange) {
+		public UnorderedListNode(UnorderedListItemNode[] items, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => items, items);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_items = items;
 			_sourceRange = sourceRange;
@@ -21,7 +20,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeType NodeType { get { return NodeType.UnorderedListItem; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

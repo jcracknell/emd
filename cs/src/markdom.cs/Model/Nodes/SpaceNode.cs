@@ -6,17 +6,15 @@ using System.Text;
 
 namespace markdom.cs.Model.Nodes{
 	public class SpaceNode : IPlainInlineNode {
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public SpaceNode(SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
-
+		public SpaceNode(MarkdomSourceRange sourceRange) {
 			_sourceRange = sourceRange;
 		}
 
 		public NodeType NodeType { get { return NodeType.Space; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

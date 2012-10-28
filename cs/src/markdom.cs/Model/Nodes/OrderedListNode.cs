@@ -10,12 +10,11 @@ namespace markdom.cs.Model.Nodes{
 		private readonly int _start;
 		private readonly int _increment;
 		private readonly OrderedListItemNode[] _items;
-		private readonly SourceRange _sourceRange;
+		private readonly MarkdomSourceRange _sourceRange;
 
-		public OrderedListNode(OrderedListStyle style, int start, int increment, OrderedListItemNode[] items, SourceRange sourceRange) {
+		public OrderedListNode(OrderedListStyle style, int start, int increment, OrderedListItemNode[] items, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => items, items);
 			CodeContract.ArgumentIsValid(() => items, items.Length >= 1, "cannot be empty");
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_style = style;
 			_start = start;
@@ -33,7 +32,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeType NodeType { get { return NodeType.OrderedList; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

@@ -8,7 +8,7 @@ namespace markdom.cs.Model.Expressions {
 	public class StringExpression : Expression {
 		private readonly string _value;
 
-		public StringExpression(string value, SourceRange sourceRange)
+		public StringExpression(string value, MarkdomSourceRange sourceRange)
 			: base(sourceRange)
 		{
 			_value = value;

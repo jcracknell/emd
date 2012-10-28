@@ -8,7 +8,7 @@ namespace markdom.cs.Model.Expressions {
 	public class ObjectExpression : Expression {
 		private readonly PropertyAssignment[] _propertyAssignments;
 
-		public ObjectExpression(PropertyAssignment[] propertyAssignments, SourceRange sourceRange)
+		public ObjectExpression(PropertyAssignment[] propertyAssignments, MarkdomSourceRange sourceRange)
 			: base(sourceRange)
 		{
 			CodeContract.ArgumentIsNotNull(() => propertyAssignments, propertyAssignments);
