@@ -42,7 +42,8 @@
   <ItemGroup>
     <Compile Include="ArrayUtils.cs" />
     <Compile Include="CodeContract.cs" />
-    <Compile Include="Model\Expressions\UriExpression.cs" />
+    <Compile Include="Model\Expressions\NumericLiteralExpression.cs" />
+    <Compile Include="Model\Expressions\UriLiteralExpression.cs" />
     <Compile Include="Model\IExpressionHandler.cs" />
     <Compile Include="Model\INode.cs" />
     <Compile Include="Model\MarkdomSourceRange.cs" />
@@ -53,7 +54,7 @@
     <Compile Include="Model\ExpressionKind.cs" />
     <Compile Include="Model\Expressions\ObjectExpression.cs" />
     <Compile Include="Model\Expressions\PropertyAssignment.cs" />
-    <Compile Include="Model\Expressions\StringExpression.cs" />
+    <Compile Include="Model\Expressions\StringLiteralExpression.cs" />
     <Compile Include="Model\Nodes\HeadingNode.cs" />
     <Compile Include="Model\Nodes\IBlockNode.cs" />
     <Compile Include="Model\Nodes\IInlineNode.cs" />

@@ -70,6 +70,7 @@ namespace markdom.cs {
 		public IParsingExpression<LineInfo> BlankLine { get; private set; }
 		public IParsingExpression<LineInfo> NonTerminalBlankLine { get; private set; }
 		public IParsingExpression<string> Digit { get; private set; }
+		public IParsingExpression<string> NonZeroDigit { get; private set; }
 		public IParsingExpression<string> HexDigit { get; private set; }
 		public IParsingExpression<string> EnglishLowerAlpha { get; private set; }
 		public IParsingExpression<string> EnglishUpperAlpha { get; private set; }
@@ -128,8 +129,9 @@ namespace markdom.cs {
 		public IParsingExpression<IExpression[]> ArgumentList { get; private set; }
 		public IParsingExpression<ObjectExpression> ObjectExpression { get; private set; }
 		public IParsingExpression<ObjectExpression> ObjectBodyExpression { get; private set; }
-		public IParsingExpression<StringExpression> StringExpression { get; private set; }
-		public IParsingExpression<UriExpression> UriExpression { get; private set; }
+		public IParsingExpression<NumericLiteralExpression> NumericLiteral { get; private set; }
+		public IParsingExpression<StringLiteralExpression> StringLiteral { get; private set; }
+		public IParsingExpression<UriLiteralExpression> UriLiteral { get; private set; }
 		public IParsingExpression<Nil> ExpressionWhitespace { get; private set; }
 
 		public IParsingExpression<int> LowerRomanNumeral { get; private set; }
@@ -491,7 +493,7 @@ namespace markdom.cs {
 				Sequence(
 					Literal("<"),
 					Reference(() => SpaceChars),
-					Reference(() => UriExpression),
+					Reference(() => UriLiteral),
 					Reference(() => SpaceChars),
 					Literal(">"),
 					Optional(
@@ -626,9 +628,10 @@ namespace markdom.cs {
 			// * `UriExpression` does not start with `@`
 			Define(() => Expression,
 				ChoiceOrdered<IExpression>(
-					Reference(() => StringExpression),
+					Reference(() => NumericLiteral),
+					Reference(() => StringLiteral),
 					Reference(() => ObjectExpression),
-					Reference(() => UriExpression)));
+					Reference(() => UriLiteral)));
 			
 			var argumentSeparator =
 				Sequence(
@@ -650,6 +653,81 @@ namespace markdom.cs {
 					argumentListArguments,
 					Sequence(Reference(() => ExpressionWhitespace), Literal(")")),
 					match => match.Product.Of2 ?? new IExpression[0]));
+
+			#region NumberExpression
+
+			var decimalIntegerLiteral =
+				ChoiceUnordered(
+					Literal("0"),
+					Sequence(
+						Reference(() => NonZeroDigit),
+						AtLeast(0, Reference(() => Digit))),
+					match => double.Parse(match.String));
+
+			var signedInteger =
+				Sequence(
+					Optional(
+						ChoiceUnordered(
+							Literal("+", match => 1d),
+							Literal("-", match => -1d)),
+						match => match.Product,
+						noMatch => 1d),
+					AtLeast(1, Reference(() => Digit), match => double.Parse(match.String)),
+					match => match.Product.Of1 * match.Product.Of2);
+
+			var hexIntegerLiteral =
+				Sequence(
+					Literal("0x"),
+					AtLeast(1, Reference(() => HexDigit), match => match.String),
+					match => new NumericLiteralExpression(
+						(double)Convert.ToInt64(match.String, 16),
+						MarkdomSourceRange.FromMatch(match)));
+
+			var optionalExponentPart =
+				Optional(
+					Sequence(
+						ChoiceUnordered(Literal("e"), Literal("E")),
+						signedInteger,
+						match => match.Product.Of2),
+					match => Math.Pow(10d, match.Product),
+					noMatch => 1d);
+
+			var optionalDecimalPart =
+				Optional(
+					Sequence(
+						Literal("."),
+						AtLeast(0, Reference(() => Digit))),
+					match => double.Parse("0" + match.String),
+					noMatch => 0d);
+
+			var requiredDecimalPart =
+				Sequence(
+					Literal("."),
+					AtLeast(1, Reference(() => Digit)),
+				match => double.Parse("0" + match.String));
+
+			var decimalLiteral = 
+				ChoiceUnordered(
+					Sequence(
+						decimalIntegerLiteral,
+						optionalDecimalPart,
+						optionalExponentPart,
+						m => new NumericLiteralExpression(
+							(m.Product.Of1 + m.Product.Of2) * m.Product.Of3,
+							MarkdomSourceRange.FromMatch(m))),
+					Sequence(
+						requiredDecimalPart,
+						optionalExponentPart,
+						m => new NumericLiteralExpression(
+							m.Product.Of1 * m.Product.Of2,
+							MarkdomSourceRange.FromMatch(m))));
+
+			Define(() => NumericLiteral,
+				ChoiceOrdered<NumericLiteralExpression>(
+					hexIntegerLiteral,
+					decimalLiteral));
+
+			#endregion
 
 			#region StringExpression
 			
@@ -685,14 +763,14 @@ namespace markdom.cs {
 			var singleQuotedStringExpression =
 				Sequence(
 					Literal("'"), singleQuotedStringExpressionContent, Literal("'"),
-					match => new StringExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
+					match => new StringLiteralExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			var doubleQuotedStringExpression =
 				Sequence(
 					Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
-					match => new StringExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
+					match => new StringLiteralExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
-			Define(() => StringExpression,
+			Define(() => StringLiteral,
 				ChoiceUnordered(
 					singleQuotedStringExpression,
 					doubleQuotedStringExpression));
@@ -703,7 +781,7 @@ namespace markdom.cs {
 
 			var objectPropertyAssignment =
 				Sequence(
-					Reference(() => StringExpression), // TODO: Identifier / String / Uri
+					Reference(() => StringLiteral), // TODO: Identifier / String / Uri
 					Reference(() => ExpressionWhitespace),
 					Literal(":"),
 					Reference(() => ExpressionWhitespace),
@@ -770,11 +848,11 @@ namespace markdom.cs {
 					NotAhead(Literal("@")),
 					Reference(() => uriExpressionPart));
 
-			Define(() => UriExpression,
+			Define(() => UriLiteral,
 				Sequence(
 					uriExpressionFirstPart,
 					AtLeast(0, uriExpressionPart),
-					match => new UriExpression(match.String, MarkdomSourceRange.FromMatch(match))));
+					match => new UriLiteralExpression(match.String, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -885,6 +963,9 @@ namespace markdom.cs {
 
 			Define(() => Digit,
 				CharacterInRange('0', '9'));
+
+			Define(() => NonZeroDigit,
+				CharacterInRange('1', '9'));
 
 			Define(() => HexDigit,
 				ChoiceOrdered(

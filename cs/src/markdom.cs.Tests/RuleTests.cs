@@ -27,7 +27,7 @@ namespace markdom.cs {
 		[TestMethod]
 		public void AutoLink_matches_uri_only() {
 			var expected = new AutoLinkNode(
-				new UriExpression("http://www.google.com", new MarkdomSourceRange(1, 21, 1, 1)),
+				new UriLiteralExpression("http://www.google.com", new MarkdomSourceRange(1, 21, 1, 1)),
 				new IExpression[0],
 				new MarkdomSourceRange(0, 23, 1, 0));
 
@@ -43,8 +43,8 @@ namespace markdom.cs {
 		[TestMethod]
 		public void AutoLink_matches_with_arguments() {
 			var expected = new AutoLinkNode(
-				new UriExpression("http://slashdot.org", new MarkdomSourceRange(1, 19, 1, 1)),
-				new IExpression[] { new StringExpression("title", new MarkdomSourceRange(22, 7, 1, 22)) },
+				new UriLiteralExpression("http://slashdot.org", new MarkdomSourceRange(1, 19, 1, 1)),
+				new IExpression[] { new StringLiteralExpression("title", new MarkdomSourceRange(22, 7, 1, 22)) },
 				new MarkdomSourceRange(0, 30, 1, 0)); 
 
 			var matchResult =
@@ -126,13 +126,79 @@ namespace markdom.cs {
 		}
 
 		[TestMethod]
+		public void NumericLiteral_matches_integer() {
+			var match = Match(Grammar.NumericLiteral, "42");
+
+			Assert.IsTrue(match.Succeeded);
+
+			var numericLiteral = match.Product as NumericLiteralExpression;
+
+			Assert.IsNotNull(numericLiteral);
+			Assert.AreEqual(42d, numericLiteral.Value);
+		}
+
+		[TestMethod]
+		public void NumericLiteral_matches_with_no_integer_part() {
+			var match = Match(Grammar.NumericLiteral, ".123");
+
+			Assert.IsTrue(match.Succeeded);
+
+			var numericLiteral = match.Product as NumericLiteralExpression;
+
+			Assert.IsNotNull(numericLiteral);
+			Assert.AreEqual(0.123d, numericLiteral.Value);
+		}
+
+		[TestMethod]
+		public void NumericLiteral_matches_with_exponent_part() {
+			var match = Match(Grammar.NumericLiteral, "4.2E1");
+
+			Assert.IsTrue(match.Succeeded);
+
+			var numericLiteral = match.Product as NumericLiteralExpression;
+
+			Assert.IsNotNull(numericLiteral);
+			Assert.AreEqual(42d, numericLiteral.Value);
+		}
+
+		[TestMethod]
+		public void bla() {
+			var match = Match(Grammar.NumericLiteral, "123456789123456789123456789123456789.123456789123456789123456789123456789");
+
+			match.ToString();
+		}
+
+		[TestMethod]
+		public void NumericLiteral_matches_hexadecimal_integer() {
+			var match = Match(Grammar.NumericLiteral, "0xdeadbeef");
+
+			Assert.IsTrue(match.Succeeded);
+
+			var numericLiteral = match.Product as NumericLiteralExpression;
+
+			Assert.IsNotNull(numericLiteral);
+			Assert.AreEqual(3735928559d, numericLiteral.Value);
+		}
+
+		[TestMethod]
+		public void NumericLiteral_does_not_match_signed_integer() {
+			var match = Match(Grammar.NumericLiteral, "-42");
+
+			Assert.IsFalse(match.Succeeded);
+		}
+
+		[TestMethod]
 		public void ObjectExpression_matches_empty_object() {
 			var expected = new ObjectExpression(new PropertyAssignment[0], new MarkdomSourceRange(0, 2, 1, 0));
 
 			var matchResult = Match(Grammar.ObjectExpression, "{}");
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+
+			var objectExpression = matchResult.Product as ObjectExpression;
+
+			Assert.IsNotNull(objectExpression);
+			Assert.AreEqual(0, objectExpression.PropertyAssignments.Count());
 		}
 
 		[TestMethod]
@@ -140,15 +206,19 @@ namespace markdom.cs {
 			var expected = new ObjectExpression(
 				new PropertyAssignment[] {
 					new PropertyAssignment(
-						new StringExpression("a", new MarkdomSourceRange(2, 3, 1, 2)),
-						new StringExpression("foo", new MarkdomSourceRange(8, 5, 1, 8)),
+						new StringLiteralExpression("a", new MarkdomSourceRange(2, 3, 1, 2)),
+						new StringLiteralExpression("foo", new MarkdomSourceRange(8, 5, 1, 8)),
 						new MarkdomSourceRange(2, 11, 1, 2)) },
 				new MarkdomSourceRange(0, 15, 1, 0));  
 
 			var matchResult = Match(Grammar.ObjectExpression, "{ 'a' : 'foo' }");
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+
+			var objectExpression = matchResult.Product as ObjectExpression;
+
+			Assert.IsNotNull(objectExpression);
+			Assert.AreEqual(1, objectExpression.PropertyAssignments.Count());
 		}
 
 		[TestMethod]
@@ -185,11 +255,11 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void StringExpression_matches_single_quoted_string() {
-			var matchResult = Match(Grammar.StringExpression, "'string'");
+			var matchResult = Match(Grammar.StringLiteral, "'string'");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
-			var stringExpression = matchResult.Product as StringExpression;
+			var stringExpression = matchResult.Product as StringLiteralExpression;
 
 			Assert.IsNotNull(stringExpression);
 			Assert.AreEqual("string", stringExpression.Value);
@@ -197,11 +267,15 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void StringExpression_matches_double_quoted_string() {
-			var expected = new StringExpression("string", new MarkdomSourceRange(0, 8, 1, 0));
-			var matchResult = Match(Grammar.StringExpression, @"""string""");
+			var expected = new StringLiteralExpression("string", new MarkdomSourceRange(0, 8, 1, 0));
+			var matchResult = Match(Grammar.StringLiteral, @"""string""");
 
 			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(expected, matchResult.Product);
+
+			var stringExpression = matchResult.Product as StringLiteralExpression;
+
+			Assert.IsNotNull(stringExpression);
+			Assert.AreEqual("string", stringExpression.Value);
 		}
 
 		[TestMethod]
@@ -231,18 +305,18 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void UriExpression_matches_remote_uri() {
-			var matchResult = Match(Grammar.UriExpression, "http://www.google.com");
+			var matchResult = Match(Grammar.UriLiteral, "http://www.google.com");
 
 			Assert.IsTrue(matchResult.Succeeded);
 		}
 
 		[TestMethod]
 		public void UriExpression_matches_uri_with_balanced_parentheses() {
-			var matchResult = Match(Grammar.UriExpression, "http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx");
+			var matchResult = Match(Grammar.UriLiteral, "http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
-			var uriExpression = matchResult.Product as UriExpression;
+			var uriExpression = matchResult.Product as UriLiteralExpression;
 
 			Assert.IsNotNull(uriExpression);
 			Assert.AreEqual("http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx", uriExpression.Value);
@@ -250,11 +324,11 @@ namespace markdom.cs {
 
 		[TestMethod]
 		public void UriExpression_discards_characters_following_unbalanced_parentheses() {
-			var matchResult = Match(Grammar.UriExpression, "http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71).aspx");
+			var matchResult = Match(Grammar.UriLiteral, "http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71).aspx");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
-			var uriExpression = matchResult.Product as UriExpression;
+			var uriExpression = matchResult.Product as UriLiteralExpression;
 
 			Assert.IsNotNull(uriExpression);
 			Assert.AreEqual("http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71", uriExpression.Value);
