@@ -135,35 +135,35 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 				match => matchAction(UpcastExpressionMatch(match, product => CastArray<T>(product))));
 		}
 
-		public IExpression<object> OrderedChoice(params IExpression[] choices) {
-			return OrderedChoice(choices, DefaultMatchAction);
+		public IExpression<object> ChoiceOrdered(params IExpression[] choices) {
+			return ChoiceOrdered(choices, DefaultMatchAction);
 		}
 
-		public IExpression<TProduct> OrderedChoice<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public IExpression<TProduct> ChoiceOrdered<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
 			return new OrderedChoiceExpression<TProduct>(choices, matchAction);
 		}
 
-		public IExpression<TChoice> OrderedChoice<TChoice>(params IExpression<TChoice>[] choices) {
-			return OrderedChoice(choices, DefaultMatchAction);
+		public IExpression<TChoice> ChoiceOrdered<TChoice>(params IExpression<TChoice>[] choices) {
+			return ChoiceOrdered(choices, DefaultMatchAction);
 		}
 
-		public IExpression<TProduct> OrderedChoice<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
+		public IExpression<TProduct> ChoiceOrdered<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
 			return new OrderedChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, product => (TChoice)product)));
 		}
 
-		public IExpression<object> Choice(params IExpression[] choices) {
+		public IExpression<object> ChoiceUnordered(params IExpression[] choices) {
 			return new FrequencyOptimizingUnorderedChoiceExpression<object>(choices, null);
 		}
 
-		public IExpression<TProduct> Choice<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public IExpression<TProduct> ChoiceUnordered<TProduct>(IExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
 			return new FrequencyOptimizingUnorderedChoiceExpression<TProduct>(choices, matchAction);
 		}
 
-		public IExpression<TChoice> Choice<TChoice>(params IExpression<TChoice>[] choices) {
+		public IExpression<TChoice> ChoiceUnordered<TChoice>(params IExpression<TChoice>[] choices) {
 			return new FrequencyOptimizingUnorderedChoiceExpression<TChoice>(choices, null);
 		}
 
-		public IExpression<TProduct> Choice<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
+		public IExpression<TProduct> ChoiceUnordered<TChoice, TProduct>(IExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {
 			return new FrequencyOptimizingUnorderedChoiceExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, p => (TChoice)p)));
 		}
 

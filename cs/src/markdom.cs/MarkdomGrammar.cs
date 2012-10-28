@@ -140,7 +140,7 @@ namespace markdom.cs {
 			#region Comments
 
 			Define(() => Comment,
-				Choice<LineInfo>(
+				ChoiceUnordered<LineInfo>(
 					Reference(() => SingleLineComment),
 					Reference(() => MultiLineComment)));
 
@@ -177,7 +177,7 @@ namespace markdom.cs {
 			Define(() => Block,
 				Sequence(
 					Reference(() => BlankLines),
-					OrderedChoice<IBlockNode>(
+					ChoiceOrdered<IBlockNode>(
 						Reference(() => Heading),
 						Reference(() => Table),
 						Reference(() => UnorderedList),
@@ -201,7 +201,7 @@ namespace markdom.cs {
 					match => match.Product.Of2);
 
 			Define(() => CommentBlock,
-				Choice<LineInfo>(
+				ChoiceUnordered<LineInfo>(
 					singleLineCommentBlock,
 					multiLineCommentBlock));
 
@@ -230,14 +230,14 @@ namespace markdom.cs {
 			// We first attempt to parse a tight list, because a loose list is defined as 'one that
 			// is not tight'.
 			Define(() => UnorderedList,
-				OrderedChoice(
+				ChoiceOrdered(
 					Reference(() => UnorderedListTight),
 					Reference(() => UnorderedListLoose)));
 
 			Define(() => Bullet,
 				Sequence(
 					Reference(() => NonIndentSpace),
-					Choice(new string[] { "*", "-", "+" }.Select(Literal).ToArray()),
+					ChoiceUnordered(new string[] { "*", "-", "+" }.Select(Literal).ToArray()),
 					Reference(() => SpaceChars),
 					match => Nil.Value));
 
@@ -275,7 +275,7 @@ namespace markdom.cs {
 					match => new UnorderedListItemNode(ParseLines(Blocks, ArrayUtils.Combine(match.Product.Of1, match.Product.Of2)), MarkdomSourceRange.FromMatch(match)));
 
 			var unorderedListContinuesLoose =
-				Choice(new IExpression[] {
+				ChoiceUnordered(new IExpression[] {
 					 Sequence(Reference(() => BlankLines), Reference(() => Bullet)),
 					 listItemContinues });;
 
@@ -307,7 +307,7 @@ namespace markdom.cs {
 			// You can also specify an increment using the form `style@value+/-increment`, e.g. `a@8-1`.
 			var enumeratorIncrement =
 				Sequence(
-					Choice(
+					ChoiceUnordered(
 						Literal("+", match => 1),
 						Literal("-", match => -1)),
 					AtLeast(1, Reference(() => Digit), match => match.String),
@@ -362,7 +362,7 @@ namespace markdom.cs {
 
 			var tableCellContents =
 				AtLeast(0,
-					OrderedChoice(
+					ChoiceOrdered(
 						Literal(@"\|"),
 						Sequence(
 							NotAhead(Literal("|")),
@@ -372,13 +372,13 @@ namespace markdom.cs {
 			var tableCellRowSpan =
 				Sequence(
 					AtLeast(1, Reference(() => Digit), match => match.String),
-					Choice(Literal("r"), Literal("R")),
+					ChoiceUnordered(Literal("r"), Literal("R")),
 					match => match.Product.Of1);
 
 			var tableCellColumnSpan =
 				Sequence(
 					AtLeast(1, Reference(() => Digit), match => match.String),
-					Choice(Literal("c"), Literal("C")),
+					ChoiceUnordered(Literal("c"), Literal("C")),
 					match => match.Product.Of1);
 
 			var tableCellAnnouncement =
@@ -430,7 +430,7 @@ namespace markdom.cs {
 			var tableCell =
 				Sequence(
 					NotAhead(tableRowEnd),
-					OrderedChoice<TableCellNode>(
+					ChoiceOrdered<TableCellNode>(
 						tableHeaderCell,
 						tableDataCell),
 					match => match.Product.Of2);
@@ -453,7 +453,7 @@ namespace markdom.cs {
 					AtLeast(1,
 						Sequence(
 							Reference(() => SpaceChars),
-							Choice(new string[] { "-", "=", "+" }.Select(Literal).ToArray()))),
+							ChoiceUnordered(new string[] { "-", "=", "+" }.Select(Literal).ToArray()))),
 					Reference(() => BlankLine),
 					match => new LineInfo(match.String, match.SourceRange)));
 
@@ -467,11 +467,11 @@ namespace markdom.cs {
 				AtLeast(0, Reference(() => Inline)));
 
 			Define(() => Inline,
-				OrderedChoice<IInlineNode>(
-					Choice<IInlineNode>(
+				ChoiceOrdered<IInlineNode>(
+					ChoiceUnordered<IInlineNode>(
 						Reference(() => Text),
 						Reference(() => Space),
-						OrderedChoice<IInlineNode>(
+						ChoiceOrdered<IInlineNode>(
 							Reference(() => Strong),
 							Reference(() => Emphasis)),
 						Reference(() => Quoted),
@@ -540,7 +540,7 @@ namespace markdom.cs {
 					match => new QuotedNode(QuoteType.Double, match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => Quoted,
-				OrderedChoice(doubleQuoted, singleQuoted));
+				ChoiceOrdered(doubleQuoted, singleQuoted));
 
 			Define(() => LineBreak,
 				Sequence(
@@ -577,7 +577,7 @@ namespace markdom.cs {
 				});
 
 			Define(() => Entity,
-				OrderedChoice(
+				ChoiceOrdered(
 					decimalHtmlEntity,
 					hexHtmlEntity,
 					namedHtmlEntity));
@@ -602,7 +602,7 @@ namespace markdom.cs {
 					Literal("["),
 					AtLeast(0,
 						Sequence(
-							NotAhead(OrderedChoice(Literal("]"), Reference(() => NewLine))),
+							NotAhead(ChoiceOrdered(Literal("]"), Reference(() => NewLine))),
 							Wildcard()),
 							match => match.String),
 					Literal("]"),
@@ -612,23 +612,23 @@ namespace markdom.cs {
 
 			Define(() => UpperRomanNumeral,
 				Sequence(
-					Ahead(Choice("IVXLCDM".Select(Literal).ToArray())),
+					Ahead(ChoiceUnordered("IVXLCDM".Select(Literal).ToArray())),
 					Reference(() => RomanNumeral),
 					match => match.Product.Of2));
 
 			Define(() => LowerRomanNumeral,
 				Sequence(
-					Ahead(Choice("ivxlcdm".Select(Literal).ToArray())),
+					Ahead(ChoiceUnordered("ivxlcdm".Select(Literal).ToArray())),
 					Reference(() => RomanNumeral),
 					match => match.Product.Of2));
 
-			var romanNumeralI = Choice(Literal("i", m => 1), Literal("I", m => 1));
-			var romanNumeralV = Choice(Literal("v", m => 5), Literal("V", m => 5));
-			var romanNumeralX = Choice(Literal("x", m => 10), Literal("X", m => 10));
-			var romanNumeralL = Choice(Literal("l", m => 50), Literal("L", m => 50));
-			var romanNumeralC = Choice(Literal("c", m => 100), Literal("C", m => 100));
-			var romanNumeralD = Choice(Literal("d", m => 500), Literal("D", m => 500));
-			var romanNumeralM = Choice(Literal("m", m => 1000), Literal("M", m => 1000));
+			var romanNumeralI = ChoiceUnordered(Literal("i", m => 1), Literal("I", m => 1));
+			var romanNumeralV = ChoiceUnordered(Literal("v", m => 5), Literal("V", m => 5));
+			var romanNumeralX = ChoiceUnordered(Literal("x", m => 10), Literal("X", m => 10));
+			var romanNumeralL = ChoiceUnordered(Literal("l", m => 50), Literal("L", m => 50));
+			var romanNumeralC = ChoiceUnordered(Literal("c", m => 100), Literal("C", m => 100));
+			var romanNumeralD = ChoiceUnordered(Literal("d", m => 500), Literal("D", m => 500));
+			var romanNumeralM = ChoiceUnordered(Literal("m", m => 1000), Literal("M", m => 1000));
 
 			Define(() => RomanNumeral,
 				Sequence(
@@ -670,18 +670,18 @@ namespace markdom.cs {
 				Sequence(
 					new IExpression[] {
 						AtLeast(0, Reference(() => SpaceChar)),
-						Choice(
+						ChoiceUnordered(
 							new IExpression[] { Reference(() => NewLine), EndOfInput() }) },
 					match => new LineInfo(match.String, match.SourceRange)));
 
 			Define(() => Indent,
-				Choice(Literal("\t"), Literal("    ")));
+				ChoiceUnordered(Literal("\t"), Literal("    ")));
 
 			Define(() => NonIndentSpace,
 				AtMost(3, Literal(" "), match => match.String));
 
 			Define(() => SpaceChar,
-				OrderedChoice(
+				ChoiceOrdered(
 					Literal(" "),
 					Literal("\t")));
 
@@ -689,12 +689,12 @@ namespace markdom.cs {
 				AtLeast(0, Reference(() => SpaceChar), match => match.String));
 
 			Define(() => NewLine,
-				Choice(
+				ChoiceUnordered(
 					Literal("\n"),
 					Literal("\r\n")));
 
 			Define(() => Whitespace,
-				Choice(
+				ChoiceUnordered(
 					Reference(() => SpaceChar),
 					Reference(() => NewLine)));
 
@@ -705,7 +705,7 @@ namespace markdom.cs {
 				CharacterInRange('0', '9'));
 
 			Define(() => HexDigit,
-				OrderedChoice(
+				ChoiceOrdered(
 					Reference(() => Digit),
 					CharacterInRange('a', 'f'),
 					CharacterInRange('A', 'F')));
@@ -717,19 +717,19 @@ namespace markdom.cs {
 				CharacterInRange('A', 'Z'));
 
 			Define(() => EnglishAlpha,
-				Choice(
+				ChoiceUnordered(
 					Reference(() => EnglishLowerAlpha),
 					Reference(() => EnglishUpperAlpha)));
 
 			Define(() => SpecialChar,
-				Choice(
+				ChoiceUnordered(
 					new string[] { "*", "&", "'", "\"", "/", "\\", "[", "]", "|", "(", ")" }
 					.Select(Literal).ToArray()));
 
 			Define(() => NormalChar,
 				Sequence(
 					NotAhead(
-						Choice(
+						ChoiceUnordered(
 							Reference(() => Whitespace),
 							Reference(() => SpecialChar))),
 					Wildcard(),
@@ -758,7 +758,7 @@ namespace markdom.cs {
 			// * `StringExpression` gets first crack at quotes
 			// * `UriExpression` does not start with `@`
 			Define(() => Expression,
-				OrderedChoice<Expression>(
+				ChoiceOrdered<Expression>(
 					Reference(() => StringExpression),
 					Reference(() => ObjectExpression),
 					Reference(() => UriExpression)));
@@ -787,7 +787,7 @@ namespace markdom.cs {
 			#region StringExpression
 			
 			var stringExpressionEscapes =
-				Choice(
+				ChoiceUnordered(
 					Literal(@"\n", match => "\n"),
 					Literal(@"\r", match => "\r"),
 					Literal(@"\t", match => "\t"),
@@ -795,22 +795,22 @@ namespace markdom.cs {
 
 			var singleQuotedStringExpressionContent =
 				AtLeast(0,
-					Choice(
+					ChoiceUnordered(
 						Literal(@"\'", match => "'"),
 						stringExpressionEscapes,
 						Sequence(
-							NotAhead(Choice(Literal("'"), Reference(() => NewLine))),
+							NotAhead(ChoiceUnordered(Literal("'"), Reference(() => NewLine))),
 							Wildcard(),
 							match => match.Product.Of2)),
 					match => match.Product.Join());
 
 			var doubleQuotedStringExpressionContent =
 				AtLeast(0,
-					Choice(
+					ChoiceUnordered(
 						Literal("\\\"", match => "\""),
 						stringExpressionEscapes,
 						Sequence(
-							NotAhead(Choice(Literal("\""), Reference(() => NewLine))),
+							NotAhead(ChoiceUnordered(Literal("\""), Reference(() => NewLine))),
 							Wildcard(),
 							match => match.Product.Of2)),
 					match => match.Product.Join());
@@ -826,7 +826,7 @@ namespace markdom.cs {
 					match => new StringExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => StringExpression,
-				Choice(
+				ChoiceUnordered(
 					singleQuotedStringExpression,
 					doubleQuotedStringExpression));
 
@@ -877,10 +877,10 @@ namespace markdom.cs {
 					match => match.String);
 
 			var bareUriExpressionCharacter =
-				Choice(
+				ChoiceUnordered(
 					Reference(() => EnglishAlpha),
 					Reference(() => Digit),
-					Choice(
+					ChoiceUnordered(
 						new string[] { ";", "/", "?", ":", "@", "&", "=", "?", "+", "$", "-", "_", ".", "!", "~", "*", "'" }
 						.Select(Literal).ToArray()),
 					uriEscaped);
@@ -892,9 +892,9 @@ namespace markdom.cs {
 					match => match.Product.Of2);
 
 			var delimitedUriExpressionCharacter =
-				Choice(
+				ChoiceUnordered(
 					bareUriExpressionCharacter,
-					Choice(new string[] { ",", "(", ")" }.Select(Literal).ToArray()));
+					ChoiceUnordered(new string[] { ",", "(", ")" }.Select(Literal).ToArray()));
 
 			var delimitedUriExpression =
 				Sequence(
@@ -903,13 +903,13 @@ namespace markdom.cs {
 
 
 			Define(() => UriExpression,
-				Choice(delimitedUriExpression, bareUriExpression));
+				ChoiceUnordered(delimitedUriExpression, bareUriExpression));
 
 			#endregion
 
 			Define(() => ExpressionWhitespace,
 				AtLeast(0,
-					Choice(new IExpression[] {
+					ChoiceUnordered(new IExpression[] {
 						Reference(() => Whitespace),
 						Reference(() => Comment)
 					}),
@@ -940,7 +940,7 @@ namespace markdom.cs {
 		}
 
 		private IExpression<int> RomanNumeralDecade(IExpression<int> decem, IExpression<int> quintum, IExpression<int> unit) {
-			return OrderedChoice(
+			return ChoiceOrdered(
 				Sequence(unit, decem, match => match.Product.Of2 - match.Product.Of1),
 				Sequence(unit, quintum, match => match.Product.Of2 - match.Product.Of1),
 				Sequence(quintum, AtMost(3, unit), match => match.Product.Of1 + match.Product.Of2.Sum()),
