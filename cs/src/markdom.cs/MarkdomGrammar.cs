@@ -342,12 +342,13 @@ namespace markdom.cs {
 				Sequence(
 					Reference(() => SpaceChars),
 					Reference(() => ReferenceLabel),
+					Reference(() => SpaceChars),
 					Literal(":"),
 					Reference(() => SpaceChars),
 					ChoiceUnordered(
 						Reference(() => UriLiteralExpression, match => match.Product.InArray()),
 						Reference(() => ArgumentList)),
-					match => new ReferenceNode(match.Product.Of2, match.Product.Of5, MarkdomSourceRange.FromMatch(match))));
+					match => new ReferenceNode(match.Product.Of2, match.Product.Of6, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => Paragraph,
 				AtLeast(1,
