@@ -126,6 +126,51 @@ namespace markdom.cs {
 		}
 
 		[TestMethod]
+		public void Link_matches_explicit_link() {
+			var matchResult = Match(Grammar.Link, "[Slashdot: News for nerds, stuff that matters](http://slashdot.org)");
+
+			Assert.IsTrue(matchResult.Succeeded);
+
+			var linkNode = matchResult.Product as LinkNode;
+
+			Assert.IsNotNull(linkNode);
+			Assert.AreEqual(1, linkNode.Arguments.Count());
+
+			var uriExpression = linkNode.Arguments.ElementAt(0) as UriLiteralExpression;
+
+			Assert.IsNotNull(uriExpression);
+			Assert.AreEqual("http://slashdot.org", uriExpression.Value);
+		}
+
+		[TestMethod]
+		public void Link_matches_hybrid_link() {
+			var matchResult = Match(Grammar.Link, "[Slashdot: News for nerds, stuff that matters][slashdot.org](http://slashdot.org)");
+
+			Assert.IsTrue(matchResult.Succeeded);
+
+			var linkNode = matchResult.Product as LinkNode;
+
+			Assert.IsNotNull(linkNode);
+			Assert.AreEqual(1, linkNode.Arguments.Count());
+
+			var uriExpression = linkNode.Arguments.ElementAt(0) as UriLiteralExpression;
+
+			Assert.IsNotNull(uriExpression);
+			Assert.AreEqual("http://slashdot.org", uriExpression.Value);
+		}
+
+		[TestMethod]
+		public void Link_matches_reference_link() {
+			var matchResult = Match(Grammar.Link, "[Slashdot: News for nerds, stuff that matters][slashdot.org]");
+
+			Assert.IsTrue(matchResult.Succeeded);
+
+			var linkNode = matchResult.Product as LinkNode;
+
+			Assert.IsNotNull(linkNode);
+		}
+
+		[TestMethod]
 		public void NumericLiteral_matches_integer() {
 			var match = Match(Grammar.NumericLiteralExpression, "42");
 

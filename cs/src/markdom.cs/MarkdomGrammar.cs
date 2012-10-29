@@ -98,18 +98,19 @@ namespace markdom.cs {
 		public IParsingExpression<UnorderedListNode> UnorderedList { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedListTight { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedListLoose { get; private set; }
+		public IParsingExpression<Nil> Bullet { get; private set; }
+		public IParsingExpression<EnumeratorInfo> Enumerator { get; private set; }
 		public IParsingExpression<ParagraphNode> Paragraph { get; private set; }
 		public IParsingExpression<LineInfo> NonEmptyBlockLine { get; private set; }
 		public IParsingExpression<LineInfo> BlockLine { get; private set; }
 		public IParsingExpression<Nil> BlockLineAtomic { get; private set; }
 		public IParsingExpression<Nil> Atomic { get; private set; }
-		public IParsingExpression<Nil> Bullet { get; private set; }
-		public IParsingExpression<EnumeratorInfo> Enumerator { get; private set; }
 
 		public IParsingExpression<IInlineNode[]> Inlines { get; private set; }
 		public IParsingExpression<IInlineNode> Inline { get; private set; }
 		public IParsingExpression<AutoLinkNode> AutoLink { get; private set; }
 		public IParsingExpression<LinkNode> Link { get; private set; }
+		public IParsingExpression<IInlineNode[]> Label { get; private set; }
 		public IParsingExpression<StrongNode> Strong { get; private set; }
 		public IParsingExpression<EmphasisNode> Emphasis { get; private set; }
 		public IParsingExpression<InlineExpressionNode> InlineExpression { get; private set; }
@@ -119,7 +120,7 @@ namespace markdom.cs {
 		public IParsingExpression<SpaceNode> Space { get; private set; }
 		public IParsingExpression<EntityNode> Entity { get; private set; }
 
-		public IParsingExpression<ReferenceId> ReferenceId { get; private set; }
+		public IParsingExpression<ReferenceId> ReferenceLabel { get; private set; }
 
 		/// <summary>
 		/// A Symbol, an unescaped special character which was not parsed into a valid node.
@@ -500,7 +501,8 @@ namespace markdom.cs {
 						Reference(() => LineBreak)),
 					Reference(() => Symbol)));
 
-			#region Link
+
+			#region AutoLink
 
 			Define(() => AutoLink,
 				Sequence(
@@ -514,20 +516,42 @@ namespace markdom.cs {
 						match => match.Product,
 						noMatch => new IExpression[0]),
 					match => new AutoLinkNode(match.Product.Of3, match.Product.Of6, MarkdomSourceRange.FromMatch(match))));
+			#endregion
 
-			var linkLabel =
+			#region Link
+
+			Define(() => Link,
+				Sequence(
+					Reference(() => Label),
+					Reference(() => SpaceChars),
+					ChoiceOrdered(
+						Sequence(
+							Optional(Reference(() => ReferenceLabel)),
+							Reference(() => SpaceChars),
+							Reference(() => ArgumentList),
+							match => Tuple.Create(match.Product.Of1, match.Product.Of3)),
+						Reference(
+							() => ReferenceLabel,
+							match => Tuple.Create(match.Product, new IExpression[0]))),
+					match => new LinkNode(match.Product.Of1, match.Product.Of3.Item1, match.Product.Of3.Item2, MarkdomSourceRange.FromMatch(match))));
+
+			Define(() => ReferenceLabel,
+				Sequence(
+					Literal("["),
+					AtLeast(0,
+						Sequence(
+							NotAhead(ChoiceUnordered(Literal("]"), Reference(() => NewLine))),
+							Wildcard()),
+						match => match.String),
+					Literal("]"),
+					match => ReferenceId.FromText(match.Product.Of2)));
+
+			Define(() => Label,
 				Sequence(
 					Literal("["),
 					AtLeast(0, Sequence(NotAhead(Literal("]")), Reference(() => Inline), match => match.Product.Of2)),
 					Literal("]"),
-					match => match.Product.Of2);
-
-			Define(() => Link,
-				Sequence(
-					linkLabel,
-					Reference(() => SpaceChars),
-					Optional(Reference(() => ArgumentList)),
-					match => new LinkNode(match.Product.Of1, null, MarkdomSourceRange.FromMatch(match))));
+					match => match.Product.Of2));
 
 			#endregion
 

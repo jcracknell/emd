@@ -9,7 +9,6 @@ namespace markdom.cs.Model {
 		Emphasis,
 		Entity,
 		Heading,
-		Image,
 		InlineExpression,
 		LineBreak,
 		Link,
