@@ -423,6 +423,10 @@ Yet another @{{*emphasis*}}.
 			var matchResult = Match(Grammar.Document, input);
 			stopwatch.Stop();
 
+			var document = matchResult.Product as MarkdomDocumentNode;
+
+			var references = new markdom.cs.Conversion.ReferenceCollection(document);
+
 			stopwatch.ToString();
 			Assert.IsTrue(matchResult.Succeeded);
 		}

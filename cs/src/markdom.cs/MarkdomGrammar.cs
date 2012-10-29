@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs {
-	public class MarkdomGrammar : Grammar<MarkdomDocument> {
+	public class MarkdomGrammar : Grammar<MarkdomDocumentNode> {
 		public struct LineInfo {
 			public readonly string LineString;
 			public readonly SourceRange SourceRange;
@@ -85,7 +85,7 @@ namespace markdom.cs {
 		/// </summary>
 		public IParsingExpression<LineInfo> SingleLineComment { get; private set; }
 
-		public IParsingExpression<MarkdomDocument> Document { get; private set; }
+		public IParsingExpression<MarkdomDocumentNode> Document { get; private set; }
 
 		public IParsingExpression<IBlockNode[]> Blocks { get; private set; }
 		public IParsingExpression<IBlockNode> Block { get; private set; }
@@ -147,7 +147,7 @@ namespace markdom.cs {
 		public MarkdomGrammar() {
 
 			Define(() => Document,
-				Reference(() => Blocks, match => new MarkdomDocument(match.Product)));
+				Reference(() => Blocks, match => new MarkdomDocumentNode(match.Product, MarkdomSourceRange.FromMatch(match))));
 
 			#region Comments
 

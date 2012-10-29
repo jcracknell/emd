@@ -42,6 +42,8 @@
   <ItemGroup>
     <Compile Include="ArrayUtils.cs" />
     <Compile Include="CodeContract.cs" />
+    <Compile Include="Conversion\ReferenceCollection.cs" />
+    <Compile Include="Conversion\ReferenceExtractingNodeHandler.cs" />
     <Compile Include="Model\Expressions\DocumentLiteralExpression.cs" />
     <Compile Include="Model\Expressions\NumericLiteralExpression.cs" />
     <Compile Include="Model\Expressions\UriLiteralExpression.cs" />
@@ -60,7 +62,7 @@
     <Compile Include="Model\Nodes\IBlockNode.cs" />
     <Compile Include="Model\Nodes\IInlineNode.cs" />
     <Compile Include="Model\INodeHandler.cs" />
-    <Compile Include="Model\MarkdomDocument.cs" />
+    <Compile Include="Model\MarkdomDocumentNode.cs" />
     <Compile Include="Model\Nodes\InlineExpressionNode.cs" />
     <Compile Include="Model\Nodes\LineBreakNode.cs" />
     <Compile Include="Model\Nodes\LinkNode.cs" />
@@ -95,6 +97,7 @@
       <Name>pegleg.cs</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

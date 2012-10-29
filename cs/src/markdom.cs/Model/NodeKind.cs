@@ -6,6 +6,7 @@ using System.Text;
 namespace markdom.cs.Model {
 	public enum NodeKind {
 		AutoLink,
+		Document,
 		Emphasis,
 		Entity,
 		Heading,
