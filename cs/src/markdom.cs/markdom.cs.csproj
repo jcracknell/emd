@@ -71,6 +71,7 @@
     <Compile Include="Model\Nodes\ParagraphNode.cs" />
     <Compile Include="Model\Nodes\QuotedNode.cs" />
     <Compile Include="Model\Nodes\ReferenceId.cs" />
+    <Compile Include="Model\Nodes\ReferenceNode.cs" />
     <Compile Include="Model\Nodes\SpaceNode.cs" />
     <Compile Include="Model\Nodes\StrongNode.cs" />
     <Compile Include="Model\Nodes\SymbolNode.cs" />

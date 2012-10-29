@@ -407,6 +407,9 @@ Yet another @{{*emphasis*}}.
 	| @{{**strong**}} | baz
 }}
 
+[slashdot.org]: http://slashdot.org
+[google.com]: (http://google.com, {'title': 'Google home page'})
+
 * Loose item 1.
 * Loose item 2.
 

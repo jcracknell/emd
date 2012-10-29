@@ -16,6 +16,7 @@ namespace markdom.cs.Model {
 		OrderedListItem,
 		Paragraph,
 		Quoted,
+		Reference,
 		Section,
 		Space,
 		Strong,

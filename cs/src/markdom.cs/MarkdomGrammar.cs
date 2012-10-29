@@ -101,6 +101,7 @@ namespace markdom.cs {
 		public IParsingExpression<Nil> Bullet { get; private set; }
 		public IParsingExpression<EnumeratorInfo> Enumerator { get; private set; }
 		public IParsingExpression<ParagraphNode> Paragraph { get; private set; }
+		public IParsingExpression<ReferenceNode> ReferenceBlock { get; private set; }
 		public IParsingExpression<LineInfo> NonEmptyBlockLine { get; private set; }
 		public IParsingExpression<LineInfo> BlockLine { get; private set; }
 		public IParsingExpression<Nil> BlockLineAtomic { get; private set; }
@@ -191,6 +192,7 @@ namespace markdom.cs {
 					ChoiceOrdered<IBlockNode>(
 						Reference(() => Heading),
 						Reference(() => Table),
+						Reference(() => ReferenceBlock),
 						Reference(() => UnorderedList),
 						Reference(() => Paragraph)), // paragraph must come last
 					Reference(() => BlankLines),
@@ -335,6 +337,17 @@ namespace markdom.cs {
 					Reference(() => SpaceChars),
 					Reference(() => BlockLine),
 					match => new HeadingNode(match.Product.Of4.LineString, match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
+
+			Define(() => ReferenceBlock,
+				Sequence(
+					Reference(() => SpaceChars),
+					Reference(() => ReferenceLabel),
+					Literal(":"),
+					Reference(() => SpaceChars),
+					ChoiceUnordered(
+						Reference(() => UriLiteralExpression, match => match.Product.InArray()),
+						Reference(() => ArgumentList)),
+					match => new ReferenceNode(match.Product.Of2, match.Product.Of5, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => Paragraph,
 				AtLeast(1,

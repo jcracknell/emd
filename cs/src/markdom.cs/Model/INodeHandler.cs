@@ -17,6 +17,7 @@ namespace markdom.cs.Model{
 		void Handle(OrderedListItemNode node);
 		void Handle(ParagraphNode node);
 		void Handle(QuotedNode node);
+		void Handle(ReferenceNode node);
 		void Handle(SpaceNode node);
 		void Handle(StrongNode node);
 		void Handle(SymbolNode node);
@@ -41,6 +42,7 @@ namespace markdom.cs.Model{
 		T Handle(OrderedListItemNode node);
 		T Handle(ParagraphNode node);
 		T Handle(QuotedNode node);
+		T Handle(ReferenceNode node);
 		T Handle(SpaceNode node);
 		T Handle(StrongNode node);
 		T Handle(SymbolNode node);
