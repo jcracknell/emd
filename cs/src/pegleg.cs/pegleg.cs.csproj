@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeContract.cs" />
+    <Compile Include="Parsing\BaseParsingExpression.cs" />
     <Compile Include="Parsing\MatchBuilder.cs" />
     <Compile Include="Parsing\Expressions\Builders\AdaptedExpressionMatch.cs" />
     <Compile Include="Parsing\Expressions\Builders\DefaultExpressionNamingConvention.cs" />
@@ -66,11 +67,10 @@
     <Compile Include="Parsing\ParsingExpressionKind.cs" />
     <Compile Include="IParsingExpression.cs" />
     <Compile Include="Parsing\IParsingExpressionHandler.cs" />
-    <Compile Include="Parsing\Expressions\BackusNaurishExpressionHandler.cs" />
+    <Compile Include="Parsing\BackusNaurishExpressionHandler.cs" />
     <Compile Include="Parsing\IMatchingResult.cs" />
     <Compile Include="Parsing\IMatchingContext.cs" />
     <Compile Include="Parsing\Expressions\LiteralParsingExpression.cs" />
-    <Compile Include="Parsing\Expressions\NothingParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\OptionalParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\RegexParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\SequenceParsingExpression.cs" />

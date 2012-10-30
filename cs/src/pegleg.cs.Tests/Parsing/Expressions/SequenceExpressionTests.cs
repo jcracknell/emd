@@ -35,7 +35,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				});
 
 			var matchingContext = new MatchingContext("abcdef");
-			var matchingResult = sequenceExpression.Match(matchingContext);
+			var matchingResult = sequenceExpression.Matches(matchingContext);
 
 			Assert.IsTrue(matchingResult.Succeeded);
 			Assert.AreEqual("seq", matchingResult.Product);

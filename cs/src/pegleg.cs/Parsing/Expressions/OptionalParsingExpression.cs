@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface OptionalParsingExpression : IParsingExpression {
-		IParsingExpression Body { get; }
+	public abstract class OptionalParsingExpression : BaseParsingExpression {
+		public OptionalParsingExpression() : base(ParsingExpressionKind.Optional) { }
+		public abstract IParsingExpression Body { get; }
 	}
 
 	public class OptionalParsingExpression<TProduct> : OptionalParsingExpression, IParsingExpression<TProduct> {
@@ -21,11 +22,13 @@ namespace pegleg.cs.Parsing.Expressions {
 			_noMatchAction = noMatchAction;
 		}
 
-		public IMatchingResult Match(IMatchingContext context) {
+		public override IParsingExpression Body { get { return _body; } }
+
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			var bodyApplicationContext = context.Clone();
-			var bodyMatchResult = _body.Match(bodyApplicationContext);
+			var bodyMatchResult = _body.Matches(bodyApplicationContext);
 
 			if(!bodyMatchResult.Succeeded)
 				return new SuccessfulMatchingResult(
@@ -41,15 +44,8 @@ namespace pegleg.cs.Parsing.Expressions {
 					: bodyMatchResult.Product);
 		}
 
-		public IParsingExpression Body { get { return _body; } }
 
-		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Optional; } }
-
-		public override string ToString() {
-			return this.HandleWith(new BackusNaurishExpressionHandler());
-		}
-
-		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 	}

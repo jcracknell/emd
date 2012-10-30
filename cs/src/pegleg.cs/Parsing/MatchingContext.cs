@@ -8,6 +8,7 @@ namespace pegleg.cs.Parsing {
 	public class MatchingContext : IMatchingContext {
 		private readonly string _consumable;
 		private readonly SourceRange[] _parts;
+		private readonly bool _isRootContext;
 		private int _consumed;
 		private int _sourceIndex;
 		private int _sourceLine;
@@ -23,6 +24,7 @@ namespace pegleg.cs.Parsing {
 			CodeContract.ArgumentIsNotNull(() => source, source);
 			CodeContract.ArgumentIsNotNull(() => parts, parts);
 
+			_isRootContext = true;
 			_consumable = source;
 			_parts = parts;
 			_consumed = 0;
@@ -37,6 +39,7 @@ namespace pegleg.cs.Parsing {
 			string source, SourceRange[] parts, int consumed, int part, int partEnd,
 			int sourceIndex, int sourceLine, int sourceLineIndex)
 		{
+			_isRootContext = false;
 			_consumable = source;
 			_parts = parts;
 			_consumed = consumed;
@@ -85,7 +88,7 @@ namespace pegleg.cs.Parsing {
 			return _consumable.Substring(index, length);
 		}
 
-		public bool TryConsumeMatching(string literal) {
+		public bool ConsumesMatching(string literal) {
 			CodeContract.ArgumentIsNotNull(() => literal, literal);
 			
 			if(literal.Length > _consumable.Length - _consumed)
@@ -99,7 +102,7 @@ namespace pegleg.cs.Parsing {
 			}
 		}
 
-		public bool TryConsumeMatching(Regex regex, out Match match) {
+		public bool ConsumesMatching(Regex regex, out Match match) {
 			CodeContract.ArgumentIsNotNull(() => regex, regex);
 
 			match = regex.Match(_consumable, _consumed);
@@ -112,7 +115,7 @@ namespace pegleg.cs.Parsing {
 			}
 		}
 
-		public bool TryConsumeMatchingCharInRange(char start, char end, out char matched) {
+		public bool ConsumesMatchingCharInRange(char start, char end, out char matched) {
 			matched = (char)0;
 
 			if(AtEndOfInput)
@@ -142,8 +145,7 @@ namespace pegleg.cs.Parsing {
 			return new MatchBuilder(this);
 		}
 
-
-		public bool TryConsumeAnyCharacter(out char c) {
+		public bool ConsumesAnyCharacter(out char c) {
 			if(AtEndOfInput) {
 				c = (char)0;
 				return false;

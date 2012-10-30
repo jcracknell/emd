@@ -15,7 +15,6 @@ namespace pegleg.cs.Parsing {
 		T Handle(EndOfInputParsingExpression expression);
 		T Handle(NamedParsingExpression expression);
 		T Handle(NotAheadParsingExpression expression);
-		T Handle(NothingParsingExpression expression);
 		T Handle(OptionalParsingExpression expression);
 		T Handle(PredicateParsingExpression expression);
 		T Handle(ReferenceParsingExpression expression);

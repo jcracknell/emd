@@ -33,7 +33,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				});
 
 			var matchingContext = new MatchingContext("cat");
-			var matchingResult = regexExpression.Match(matchingContext);
+			var matchingResult = regexExpression.Matches(matchingContext);
 
 			Assert.IsTrue(matchingResult.Succeeded);
 			Assert.AreEqual("match", matchingResult.Product);
@@ -49,7 +49,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				});
 
 			var matchingContext = new MatchingContext("abc123def");
-			var matchingResult = regexExpression.Match(matchingContext);
+			var matchingResult = regexExpression.Matches(matchingContext);
 
 			Assert.IsFalse(matchingResult.Succeeded);
 		}

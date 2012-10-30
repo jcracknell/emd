@@ -17,7 +17,8 @@ namespace markdom.cs {
 
 		private IMatchingResult Match(IParsingExpression expression, params string[] input) {
 			var context = new MatchingContext(string.Join("", input));
-			return expression.Match(context);
+			var match = expression.Matches(context);
+			return match;
 		}
 
 		private void AssertNodesAreEqual(INode expected, object actual) {
@@ -119,7 +120,7 @@ namespace markdom.cs {
 					new TextNode("text", new MarkdomSourceRange(1, 4, 1, 1)) },
 				new MarkdomSourceRange(0, 6, 1, 0));
 
-			var matchResult = Grammar.Emphasis.Match(input);
+			var matchResult = Grammar.Emphasis.Matches(input);
 			
 			Assert.IsTrue(matchResult.Succeeded);
 			AssertNodesAreEqual(expected, matchResult.Product);
@@ -275,7 +276,7 @@ namespace markdom.cs {
 					new TextNode("text", new MarkdomSourceRange(1, 4, 1, 1)) },
 				new MarkdomSourceRange(0, 6, 1, 0));
 
-			var matchResult = Grammar.Quoted.Match(input);
+			var matchResult = Grammar.Quoted.Matches(input);
 
 			Assert.IsTrue(matchResult.Succeeded);
 			AssertNodesAreEqual(expected, matchResult.Product);
@@ -293,7 +294,7 @@ namespace markdom.cs {
 		public void SingleLineComment_matches_base_case() {
 			var input = new MatchingContext("// text");
 
-			var matchResult = Grammar.SingleLineComment.Match(input);
+			var matchResult = Grammar.SingleLineComment.Matches(input);
 
 			Assert.IsTrue(matchResult.Succeeded);
 		}
@@ -331,7 +332,7 @@ namespace markdom.cs {
 					new TextNode("text", new MarkdomSourceRange(2, 4, 1, 2)) },
 				new MarkdomSourceRange(0, 8, 1, 0));
 
-			var matchResult = Grammar.Strong.Match(input);
+			var matchResult = Grammar.Strong.Matches(input);
 
 			Assert.IsTrue(matchResult.Succeeded);
 			AssertNodesAreEqual(expected, matchResult.Product);
@@ -342,7 +343,7 @@ namespace markdom.cs {
 			var input = new MatchingContext("*");
 			var expected = new SymbolNode("*", new MarkdomSourceRange(0, 1, 1, 0));
 
-			var matchResult = Grammar.Symbol.Match(input);
+			var matchResult = Grammar.Symbol.Matches(input);
 
 			Assert.IsTrue(matchResult.Succeeded);
 			AssertNodesAreEqual(expected, matchResult.Product);

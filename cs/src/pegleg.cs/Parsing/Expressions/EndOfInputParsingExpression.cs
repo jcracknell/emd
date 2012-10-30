@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface EndOfInputParsingExpression : IParsingExpression {
+	public abstract class EndOfInputParsingExpression : BaseParsingExpression {
+		public EndOfInputParsingExpression() : base(ParsingExpressionKind.EndOfInput) { }
 	}
 
 	public class EndOfInputParsingExpression<TProduct> : EndOfInputParsingExpression, IParsingExpression<TProduct> {
@@ -16,13 +17,11 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.EndOfInput; } }
-
-		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 
-		public IMatchingResult Match(IMatchingContext context) {
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
 			if(!context.AtEndOfInput)
 				return new UnsuccessfulMatchingResult();
 

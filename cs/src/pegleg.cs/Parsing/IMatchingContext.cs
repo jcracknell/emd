@@ -9,10 +9,10 @@ namespace pegleg.cs.Parsing {
 		SourceLocation SourceLocation { get; }
 		int Consumed { get; }	
 		string Substring(int index, int length);
-		bool TryConsumeAnyCharacter(out char c);
-		bool TryConsumeMatching(string literal);
-		bool TryConsumeMatching(Regex regex, out Match match);
-		bool TryConsumeMatchingCharInRange(char start, char end, out char matched);
+		bool ConsumesAnyCharacter(out char c);
+		bool ConsumesMatching(string literal);
+		bool ConsumesMatching(Regex regex, out Match match);
+		bool ConsumesMatchingCharInRange(char start, char end, out char matched);
 		bool AtEndOfInput { get; }
 		IMatchingContext Clone();
 		void Assimilate(IMatchingContext clone);

@@ -31,7 +31,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				});
 
 			var matchingContext = new MatchingContext("");
-			var matchResult = repetitionExpression.Match(matchingContext);
+			var matchResult = repetitionExpression.Matches(matchingContext);
 
 			Assert.IsTrue(matchResult.Succeeded);
 			Assert.AreEqual("match", matchResult.Product);

@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface DynamicParsingExpression : IParsingExpression {
-		IParsingExpression ConstructExpression();
+	public abstract class DynamicParsingExpression : BaseParsingExpression {
+		public DynamicParsingExpression() : base(ParsingExpressionKind.Closure) { }
+
+		public abstract IParsingExpression ConstructExpression();
 	}
 
 	public class DynamicParsingExpression<TProduct> : DynamicParsingExpression, IParsingExpression<TProduct> {
@@ -17,23 +19,17 @@ namespace pegleg.cs.Parsing.Expressions {
 			_expression = expression;
 		}
 
-		public IParsingExpression ConstructExpression() {
+		public override IParsingExpression ConstructExpression() {
 			return _expression();
 		}
 
-		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Closure; } }
-
-		public IMatchingResult Match(IMatchingContext context) {
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
 			var closed = _expression();
-			return closed.Match(context);
+			return closed.Matches(context);
 		}
 
-		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
-		}
-
-		public override string ToString() {
-			return this.HandleWith(new BackusNaurishExpressionHandler());
 		}
 	}
 }

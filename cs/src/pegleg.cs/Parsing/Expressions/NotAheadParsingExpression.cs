@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface NotAheadParsingExpression : IParsingExpression {
-		IParsingExpression Body { get; }
+	public abstract class NotAheadParsingExpression : BaseParsingExpression {
+		public NotAheadParsingExpression() : base(ParsingExpressionKind.NegativeLookahead) { }
+		public abstract IParsingExpression Body { get; }
 	}
 
 	public class NotAheadParsingExpression<TProduct> : NotAheadParsingExpression, IParsingExpression<TProduct> {
@@ -20,13 +21,11 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public IParsingExpression Body { get { return _body; } }
+		public override IParsingExpression Body { get { return _body; } }
 
-		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.NegativeLookahead; } }
-
-		public IMatchingResult Match(IMatchingContext context) {
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
 			var bodyMatchingContext = context.Clone();
-			var bodyMatchingResult = _body.Match(bodyMatchingContext);
+			var bodyMatchingResult = _body.Matches(bodyMatchingContext);
 
 			if(bodyMatchingResult.Succeeded) {
 				return new UnsuccessfulMatchingResult();
@@ -37,12 +36,8 @@ namespace pegleg.cs.Parsing.Expressions {
 			}
 		}
 
-		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
-		}
-
-		public override string ToString() {
-			return this.HandleWith(new BackusNaurishExpressionHandler());
 		}
 	}
 }

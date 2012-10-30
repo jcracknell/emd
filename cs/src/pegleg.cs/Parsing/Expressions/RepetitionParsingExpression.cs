@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface RepetitionParsingExpression : IParsingExpression {
-		uint MinOccurs { get; }
-		uint MaxOccurs { get; }
-		IParsingExpression Body { get; }
+	public abstract class RepetitionParsingExpression : BaseParsingExpression {
+		public RepetitionParsingExpression() : base(ParsingExpressionKind.Repetition) { }
+
+		public abstract uint MinOccurs { get; }
+		public abstract uint MaxOccurs { get; }
+		public abstract IParsingExpression Body { get; }
 	}
 
 	public class RepetitionParsingExpression<TProduct> : RepetitionParsingExpression, IParsingExpression<TProduct> {
@@ -27,15 +29,13 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;	
 		}
 
-		public uint MinOccurs { get { return _minOccurs; } }
+		public override uint MinOccurs { get { return _minOccurs; } }
 
-		public uint MaxOccurs { get { return _maxOccurs; } }
+		public override uint MaxOccurs { get { return _maxOccurs; } }
 
-		public IParsingExpression Body { get { return _body; } }
+		public override IParsingExpression Body { get { return _body; } }
 
-		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Repetition; } }
-
-		public IMatchingResult Match(IMatchingContext context) {
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 			
 			uint iterationCount = 0;
@@ -45,7 +45,7 @@ namespace pegleg.cs.Parsing.Expressions {
 					"this would be a good place to put a breakpoint".ToString();
 
 				var iterationContext = context.Clone();
-				var iterationResult = _body.Match(iterationContext);
+				var iterationResult = _body.Matches(iterationContext);
 
 				if(iterationResult.Succeeded) {
 					iterationProducts.Add(iterationResult.Product);
@@ -66,12 +66,8 @@ namespace pegleg.cs.Parsing.Expressions {
 			return new SuccessfulMatchingResult(product);
 		}
 
-		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
-		}
-
-		public override string ToString() {
-			return HandleWith(new BackusNaurishExpressionHandler());
 		}
 	}
 }

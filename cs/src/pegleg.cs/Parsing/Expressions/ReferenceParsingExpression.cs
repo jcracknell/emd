@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface ReferenceParsingExpression : IParsingExpression {
-		IParsingExpression Referenced { get; }
+	public abstract class ReferenceParsingExpression : BaseParsingExpression {
+		public ReferenceParsingExpression() : base(ParsingExpressionKind.Reference) { }
+
+		public abstract IParsingExpression Referenced { get; }
 	}
 
 	public class ReferenceParsingExpression<TProduct> : ReferenceParsingExpression, IParsingExpression<TProduct> {
@@ -20,21 +22,13 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public IParsingExpression Referenced {
-			get { return _reference(); }
-		}
+		public override IParsingExpression Referenced { get { return _reference(); } }
 
-		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Reference; } }
-
-		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
-			return handler.Handle(this);
-		}
-
-		public IMatchingResult Match(IMatchingContext context) {
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			var referencedExpression = _reference();
-			var referenceMatchResult = referencedExpression.Match(context);
+			var referenceMatchResult = referencedExpression.Matches(context);
 
 			if(!referenceMatchResult.Succeeded)
 				return referenceMatchResult;
@@ -44,8 +38,8 @@ namespace pegleg.cs.Parsing.Expressions {
 			return new SuccessfulMatchingResult(product);
 		}
 
-		public override string ToString() {
-			return this.HandleWith(new BackusNaurishExpressionHandler());
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+			return handler.Handle(this);
 		}
 	}
 }

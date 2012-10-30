@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface SequenceParsingExpression : IParsingExpression {
-		IEnumerable<IParsingExpression> Sequence { get; }
+	public abstract class SequenceParsingExpression : BaseParsingExpression {
+		public SequenceParsingExpression() : base(ParsingExpressionKind.OrderedChoice) { }
+
+		public abstract IEnumerable<IParsingExpression> Sequence { get; }
 	}
 
 	public class SequenceParsingExpression<TProduct> : SequenceParsingExpression, IParsingExpression<TProduct> {
@@ -21,14 +23,14 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public IMatchingResult Match(IMatchingContext context) {
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			var expressionProducts = new object[_sequence.Length];
 			for(int i = 0; i < _sequence.Length; i++) {
 				var currentExpression = _sequence[i];
 
-				var currentExpressionApplicationResult = currentExpression.Match(context);
+				var currentExpressionApplicationResult = currentExpression.Matches(context);
 				
 				if(!currentExpressionApplicationResult.Succeeded)
 					return currentExpressionApplicationResult;
@@ -41,15 +43,9 @@ namespace pegleg.cs.Parsing.Expressions {
 			return new SuccessfulMatchingResult(product);
 		}
 
-		public IEnumerable<IParsingExpression> Sequence { get { return _sequence; } }
+		public override IEnumerable<IParsingExpression> Sequence { get { return _sequence; } }
 
-		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Sequence; } }
-
-		public override string ToString() {
-			return this.HandleWith(new BackusNaurishExpressionHandler());
-		}
-
-		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 	}

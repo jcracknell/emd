@@ -27,7 +27,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 			var matchingContext = new MatchingContext("cat");
 			
-			var matchingResult = literalExpression.Match(matchingContext);
+			var matchingResult = literalExpression.Matches(matchingContext);
 
 			Assert.IsNotNull(matchingResult);
 			Assert.IsTrue(matchingResult.Succeeded);
@@ -45,7 +45,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 			var matchingContext = new MatchingContext("catatonic");
 
-			var applicationResult = literalExpression.Match(matchingContext);
+			var applicationResult = literalExpression.Matches(matchingContext);
 
 			Assert.IsTrue(applicationResult.Succeeded);
 			Assert.AreEqual("match", applicationResult.Product);
@@ -59,7 +59,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			});
 
 			var matchingContext = new MatchingContext("bat");
-			var matchingResult = literalExpression.Match(matchingContext);
+			var matchingResult = literalExpression.Matches(matchingContext);
 
 			Assert.IsFalse(matchingResult.Succeeded);
 		}
@@ -72,7 +72,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			});
 
 			var matchingContext = new MatchingContext("ca");
-			var applicationResult = literalExpression.Match(matchingContext);
+			var applicationResult = literalExpression.Matches(matchingContext);
 
 			Assert.IsFalse(applicationResult.Succeeded);
 		}

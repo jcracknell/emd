@@ -163,14 +163,6 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new ReferenceParsingExpression<TProduct>(reference, match => matchAction(UpcastExpressionMatch(match, product => (T)product)));
 		}
 
-		public IParsingExpression<Nil> Nothing() {
-			return new NothingParsingExpression<Nil>(match => global::pegleg.cs.Nil.Value);
-		}
-
-		public IParsingExpression<TProduct> Nothing<TProduct>(Func<IExpressionMatch<Nil>, TProduct> matchAction) {
-			return new NothingParsingExpression<TProduct>(matchAction);
-		}
-
 		public IParsingExpression<string> Wildcard() {
 			return Wildcard(DefaultMatchAction);
 		}

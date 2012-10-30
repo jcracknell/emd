@@ -48,9 +48,6 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		IParsingExpression<string> Wildcard();
 		IParsingExpression<TProduct> Wildcard<TProduct>(Func<IExpressionMatch<string>, TProduct> matchAction);
 
-		IParsingExpression<Nil> Nothing();
-		IParsingExpression<TProduct> Nothing<TProduct>(Func<IExpressionMatch<Nil>, TProduct> matchAction);
-
 		// # Non-terminals
 
 		IParsingExpression<T> Dynamic<T>(Func<IParsingExpression<T>> closure);

@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface WildcardParsingExpression : IParsingExpression {
+	public abstract class WildcardParsingExpression : BaseParsingExpression {
+		public WildcardParsingExpression() : base(ParsingExpressionKind.Wildcard) { }
 	}
 
 	public class WildcardParsingExpression<TProduct> : WildcardParsingExpression, IParsingExpression<TProduct> {
@@ -16,13 +17,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;			
 		}
 
-		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.Wildcard; } }
-
-		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
-			return handler.Handle(this);
-		}
-
-		public IMatchingResult Match(IMatchingContext context) {
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
 			if(context.AtEndOfInput)
 				return new UnsuccessfulMatchingResult();
 
@@ -30,22 +25,22 @@ namespace pegleg.cs.Parsing.Expressions {
 			if(null != _matchAction) {
 				var matchBuilder = context.StartMatch();
 
-				if(!context.TryConsumeAnyCharacter(out c))
+				if(!context.ConsumesAnyCharacter(out c))
 					return new UnsuccessfulMatchingResult();
 
 				var product = _matchAction(matchBuilder.CompleteMatch(this, c.ToString()));
 
 				return new SuccessfulMatchingResult(product);
 			} else {
-				if(!context.TryConsumeAnyCharacter(out c))
+				if(!context.ConsumesAnyCharacter(out c))
 					return new UnsuccessfulMatchingResult();
 
 				return new SuccessfulMatchingResult(c.ToString());
 			}
 		}
 
-		public override string ToString() {
-			return this.HandleWith(new BackusNaurishExpressionHandler());
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+			return handler.Handle(this);
 		}
 	}
 }

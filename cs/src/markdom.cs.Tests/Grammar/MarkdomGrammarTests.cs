@@ -14,7 +14,7 @@ namespace markdom.cs.Grammar {
 
 		private IMatchingResult Match(IParsingExpression expression, string s) {
 			var matchContext = new MatchingContext(s);
-			return expression.Match(matchContext);
+			return expression.Matches(matchContext);
 		}
 
 		[TestMethod]

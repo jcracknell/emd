@@ -1067,7 +1067,7 @@ namespace markdom.cs {
 					lines.Select(line => line.LineString).Join(),
 					lines.Select(line => line.SourceRange).ToArray());
 			
-			var expressionMatchingResult = expression.Match(expressionMatchingContext);
+			var expressionMatchingResult = expression.Matches(expressionMatchingContext);
 
 			if(!expressionMatchingResult.Succeeded)
 				return default(T);

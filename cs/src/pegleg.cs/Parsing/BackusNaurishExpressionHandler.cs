@@ -1,9 +1,10 @@
-﻿using System;
+﻿using pegleg.cs.Parsing.Expressions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace pegleg.cs.Parsing.Expressions {
+namespace pegleg.cs.Parsing {
 	public class BackusNaurishExpressionHandler : IParsingExpressionHandler<string> {
 		public class PrecedenceExpressionHandler : IParsingExpressionHandler<int> {
 			public int Handle(DynamicParsingExpression expression) { return 100; }
@@ -11,7 +12,6 @@ namespace pegleg.cs.Parsing.Expressions {
 			public int Handle(PredicateParsingExpression expression) { return 4; }
 			public int Handle(CharacterRangeParsingExpression expression) { return 4; }
 			public int Handle(LiteralParsingExpression expression) { return 4; }
-			public int Handle(NothingParsingExpression expression) { return 4; }
 			public int Handle(EndOfInputParsingExpression expression) { return 4; }
 			public int Handle(WildcardParsingExpression expression) { return 4; }
 			public int Handle(RegexParsingExpression expression) { return 4; }
@@ -65,10 +65,6 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public string Handle(LiteralParsingExpression expression) {
 			return StringUtils.LiteralEncode(expression.Literal);
-		}
-
-		public string Handle(NothingParsingExpression expression) {
-			return "<0>";
 		}
 
 		public string Handle(OptionalParsingExpression expression) {

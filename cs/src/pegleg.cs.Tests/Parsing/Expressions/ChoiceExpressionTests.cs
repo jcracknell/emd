@@ -33,7 +33,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				});
 
 			var matchingContext = new MatchingContext("a");
-			var matchingResult = choiceExpression.Match(matchingContext);
+			var matchingResult = choiceExpression.Matches(matchingContext);
 
 			Assert.IsTrue(matchingResult.Succeeded);
 			Assert.AreEqual("match", matchingResult.Product);
@@ -52,7 +52,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				});
 
 			var matchingContext = new MatchingContext("b");
-			var matchingResult = choiceExpression.Match(matchingContext);
+			var matchingResult = choiceExpression.Matches(matchingContext);
 
 			Assert.IsTrue(matchingResult.Succeeded);
 			Assert.AreEqual("match", matchingResult.Product);
@@ -70,7 +70,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				});
 
 			var matchingContext = new MatchingContext("aaa");
-			var matchingResult = choiceExpression.Match(matchingContext); 
+			var matchingResult = choiceExpression.Matches(matchingContext); 
 
 			Assert.IsTrue(matchingResult.Succeeded);
 			Assert.AreEqual("match", matchingResult.Product);
@@ -88,7 +88,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				});
 
 			var matchingContext = new MatchingContext("c");
-			var matchingResult = choiceExpression.Match(matchingContext);
+			var matchingResult = choiceExpression.Matches(matchingContext);
 
 			Assert.IsFalse(matchingResult.Succeeded);
 		}

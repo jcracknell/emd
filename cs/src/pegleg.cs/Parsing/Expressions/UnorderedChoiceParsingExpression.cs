@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public interface UnorderedChoiceParsingExpression : IParsingExpression {
-		IEnumerable<IParsingExpression> Choices { get; }
+	public abstract class UnorderedChoiceParsingExpression : BaseParsingExpression {
+		public UnorderedChoiceParsingExpression() : base(ParsingExpressionKind.UnorderedChoice) { }
+
+		public abstract IEnumerable<IParsingExpression> Choices { get; }
 	}
 
 	public class UnorderedChoiceParsingExpression<TProduct> : UnorderedChoiceParsingExpression, IParsingExpression<TProduct> {
@@ -29,9 +31,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				_choiceOrder[i] = i;
 		}
 
-		public ParsingExpressionKind Kind { get { return ParsingExpressionKind.UnorderedChoice; } }
-
-		public IEnumerable<IParsingExpression> Choices { get { return _choices; } }
+		public override IEnumerable<IParsingExpression> Choices { get { return _choices; } }
 
 		/// <summary>
 		/// The current ordering of choices by success count.
@@ -41,7 +41,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			get { return _choiceOrder.Select(i => Tuple.Create(_choiceHits[i], _choices[i])).ToArray(); }
 		}
 
-		public IMatchingResult Match(IMatchingContext context) {
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			for(var i = 0; i != _choiceCount; i++) {
@@ -49,7 +49,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				var currentChoice = _choices[_choiceOrder[i]];
 
 				var choiceMatchingContext = context.Clone();
-				var choiceMatchingResult = currentChoice.Match(choiceMatchingContext);
+				var choiceMatchingResult = currentChoice.Matches(choiceMatchingContext);
 
 				if(choiceMatchingResult.Succeeded) {
 					UpdateChoiceOrder(i);
@@ -97,11 +97,7 @@ namespace pegleg.cs.Parsing.Expressions {
 					_choiceHits[j] = _choiceHits[j] >> 1;
 		}
 
-		public override string ToString() {
-			return this.HandleWith(new BackusNaurishExpressionHandler());
-		}
-
-		public T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 	}
