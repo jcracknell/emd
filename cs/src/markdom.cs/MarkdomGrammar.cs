@@ -11,6 +11,8 @@ using System.Text;
 
 namespace markdom.cs {
 	public class MarkdomGrammar : Grammar<MarkdomDocumentNode> {
+		#region Intermediate data structures
+
 		public struct LineInfo {
 			public readonly string LineString;
 			public readonly SourceRange SourceRange;
@@ -22,6 +24,24 @@ namespace markdom.cs {
 
 			public static LineInfo FromMatch(IMatch match) {
 				return new LineInfo(match.String, match.SourceRange);
+			}
+		}
+
+		public struct BlockLineInfo {
+			public readonly LineInfo[] Lines;
+			public readonly SourceRange SourceRange;
+
+			public BlockLineInfo(LineInfo[] lines, SourceRange sourceRange) {
+				Lines = lines;
+				SourceRange = sourceRange;
+			}
+
+			public static BlockLineInfo FromMatch(IExpressionMatch<LineInfo[]> match) {
+				return new BlockLineInfo(match.Product, match.SourceRange);
+			}
+
+			public static BlockLineInfo FromMatch(IExpressionMatch<LineInfo> match) {
+				return new BlockLineInfo(match.Product.InArray(), match.SourceRange);
 			}
 		}
 
@@ -40,6 +60,8 @@ namespace markdom.cs {
 				RowSpan = rowSpan;
 			}
 		}
+
+		#endregion
 		
 		/// <summary>
 		/// A tab or a space.
@@ -278,32 +300,50 @@ namespace markdom.cs {
 			var unorderedListItemTight =
 				Reference(
 					() => unorderedListItemInitialBlock,
-					match => new UnorderedListItemNode(ParseLines(Inlines, match.Product), MarkdomSourceRange.FromMatch(match)));
+					BlockLineInfo.FromMatch);
 
 			var unorderedListItemLoose =
 				Sequence(
-					unorderedListItemInitialBlock,
-					AtLeast(0, unorderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
+					Sequence(
+						unorderedListItemInitialBlock,
+						AtLeast(0, unorderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
+						match => new BlockLineInfo(ArrayUtils.Combine(match.Product.Of1, match.Product.Of2), match.SourceRange)),
 					Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
-					match => new UnorderedListItemNode(ParseLines(Blocks, ArrayUtils.Combine(match.Product.Of1, match.Product.Of2)), MarkdomSourceRange.FromMatch(match)));
+					match => match.Product.Of1);
 
 			var unorderedListContinuesLoose =
-				ChoiceUnordered(new IParsingExpression[] {
-					 Sequence(Reference(() => BlankLines), Reference(() => Bullet)),
-					 listItemContinues });;
+				ChoiceUnordered(
+					Sequence(Reference(() => BlankLines), Reference(() => Bullet)),
+					listItemContinues);
 
 			Define(() => UnorderedListTight,
 				Sequence(
 					Reference(() => BlankLines),
 					AtLeast(1, unorderedListItemTight),
 					NotAhead(unorderedListContinuesLoose),
-					match => new UnorderedListNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
+					match => {
+						var items = match.Product.Of2
+							.Select(itemBlockInfo =>
+								new UnorderedListItemNode(
+									ParseLines(Inlines, itemBlockInfo.Lines),
+									new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
+							.ToArray();
+						return new UnorderedListNode(items, MarkdomSourceRange.FromMatch(match));
+					}));
 
 			Define(() => UnorderedListLoose,
 				Sequence(
 					Reference(() => BlankLines),
 					AtLeast(1, unorderedListItemLoose),
-					match => new UnorderedListNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
+					match => {
+						var items = match.Product.Of2
+							.Select(itemBlockInfo =>
+								new UnorderedListItemNode(
+									ParseLines(Blocks, itemBlockInfo.Lines),
+									new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
+							.ToArray();
+						return new UnorderedListNode(items, MarkdomSourceRange.FromMatch(match));
+					}));
 
 			#endregion
 
