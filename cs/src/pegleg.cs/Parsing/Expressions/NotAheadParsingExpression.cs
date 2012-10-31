@@ -15,7 +15,6 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public NotAheadParsingExpression(IParsingExpression body, Func<IExpressionMatch<Nil>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
 
 			_body = body;
 			_matchAction = matchAction;
@@ -30,8 +29,10 @@ namespace pegleg.cs.Parsing.Expressions {
 			if(bodyMatchingResult.Succeeded) {
 				return new UnsuccessfulMatchingResult();
 			} else {
-				var product = _matchAction(context.StartMatch().CompleteMatch(this, Nil.Value));
+				if(null == _matchAction)
+					return new SuccessfulMatchingResult(Nil.Value);
 
+				var product = _matchAction(context.StartMatch().CompleteMatch(this, Nil.Value));
 				return new SuccessfulMatchingResult(product);
 			}
 		}

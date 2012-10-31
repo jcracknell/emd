@@ -8,9 +8,14 @@ namespace pegleg.cs.Parsing {
 		private readonly Guid _id;
 		private readonly ParsingExpressionKind _kind;
 
+		// Stats
+		private readonly System.Diagnostics.Stopwatch _matchExecution;
+		private int _matchExecutionCount = 0;
+
 		public BaseParsingExpression(ParsingExpressionKind kind) {
 			_id = Guid.NewGuid();
 			_kind = kind;
+			_matchExecution = new System.Diagnostics.Stopwatch();
 		}
 
 		public Guid Id { get { return _id; } }
@@ -20,13 +25,19 @@ namespace pegleg.cs.Parsing {
 		public abstract T HandleWith<T>(IParsingExpressionHandler<T> handler);
 
 		public IMatchingResult Matches(IMatchingContext context) {
-			return MatchesCore(context);
+			_matchExecutionCount++;
+			_matchExecution.Start();
+
+			var result = MatchesCore(context);
+
+			_matchExecution.Stop();
+			return result;
 		}
 
 		protected abstract IMatchingResult MatchesCore(IMatchingContext context);
 
 		public override string ToString() {
-			return this.HandleWith(new BackusNaurishExpressionHandler());
+			return "[" + _matchExecutionCount + "][" + _matchExecution.Elapsed.ToString() +  "] " + this.HandleWith(new BackusNaurishExpressionHandler());
 		}
 	}
 }

@@ -75,7 +75,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<Nil> EndOfInput() {
-			return EndOfInput(DefaultMatchAction);
+			return new EndOfInputParsingExpression<Nil>(null);
 		}
 
 		public IParsingExpression<TProduct> EndOfInput<TProduct>(Func<IExpressionMatch<Nil>, TProduct> matchAction) {
@@ -91,7 +91,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<T> Ahead<T>(IParsingExpression<T> expression) {
-			return Ahead(expression, DefaultMatchAction);
+			return new AheadExpression<T>(expression, null);
 		}
 
 		public IParsingExpression<TProduct> Ahead<T, TProduct>(IParsingExpression<T> expression, Func<IExpressionMatch<T>, TProduct> matchAction) {
@@ -100,43 +100,39 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<T[]> AtLeast<T>(uint n, IParsingExpression<T> expression) {
-			return AtLeast(n, expression, DefaultMatchAction);
+			return new RepetitionParsingExpression<T, T[]>(n, RepetitionParsingExpression.UNBOUNDED, expression, null);
 		}
 
 		public IParsingExpression<TProduct> AtLeast<T, TProduct>(uint n, IParsingExpression<T> expression, Func<IExpressionMatch<T[]>, TProduct> matchAction) {
-			return new RepetitionParsingExpression<TProduct>(n, 0, expression,
-				match => matchAction(UpcastExpressionMatch(match, product => CastArray<T>(product))));
+			return new RepetitionParsingExpression<T, TProduct>(n, 0, expression, matchAction);
 		}
 
 		public IParsingExpression<T[]> AtMost<T>(uint maxOccurs, IParsingExpression<T> expression) {
-			return AtMost(maxOccurs, expression, DefaultMatchAction);
+			return new RepetitionParsingExpression<T, T[]>(RepetitionParsingExpression.UNBOUNDED, maxOccurs, expression, null);
 		}
 
 		public IParsingExpression<TProduct> AtMost<T, TProduct>(uint maxOccurs, IParsingExpression<T> expression, Func<IExpressionMatch<T[]>, TProduct> matchAction) {
-			return new RepetitionParsingExpression<TProduct>(0, maxOccurs, expression,
-				match => matchAction(UpcastExpressionMatch(match, product => CastArray<T>(product))));
+			return new RepetitionParsingExpression<T, TProduct>(0, maxOccurs, expression, matchAction);
 		}
 
 		public IParsingExpression<T[]> Between<T>(uint minOccurs, uint maxOccurs, IParsingExpression<T> expression) {
-			return Between(minOccurs, maxOccurs, expression, DefaultMatchAction);
+			return new RepetitionParsingExpression<T, T[]>(minOccurs, maxOccurs, expression, null);
 		}
 
 		public IParsingExpression<TProduct> Between<T, TProduct>(uint minOccurs, uint maxOccurs, IParsingExpression<T> expression, Func<IExpressionMatch<T[]>, TProduct> matchAction) {
-			return new RepetitionParsingExpression<TProduct>(minOccurs, maxOccurs, expression,
-				match => matchAction(UpcastExpressionMatch(match, product => CastArray<T>(product))));
+			return new RepetitionParsingExpression<T, TProduct>(minOccurs, maxOccurs, expression, matchAction);
 		}
 
 		public IParsingExpression<T[]> Exactly<T>(uint occurs, IParsingExpression<T> expression) {
-			return Exactly(occurs, expression, DefaultMatchAction);
+			return new RepetitionParsingExpression<T, T[]>(occurs, occurs, expression, null);
 		}
 
 		public IParsingExpression<TProduct> Exactly<T, TProduct>(uint occurs, IParsingExpression<T> expression, Func<IExpressionMatch<T[]>, TProduct> matchAction) {
-			return new RepetitionParsingExpression<TProduct>(occurs, occurs, expression,
-				match => matchAction(UpcastExpressionMatch(match, product => CastArray<T>(product))));
+			return new RepetitionParsingExpression<T, TProduct>(occurs, occurs, expression, matchAction);
 		}
 
 		public IParsingExpression<Nil> NotAhead<T>(IParsingExpression<T> expression) {
-			return NotAhead(expression, DefaultMatchAction);	
+			return new NotAheadParsingExpression<Nil>(expression, null);
 		}
 
 		public IParsingExpression<TProduct> NotAhead<T, TProduct>(IParsingExpression<T> expression, Func<IExpressionMatch<Nil>, TProduct> matchAction) {
@@ -156,7 +152,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<T> Reference<T>(Func<IParsingExpression<T>> reference) {
-			return Reference(reference, DefaultMatchAction);
+			return new ReferenceParsingExpression<T>(reference, null);
 		}
 
 		public IParsingExpression<TProduct> Reference<T, TProduct>(Func<IParsingExpression<T>> reference, Func<IExpressionMatch<T>, TProduct> matchAction) {
@@ -164,7 +160,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<string> Wildcard() {
-			return Wildcard(DefaultMatchAction);
+			return new WildcardParsingExpression<string>(null);
 		}
 
 		public IParsingExpression<TProduct> Wildcard<TProduct>(Func<IExpressionMatch<string>, TProduct> matchAction) {
@@ -182,7 +178,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		#region ChoiceOrdered
 
 		public IParsingExpression<object> ChoiceOrdered(params IParsingExpression[] choices) {
-			return ChoiceOrdered(choices, DefaultMatchAction);
+			return new OrderedChoiceParsingExpression<object>(choices, null);
 		}
 
 		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
@@ -190,7 +186,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<TChoice> ChoiceOrdered<TChoice>(params IParsingExpression<TChoice>[] choices) {
-			return ChoiceOrdered(choices, DefaultMatchAction);
+			return new OrderedChoiceParsingExpression<TChoice>(choices, null);
 		}
 
 		public IParsingExpression<TProduct> ChoiceOrdered<TChoice, TProduct>(IParsingExpression<TChoice>[] choices, Func<IExpressionMatch<TChoice>, TProduct> matchAction) {

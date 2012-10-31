@@ -17,7 +17,6 @@ namespace pegleg.cs.Parsing.Expressions {
 		public OrderedChoiceParsingExpression(IParsingExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
 			CodeContract.ArgumentIsValid(() => choices, choices.Length >= 2, "must have length of at least two");
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
 			
 			_choices = choices;
 			_matchAction = matchAction;
@@ -36,8 +35,10 @@ namespace pegleg.cs.Parsing.Expressions {
 				if(choiceMatchingResult.Succeeded) {
 					context.Assimilate(choiceMatchingContext);
 
-					var product = _matchAction(matchBuilder.CompleteMatch(this, choiceMatchingResult.Product));
+					if(null == _matchAction)
+						return choiceMatchingResult;
 
+					var product = _matchAction(matchBuilder.CompleteMatch(this, choiceMatchingResult.Product));
 					return new SuccessfulMatchingResult(product);
 				}
 			}

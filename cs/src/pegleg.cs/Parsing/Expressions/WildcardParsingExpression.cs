@@ -12,8 +12,6 @@ namespace pegleg.cs.Parsing.Expressions {
 		private readonly Func<IExpressionMatch<string>, TProduct> _matchAction = null;
 
 		public WildcardParsingExpression(Func<IExpressionMatch<string>, TProduct> matchAction) {
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
-
 			_matchAction = matchAction;			
 		}
 

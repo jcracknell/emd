@@ -1053,7 +1053,9 @@ namespace markdom.cs {
 			#endregion
 		}
 
+		private int _parseLinesCount = 0;
 		private T ParseLines<T>(IParsingExpression<T> expression, LineInfo[] lines) {
+			_parseLinesCount++;
 			var expressionMatchingContext =
 				new MatchingContext(
 					lines.Select(line => line.LineString).Join(),

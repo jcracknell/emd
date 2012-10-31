@@ -12,8 +12,6 @@ namespace pegleg.cs.Parsing.Expressions {
 		private readonly Func<IExpressionMatch<Nil>, TProduct> _matchAction;
 
 		public EndOfInputParsingExpression(Func<IExpressionMatch<Nil>, TProduct> matchAction) {
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
-
 			_matchAction = matchAction;
 		}
 
@@ -25,8 +23,10 @@ namespace pegleg.cs.Parsing.Expressions {
 			if(!context.AtEndOfInput)
 				return new UnsuccessfulMatchingResult();
 
-			var product = _matchAction(context.StartMatch().CompleteMatch(this, Nil.Value));
+			if(null == _matchAction)
+				return new SuccessfulMatchingResult(Nil.Value);
 
+			var product = _matchAction(context.StartMatch().CompleteMatch(this, Nil.Value));
 			return new SuccessfulMatchingResult(product);
 		}
 	}

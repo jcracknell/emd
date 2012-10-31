@@ -7,19 +7,20 @@ namespace pegleg.cs.Parsing.Expressions {
 	public abstract class RepetitionParsingExpression : BaseParsingExpression {
 		public RepetitionParsingExpression() : base(ParsingExpressionKind.Repetition) { }
 
+		public const uint UNBOUNDED = 0;
+
 		public abstract uint MinOccurs { get; }
 		public abstract uint MaxOccurs { get; }
 		public abstract IParsingExpression Body { get; }
 	}
 
-	public class RepetitionParsingExpression<TProduct> : RepetitionParsingExpression, IParsingExpression<TProduct> {
-		public const uint UNBOUNDED = 0;
+	public class RepetitionParsingExpression<TBody, TProduct> : RepetitionParsingExpression, IParsingExpression<TProduct> {
 		private readonly uint _minOccurs;
 		private readonly uint _maxOccurs;
-		private readonly IParsingExpression _body;
-		private readonly Func<IExpressionMatch<object[]>, TProduct> _matchAction;
+		private readonly IParsingExpression<TBody> _body;
+		private readonly Func<IExpressionMatch<TBody[]>, TProduct> _matchAction;
 
-		public RepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression body, Func<IExpressionMatch<object[]>, TProduct> matchAction) {
+		public RepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression<TBody> body, Func<IExpressionMatch<TBody[]>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 			CodeContract.ArgumentIsValid(() => maxOccurs, UNBOUNDED == maxOccurs || maxOccurs >= minOccurs, "must be greater than or equal to minOccurs");
 
@@ -39,7 +40,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			var matchBuilder = context.StartMatch();
 			
 			uint iterationCount = 0;
-			var iterationProducts = 0 == _maxOccurs ? new List<object>() : new List<object>((int)_maxOccurs);
+			var iterationProducts = 0 == _maxOccurs ? new List<TBody>() : new List<TBody>((int)_maxOccurs);
 			while(true) {
 				if(iterationCount > 1000)
 					"this would be a good place to put a breakpoint".ToString();
@@ -48,7 +49,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				var iterationResult = _body.Matches(iterationContext);
 
 				if(iterationResult.Succeeded) {
-					iterationProducts.Add(iterationResult.Product);
+					iterationProducts.Add((TBody)iterationResult.Product);
 					context.Assimilate(iterationContext);
 					iterationCount++;
 
@@ -62,7 +63,12 @@ namespace pegleg.cs.Parsing.Expressions {
 				}
 			}
 
-			var product = _matchAction(matchBuilder.CompleteMatch(this, iterationProducts.ToArray()));
+			var iterationProductsArray = iterationProducts.ToArray();
+
+			if(null == _matchAction)
+				return new SuccessfulMatchingResult(iterationProductsArray);
+
+			var product = _matchAction(matchBuilder.CompleteMatch(this, iterationProductsArray));
 			return new SuccessfulMatchingResult(product);
 		}
 

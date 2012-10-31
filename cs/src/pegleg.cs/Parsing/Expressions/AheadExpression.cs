@@ -16,7 +16,6 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public AheadExpression(IParsingExpression body, Func<IExpressionMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
 		
 			_body = body;	
 			_matchAction = matchAction;
@@ -26,15 +25,14 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		protected override IMatchingResult MatchesCore(IMatchingContext context) {
 			var bodyMatchingContext = context.Clone();
+			
 			var bodyMatchingResult = _body.Matches(bodyMatchingContext);
 
-			if(bodyMatchingResult.Succeeded) {
-				var product = _matchAction(context.StartMatch().CompleteMatch(this, bodyMatchingResult.Product));
+			if(null == _matchAction || !bodyMatchingResult.Succeeded)
+				return bodyMatchingResult;
 
-				return new SuccessfulMatchingResult(product);
-			} else {
-				return new UnsuccessfulMatchingResult();
-			}
+			var product = _matchAction(context.StartMatch().CompleteMatch(this, bodyMatchingResult.Product));
+			return new SuccessfulMatchingResult(product);
 		}
 
 		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {

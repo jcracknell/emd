@@ -23,12 +23,12 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 
 		protected override IMatchingResult MatchesCore(IMatchingContext context) {
-			var namedApplicationResult = _named.Matches(context);
-			if(namedApplicationResult.Succeeded)
-				return namedApplicationResult;
+			var namedMatchResult = _named.Matches(context);
+			if(namedMatchResult.Succeeded)
+				return namedMatchResult;
 
 			// TODO: Make fancy error
-			return namedApplicationResult;
+			return namedMatchResult;
 		}
 
 		public override string Name { get { return _name; } }
@@ -39,10 +39,12 @@ namespace pegleg.cs.Parsing.Expressions {
 			return handler.Handle(this);
 		}
 
+		/*
 		public override string ToString() {
 			// Named expression is a little different in that it is generally not very
 			// useful to display just a single name
 			return _named.HandleWith(new BackusNaurishExpressionHandler());
 		}
+		*/
 	}
 }
