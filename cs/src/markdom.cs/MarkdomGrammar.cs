@@ -395,12 +395,10 @@ namespace markdom.cs {
 
 			var tableCellContents =
 				AtLeast(0,
-					ChoiceOrdered(
-						Literal(@"\|"),
-						Sequence(
-							NotAhead(Literal("|")),
-							Reference(() => BlockLineAtomic))),
-					match => LineInfo.FromMatch(match));
+					Sequence(
+						NotAhead(ChoiceUnordered(Literal("|"), Reference(() => NewLine))),
+						Reference(() => Inline),
+						match => match.Product.Of2));	
 
 			var tableCellRowSpan =
 				Sequence(
@@ -442,7 +440,7 @@ namespace markdom.cs {
 						new TableHeaderCellNode(
 							match.Product.Of1.ColumnSpan,
 							match.Product.Of1.RowSpan,
-							ParseLines(Inlines, match.Product.Of2.InArray()),
+							match.Product.Of2,
 							MarkdomSourceRange.FromMatch(match)));
 
 			var tableDataCell =
@@ -452,7 +450,7 @@ namespace markdom.cs {
 					match => new TableDataCellNode(
 						match.Product.Of1.ColumnSpan,
 						match.Product.Of1.RowSpan,
-						ParseLines(Inlines, match.Product.Of2.InArray()),
+						match.Product.Of2,
 						MarkdomSourceRange.FromMatch(match)));
 
 			var tableRowEnd =
@@ -467,12 +465,6 @@ namespace markdom.cs {
 						tableHeaderCell,
 						tableDataCell),
 					match => match.Product.Of2);
-
-			var tableUnannouncedDataCell =
-				Sequence(
-					tableCellContents,
-					Ahead(Literal("|")),
-					match => new TableDataCellNode(1, 1, ParseLines(Inlines, match.Product.Of1.InArray()), MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => TableRow,
 				Sequence(
