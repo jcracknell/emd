@@ -9,9 +9,9 @@ namespace pegleg.cs.Parsing.Expressions {
 	}
 
 	public class EndOfInputParsingExpression<TProduct> : EndOfInputParsingExpression, IParsingExpression<TProduct> {
-		private readonly Func<IExpressionMatch<Nil>, TProduct> _matchAction;
+		private readonly Func<IMatch<Nil>, TProduct> _matchAction;
 
-		public EndOfInputParsingExpression(Func<IExpressionMatch<Nil>, TProduct> matchAction) {
+		public EndOfInputParsingExpression(Func<IMatch<Nil>, TProduct> matchAction) {
 			_matchAction = matchAction;
 		}
 

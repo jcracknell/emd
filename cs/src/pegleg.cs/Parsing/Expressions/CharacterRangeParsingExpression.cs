@@ -14,9 +14,9 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class CharacterRangeParsingExpression<TProduct> : CharacterRangeParsingExpression, IParsingExpression<TProduct> {
 		private readonly char _rangeStart;
 		private readonly char _rangeEnd;
-		private readonly Func<IExpressionMatch<string>, TProduct> _matchAction;
+		private readonly Func<IMatch<string>, TProduct> _matchAction;
 
-		public CharacterRangeParsingExpression(char rangeStart, char rangeEnd, Func<IExpressionMatch<string>, TProduct> matchAction) {
+		public CharacterRangeParsingExpression(char rangeStart, char rangeEnd, Func<IMatch<string>, TProduct> matchAction) {
 			// Automatically fix incorrect order
 			if(rangeEnd < rangeStart) {
 				_rangeStart = rangeEnd;

@@ -15,9 +15,9 @@ namespace pegleg.cs.Parsing.Expressions {
 		private readonly int _choiceCount;
 		private readonly int[] _choiceOrder;
 		private readonly uint[] _choiceHits;
-		private readonly Func<IExpressionMatch<object>, TProduct> _matchAction;
+		private readonly Func<IMatch<object>, TProduct> _matchAction;
 
-		public UnorderedChoiceParsingExpression(IParsingExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public UnorderedChoiceParsingExpression(IParsingExpression[] choices, Func<IMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
 			CodeContract.ArgumentIsValid(() => choices, choices.Length >= 2, "must have length of at least two");
 			

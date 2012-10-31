@@ -36,11 +36,11 @@ namespace markdom.cs {
 				SourceRange = sourceRange;
 			}
 
-			public static BlockLineInfo FromMatch(IExpressionMatch<LineInfo[]> match) {
+			public static BlockLineInfo FromMatch(IMatch<LineInfo[]> match) {
 				return new BlockLineInfo(match.Product, match.SourceRange);
 			}
 
-			public static BlockLineInfo FromMatch(IExpressionMatch<LineInfo> match) {
+			public static BlockLineInfo FromMatch(IMatch<LineInfo> match) {
 				return new BlockLineInfo(match.Product.InArray(), match.SourceRange);
 			}
 		}

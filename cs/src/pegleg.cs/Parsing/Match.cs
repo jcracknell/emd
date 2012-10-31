@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public class ExpressionMatch<TProduct> : IExpressionMatch<TProduct> {
+	public class ExpressionMatch<TProduct> : IMatch<TProduct> {
 		private readonly IMatchingContext _context;
 		private readonly IParsingExpression _expression;
 		private readonly TProduct _product;

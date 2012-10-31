@@ -11,10 +11,10 @@ namespace pegleg.cs.Parsing.Expressions {
 
 	public class OptionalParsingExpression<TProduct> : OptionalParsingExpression, IParsingExpression<TProduct> {
 		private readonly IParsingExpression _body;
-		private readonly Func<IExpressionMatch<object>, TProduct> _matchAction;
-		private readonly Func<IExpressionMatch<Nil>, TProduct> _noMatchAction;
+		private readonly Func<IMatch<object>, TProduct> _matchAction;
+		private readonly Func<IMatch<Nil>, TProduct> _noMatchAction;
 
-		public OptionalParsingExpression(IParsingExpression body, Func<IExpressionMatch<object>, TProduct> matchAction, Func<IExpressionMatch<Nil>, TProduct> noMatchAction) {
+		public OptionalParsingExpression(IParsingExpression body, Func<IMatch<object>, TProduct> matchAction, Func<IMatch<Nil>, TProduct> noMatchAction) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 
 			_body = body;

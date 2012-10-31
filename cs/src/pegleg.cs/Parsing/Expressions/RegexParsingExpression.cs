@@ -13,9 +13,9 @@ namespace pegleg.cs.Parsing.Expressions {
 
 	public class RegexParsingExpression<TProduct> : RegexParsingExpression, IParsingExpression<TProduct> {
 		private readonly Regex _regex;
-		private readonly Func<IExpressionMatch<Match>, TProduct> _matchAction;
+		private readonly Func<IMatch<Match>, TProduct> _matchAction;
 
-		public RegexParsingExpression(Regex regex, Func<IExpressionMatch<Match>, TProduct> matchAction) {
+		public RegexParsingExpression(Regex regex, Func<IMatch<Match>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => regex, regex);
 
 			_regex = regex;

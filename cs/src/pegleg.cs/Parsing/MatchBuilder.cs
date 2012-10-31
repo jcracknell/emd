@@ -15,7 +15,7 @@ namespace pegleg.cs.Parsing {
 			_initialSourceLocation = context.SourceLocation;
 		}
 
-		public IExpressionMatch<TProduct> CompleteMatch<TProduct>(IParsingExpression expression, TProduct product) {
+		public IMatch<TProduct> CompleteMatch<TProduct>(IParsingExpression expression, TProduct product) {
 			var matchLength = _matchingContext.Consumed - _initialConsumed;
 			var matchSourceRange = new SourceRange(
 				_initialSourceLocation,

@@ -15,9 +15,9 @@ namespace pegleg.cs.Parsing.Expressions {
 
 	public class LiteralParsingExpression<TProduct> : LiteralParsingExpression, IParsingExpression<TProduct> {
 		private readonly string _literal;
-		private readonly Func<IExpressionMatch<string>, TProduct> _matchAction;
+		private readonly Func<IMatch<string>, TProduct> _matchAction;
 
-		public LiteralParsingExpression(string literal, Func<IExpressionMatch<string>, TProduct> matchAction) {
+		public LiteralParsingExpression(string literal, Func<IMatch<string>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => literal, literal);
 
 			_literal = literal;

@@ -5,6 +5,6 @@ using System.Text;
 
 namespace pegleg.cs.Parsing {
 	public interface IMatchBuilder {
-		IExpressionMatch<TProduct> CompleteMatch<TProduct>(IParsingExpression expression, TProduct product);
+		IMatch<TProduct> CompleteMatch<TProduct>(IParsingExpression expression, TProduct product);
 	}
 }

@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions.Builders {
-	public class UpcastedExpressionMatch<TSource, TTarget> : IExpressionMatch<TTarget> {
-		private readonly IExpressionMatch<TSource> _source;
+	public class UpcastedExpressionMatch<TSource, TTarget> : IMatch<TTarget> {
+		private readonly IMatch<TSource> _source;
 		private readonly Func<TSource, TTarget> _upcast;
 		private TTarget _upcastedProduct;
 		private bool _cached = false;
 
-		public UpcastedExpressionMatch(IExpressionMatch<TSource> source, Func<TSource, TTarget> upcast) {
+		public UpcastedExpressionMatch(IMatch<TSource> source, Func<TSource, TTarget> upcast) {
 			CodeContract.ArgumentIsNotNull(() => source, source);
 			CodeContract.ArgumentIsNotNull(() => upcast, upcast);
 

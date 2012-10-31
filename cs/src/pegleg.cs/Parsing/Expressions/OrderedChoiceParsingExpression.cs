@@ -12,9 +12,9 @@ namespace pegleg.cs.Parsing.Expressions {
 
 	public class OrderedChoiceParsingExpression<TProduct> : OrderedChoiceParsingExpression, IParsingExpression<TProduct> {
 		private IParsingExpression[] _choices;
-		private Func<IExpressionMatch<object>, TProduct> _matchAction;
+		private Func<IMatch<object>, TProduct> _matchAction;
 
-		public OrderedChoiceParsingExpression(IParsingExpression[] choices, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public OrderedChoiceParsingExpression(IParsingExpression[] choices, Func<IMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
 			CodeContract.ArgumentIsValid(() => choices, choices.Length >= 2, "must have length of at least two");
 			

@@ -12,10 +12,10 @@ namespace pegleg.cs.Parsing.Expressions {
 
 	public class ReferenceParsingExpression<TProduct> : ReferenceParsingExpression, IParsingExpression<TProduct> {
 		private readonly Func<IParsingExpression> _reference;
-		private readonly Func<IExpressionMatch<object>, TProduct> _matchAction;
+		private readonly Func<IMatch<object>, TProduct> _matchAction;
 		private IParsingExpression _referencedExpression;
 
-		public ReferenceParsingExpression(Func<IParsingExpression> reference, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public ReferenceParsingExpression(Func<IParsingExpression> reference, Func<IMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => reference, reference);
 
 			_reference = reference;

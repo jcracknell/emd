@@ -9,9 +9,9 @@ namespace pegleg.cs.Parsing.Expressions {
 	}
 
 	public class WildcardParsingExpression<TProduct> : WildcardParsingExpression, IParsingExpression<TProduct> {
-		private readonly Func<IExpressionMatch<string>, TProduct> _matchAction = null;
+		private readonly Func<IMatch<string>, TProduct> _matchAction = null;
 
-		public WildcardParsingExpression(Func<IExpressionMatch<string>, TProduct> matchAction) {
+		public WildcardParsingExpression(Func<IMatch<string>, TProduct> matchAction) {
 			_matchAction = matchAction;			
 		}
 

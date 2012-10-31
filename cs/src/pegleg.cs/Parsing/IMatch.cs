@@ -26,7 +26,7 @@ namespace pegleg.cs.Parsing {
 	/// This interface uses methods instead of properties in order to improve syntactical
 	/// compatibility with languages which do not support properties.
 	/// </remarks>
-	public interface IExpressionMatch<out TProduct> : IMatch {
+	public interface IMatch<out TProduct> : IMatch {
 		TProduct Product { get; }
 	}
 }

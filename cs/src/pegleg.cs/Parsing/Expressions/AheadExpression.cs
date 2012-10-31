@@ -12,9 +12,9 @@ namespace pegleg.cs.Parsing.Expressions {
 
 	public class AheadExpression<TProduct> : AheadExpression, IParsingExpression<TProduct> {
 		private readonly IParsingExpression _body;
-		private readonly Func<IExpressionMatch<object>, TProduct> _matchAction;
+		private readonly Func<IMatch<object>, TProduct> _matchAction;
 
-		public AheadExpression(IParsingExpression body, Func<IExpressionMatch<object>, TProduct> matchAction) {
+		public AheadExpression(IParsingExpression body, Func<IMatch<object>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 		
 			_body = body;	

@@ -12,9 +12,9 @@ namespace pegleg.cs.Parsing.Expressions {
 
 	public class SequenceParsingExpression<TProduct> : SequenceParsingExpression, IParsingExpression<TProduct> {
 		private IParsingExpression[] _sequence;
-		private readonly Func<IExpressionMatch<SequenceProducts>, TProduct> _matchAction;
+		private readonly Func<IMatch<SequenceProducts>, TProduct> _matchAction;
 
-		public SequenceParsingExpression(IParsingExpression[] sequence, Func<IExpressionMatch<SequenceProducts>, TProduct> matchAction) {
+		public SequenceParsingExpression(IParsingExpression[] sequence, Func<IMatch<SequenceProducts>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => sequence, sequence);
 			CodeContract.ArgumentIsValid(() => sequence, sequence.Length >= 2, "must have length of at least two");
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);

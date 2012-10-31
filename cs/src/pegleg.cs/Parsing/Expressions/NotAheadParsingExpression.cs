@@ -11,9 +11,9 @@ namespace pegleg.cs.Parsing.Expressions {
 
 	public class NotAheadParsingExpression<TProduct> : NotAheadParsingExpression, IParsingExpression<TProduct> {
 		private readonly IParsingExpression _body;
-		private readonly Func<IExpressionMatch<Nil>, TProduct> _matchAction;
+		private readonly Func<IMatch<Nil>, TProduct> _matchAction;
 
-		public NotAheadParsingExpression(IParsingExpression body, Func<IExpressionMatch<Nil>, TProduct> matchAction) {
+		public NotAheadParsingExpression(IParsingExpression body, Func<IMatch<Nil>, TProduct> matchAction) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 
 			_body = body;
