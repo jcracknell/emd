@@ -325,7 +325,7 @@ namespace markdom.cs {
 						var items = match.Product.Of2
 							.Select(itemBlockInfo =>
 								new UnorderedListItemNode(
-									ParseLines(Inlines, itemBlockInfo.Lines),
+									ParseLinesAs(Inlines, itemBlockInfo.Lines),
 									new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
 							.ToArray();
 						return new UnorderedListNode(items, MarkdomSourceRange.FromMatch(match));
@@ -339,7 +339,7 @@ namespace markdom.cs {
 						var items = match.Product.Of2
 							.Select(itemBlockInfo =>
 								new UnorderedListItemNode(
-									ParseLines(Blocks, itemBlockInfo.Lines),
+									ParseLinesAs(Blocks, itemBlockInfo.Lines),
 									new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
 							.ToArray();
 						return new UnorderedListNode(items, MarkdomSourceRange.FromMatch(match));
@@ -393,7 +393,7 @@ namespace markdom.cs {
 			Define(() => Paragraph,
 				AtLeast(1,
 					Reference(() => NonEmptyBlockLine),
-					match => new ParagraphNode(ParseLines(Inlines, match.Product), MarkdomSourceRange.FromMatch(match))));
+					match => new ParagraphNode(ParseLinesAs(Inlines, match.Product), MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => NonEmptyBlockLine,
 				Sequence(
@@ -956,7 +956,7 @@ namespace markdom.cs {
 							match => LineInfo.FromMatch(match)),
 						Reference(() => endBraces),
 						match => new DocumentLiteralExpression(
-							ParseLines(Blocks, match.Product.Of2.InArray()),
+							ParseLinesAs(Blocks, match.Product.Of2.InArray()),
 							MarkdomSourceRange.FromMatch(match)));
 				}));
 
@@ -1094,7 +1094,7 @@ namespace markdom.cs {
 		}
 
 		private int _parseLinesCount = 0;
-		private T ParseLines<T>(IParsingExpression<T> expression, LineInfo[] lines) {
+		private T ParseLinesAs<T>(IParsingExpression<T> expression, LineInfo[] lines) {
 			_parseLinesCount++;
 			var expressionMatchingContext =
 				new MatchingContext(
