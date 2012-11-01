@@ -123,12 +123,12 @@ namespace markdom.cs {
 		/// <summary>
 		/// A tab or a space.
 		/// </summary>
-		public IParsingExpression<string> SpaceChar { get; private set; }
+		public IParsingExpression<Nil> SpaceChar { get; private set; }
 		public IParsingExpression<string> SpaceChars { get; private set; }
 		/// <summary>
 		/// A whitespace character; space, tab or newline.
 		/// </summary>
-		public IParsingExpression<string> Whitespace { get; private set; }
+		public IParsingExpression<Nil> Whitespace { get; private set; }
 		public IParsingExpression<Nil[]> Whitespaces { get; private set; }
 		/// <summary>
 		/// A newline character.
@@ -179,6 +179,32 @@ namespace markdom.cs {
 		public IParsingExpression<string> CRParen { get; private set; }
 		public IParsingExpression<string> CRSquareBracket { get; private set; }
 		public IParsingExpression<string> CSingleQuote { get; private set; }
+
+		#region char sets
+
+		private static readonly char[] specialCharValues =
+			new char[] {
+				'*', // strong, emphasis
+				'&', // entities
+				'\'', '"', // quotes
+				'`', // ticks
+				'/', // single-line comment
+				'\\', // escape sequence
+				'[', ']', // labels
+				'<', '>', // autolinks
+				'|', // table cell delimiter
+				'@' // expressions
+			};
+
+		private static readonly char[] spaceCharValues =
+			new char[] { ' ', '\t' };
+
+		private static readonly char[] whitespaceCharValues =
+			spaceCharValues
+			.Concat(new char[] { '\n', '\r' })
+			.ToArray();
+
+		#endregion
 
 
 		public MarkdomGrammar() {
@@ -431,7 +457,7 @@ namespace markdom.cs {
 
 			Define(() => Atomic,
 				ChoiceOrdered(
-					Sequence(NotAhead(Reference(() => SpecialChar)), Wildcard()),
+					CharacterNotIn(specialCharValues),
 					ChoiceUnordered(
 						Reference(() => SingleLineComment),
 						Reference(() => MultiLineComment),
@@ -451,11 +477,9 @@ namespace markdom.cs {
 
 			var tableCellContents =
 				AtLeast(0,
-					ChoiceOrdered(
-						Literal(@"\|"),
-						Sequence(
-							NotAhead(Reference(() => CPipe)),
-							Reference(() => BlockLineAtomic))),
+					Sequence(
+						NotAhead(Reference(() => CPipe)),
+						Reference(() => BlockLineAtomic)),
 					match => LineInfo.FromMatch(match));
 
 			var tableCellRowSpan =
@@ -711,29 +735,13 @@ namespace markdom.cs {
 				AtLeast(1, Reference(() => Whitespace), match => new SpaceNode(MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => NormalChar,
-				Sequence(
-					NotAhead(
-						ChoiceUnordered(
-							Reference(() => Whitespace),
-							Reference(() => SpecialChar))),
-					Wildcard()));
+				CharacterNotIn(whitespaceCharValues.Concat(specialCharValues)));
 
 			Define(() => Symbol,
 				Reference(() => SpecialChar, match => new SymbolNode(match.String, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => SpecialChar,
-				CharacterRanges(new char[] {
-					'*', // strong, emphasis
-					'&', // entities
-					'\'', '"', // quotes
-					'`', // ticks
-					'/', // single-line comment
-					'\\', // escape sequence
-					'[', ']', // labels
-					'<', '>', // autolinks
-					'|', // table cell delimiter
-					'@' // expressions
-				}));
+				CharacterIn(specialCharValues));
 
 			#endregion
 
@@ -949,7 +957,7 @@ namespace markdom.cs {
 					ChoiceUnordered(
 						Reference(() => EnglishAlpha),
 						Reference(() => Digit),
-						CharacterRanges(new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' }),
+						CharacterIn(new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' }),
 						Sequence(
 							Literal("%"),
 							Exactly(2, Reference(() => HexDigit)))));
@@ -1072,9 +1080,7 @@ namespace markdom.cs {
 				AtMost(3, Literal(" "), match => match.String));
 
 			Define(() => SpaceChar,
-				ChoiceOrdered(
-					Literal(" "),
-					Literal("\t")));
+				CharacterIn(spaceCharValues));
 
 			Define(() => SpaceChars,
 				AtLeast(0, Reference(() => SpaceChar), match => match.String));
@@ -1091,7 +1097,7 @@ namespace markdom.cs {
 
 			Define(() => Whitespaces,
 				AtLeast(0,
-					CharacterRanges(new char[] { ' ', '\t', '\r', '\n' })));
+					CharacterIn(whitespaceCharValues)));
 
 			Define(() => Digit,
 				CharacterInRange('0', '9'));

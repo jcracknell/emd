@@ -163,9 +163,9 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new NonCapturingCharacterRangeParsingExpression(rangeStart, rangeEnd);
 		}
 
-		public IParsingExpression<Nil> CharacterRanges(IEnumerable<char> chars) {
+		public IParsingExpression<Nil> CharacterIn(IEnumerable<char> chars) {
 			var ranges = new List<IParsingExpression<Nil>>();
-			var enumerator = chars.Distinct().OrderBy(c => (int)c).GetEnumerator();
+			var enumerator = chars.OrderBy(c => c).Distinct().GetEnumerator();
 			if(enumerator.MoveNext()) {
 				var rangeStart = enumerator.Current;
 				var rangeEnd = rangeStart;
@@ -173,15 +173,43 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 				while(enumerator.MoveNext()) {
 					if(enumerator.Current == rangeEnd + 1) {
 						rangeEnd = enumerator.Current;
-						continue;
-					}					
-
-					ranges.Add(new NonCapturingCharacterRangeParsingExpression(rangeStart, rangeEnd));
-
-					rangeStart = rangeEnd = enumerator.Current;
+					} else {
+						ranges.Add(CharacterInRange(rangeStart, rangeEnd));
+						rangeStart = rangeEnd = enumerator.Current;
+					}
 				}
+
+				if(rangeStart == rangeEnd)
+					ranges.Add(CharacterInRange(rangeStart, rangeEnd));
 			}
 
+			if(1 == ranges.Count) return ranges[0];
+
+			return ChoiceUnordered(ranges);
+		}
+
+		public IParsingExpression<Nil> CharacterNotIn(IEnumerable<char> chars) {
+			var ranges = new List<IParsingExpression<Nil>>();
+			var enumerator = chars.OrderBy(c => c).Distinct().GetEnumerator();
+			if(!enumerator.MoveNext()) {
+				return CharacterInRange(char.MinValue, char.MaxValue);
+			} else {
+				if(char.MinValue != enumerator.Current)
+					ranges.Add(CharacterInRange(char.MinValue, (char)(enumerator.Current - 1)));
+
+				var rangeStart = enumerator.Current + 1;
+				while(enumerator.MoveNext()) {
+					if(enumerator.Current != rangeStart)
+						ranges.Add(CharacterInRange((char)rangeStart, (char)(enumerator.Current - 1)));
+
+					if(char.MaxValue != enumerator.Current)
+						rangeStart = enumerator.Current + 1;
+				}
+
+				if(char.MaxValue != rangeStart)
+					ranges.Add(CharacterInRange((char)rangeStart, char.MaxValue));
+			}
+			
 			if(1 == ranges.Count) return ranges[0];
 
 			return ChoiceUnordered(ranges);
