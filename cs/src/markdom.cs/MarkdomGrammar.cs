@@ -63,7 +63,6 @@ namespace markdom.cs {
 
 		#endregion
 		
-		
 		public IParsingExpression<LineInfo> Comment { get; private set; }
 		public IParsingExpression<LineInfo> MultiLineComment { get; private set; }
 		public IParsingExpression<LineInfo> SingleLineComment { get; private set; }
@@ -292,8 +291,7 @@ namespace markdom.cs {
 						Reference(() => CAsterix),
 						Reference(() => CMinus),
 						Reference(() => CPlus)),
-					AtLeast(1, Reference(() => SpaceChar)),
-					match => Nil.Value));
+					AtLeast(1, Reference(() => SpaceChar))));
 
 			var unorderedListBlockLine =
 				Sequence(
@@ -429,8 +427,7 @@ namespace markdom.cs {
 			Define(() => BlockLineAtomic,
 				Sequence(
 					NotAhead(Reference(() => NewLine)),
-					Reference(() => Atomic),
-					match => Nil.Value));
+					Reference(() => Atomic)));
 
 			Define(() => Atomic,
 				ChoiceOrdered(
