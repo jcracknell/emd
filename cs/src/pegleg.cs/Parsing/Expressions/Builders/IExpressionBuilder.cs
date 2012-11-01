@@ -96,8 +96,8 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, IParsingExpression e14, IParsingExpression e15, Func<IMatch<object>, TProduct> matchAction);
 		IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, IParsingExpression e14, IParsingExpression e15, IParsingExpression e16, Func<IMatch<object>, TProduct> matchAction);
 
-		IParsingExpression<object> ChoiceUnordered(params IParsingExpression[] choices);
-		IParsingExpression<object> ChoiceUnordered(IEnumerable<IParsingExpression> choices);
+		IParsingExpression<Nil> ChoiceUnordered(params IParsingExpression[] choices);
+		IParsingExpression<Nil> ChoiceUnordered(IEnumerable<IParsingExpression> choices);
 		IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IEnumerable<IParsingExpression> choices, Func<IMatch<object>, TProduct> matchAction);
 		IParsingExpression<TChoice> ChoiceUnordered<TChoice>(params IParsingExpression<TChoice>[] choices);
 		IParsingExpression<TChoice> ChoiceUnordered<TChoice>(IEnumerable<IParsingExpression<TChoice>> choices);

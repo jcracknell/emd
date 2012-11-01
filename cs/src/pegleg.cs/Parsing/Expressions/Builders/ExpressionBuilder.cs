@@ -261,20 +261,20 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 
 		#region ChoiceUnordered
 
-		public IParsingExpression<object> ChoiceUnordered(params IParsingExpression[] choices) {
-			return new UnorderedChoiceParsingExpression<object>(choices, null);
+		public IParsingExpression<Nil> ChoiceUnordered(params IParsingExpression[] choices) {
+			return new NonCapturingUnorderedChoiceParsingExpression(choices);
 		}
 
-		public IParsingExpression<object> ChoiceUnordered(IEnumerable<IParsingExpression> choices) {
+		public IParsingExpression<Nil> ChoiceUnordered(IEnumerable<IParsingExpression> choices) {
 			return ChoiceUnordered(choices.ToArray());
 		}
 
 		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IEnumerable<IParsingExpression> choices, Func<IMatch<object>, TProduct> matchAction) {
-			return new UnorderedChoiceParsingExpression<TProduct>(choices.ToArray(), matchAction);
+			return new CapturingUnorderedChoiceParsingExpression<object, TProduct>(choices.ToArray(), matchAction);
 		}
 
 		public IParsingExpression<TChoice> ChoiceUnordered<TChoice>(params IParsingExpression<TChoice>[] choices) {
-			return new UnorderedChoiceParsingExpression<TChoice>(choices, null);
+			return new NonCapturingUnorderedChoiceParsingExpression<TChoice>(choices);
 		}
 
 		public IParsingExpression<TChoice> ChoiceUnordered<TChoice>(IEnumerable<IParsingExpression<TChoice>> choices) {
@@ -282,7 +282,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<TProduct> ChoiceUnordered<TChoice, TProduct>(IEnumerable<IParsingExpression<TChoice>> choices, Func<IMatch<TChoice>, TProduct> matchAction) {
-			return new UnorderedChoiceParsingExpression<TProduct>(choices.ToArray(), match => matchAction(UpcastExpressionMatch(match, p => (TChoice)p)));
+			return new CapturingUnorderedChoiceParsingExpression<TChoice, TProduct>(choices.ToArray(), matchAction);
 		}
 
 		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, Func<IMatch<object>, TProduct> matchAction) {

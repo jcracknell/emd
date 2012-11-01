@@ -5,45 +5,33 @@ using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
 	public abstract class UnorderedChoiceParsingExpression : BaseParsingExpression {
-		public UnorderedChoiceParsingExpression() : base(ParsingExpressionKind.UnorderedChoice) { }
-
-		public abstract IEnumerable<IParsingExpression> Choices { get; }
-	}
-
-	public class UnorderedChoiceParsingExpression<TProduct> : UnorderedChoiceParsingExpression, IParsingExpression<TProduct> {
 		private readonly IParsingExpression[] _choices;
 		private readonly int _choiceCount;
 		private readonly int[] _choiceOrder;
 		private readonly uint[] _choiceHits;
-		private readonly Func<IMatch<object>, TProduct> _matchAction;
 
-		public UnorderedChoiceParsingExpression(IParsingExpression[] choices, Func<IMatch<object>, TProduct> matchAction) {
+		public UnorderedChoiceParsingExpression(IParsingExpression[] choices)
+			: base(ParsingExpressionKind.UnorderedChoice)
+		{
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
 			CodeContract.ArgumentIsValid(() => choices, choices.Length >= 2, "must have length of at least two");
-			
+	
 			_choices = choices;
 			_choiceCount = choices.Length;
 			_choiceOrder = new int[_choiceCount];
 			_choiceHits = new uint[_choiceCount];
-			_matchAction = matchAction;
 
 			for(int i = 0; i != _choiceCount; i++)
 				_choiceOrder[i] = i;
 		}
 
-		public override IEnumerable<IParsingExpression> Choices { get { return _choices; } }
+		public IEnumerable<IParsingExpression> Choices { get { return _choices; } }
 
-		/// <summary>
-		/// The current ordering of choices by success count.
-		/// Mostly for inspection while debugging.
-		/// </summary>
 		public IEnumerable<Tuple<uint, IParsingExpression>> CurrentChoiceOrder {
 			get { return _choiceOrder.Select(i => Tuple.Create(_choiceHits[i], _choices[i])).ToArray(); }
 		}
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
-			var matchBuilder = context.StartMatch();
-
+		protected IMatchingResult MatchChoices(IMatchingContext context) {
 			for(var i = 0; i != _choiceCount; i++) {
 				// Ordering of choices is determined by the choice order array
 				var currentChoice = _choices[_choiceOrder[i]];
@@ -52,18 +40,13 @@ namespace pegleg.cs.Parsing.Expressions {
 				var choiceMatchingResult = currentChoice.Matches(choiceMatchingContext);
 
 				if(choiceMatchingResult.Succeeded) {
-					UpdateChoiceOrder(i);
-
 					context.Assimilate(choiceMatchingContext);
-					return new SuccessfulMatchingResult(
-						null != _matchAction
-							? _matchAction(matchBuilder.CompleteMatch(this, choiceMatchingResult.Product))
-							: choiceMatchingResult.Product
-					);
+					UpdateChoiceOrder(i);
+					return choiceMatchingResult;
 				}
 			}
 
-			return new UnsuccessfulMatchingResult();
+			return null;
 		}
 
 		private void UpdateChoiceOrder(int i) {
@@ -99,6 +82,48 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
+		}
+	}
+
+	public class NonCapturingUnorderedChoiceParsingExpression : UnorderedChoiceParsingExpression, IParsingExpression<Nil> {
+		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression[] choices) : base(choices) { }
+
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+			if(null == MatchChoices(context))
+				return new UnsuccessfulMatchingResult();
+
+			return SuccessfulMatchingResult.NilProduct;
+		}
+	}
+
+	public class NonCapturingUnorderedChoiceParsingExpression<TChoice> : UnorderedChoiceParsingExpression, IParsingExpression<TChoice> {
+		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression[] choices) : base(choices) { }
+
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+			return MatchChoices(context) ?? new UnsuccessfulMatchingResult();
+		}
+	}
+
+	public class CapturingUnorderedChoiceParsingExpression<TChoice, TProduct> : UnorderedChoiceParsingExpression, IParsingExpression<TProduct> {
+		private readonly Func<IMatch<TChoice>, TProduct> _matchAction;
+
+		public CapturingUnorderedChoiceParsingExpression(IParsingExpression[] choices, Func<IMatch<TChoice>, TProduct> matchAction)
+			: base(choices)	
+		{
+			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
+
+			_matchAction = matchAction;
+		}
+
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+			var matchBuilder = context.StartMatch();
+
+			var choiceResult = MatchChoices(context);
+			if(null == choiceResult)
+				return new UnsuccessfulMatchingResult();
+
+			var product = _matchAction(matchBuilder.CompleteMatch(this, (TChoice)choiceResult.Product));
+			return new SuccessfulMatchingResult(product);
 		}
 	}
 }
