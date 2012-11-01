@@ -152,11 +152,11 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<T> Reference<T>(Func<IParsingExpression<T>> reference) {
-			return new ReferenceParsingExpression<T>(reference, null);
+			return new NonCapturingReferenceParsingExpression<T>(reference);
 		}
 
 		public IParsingExpression<TProduct> Reference<T, TProduct>(Func<IParsingExpression<T>> reference, Func<IMatch<T>, TProduct> matchAction) {
-			return new ReferenceParsingExpression<TProduct>(reference, match => matchAction(UpcastExpressionMatch(match, product => (T)product)));
+			return new CapturingReferenceParsingExpression<T, TProduct>(reference, matchAction);
 		}
 
 		public IParsingExpression<Nil> Wildcard() {
