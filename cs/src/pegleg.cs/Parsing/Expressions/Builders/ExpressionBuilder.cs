@@ -27,14 +27,6 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new UpcastedExpressionMatch<TSource, TDest>(expressionMatch, cast);
 		}
 
-		private TDest[] CastArray<TDest>(object[] source) {
-			var dest = new TDest[source.Length];
-			for(var i = 0; i < source.Length; i++)
-				dest[i] = (TDest)source[i];
-
-			return dest;
-		}
-
 		#endregion
 
 		public IParsingExpression<T> Named<T>(string name, IParsingExpression<T> expression) {
