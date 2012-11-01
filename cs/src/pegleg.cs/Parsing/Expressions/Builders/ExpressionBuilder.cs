@@ -181,16 +181,24 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new OrderedChoiceParsingExpression<object>(choices, null);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression[] choices, Func<IMatch<object>, TProduct> matchAction) {
-			return new OrderedChoiceParsingExpression<TProduct>(choices, matchAction);
+		public IParsingExpression<object> ChoiceOrdered(IEnumerable<IParsingExpression> choices) {
+			return ChoiceOrdered(choices.ToArray());
+		}
+
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IEnumerable<IParsingExpression> choices, Func<IMatch<object>, TProduct> matchAction) {
+			return new OrderedChoiceParsingExpression<TProduct>(choices.ToArray(), matchAction);
 		}
 
 		public IParsingExpression<TChoice> ChoiceOrdered<TChoice>(params IParsingExpression<TChoice>[] choices) {
 			return new OrderedChoiceParsingExpression<TChoice>(choices, null);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TChoice, TProduct>(IParsingExpression<TChoice>[] choices, Func<IMatch<TChoice>, TProduct> matchAction) {
-			return new OrderedChoiceParsingExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, product => (TChoice)product)));
+		public IParsingExpression<TChoice> ChoiceOrdered<TChoice>(IEnumerable<IParsingExpression<TChoice>> choices) {
+			return ChoiceOrdered(choices.ToArray());
+		}
+
+		public IParsingExpression<TProduct> ChoiceOrdered<TChoice, TProduct>(IEnumerable<IParsingExpression<TChoice>> choices, Func<IMatch<TChoice>, TProduct> matchAction) {
+			return new OrderedChoiceParsingExpression<TProduct>(choices.ToArray(), match => matchAction(UpcastExpressionMatch(match, product => (TChoice)product)));
 		}
 
 		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, Func<IMatch<object>, TProduct> matchAction) {
@@ -261,16 +269,24 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new UnorderedChoiceParsingExpression<object>(choices, null);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression[] choices, Func<IMatch<object>, TProduct> matchAction) {
-			return new UnorderedChoiceParsingExpression<TProduct>(choices, matchAction);
+		public IParsingExpression<object> ChoiceUnordered(IEnumerable<IParsingExpression> choices) {
+			return ChoiceUnordered(choices.ToArray());
+		}
+
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IEnumerable<IParsingExpression> choices, Func<IMatch<object>, TProduct> matchAction) {
+			return new UnorderedChoiceParsingExpression<TProduct>(choices.ToArray(), matchAction);
 		}
 
 		public IParsingExpression<TChoice> ChoiceUnordered<TChoice>(params IParsingExpression<TChoice>[] choices) {
 			return new UnorderedChoiceParsingExpression<TChoice>(choices, null);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TChoice, TProduct>(IParsingExpression<TChoice>[] choices, Func<IMatch<TChoice>, TProduct> matchAction) {
-			return new UnorderedChoiceParsingExpression<TProduct>(choices, match => matchAction(UpcastExpressionMatch(match, p => (TChoice)p)));
+		public IParsingExpression<TChoice> ChoiceUnordered<TChoice>(IEnumerable<IParsingExpression<TChoice>> choices) {
+			return ChoiceUnordered(choices.ToArray());
+		}
+
+		public IParsingExpression<TProduct> ChoiceUnordered<TChoice, TProduct>(IEnumerable<IParsingExpression<TChoice>> choices, Func<IMatch<TChoice>, TProduct> matchAction) {
+			return new UnorderedChoiceParsingExpression<TProduct>(choices.ToArray(), match => matchAction(UpcastExpressionMatch(match, p => (TChoice)p)));
 		}
 
 		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, Func<IMatch<object>, TProduct> matchAction) {

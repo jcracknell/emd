@@ -964,7 +964,7 @@ namespace markdom.cs {
 					ChoiceUnordered(
 						Reference(() => EnglishAlpha),
 						Reference(() => Digit),
-						ChoiceUnordered(new string[] { "/", "?", ":", "@", "&", "=", "?", "+", "$", "-", "_", "!", "~", "*", "'", ".", ";" } .Select(Literal).ToArray()),
+						ChoiceUnordered(new string[] { "/", "?", ":", "@", "&", "=", "+", "$", "-", "_", "!", "~", "*", "'", ".", ";" }.Select(Literal)),
 						Sequence(
 							Literal("%"),
 							Exactly(2, Reference(() => HexDigit)))));
@@ -1016,13 +1016,13 @@ namespace markdom.cs {
 
 			Define(() => UpperRomanNumeral,
 				Sequence(
-					Ahead(ChoiceUnordered("IVXLCDM".Select(Literal).ToArray())),
+					Ahead(ChoiceUnordered("IVXLCDM".Select(Literal))),
 					Reference(() => RomanNumeral),
 					match => match.Product.Of2));
 
 			Define(() => LowerRomanNumeral,
 				Sequence(
-					Ahead(ChoiceUnordered("ivxlcdm".Select(Literal).ToArray())),
+					Ahead(ChoiceUnordered("ivxlcdm".Select(Literal))),
 					Reference(() => RomanNumeral),
 					match => match.Product.Of2));
 
