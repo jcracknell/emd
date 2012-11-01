@@ -129,12 +129,12 @@ namespace markdom.cs {
 		/// A whitespace character; space, tab or newline.
 		/// </summary>
 		public IParsingExpression<string> Whitespace { get; private set; }
-		public IParsingExpression<string> Whitespaces { get; private set; }
+		public IParsingExpression<Nil[]> Whitespaces { get; private set; }
 		/// <summary>
 		/// A newline character.
 		/// </summary>
 		public IParsingExpression<string> NewLine { get; private set; }
-		public IParsingExpression<string> SpecialChar { get; private set; }
+		public IParsingExpression<Nil> SpecialChar { get; private set; }
 		public IParsingExpression<Nil> NormalChar { get; private set; }
 		public IParsingExpression<string> Indent { get; private set; }
 		public IParsingExpression<string> NonIndentSpace { get; private set; }
@@ -722,17 +722,16 @@ namespace markdom.cs {
 				Reference(() => SpecialChar, match => new SymbolNode(match.String, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => SpecialChar,
-				ChoiceUnordered(
-					Reference(() => CAsterix), // bullets, strong, emphasis
-					Reference(() => CAmpersand), // entities
-					Reference(() => CSingleQuote), // quotes
-					Reference(() => CDoubleQuote), // quotes
-					Reference(() => CForwardSlash), // single-line comment
-					Reference(() => CBackSlash), // escape character
-					Reference(() => CLSquareBracket), // label (link, reference)
-					Reference(() => CRSquareBracket), // label
-					Reference(() => CPipe), // table cell delimiter
-					Reference(() => CAt))); // expressions
+				CharacterRanges(new char[] {
+					'*', // strong, emphasis
+					'&', // entities
+					'\'', '"', // quotes
+					'/', // single-line comment
+					'\\', // escape sequence
+					'[', ']', // labels
+					'|', // table cell delimiter
+					'@' // expressions
+				}));
 
 			#endregion
 
@@ -948,7 +947,7 @@ namespace markdom.cs {
 					ChoiceUnordered(
 						Reference(() => EnglishAlpha),
 						Reference(() => Digit),
-						ChoiceUnordered(new string[] { "/", "?", ":", "@", "&", "=", "+", "$", "-", "_", "!", "~", "*", "'", ".", ";" }.Select(Literal)),
+						CharacterRanges(new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' }),
 						Sequence(
 							Literal("%"),
 							Exactly(2, Reference(() => HexDigit)))));
@@ -1089,7 +1088,8 @@ namespace markdom.cs {
 					Reference(() => NewLine)));
 
 			Define(() => Whitespaces,
-				AtLeast(0, Reference(() => Whitespace), match => match.String));
+				AtLeast(0,
+					CharacterRanges(new char[] { ' ', '\t', '\r', '\n' })));
 
 			Define(() => Digit,
 				CharacterInRange('0', '9'));

@@ -25,6 +25,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		// If there is no user-provided action, the expression product type parameter is the
 		// most detailed type which can be automatically inferred.
 
+
 		IParsingExpression<T> Named<T>(string name, IParsingExpression<T> expression);
 
 		// # Terminals
@@ -35,6 +36,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		IParsingExpression<TProduct> Literal<TProduct>(char literal, Func<IMatch<string>, TProduct> matchAction);
 
 		IParsingExpression<Nil> CharacterInRange(char rangeStart, char rangeEnd);
+		IParsingExpression<Nil> CharacterRanges(IEnumerable<char> chars);
 
 		IParsingExpression<Match> Regex(Regex regex);
 		IParsingExpression<Match> Regex(string regex);

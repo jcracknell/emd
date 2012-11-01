@@ -163,6 +163,30 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new NonCapturingCharacterRangeParsingExpression(rangeStart, rangeEnd);
 		}
 
+		public IParsingExpression<Nil> CharacterRanges(IEnumerable<char> chars) {
+			var ranges = new List<IParsingExpression<Nil>>();
+			var enumerator = chars.Distinct().OrderBy(c => (int)c).GetEnumerator();
+			if(enumerator.MoveNext()) {
+				var rangeStart = enumerator.Current;
+				var rangeEnd = rangeStart;
+
+				while(enumerator.MoveNext()) {
+					if(enumerator.Current == rangeEnd + 1) {
+						rangeEnd = enumerator.Current;
+						continue;
+					}					
+
+					ranges.Add(new NonCapturingCharacterRangeParsingExpression(rangeStart, rangeEnd));
+
+					rangeStart = rangeEnd = enumerator.Current;
+				}
+			}
+
+			if(1 == ranges.Count) return ranges[0];
+
+			return ChoiceUnordered(ranges);
+		}
+
 		#region ChoiceOrdered
 
 		public IParsingExpression<Nil> ChoiceOrdered(params IParsingExpression[] choices) {
@@ -440,5 +464,6 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		#endregion
+
 	}
 }
