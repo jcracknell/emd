@@ -74,8 +74,8 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		IParsingExpression<T> Reference<T>(Func<IParsingExpression<T>> reference);
 		IParsingExpression<TProduct> Reference<T, TProduct>(Func<IParsingExpression<T>> reference, Func<IMatch<T>, TProduct> matchAction);
 
-		IParsingExpression<object> ChoiceOrdered(params IParsingExpression[] choices);
-		IParsingExpression<object> ChoiceOrdered(IEnumerable<IParsingExpression> choices);
+		IParsingExpression<Nil> ChoiceOrdered(params IParsingExpression[] choices);
+		IParsingExpression<Nil> ChoiceOrdered(IEnumerable<IParsingExpression> choices);
 		IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IEnumerable<IParsingExpression> choices, Func<IMatch<object>, TProduct> matchAction);
 		IParsingExpression<TChoice> ChoiceOrdered<TChoice>(params IParsingExpression<TChoice>[] choices);
 		IParsingExpression<TChoice> ChoiceOrdered<TChoice>(IEnumerable<IParsingExpression<TChoice>> choices);

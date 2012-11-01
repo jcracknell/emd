@@ -12,7 +12,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public void ChoiceExpression_constructor_works_as_expected() {
 			var literalExpressionA = new LiteralParsingExpression<string>("a", m => "A");
 			var literalExpressionB = new LiteralParsingExpression<string>("b", m => "B");
-			var choiceExpression = new OrderedChoiceParsingExpression<string>(
+			var choiceExpression = new CapturingOrderedChoiceParsingExpression<string, string>(
 				new IParsingExpression[] { literalExpressionA, literalExpressionB },
 				match => "match");
 
@@ -23,7 +23,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void ChoiceExpression_matches_first_choice() {
-			var choiceExpression = new OrderedChoiceParsingExpression<string>(
+			var choiceExpression = new CapturingOrderedChoiceParsingExpression<string, string>(
 				new IParsingExpression[] {
 					new LiteralParsingExpression<string>("a", m => "A"),
 					new LiteralParsingExpression<string>("b", m => { Assert.Fail(); return "B"; }) },
@@ -41,7 +41,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void ChoiceExpression_matches_second_choice() {
-			var choiceExpression = new OrderedChoiceParsingExpression<string>(
+			var choiceExpression = new CapturingOrderedChoiceParsingExpression<string, string>(
 				new IParsingExpression[] {
 					new LiteralParsingExpression<string>("a", m => "A"),
 					new LiteralParsingExpression<string>("b", m => "B") },
@@ -60,7 +60,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void ChoiceExpression_order_implies_precedence() {
-			var choiceExpression = new OrderedChoiceParsingExpression<string>(
+			var choiceExpression = new CapturingOrderedChoiceParsingExpression<string, string>(
 				new IParsingExpression[] {
 					new LiteralParsingExpression<string>("aa", m => m.Product),
 					new LiteralParsingExpression<string>("a", m => m.Product) },
@@ -78,7 +78,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void ChoiceExpression_rejects_when_no_choice_matches() {
-			var choiceExpression = new OrderedChoiceParsingExpression<string>(
+			var choiceExpression = new CapturingOrderedChoiceParsingExpression<string, string>(
 				new IParsingExpression[] {
 					new LiteralParsingExpression<string>("a", m => { Assert.Fail(); return m.Product; }),
 					new LiteralParsingExpression<string>("b", m => { Assert.Fail(); return m.Product; }) },
