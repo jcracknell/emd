@@ -6,12 +6,29 @@ using System.Text;
 namespace pegleg.cs.Parsing.Expressions {
 	public abstract class WildcardParsingExpression : BaseParsingExpression {
 		public WildcardParsingExpression() : base(ParsingExpressionKind.Wildcard) { }
+
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+			return handler.Handle(this);
+		}
 	}
 
-	public class WildcardParsingExpression<TProduct> : WildcardParsingExpression, IParsingExpression<TProduct> {
-		private readonly Func<IMatch<string>, TProduct> _matchAction = null;
+	public class NonCapturingWildcardParsingExpression : WildcardParsingExpression, IParsingExpression<Nil> {
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+			if(context.AtEndOfInput)
+				return new UnsuccessfulMatchingResult();
 
-		public WildcardParsingExpression(Func<IMatch<string>, TProduct> matchAction) {
+			if(context.ConsumesAnyCharacter())
+				return SuccessfulMatchingResult.NilProduct;
+
+			return new UnsuccessfulMatchingResult();
+		}
+	}
+
+	public class CapturingWildcardParsingExpression<TProduct> : WildcardParsingExpression, IParsingExpression<TProduct> {
+		private readonly Func<IMatch<char>, TProduct> _matchAction = null;
+
+		public CapturingWildcardParsingExpression(Func<IMatch<char>, TProduct> matchAction) {
+			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
 			_matchAction = matchAction;			
 		}
 
@@ -19,26 +36,13 @@ namespace pegleg.cs.Parsing.Expressions {
 			if(context.AtEndOfInput)
 				return new UnsuccessfulMatchingResult();
 
+			var matchBuilder = context.StartMatch();
 			char c;
-			if(null != _matchAction) {
-				var matchBuilder = context.StartMatch();
+			if(!context.ConsumesAnyCharacter(out c))
+				return new UnsuccessfulMatchingResult();
 
-				if(!context.ConsumesAnyCharacter(out c))
-					return new UnsuccessfulMatchingResult();
-
-				var product = _matchAction(matchBuilder.CompleteMatch(this, c.ToString()));
-
-				return new SuccessfulMatchingResult(product);
-			} else {
-				if(!context.ConsumesAnyCharacter(out c))
-					return new UnsuccessfulMatchingResult();
-
-				return new SuccessfulMatchingResult(c.ToString());
-			}
-		}
-
-		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
-			return handler.Handle(this);
+			var product = _matchAction(matchBuilder.CompleteMatch(this, c));
+			return new SuccessfulMatchingResult(product);
 		}
 	}
 }

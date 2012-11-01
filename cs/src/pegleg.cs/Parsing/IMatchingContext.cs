@@ -10,6 +10,7 @@ namespace pegleg.cs.Parsing {
 		int Consumed { get; }	
 		string Substring(int index, int length);
 		bool ConsumesAnyCharacter(out char c);
+		bool ConsumesAnyCharacter();
 		bool ConsumesMatching(string literal);
 		bool ConsumesMatching(Regex regex, out Match match);
 		bool ConsumesMatchingCharInRange(char start, char end, out char matched);

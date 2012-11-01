@@ -147,7 +147,7 @@ namespace markdom.cs {
 		/// </summary>
 		public IParsingExpression<string> NewLine { get; private set; }
 		public IParsingExpression<string> SpecialChar { get; private set; }
-		public IParsingExpression<string> NormalChar { get; private set; }
+		public IParsingExpression<Nil> NormalChar { get; private set; }
 		public IParsingExpression<string> Indent { get; private set; }
 		public IParsingExpression<string> NonIndentSpace { get; private set; }
 		/// <summary>
@@ -731,8 +731,7 @@ namespace markdom.cs {
 						ChoiceUnordered(
 							Reference(() => Whitespace),
 							Reference(() => SpecialChar))),
-					Wildcard(),
-					match => match.Product.Of2));
+					Wildcard()));
 
 			Define(() => Symbol,
 				Reference(() => SpecialChar, match => new SymbolNode(match.String, MarkdomSourceRange.FromMatch(match))));
@@ -878,7 +877,7 @@ namespace markdom.cs {
 						Sequence(
 							NotAhead(ChoiceUnordered(Reference(() => CSingleQuote), Reference(() => NewLine))),
 							Wildcard(),
-							match => match.Product.Of2)),
+							match => match.String)),
 					match => match.Product.Join());
 
 			var doubleQuotedStringExpressionContent =
@@ -889,7 +888,7 @@ namespace markdom.cs {
 						Sequence(
 							NotAhead(ChoiceUnordered(Reference(() => CDoubleQuote), Reference(() => NewLine))),
 							Wildcard(),
-							match => match.Product.Of2)),
+							match => match.String)),
 					match => match.Product.Join());
 
 			var singleQuotedStringExpression =
@@ -949,9 +948,9 @@ namespace markdom.cs {
 			//   * Parentheses inside of a URI expression must be balanced
 			//   * Cannot start with `@`, `'`, or `"'
 
-			IParsingExpression<object[]> uriExpressionPart = null;
+			IParsingExpression<object> uriExpressionPart = null;
 			IParsingExpression<object[]> uriExpressionRegularPart = null;
-			IParsingExpression<object[]> uriExpressionParenthesizedPart = null;
+			IParsingExpression<Nil> uriExpressionParenthesizedPart = null;
 
 			uriExpressionPart = 
 				Named("UriExpressionPart",

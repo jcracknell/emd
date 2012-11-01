@@ -45,8 +45,8 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		IParsingExpression<Nil> EndOfInput();
 		IParsingExpression<TProduct> EndOfInput<TProduct>(Func<IMatch<Nil>, TProduct> matchAction);
 
-		IParsingExpression<string> Wildcard();
-		IParsingExpression<TProduct> Wildcard<TProduct>(Func<IMatch<string>, TProduct> matchAction);
+		IParsingExpression<Nil> Wildcard();
+		IParsingExpression<TProduct> Wildcard<TProduct>(Func<IMatch<char>, TProduct> matchAction);
 
 		// # Non-terminals
 
@@ -119,7 +119,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, IParsingExpression e14, IParsingExpression e15, Func<IMatch<object>, TProduct> matchAction);
 		IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, IParsingExpression e14, IParsingExpression e15, IParsingExpression e16, Func<IMatch<object>, TProduct> matchAction);
 
-		IParsingExpression<object[]> Sequence(params IParsingExpression[] sequence);
+		IParsingExpression<Nil> Sequence(params IParsingExpression[] sequence);
 		IParsingExpression<TProduct> Sequence<TProduct>(IParsingExpression[] sequence, Func<IMatch<SequenceProducts>, TProduct> matchAction);
 		IParsingExpression<TProduct> Sequence<T1, T2, TProduct>(IParsingExpression<T1> e1, IParsingExpression<T2> e2, Func<IMatch<SequenceProducts<T1, T2>>, TProduct> matchAction);
 		IParsingExpression<TProduct> Sequence<T1, T2, T3, TProduct>(IParsingExpression<T1> e1, IParsingExpression<T2> e2, IParsingExpression<T3> e3, Func<IMatch<SequenceProducts<T1, T2, T3>>, TProduct> matchAction);

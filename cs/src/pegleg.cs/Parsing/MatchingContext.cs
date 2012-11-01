@@ -130,6 +130,24 @@ namespace pegleg.cs.Parsing {
 			return true;
 		}
 
+		public bool ConsumesAnyCharacter(out char c) {
+			if(AtEndOfInput) {
+				c = (char)0;
+				return false;
+			} else {
+				c = _consumable[_consumed];
+				Consume(1);
+				return true;
+			}
+		}
+
+		public bool ConsumesAnyCharacter() {
+			if(AtEndOfInput) return false;
+
+			Consume(1);
+			return true;
+		}
+
 		public bool AtEndOfInput { get { return _consumable.Length == _consumed; } }
 
 		public IMatchingContext Clone() {
@@ -145,15 +163,5 @@ namespace pegleg.cs.Parsing {
 			return new MatchBuilder(this);
 		}
 
-		public bool ConsumesAnyCharacter(out char c) {
-			if(AtEndOfInput) {
-				c = (char)0;
-				return false;
-			} else {
-				c = _consumable[_consumed];
-				Consume(1);
-				return true;
-			}
-		}
 	}
 }

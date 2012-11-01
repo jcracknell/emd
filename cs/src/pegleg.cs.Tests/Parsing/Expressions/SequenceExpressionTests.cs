@@ -13,7 +13,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			var literalExpressionA = new LiteralParsingExpression<string>("a", c => "A");
 			var literalExpressionB = new LiteralParsingExpression<string>("b", c => "B");
 
-			var sequenceExpression = new SequenceParsingExpression<string>(
+			var sequenceExpression = new CapturingSequenceParsingExpression<string>(
 				new IParsingExpression[] { literalExpressionA, literalExpressionB },
 				matchContext => "seq");
 
@@ -25,7 +25,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			var literalExpressionA = new LiteralParsingExpression<string>("a", c => "A");
 			var literalExpressionB = new LiteralParsingExpression<string>("b", c => "B");
 
-			var sequenceExpression = new SequenceParsingExpression<string>(
+			var sequenceExpression = new CapturingSequenceParsingExpression<string>(
 				new IParsingExpression[] { literalExpressionA, literalExpressionB },
 				matchContext => {
 					Assert.AreEqual("A", matchContext.Product[0]);
