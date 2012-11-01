@@ -13,7 +13,8 @@ namespace pegleg.cs.Parsing {
 		bool ConsumesAnyCharacter();
 		bool ConsumesMatching(string literal);
 		bool ConsumesMatching(Regex regex, out Match match);
-		bool ConsumesMatchingCharInRange(char start, char end, out char matched);
+		bool ConsumesCharInRange(char start, char end, out char matched);
+		bool ConsumesCharInRange(char start, char end);
 		bool AtEndOfInput { get; }
 		IMatchingContext Clone();
 		void Assimilate(IMatchingContext clone);

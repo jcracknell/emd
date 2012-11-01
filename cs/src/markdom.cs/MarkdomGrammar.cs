@@ -64,13 +64,8 @@ namespace markdom.cs {
 		#endregion
 		
 		
-		/// <summary>
-		/// A C-style multi-line comment.
-		/// </summary>
+		public IParsingExpression<LineInfo> Comment { get; private set; }
 		public IParsingExpression<LineInfo> MultiLineComment { get; private set; }
-		/// <summary>
-		/// A C-style single line comment. Does not consume the end of the line
-		/// </summary>
 		public IParsingExpression<LineInfo> SingleLineComment { get; private set; }
 
 		public IParsingExpression<MarkdomDocumentNode> Document { get; private set; }
@@ -108,14 +103,8 @@ namespace markdom.cs {
 		public IParsingExpression<TextNode> Text { get; private set; }
 		public IParsingExpression<SpaceNode> Space { get; private set; }
 		public IParsingExpression<EntityNode> Entity { get; private set; }
-
 		public IParsingExpression<ReferenceId> ReferenceLabel { get; private set; }
-
-		/// <summary>
-		/// A Symbol, an unescaped special character which was not parsed into a valid node.
-		/// </summary>
 		public IParsingExpression<SymbolNode> Symbol { get; private set; }
-
 
 		public IParsingExpression<IExpression> Expression { get; private set; }
 		public IParsingExpression<IExpression> LiteralExpression { get; private set; }
@@ -160,13 +149,12 @@ namespace markdom.cs {
 		public IParsingExpression<LineInfo[]> BlankLines { get; private set; }
 		public IParsingExpression<LineInfo> BlankLine { get; private set; }
 		public IParsingExpression<LineInfo> NonTerminalBlankLine { get; private set; }
-		public IParsingExpression<string> Digit { get; private set; }
-		public IParsingExpression<string> NonZeroDigit { get; private set; }
-		public IParsingExpression<string> HexDigit { get; private set; }
-		public IParsingExpression<string> EnglishLowerAlpha { get; private set; }
-		public IParsingExpression<string> EnglishUpperAlpha { get; private set; }
-		public IParsingExpression<string> EnglishAlpha { get; private set; }
-		public IParsingExpression<LineInfo> Comment { get; private set; }
+		public IParsingExpression<Nil> Digit { get; private set; }
+		public IParsingExpression<Nil> NonZeroDigit { get; private set; }
+		public IParsingExpression<Nil> HexDigit { get; private set; }
+		public IParsingExpression<Nil> EnglishLowerAlpha { get; private set; }
+		public IParsingExpression<Nil> EnglishUpperAlpha { get; private set; }
+		public IParsingExpression<Nil> EnglishAlpha { get; private set; }
 
 		public IParsingExpression<string> CAmpersand { get; private set; }
 		public IParsingExpression<string> CAsterix { get; private set; }

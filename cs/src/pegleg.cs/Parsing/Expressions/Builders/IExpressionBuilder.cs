@@ -34,8 +34,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		IParsingExpression<TProduct> Literal<TProduct>(string literal, Func<IMatch<string>, TProduct> matchAction);
 		IParsingExpression<TProduct> Literal<TProduct>(char literal, Func<IMatch<string>, TProduct> matchAction);
 
-		IParsingExpression<string> CharacterInRange(char rangeStart, char rangeEnd);
-		IParsingExpression<TProduct> CharacterInRange<TProduct>(char rangeStart, char rangeEnd, Func<IMatch<string>, TProduct> matchAction);
+		IParsingExpression<Nil> CharacterInRange(char rangeStart, char rangeEnd);
 
 		IParsingExpression<Match> Regex(Regex regex);
 		IParsingExpression<Match> Regex(string regex);

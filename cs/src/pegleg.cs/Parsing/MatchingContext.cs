@@ -115,19 +115,33 @@ namespace pegleg.cs.Parsing {
 			}
 		}
 
-		public bool ConsumesMatchingCharInRange(char start, char end, out char matched) {
+		public bool ConsumesCharInRange(char start, char end) {
+			if(AtEndOfInput) return false;
+
+			var c = _consumable[_consumed];
+
+			if(start <= c && c <= end) {
+				Consume(1);
+				return true;
+			}
+
+			return false;
+		}
+
+		public bool ConsumesCharInRange(char start, char end, out char matched) {
 			matched = (char)0;
 
 			if(AtEndOfInput)
 				return false;
 
 			var c = _consumable[_consumed];
-			if(!(start <= c && c <= end))
-				return false;
+			if(start <= c && c <= end) {
+				matched = c;
+				Consume(1);
+				return true;
+			}
 
-			matched = c;
-			Consume(1);
-			return true;
+			return false;
 		}
 
 		public bool ConsumesAnyCharacter(out char c) {

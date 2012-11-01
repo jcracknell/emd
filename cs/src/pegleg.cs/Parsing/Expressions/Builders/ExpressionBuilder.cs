@@ -167,12 +167,8 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new CapturingWildcardParsingExpression<TProduct>(matchAction);
 		}
 
-		public IParsingExpression<string> CharacterInRange(char rangeStart, char rangeEnd) {
-			return new CharacterRangeParsingExpression<string>(rangeStart, rangeEnd, null);
-		}
-
-		public IParsingExpression<TProduct> CharacterInRange<TProduct>(char rangeStart, char rangeEnd, Func<IMatch<string>, TProduct> matchAction) {
-			return new CharacterRangeParsingExpression<TProduct>(rangeStart, rangeEnd, matchAction);
+		public IParsingExpression<Nil> CharacterInRange(char rangeStart, char rangeEnd) {
+			return new NonCapturingCharacterRangeParsingExpression(rangeStart, rangeEnd);
 		}
 
 		#region ChoiceOrdered
