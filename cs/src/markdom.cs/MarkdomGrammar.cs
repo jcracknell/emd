@@ -63,41 +63,7 @@ namespace markdom.cs {
 
 		#endregion
 		
-		/// <summary>
-		/// A tab or a space.
-		/// </summary>
-		public IParsingExpression<string> SpaceChar { get; private set; }
-		public IParsingExpression<string> SpaceChars { get; private set; }
-		/// <summary>
-		/// A whitespace character; space, tab or newline.
-		/// </summary>
-		public IParsingExpression<string> Whitespace { get; private set; }
-		public IParsingExpression<string> Whitespaces { get; private set; }
-		/// <summary>
-		/// A newline character.
-		/// </summary>
-		public IParsingExpression<string> NewLine { get; private set; }
-		public IParsingExpression<string> SpecialChar { get; private set; }
-		public IParsingExpression<string> NormalChar { get; private set; }
-		public IParsingExpression<string> Indent { get; private set; }
-		public IParsingExpression<string> NonIndentSpace { get; private set; }
-		/// <summary>
-		/// A raw line of input, including the newline character.
-		/// </summary>
-		public IParsingExpression<LineInfo> Line { get; private set; }
-		/// <summary>
-		/// A blank line; composed of any number of spaces followed by a line end.
-		/// </summary>
-		public IParsingExpression<LineInfo[]> BlankLines { get; private set; }
-		public IParsingExpression<LineInfo> BlankLine { get; private set; }
-		public IParsingExpression<LineInfo> NonTerminalBlankLine { get; private set; }
-		public IParsingExpression<string> Digit { get; private set; }
-		public IParsingExpression<string> NonZeroDigit { get; private set; }
-		public IParsingExpression<string> HexDigit { get; private set; }
-		public IParsingExpression<string> EnglishLowerAlpha { get; private set; }
-		public IParsingExpression<string> EnglishUpperAlpha { get; private set; }
-		public IParsingExpression<string> EnglishAlpha { get; private set; }
-		public IParsingExpression<LineInfo> Comment { get; private set; }
+		
 		/// <summary>
 		/// A C-style multi-line comment.
 		/// </summary>
@@ -165,6 +131,68 @@ namespace markdom.cs {
 		public IParsingExpression<int> LowerRomanNumeral { get; private set; }
 		public IParsingExpression<int> UpperRomanNumeral { get; private set; }
 		public IParsingExpression<int> RomanNumeral { get; private set; }
+
+		/// <summary>
+		/// A tab or a space.
+		/// </summary>
+		public IParsingExpression<string> SpaceChar { get; private set; }
+		public IParsingExpression<string> SpaceChars { get; private set; }
+		/// <summary>
+		/// A whitespace character; space, tab or newline.
+		/// </summary>
+		public IParsingExpression<string> Whitespace { get; private set; }
+		public IParsingExpression<string> Whitespaces { get; private set; }
+		/// <summary>
+		/// A newline character.
+		/// </summary>
+		public IParsingExpression<string> NewLine { get; private set; }
+		public IParsingExpression<string> SpecialChar { get; private set; }
+		public IParsingExpression<string> NormalChar { get; private set; }
+		public IParsingExpression<string> Indent { get; private set; }
+		public IParsingExpression<string> NonIndentSpace { get; private set; }
+		/// <summary>
+		/// A raw line of input, including the newline character.
+		/// </summary>
+		public IParsingExpression<LineInfo> Line { get; private set; }
+		/// <summary>
+		/// A blank line; composed of any number of spaces followed by a line end.
+		/// </summary>
+		public IParsingExpression<LineInfo[]> BlankLines { get; private set; }
+		public IParsingExpression<LineInfo> BlankLine { get; private set; }
+		public IParsingExpression<LineInfo> NonTerminalBlankLine { get; private set; }
+		public IParsingExpression<string> Digit { get; private set; }
+		public IParsingExpression<string> NonZeroDigit { get; private set; }
+		public IParsingExpression<string> HexDigit { get; private set; }
+		public IParsingExpression<string> EnglishLowerAlpha { get; private set; }
+		public IParsingExpression<string> EnglishUpperAlpha { get; private set; }
+		public IParsingExpression<string> EnglishAlpha { get; private set; }
+		public IParsingExpression<LineInfo> Comment { get; private set; }
+
+		public IParsingExpression<string> CAmpersand { get; private set; }
+		public IParsingExpression<string> CAsterix { get; private set; }
+		public IParsingExpression<string> CAt { get; private set; }
+		public IParsingExpression<string> CBackSlash { get; private set; }
+		public IParsingExpression<string> CColon { get; private set; }
+		public IParsingExpression<string> CComma { get; private set; }
+		public IParsingExpression<string> CDoubleQuote { get; private set; }
+		public IParsingExpression<string> CEquals { get; private set; }
+		public IParsingExpression<string> CForwardSlash { get; private set; }
+		public IParsingExpression<string> CGreaterThan { get; private set; }
+		public IParsingExpression<string> CHash { get; private set; }
+		public IParsingExpression<string> CLBrace { get; private set; }
+		public IParsingExpression<string> CLessThan { get; private set; }
+		public IParsingExpression<string> CLParen { get; private set; }
+		public IParsingExpression<string> CSemiColon { get; private set; }
+		public IParsingExpression<string> CLSquareBracket { get; private set; }
+		public IParsingExpression<string> CMinus { get; private set; }
+		public IParsingExpression<string> CPeriod { get; private set; }
+		public IParsingExpression<string> CPipe { get; private set; }
+		public IParsingExpression<string> CPlus { get; private set; }
+		public IParsingExpression<string> CRBrace { get; private set; }
+		public IParsingExpression<string> CRParen { get; private set; }
+		public IParsingExpression<string> CRSquareBracket { get; private set; }
+		public IParsingExpression<string> CSingleQuote { get; private set; }
+
 
 		public MarkdomGrammar() {
 
@@ -272,7 +300,10 @@ namespace markdom.cs {
 			Define(() => Bullet,
 				Sequence(
 					Reference(() => NonIndentSpace),
-					ChoiceUnordered(new string[] { "*", "-", "+" }.Select(Literal).ToArray()),
+					ChoiceUnordered(
+						Reference(() => CAsterix),
+						Reference(() => CMinus),
+						Reference(() => CPlus)),
 					AtLeast(1, Reference(() => SpaceChar)),
 					match => Nil.Value));
 
@@ -353,7 +384,7 @@ namespace markdom.cs {
 			// any value for the initial item in a list using the form `style@value`, e.g. `a@7`.
 			var enumeratorValue =
 				Sequence(
-					Literal("@"),
+					Reference(() => CAt),
 					AtLeast(1, Reference(() => Digit), match => { int v; return int.TryParse(match.String, out v) ? v : 1; }),
 					match => match.Product.Of2);
 
@@ -361,8 +392,8 @@ namespace markdom.cs {
 			var enumeratorIncrement =
 				Sequence(
 					ChoiceUnordered(
-						Literal("+", match => 1),
-						Literal("-", match => -1)),
+						Reference(() => CPlus, match => 1),
+						Reference(() => CMinus, match => -1)),
 					AtLeast(1, Reference(() => Digit), match => match.String),
 					match => match.Product.Of1 * match.Product.Of2.ParseDefault(1));
 
@@ -373,7 +404,7 @@ namespace markdom.cs {
 			Define(() => Heading,
 				Sequence(
 					Reference(() => SpaceChars),
-					AtLeast(1, Literal("#"), match => match.Product.Length),
+					AtLeast(1, Reference(() => CHash), match => match.Product.Length),
 					Reference(() => SpaceChars),
 					Reference(() => BlockLine),
 					match => new HeadingNode(match.Product.Of4.LineString, match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
@@ -383,7 +414,7 @@ namespace markdom.cs {
 					Reference(() => SpaceChars),
 					Reference(() => ReferenceLabel),
 					Reference(() => SpaceChars),
-					Literal(":"),
+					Reference(() => CColon),
 					Reference(() => SpaceChars),
 					ChoiceUnordered(
 						Reference(() => UriLiteralExpression, match => match.Product.InArray()),
@@ -438,7 +469,7 @@ namespace markdom.cs {
 					ChoiceOrdered(
 						Literal(@"\|"),
 						Sequence(
-							NotAhead(Literal("|")),
+							NotAhead(Reference(() => CPipe)),
 							Reference(() => BlockLineAtomic))),
 					match => LineInfo.FromMatch(match));
 
@@ -456,7 +487,7 @@ namespace markdom.cs {
 
 			var tableCellAnnouncement =
 				Sequence(
-					Literal("|"),
+					Reference(() => CPipe),
 					Optional(tableCellColumnSpan),
 					Optional(tableCellRowSpan),
 					match => new TableCellSpanningInfo(match.Product.Of2.ParseDefault(1), match.Product.Of3.ParseDefault(1)));
@@ -464,7 +495,7 @@ namespace markdom.cs {
 			var tableHeaderCellAnnouncement =
 				Sequence(
 					tableCellAnnouncement,
-					Literal("="),
+					Reference(() => CEquals),
 					Reference(() => SpaceChars),
 					match => match.Product.Of1);
 
@@ -497,7 +528,7 @@ namespace markdom.cs {
 
 			var tableRowEnd =
 				Sequence(
-					Optional(Literal("|")),
+					Optional(Reference(() => CPipe)),
 					Reference(() => BlankLine));
 
 			var tableCell =
@@ -507,12 +538,6 @@ namespace markdom.cs {
 						tableHeaderCell,
 						tableDataCell),
 					match => match.Product.Of2);
-
-			var tableUnannouncedDataCell =
-				Sequence(
-					tableCellContents,
-					Ahead(Literal("|")),
-					match => new TableDataCellNode(1, 1, ParseLinesAs(Inlines, match.Product.Of1.InArray()), MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => TableRow,
 				Sequence(
@@ -526,7 +551,10 @@ namespace markdom.cs {
 					AtLeast(1,
 						Sequence(
 							Reference(() => SpaceChars),
-							ChoiceUnordered(new string[] { "-", "=", "+" }.Select(Literal).ToArray()))),
+							ChoiceUnordered(
+								Reference(() => CMinus),
+								Reference(() => CEquals),
+								Reference(() => CPlus)))),
 					Reference(() => BlankLine),
 					match => LineInfo.FromMatch(match)));
 
@@ -560,11 +588,11 @@ namespace markdom.cs {
 
 			Define(() => AutoLink,
 				Sequence(
-					Literal("<"),
+					Reference(() => CLessThan),
 					Reference(() => SpaceChars),
 					Reference(() => UriLiteralExpression),
 					Reference(() => SpaceChars),
-					Literal(">"),
+					Reference(() => CGreaterThan),
 					Optional(
 						Reference(() => ArgumentList),
 						match => match.Product,
@@ -591,29 +619,29 @@ namespace markdom.cs {
 
 			Define(() => ReferenceLabel,
 				Sequence(
-					Literal("["),
+					Reference(() => CLSquareBracket),
 					AtLeast(0,
 						Sequence(
-							NotAhead(ChoiceUnordered(Literal("]"), Reference(() => NewLine))),
+							NotAhead(ChoiceUnordered(Reference(() => CRSquareBracket), Reference(() => NewLine))),
 							Wildcard()),
 						match => match.String),
-					Literal("]"),
+					Reference(() => CRSquareBracket),
 					match => ReferenceId.FromText(match.Product.Of2)));
 
 			Define(() => Label,
 				Sequence(
-					Literal("["),
-					AtLeast(0, Sequence(NotAhead(Literal("]")), Reference(() => Inline), match => match.Product.Of2)),
-					Literal("]"),
+					Reference(() => CLSquareBracket),
+					AtLeast(0, Sequence(NotAhead(Reference(() => CRSquareBracket)), Reference(() => Inline), match => match.Product.Of2)),
+					Reference(() => CRSquareBracket),
 					match => match.Product.Of2));
 
 			#endregion
 
 			Define(() => InlineExpression,
 				Sequence(
-					Literal("@"),
+					Reference(() => CAt),
 					Reference(() => Expression),
-					Optional(Literal(";")),
+					Optional(Reference(() => CSemiColon)),
 					match => new InlineExpressionNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => Strong,
@@ -625,23 +653,23 @@ namespace markdom.cs {
 
 			Define(() => Emphasis,
 				Sequence(
-					Literal("*"),
-					AtLeast(0, Sequence(NotAhead(Literal("*")), Reference(() => Inline), match => match.Product.Of2)),
-					Optional(Literal("*")),
+					Reference(() => CAsterix),
+					AtLeast(0, Sequence(NotAhead(Reference(() => CAsterix)), Reference(() => Inline), match => match.Product.Of2)),
+					Optional(Reference(() => CAsterix)),
 					match => new EmphasisNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
 			var singleQuoted =
 				Sequence(
-					Literal("'"),
-					AtLeast(0, Sequence(NotAhead(Literal("'")), Reference(() => Inline), match => match.Product.Of2)),
-					Literal("'"),
+					Reference(() => CSingleQuote),
+					AtLeast(0, Sequence(NotAhead(Reference(() => CSingleQuote)), Reference(() => Inline), match => match.Product.Of2)),
+					Reference(() => CSingleQuote),
 					match => new QuotedNode(QuoteType.Single, match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			var doubleQuoted =
 				Sequence(
-					Literal("\""),
-					AtLeast(0, Sequence(NotAhead(Literal("\"")), Reference(() => Inline), match => match.Product.Of2)),
-					Literal("\""),
+					Reference(() => CDoubleQuote),
+					AtLeast(0, Sequence(NotAhead(Reference(() => CDoubleQuote)), Reference(() => Inline), match => match.Product.Of2)),
+					Reference(() => CDoubleQuote),
 					match => new QuotedNode(QuoteType.Double, match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => Quoted,
@@ -658,14 +686,14 @@ namespace markdom.cs {
 				Sequence(
 					Literal("&#"),
 					Between(1, 6, Reference(() => Digit), match => match.String),
-					Literal(";"),
+					Reference(() => CSemiColon),
 					match => new EntityNode(int.Parse(match.Product.Of2), MarkdomSourceRange.FromMatch(match)));
 
 			var hexHtmlEntity =
 				Sequence(
 					Literal("&#x"),
 					Between(1, 6, Reference(() => HexDigit), match => match.String),
-					Literal(";"),
+					Reference(() => CSemiColon),
 					match => new EntityNode(Convert.ToInt32(match.Product.Of2, 16), MarkdomSourceRange.FromMatch(match)));
 
 			// Because of the large number of named entities it is much faster to use a dynamic
@@ -674,10 +702,10 @@ namespace markdom.cs {
 				Dynamic(() => {
 					string entityName = null;
 					return Sequence(
-						Literal("&"),
+						Reference(() => CAmpersand),
 						Between(1, 32, Reference(() => EnglishAlpha), match => { return entityName = match.String; }),
 						Assert(() => EntityNode.IsEntityName(entityName)),
-						Literal(";"),
+						Reference(() => CSemiColon),
 						match => new EntityNode(EntityNode.GetNamedEntityValue(entityName), MarkdomSourceRange.FromMatch(match)));
 				});
 
@@ -711,8 +739,16 @@ namespace markdom.cs {
 
 			Define(() => SpecialChar,
 				ChoiceUnordered(
-					new string[] { "*", "&", "'", "\"", "/", "\\", "[", "]", "|", "(", ")", "@", ";" }
-					.Select(Literal).ToArray()));
+					Reference(() => CAsterix), // bullets, strong, emphasis
+					Reference(() => CAmpersand), // entities
+					Reference(() => CSingleQuote), // quotes
+					Reference(() => CDoubleQuote), // quotes
+					Reference(() => CForwardSlash), // single-line comment
+					Reference(() => CBackSlash), // escape character
+					Reference(() => CLSquareBracket), // label (link, reference)
+					Reference(() => CRSquareBracket), // label
+					Reference(() => CPipe), // table cell delimiter
+					Reference(() => CAt))); // expressions
 
 			#endregion
 
@@ -764,8 +800,8 @@ namespace markdom.cs {
 				Sequence(
 					Optional(
 						ChoiceUnordered(
-							Literal("+", match => 1d),
-							Literal("-", match => -1d)),
+							Reference(() => CPlus, match => 1d),
+							Reference(() => CMinus, match => -1d)),
 						match => match.Product,
 						noMatch => 1d),
 					AtLeast(1, Reference(() => Digit), match => double.Parse(match.String)),
@@ -791,14 +827,14 @@ namespace markdom.cs {
 			var optionalDecimalPart =
 				Optional(
 					Sequence(
-						Literal("."),
+						Reference(() => CPeriod),
 						AtLeast(0, Reference(() => Digit))),
 					match => double.Parse("0" + match.String),
 					noMatch => 0d);
 
 			var requiredDecimalPart =
 				Sequence(
-					Literal("."),
+					Reference(() => CPeriod),
 					AtLeast(1, Reference(() => Digit)),
 				match => double.Parse("0" + match.String));
 
@@ -840,7 +876,7 @@ namespace markdom.cs {
 						Literal(@"\'", match => "'"),
 						stringExpressionEscapes,
 						Sequence(
-							NotAhead(ChoiceUnordered(Literal("'"), Reference(() => NewLine))),
+							NotAhead(ChoiceUnordered(Reference(() => CSingleQuote), Reference(() => NewLine))),
 							Wildcard(),
 							match => match.Product.Of2)),
 					match => match.Product.Join());
@@ -851,19 +887,19 @@ namespace markdom.cs {
 						Literal("\\\"", match => "\""),
 						stringExpressionEscapes,
 						Sequence(
-							NotAhead(ChoiceUnordered(Literal("\""), Reference(() => NewLine))),
+							NotAhead(ChoiceUnordered(Reference(() => CDoubleQuote), Reference(() => NewLine))),
 							Wildcard(),
 							match => match.Product.Of2)),
 					match => match.Product.Join());
 
 			var singleQuotedStringExpression =
 				Sequence(
-					Literal("'"), singleQuotedStringExpressionContent, Literal("'"),
+					Reference(() => CSingleQuote), singleQuotedStringExpressionContent, Reference(() => CSingleQuote),
 					match => new StringLiteralExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			var doubleQuotedStringExpression =
 				Sequence(
-					Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
+					Reference(() => CDoubleQuote), doubleQuotedStringExpressionContent, Reference(() => CDoubleQuote),
 					match => new StringLiteralExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => StringLiteralExpression,
@@ -879,7 +915,7 @@ namespace markdom.cs {
 				Sequence(
 					Reference(() => StringLiteralExpression), // TODO: Identifier / String / Uri
 					Reference(() => ExpressionWhitespace),
-					Literal(":"),
+					Reference(() => CColon),
 					Reference(() => ExpressionWhitespace),
 					Reference(() => Expression),
 					match => new PropertyAssignment(match.Product.Of1, match.Product.Of5, MarkdomSourceRange.FromMatch(match)));
@@ -892,10 +928,10 @@ namespace markdom.cs {
 						match => ArrayUtils.Combine(match.Product.Of1.InArray(), match.Product.Of2)));
 
 			var objectExpressionStart =
-				Sequence( Literal("{"), Reference(() => ExpressionWhitespace));
+				Sequence( Reference(() => CLBrace), Reference(() => ExpressionWhitespace));
 
 			var objectExpressionEnd =
-				Sequence( Reference(() => ExpressionWhitespace), Literal("}"));
+				Sequence( Reference(() => ExpressionWhitespace), Reference(() => CRBrace));
 
 			Define(() => ObjectLiteralExpression,
 				Sequence(
@@ -935,19 +971,15 @@ namespace markdom.cs {
 
 			uriExpressionParenthesizedPart =
 				Sequence(
-					Literal("("),
+					Reference(() => CLParen),
 					AtLeast(0, Reference(() => uriExpressionPart)),
-					Literal(")"));
-
-			var uriExpressionFirstPart =
-				Sequence(
-					NotAhead(ChoiceUnordered(new string[] { "@", "\"", "'" }.Select(Literal).ToArray())),
-					Reference(() => uriExpressionPart));
+					Reference(() => CRParen));
 
 			Define(() => UriLiteralExpression,
-				Sequence(
-					uriExpressionFirstPart,
-					AtLeast(0, uriExpressionPart),
+				AtLeast(1,
+					ChoiceUnordered(
+						Reference(() => uriExpressionRegularPart),
+						Reference(() => uriExpressionParenthesizedPart)),
 					match => new UriLiteralExpression(match.String, MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
@@ -958,7 +990,7 @@ namespace markdom.cs {
 				Dynamic(() => {
 					IParsingExpression<string> endBraces = null;
 					return Sequence(
-						AtLeast(2, Literal("{"), m => { endBraces = Literal("".PadLeft(m.Length, '}')); return Nil.Value; }),
+						AtLeast(2, Reference(() => CLBrace), m => { endBraces = Literal("".PadLeft(m.Length, '}')); return Nil.Value; }),
 						AtLeast(0,
 							Sequence(NotAhead(Reference(() => endBraces)), Reference(() => Atomic)),
 							match => LineInfo.FromMatch(match)),
@@ -1097,6 +1129,35 @@ namespace markdom.cs {
 				ChoiceUnordered(
 					Reference(() => EnglishLowerAlpha),
 					Reference(() => EnglishUpperAlpha)));
+
+			#region Characters
+
+			Define(() => CAmpersand, Literal("&"));
+			Define(() => CAsterix, Literal("*"));
+			Define(() => CAt, Literal("@"));
+			Define(() => CBackSlash, Literal("\\"));
+			Define(() => CColon, Literal(":"));
+			Define(() => CComma, Literal(","));
+			Define(() => CDoubleQuote, Literal("\""));
+			Define(() => CEquals, Literal("="));
+			Define(() => CForwardSlash, Literal("/"));
+			Define(() => CGreaterThan, Literal(">"));
+			Define(() => CHash, Literal("#"));
+			Define(() => CLBrace, Literal("{"));
+			Define(() => CLessThan, Literal("<"));
+			Define(() => CLParen, Literal("("));
+			Define(() => CPeriod, Literal("."));
+			Define(() => CLSquareBracket, Literal("["));
+			Define(() => CMinus, Literal("-"));
+			Define(() => CPipe, Literal("|"));
+			Define(() => CPlus, Literal("+"));
+			Define(() => CRBrace, Literal("}"));
+			Define(() => CRParen, Literal(")"));
+			Define(() => CSemiColon, Literal(";"));
+			Define(() => CRSquareBracket, Literal("]"));
+			Define(() => CSingleQuote, Literal("'"));
+
+			#endregion
 
 			#endregion
 		}
