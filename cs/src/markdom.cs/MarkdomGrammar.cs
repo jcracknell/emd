@@ -726,9 +726,11 @@ namespace markdom.cs {
 					'*', // strong, emphasis
 					'&', // entities
 					'\'', '"', // quotes
+					'`', // ticks
 					'/', // single-line comment
 					'\\', // escape sequence
 					'[', ']', // labels
+					'<', '>', // autolinks
 					'|', // table cell delimiter
 					'@' // expressions
 				}));
