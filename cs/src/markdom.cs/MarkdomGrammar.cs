@@ -431,12 +431,12 @@ namespace markdom.cs {
 
 			Define(() => Atomic,
 				ChoiceOrdered(
+					Sequence(NotAhead(Reference(() => SpecialChar)), Wildcard()),
 					ChoiceUnordered(
 						Reference(() => SingleLineComment),
 						Reference(() => MultiLineComment),
 						Reference(() => InlineExpression)),
-					Wildcard(),
-					match => Nil.Value));
+					Wildcard()));
 
 			#region Tables
 
