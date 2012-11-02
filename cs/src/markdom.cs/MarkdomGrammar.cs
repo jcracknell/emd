@@ -13,7 +13,7 @@ namespace markdom.cs {
 	public class MarkdomGrammar : Grammar<MarkdomDocumentNode> {
 		#region Intermediate data structures
 
-		public struct LineInfo {
+		public class LineInfo {
 			public readonly string LineString;
 			public readonly SourceRange SourceRange;
 
@@ -27,7 +27,7 @@ namespace markdom.cs {
 			}
 		}
 
-		public struct BlockLineInfo {
+		public class BlockLineInfo {
 			public readonly LineInfo[] Lines;
 			public readonly SourceRange SourceRange;
 
@@ -45,13 +45,74 @@ namespace markdom.cs {
 			}
 		}
 
-		public struct EnumeratorInfo {
-			public readonly int Start;
-			public readonly int Increment;
-			public readonly OrderedListStyle Style;
+		public class EnumeratorCounterStyleInfo {
+			public readonly OrderedListCounterStyle Style;
+			public readonly int SuggestedValue;
+
+			public EnumeratorCounterStyleInfo(OrderedListCounterStyle style, int suggestedValue) {
+				Style = style;
+				SuggestedValue = suggestedValue;
+			}
 		}
 
-		public struct TableCellSpanningInfo {
+		public class EnumeratorCounterStyleDefinition {
+			public readonly OrderedListCounterStyle CounterStyle;
+			public IParsingExpression<EnumeratorCounterStyleInfo> Expression;
+
+			public EnumeratorCounterStyleDefinition(OrderedListCounterStyle style, IParsingExpression<EnumeratorCounterStyleInfo> expression) {
+				CounterStyle = style;
+				Expression = expression;
+			}
+		}
+
+		public class EnumeratorSeparatorStyleDefinition {
+			public readonly OrderedListSeparatorStyle SeparatorStyle;
+			public readonly IParsingExpression<object> Preceding;
+			public readonly IParsingExpression<object> Following;
+			public EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle style, IParsingExpression<object> preceding, IParsingExpression<object> following) {
+				SeparatorStyle = style;
+				Preceding = preceding;
+				Following = following;
+			}
+		}
+
+		public class OrderedListStyleDefinition {
+			public readonly OrderedListCounterStyle CounterStyle;
+			public readonly OrderedListSeparatorStyle SeparatorStyle;
+			public readonly IParsingExpression<InitialEnumeratorInfo> InitialEnumerator;
+			public readonly IParsingExpression<ContinuationEnumeratorInfo> ContinuationEnumerator;
+
+			public OrderedListStyleDefinition(OrderedListCounterStyle counterStyle, OrderedListSeparatorStyle separatorStyle, IParsingExpression<InitialEnumeratorInfo> initialEnumerator, IParsingExpression<ContinuationEnumeratorInfo> continuationEnumerator) {
+				CounterStyle = counterStyle;
+				SeparatorStyle = separatorStyle;
+				InitialEnumerator = initialEnumerator;
+				ContinuationEnumerator = continuationEnumerator;
+			}
+		}
+
+		public class InitialEnumeratorInfo {
+			public readonly OrderedListCounterStyle CounterStyle;
+			public readonly OrderedListSeparatorStyle SeparatorStyle;
+			public readonly int Value;
+
+			public InitialEnumeratorInfo(OrderedListCounterStyle counterStyle, OrderedListSeparatorStyle separatorStyle, int value) {
+				CounterStyle = counterStyle;
+				SeparatorStyle = separatorStyle;
+				Value = value;
+			}
+		}
+
+		public class ContinuationEnumeratorInfo {
+			public readonly OrderedListCounterStyle CounterStyle;
+			public readonly OrderedListSeparatorStyle SeparatorStyle;
+
+			public ContinuationEnumeratorInfo(OrderedListCounterStyle counterStyle, OrderedListSeparatorStyle separatorStyle) {
+				CounterStyle = counterStyle;
+				SeparatorStyle = separatorStyle;
+			}
+		}
+
+		public class TableCellSpanningInfo {
 			public readonly int ColumnSpan;
 			public readonly int RowSpan;
 
@@ -77,11 +138,13 @@ namespace markdom.cs {
 		public IParsingExpression<TableRowNode> TableRow { get; private set; }
 		public IParsingExpression<LineInfo> TableRowSeparator { get; private set; }
 		public IParsingExpression<HeadingNode> Heading { get; private set; }
+		public IParsingExpression<int> HeadingAnnouncement { get; private set; }
+		public IParsingExpression<OrderedListNode> OrderedList { get; private set; }
+		public IParsingExpression<InitialEnumeratorInfo> Enumerator { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedList { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedListTight { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedListLoose { get; private set; }
 		public IParsingExpression<Nil> Bullet { get; private set; }
-		public IParsingExpression<EnumeratorInfo> Enumerator { get; private set; }
 		public IParsingExpression<ParagraphNode> Paragraph { get; private set; }
 		public IParsingExpression<ReferenceNode> ReferenceBlock { get; private set; }
 		public IParsingExpression<LineInfo> NonEmptyBlockLine { get; private set; }
@@ -254,10 +317,11 @@ namespace markdom.cs {
 					Reference(() => BlankLines),
 					ChoiceOrdered<IBlockNode>(
 						Reference(() => Heading),
-						Reference(() => Table),
 						Reference(() => ReferenceBlock),
 						Reference(() => UnorderedList),
-						Reference(() => Paragraph)), // paragraph must come last
+						Reference(() => Table),
+						Reference(() => OrderedList),
+						Reference(() => Paragraph)), 
 					Reference(() => BlankLines),
 					match => match.Product.Of2));
 
@@ -300,6 +364,177 @@ namespace markdom.cs {
 					Optional(Reference(() => Indent)),
 					Reference(() => NonEmptyBlockLine),
 					match => match.Product.Of2);
+
+
+			#region Ordered List
+
+			var enumeratorCounterStyleLowerRomanCharValues = new char[] { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
+			var enumeratorCounterStyleUpperRomanCharValues = enumeratorCounterStyleLowerRomanCharValues.Select(char.ToUpper);
+
+			var enumeratorCounterStyleLowerRomanChar = CharacterIn(enumeratorCounterStyleLowerRomanCharValues);
+			var enumeratorCounterStyleUpperRomanChar = CharacterIn(enumeratorCounterStyleUpperRomanCharValues);
+			var enumeratorCounterStyleRomanChar = CharacterIn(enumeratorCounterStyleLowerRomanCharValues.Concat(enumeratorCounterStyleUpperRomanCharValues));
+
+			var enumeratorValue =
+				Optional(
+					Sequence(
+						Reference(() => CAt),
+						AtLeast(1, Reference(() => Digit), match => match.String.ParseDefault(1)),
+						match => match.Product.Of2),
+					match => match.Product,
+					noMatch => 1);
+
+			var enumeratorCounterStyleDefinitions = new EnumeratorCounterStyleDefinition[] {
+				new EnumeratorCounterStyleDefinition(
+					OrderedListCounterStyle.Decimal,
+					AtLeast(1,
+						Reference(() => Digit),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.Decimal, match.String.ParseDefault(1)))),
+				new EnumeratorCounterStyleDefinition(
+					OrderedListCounterStyle.LowerRoman,
+					Sequence(
+						enumeratorCounterStyleLowerRomanChar,
+						AtLeast(0, enumeratorCounterStyleRomanChar),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerRoman, 1))),
+				new EnumeratorCounterStyleDefinition(
+					OrderedListCounterStyle.UpperRoman,
+					Sequence(
+						enumeratorCounterStyleUpperRomanChar,
+						AtLeast(0, enumeratorCounterStyleRomanChar),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperRoman, 1))),
+				new EnumeratorCounterStyleDefinition(
+					OrderedListCounterStyle.LowerAlpha,
+					Sequence(
+						Reference(() => EnglishLowerAlpha),
+						AtLeast(0, Reference(() => EnglishAlpha)),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerAlpha, 1))),
+				new EnumeratorCounterStyleDefinition(
+					OrderedListCounterStyle.UpperAlpha,
+					Sequence(
+						Reference(() => EnglishUpperAlpha),
+						AtLeast(0, Reference(() => EnglishAlpha)),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperAlpha, 1)))
+			};
+
+			var enumeratorSeparatorStyleDefinitions = new EnumeratorSeparatorStyleDefinition[] {
+				new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Dot, Literal(""), Literal(".")),
+				new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Dash, Literal(""), Sequence(Reference(() => SpaceChars), Literal("-"))),
+				new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Parenthesis, Literal(""), Literal(")")),
+				new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Bracketed, Literal("["), Literal("]")),
+				new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Parenthesized, Literal("("), Literal(")")),
+			};
+
+			var orderedListStyleDefinitions =
+				enumeratorCounterStyleDefinitions.SelectMany(cd =>
+				enumeratorSeparatorStyleDefinitions.Select(sd =>
+					new OrderedListStyleDefinition(cd.CounterStyle, sd.SeparatorStyle,
+						Sequence(
+							Reference(() => NonIndentSpace), sd.Preceding, cd.Expression, enumeratorValue, sd.Following, Reference(() => SpaceChars),
+							match => new InitialEnumeratorInfo(cd.CounterStyle, sd.SeparatorStyle,
+								1 == match.Product.Of4 ? match.Product.Of3.SuggestedValue : match.Product.Of4)),
+						Sequence(
+							Reference(() => NonIndentSpace), sd.Preceding, cd.Expression, sd.Following, Reference(() => SpaceChars),
+						match => new ContinuationEnumeratorInfo(cd.CounterStyle, sd.SeparatorStyle)))
+				))
+				.ToList();
+
+			// This works because the continuation enumerator is a special case of the initial
+			Define(() => Enumerator,
+				ChoiceUnordered(orderedListStyleDefinitions.Select(ls => ls.InitialEnumerator)));
+
+			Define(() => OrderedList,
+				ChoiceOrdered(orderedListStyleDefinitions.Select(listStyle => {
+					var orderedListBlockLine =
+						Sequence(
+							NotAhead(Reference(() => Enumerator)), listBlockLine,
+							m => m.Product.Of2);
+
+					var orderedListBlockLines = AtLeast(0, orderedListBlockLine);
+
+					var initialOrderedListItemInitialBlock =
+						Sequence(
+							listStyle.InitialEnumerator,
+							Reference(() => BlockLine),
+							orderedListBlockLines,
+							match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
+
+					var subsequentOrderedListItemInitialBlock =
+						Sequence(
+							listStyle.ContinuationEnumerator,
+							Reference(() => BlockLine),
+							orderedListBlockLines,
+							match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
+
+					var orderedListItemSubsequentBlock =
+						Sequence(
+							listItemContinues,
+							orderedListBlockLines,
+							Reference(() => BlankLines),
+							match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2, match.Product.Of3));
+
+					var initialOrderedListItemTight =
+						Reference( () => initialOrderedListItemInitialBlock, BlockLineInfo.FromMatch);
+
+					var subsequentOrderedListItemTight =
+						Reference(() => subsequentOrderedListItemInitialBlock, BlockLineInfo.FromMatch);
+
+					var initialOrderedListItemLoose =
+						Sequence(
+							Sequence(
+								initialOrderedListItemInitialBlock,
+								AtLeast(0, orderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
+								match => new BlockLineInfo(ArrayUtils.Combine(match.Product.Of1, match.Product.Of2), match.SourceRange)),
+							Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
+							match => match.Product.Of1);
+
+					var subsequentOrderedListItemLoose = 
+						Sequence(
+							Sequence(
+								subsequentOrderedListItemInitialBlock,
+								AtLeast(0, orderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
+								match => new BlockLineInfo(ArrayUtils.Combine(match.Product.Of1, match.Product.Of2), match.SourceRange)),
+							Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
+							match => match.Product.Of1);
+
+					var orderedListContinuesLoose =
+						ChoiceUnordered(
+							Sequence(Reference(() => BlankLines), listStyle.ContinuationEnumerator),
+							listItemContinues);
+
+					var orderedListTight =
+						Sequence(
+							Reference(() => BlankLines),
+							initialOrderedListItemTight,
+							AtLeast(0, subsequentOrderedListItemTight),
+							NotAhead(orderedListContinuesLoose),
+							match => {
+								var items = match.Product.Of2.InArray().Concat(match.Product.Of3)
+									.Select(itemBlockInfo =>
+										new OrderedListItemNode(
+											ParseLinesAs(Inlines, itemBlockInfo.Lines),
+											new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
+									.ToArray();
+								return new OrderedListNode(listStyle.CounterStyle, listStyle.SeparatorStyle, 1, items, MarkdomSourceRange.FromMatch(match));
+							});
+
+					var orderedListLoose =
+						Sequence(
+							Reference(() => BlankLines),
+							initialOrderedListItemLoose,
+							AtLeast(0, subsequentOrderedListItemLoose),
+							match => {
+								var items = match.Product.Of2.InArray().Concat(match.Product.Of3)
+									.Select(itemBlockInfo =>
+										new OrderedListItemNode(
+											ParseLinesAs(Blocks, itemBlockInfo.Lines),
+											new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
+									.ToArray();
+								return new OrderedListNode(listStyle.CounterStyle, listStyle.SeparatorStyle, 1, items, MarkdomSourceRange.FromMatch(match));
+							});
+
+					return ChoiceOrdered(orderedListTight, orderedListLoose);
+			})));
+		#endregion
 
 			#region Unordered List
 
@@ -390,36 +625,22 @@ namespace markdom.cs {
 
 			#endregion
 
-			#region Ordered List
-
-			// To avoid tedious mental gymnastics, you can specify a specify a combination of style
-			// any value for the initial item in a list using the form `style@value`, e.g. `a@7`.
-			var enumeratorValue =
-				Sequence(
-					Reference(() => CAt),
-					AtLeast(1, Reference(() => Digit), match => { int v; return int.TryParse(match.String, out v) ? v : 1; }),
-					match => match.Product.Of2);
-
-			// You can also specify an increment using the form `style@value+/-increment`, e.g. `a@8-1`.
-			var enumeratorIncrement =
-				Sequence(
-					ChoiceUnordered(
-						Reference(() => CPlus, match => 1),
-						Reference(() => CMinus, match => -1)),
-					AtLeast(1, Reference(() => Digit), match => match.String),
-					match => match.Product.Of1 * match.Product.Of2.ParseDefault(1));
-
 			#endregion
 
-			#endregion
-
+			#region Headings
 			Define(() => Heading,
 				Sequence(
-					Reference(() => SpaceChars),
-					AtLeast(1, Reference(() => CHash), match => match.Product.Length),
+					Reference(() => HeadingAnnouncement),
 					Reference(() => SpaceChars),
 					Reference(() => BlockLine),
-					match => new HeadingNode(match.Product.Of4.LineString, match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
+					match => new HeadingNode(match.Product.Of3.LineString, match.Product.Of1, MarkdomSourceRange.FromMatch(match))));
+
+			Define(() => HeadingAnnouncement,
+				Sequence(
+					Reference(() => SpaceChars),
+					AtLeast(1, Literal("#"), match => match.Product.Length),
+					match => match.Product.Of2));
+			#endregion
 
 			Define(() => ReferenceBlock,
 				Sequence(
@@ -433,10 +654,14 @@ namespace markdom.cs {
 						Reference(() => ArgumentList)),
 					match => new ReferenceNode(match.Product.Of2, match.Product.Of6, MarkdomSourceRange.FromMatch(match))));
 
+			#region Paragraph
+
 			Define(() => Paragraph,
 				AtLeast(1,
 					Reference(() => NonEmptyBlockLine),
 					match => new ParagraphNode(ParseLinesAs(Inlines, match.Product), MarkdomSourceRange.FromMatch(match))));
+
+			#endregion
 
 			Define(() => NonEmptyBlockLine,
 				Sequence(
@@ -496,7 +721,7 @@ namespace markdom.cs {
 
 			var tableCellAnnouncement =
 				Sequence(
-					Reference(() => CPipe),
+					Literal("|"),
 					Optional(tableCellColumnSpan),
 					Optional(tableCellRowSpan),
 					match => new TableCellSpanningInfo(match.Product.Of2.ParseDefault(1), match.Product.Of3.ParseDefault(1)));
@@ -508,7 +733,7 @@ namespace markdom.cs {
 					Reference(() => SpaceChars),
 					match => match.Product.Of1);
 
-			var tableDataCellAnnouncemnt =
+			var tableDataCellAnnouncement =
 				Sequence(
 					tableCellAnnouncement,
 					Reference(() => SpaceChars),
@@ -527,7 +752,7 @@ namespace markdom.cs {
 
 			var tableDataCell =
 				Sequence(
-					tableDataCellAnnouncemnt,
+					tableDataCellAnnouncement,
 					tableCellContents,
 					match => new TableDataCellNode(
 						match.Product.Of1.ColumnSpan,
@@ -557,13 +782,9 @@ namespace markdom.cs {
 
 			Define(() => TableRowSeparator,
 				Sequence(
-					AtLeast(1,
-						Sequence(
-							Reference(() => SpaceChars),
-							ChoiceUnordered(
-								Reference(() => CMinus),
-								Reference(() => CEquals),
-								Reference(() => CPlus)))),
+					Reference(() => SpaceChars),
+					CharacterIn(new char[] { '+', '-', '=' }),
+					AtLeast(0, CharacterIn(new char[] { '+', '-', '=', ' ', '\t' })),
 					Reference(() => BlankLine),
 					match => LineInfo.FromMatch(match)));
 
@@ -629,11 +850,7 @@ namespace markdom.cs {
 			Define(() => ReferenceLabel,
 				Sequence(
 					Reference(() => CLSquareBracket),
-					AtLeast(0,
-						Sequence(
-							NotAhead(ChoiceUnordered(Reference(() => CRSquareBracket), Reference(() => NewLine))),
-							Wildcard()),
-						match => match.String),
+					AtLeast(0, CharacterNotIn(new char[] { ']', '\n', '\r' }), match => match.String),
 					Reference(() => CRSquareBracket),
 					match => ReferenceId.FromText(match.Product.Of2)));
 

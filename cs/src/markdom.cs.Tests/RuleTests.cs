@@ -411,6 +411,9 @@ Yet another @{{*emphasis*}}.
 [slashdot.org]: http://slashdot.org
 [google.com]: (http://google.com, {'title': 'Google home page'})
 
+1. Item 1.
+a@42) Item 2.
+
 * Loose item 1.
 * Loose item 2.
 

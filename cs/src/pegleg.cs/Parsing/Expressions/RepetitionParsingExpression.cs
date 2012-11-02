@@ -40,7 +40,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			var matchBuilder = context.StartMatch();
 			
 			uint iterationCount = 0;
-			var iterationProducts = 0 == _maxOccurs ? new List<TBody>() : new List<TBody>((int)_maxOccurs);
+			var iterationProducts = new LinkedList<TBody>();
 			while(true) {
 				if(iterationCount > 1000)
 					"this would be a good place to put a breakpoint".ToString();
@@ -49,7 +49,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				var iterationResult = _body.Matches(iterationContext);
 
 				if(iterationResult.Succeeded) {
-					iterationProducts.Add((TBody)iterationResult.Product);
+					iterationProducts.AddLast((TBody)iterationResult.Product);
 					context.Assimilate(iterationContext);
 					iterationCount++;
 

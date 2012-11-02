@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model {
-	public struct MarkdomSourceRange {
+	public class MarkdomSourceRange {
 		public readonly int Index;
 		public readonly int Length;
 		public readonly int Line;

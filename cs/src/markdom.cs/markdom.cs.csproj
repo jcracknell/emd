@@ -69,7 +69,8 @@
     <Compile Include="Model\NodeKind.cs" />
     <Compile Include="Model\Nodes\OrderedListItemNode.cs" />
     <Compile Include="Model\Nodes\OrderedListNode.cs" />
-    <Compile Include="Model\Nodes\OrderedListStyle.cs" />
+    <Compile Include="Model\Nodes\OrderedListCounterStyle.cs" />
+    <Compile Include="Model\Nodes\OrderedListSeparatorStyle.cs" />
     <Compile Include="Model\Nodes\ParagraphNode.cs" />
     <Compile Include="Model\Nodes\QuotedNode.cs" />
     <Compile Include="Model\Nodes\ReferenceId.cs" />

@@ -6,27 +6,28 @@ using System.Text;
 
 namespace markdom.cs.Model.Nodes{
 	public class OrderedListNode : IBlockNode {
-		private readonly OrderedListStyle _style;
+		private readonly OrderedListCounterStyle _counterStyle;
+		private readonly OrderedListSeparatorStyle _separatorStyle;
 		private readonly int _start;
-		private readonly int _increment;
 		private readonly OrderedListItemNode[] _items;
 		private readonly MarkdomSourceRange _sourceRange;
 
-		public OrderedListNode(OrderedListStyle style, int start, int increment, OrderedListItemNode[] items, MarkdomSourceRange sourceRange) {
+		public OrderedListNode(OrderedListCounterStyle counterStyle, OrderedListSeparatorStyle separatorStyle, int start, OrderedListItemNode[] items, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => items, items);
 			CodeContract.ArgumentIsValid(() => items, items.Length >= 1, "cannot be empty");
 
-			_style = style;
+			_counterStyle = counterStyle;
+			_separatorStyle = separatorStyle;
 			_start = start;
-			_increment = increment;
 			_items = items;
+			_sourceRange = sourceRange;
 		}
 
-		public OrderedListStyle Style { get { return _style; } }
+		public OrderedListCounterStyle CounterStyle { get { return _counterStyle; } }
+
+		public OrderedListSeparatorStyle SeparatorStyle { get { return _separatorStyle; } }
 
 		public int Start { get { return _start; } }
-
-		public int Increment { get { return _increment; } }
 
 		public IEnumerable<OrderedListItemNode> Items { get { return _items; } }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Nodes{
-	public enum OrderedListStyle {
+	public enum OrderedListCounterStyle {
 		Decimal,
 		LowerAlpha,
 		UpperAlpha,
