@@ -72,11 +72,9 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 
 		private string FixRegexString(string regex) {
 			// This is here because the .NET regex class does not provide a method for matching
-			// a regex at a specific position; handily as ^ is zero width, we can tack one on at
-			// the beginning of every regex.
-			return 0 != regex.Length && '^' == regex[0]
-				? regex
-				: "^" + regex;
+			// a regex at a specific position; you have to use this flag instead per:
+			// http://msdn.microsoft.com/en-us/library/3583dcyh%28v=VS.100%29.aspx
+			return @"\G" + regex;
 		}
 
 		#endregion
