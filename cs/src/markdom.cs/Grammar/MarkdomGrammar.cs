@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace markdom.cs {
+namespace markdom.cs.Grammar {
 	public class MarkdomGrammar : Grammar<MarkdomDocumentNode> {
 		#region Intermediate data structures
 

@@ -86,7 +86,7 @@
     <Compile Include="Model\Nodes\TextNode.cs" />
     <Compile Include="Model\Nodes\UnorderedListItemNode.cs" />
     <Compile Include="Model\Nodes\UnorderedListNode.cs" />
-    <Compile Include="MarkdomGrammar.cs" />
+    <Compile Include="Grammar\MarkdomGrammar.cs" />
     <Compile Include="HashCodeBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RomanNumeralUtils.cs" />

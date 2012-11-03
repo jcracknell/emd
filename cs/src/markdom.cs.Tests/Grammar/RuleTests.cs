@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace markdom.cs {
+namespace markdom.cs.Grammar {
 	[TestClass]
 	public class RuleTests {
 		private readonly MarkdomGrammar Grammar = new MarkdomGrammar();
