@@ -16,9 +16,6 @@ namespace pegleg.cs.Parsing.Expressions {
 			_regex = regex;
 		}
 
-
-		public RegexParsingExpression() : base(ParsingExpressionKind.Regex) { }
-
 		public Regex Regex { get { return _regex; } }
 
 		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
@@ -39,7 +36,9 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class CapturingRegexParsingExpression<TProduct> : RegexParsingExpression, IParsingExpression<TProduct> {
 		private readonly Func<IMatch<Match>, TProduct> _matchAction;
 
-		public CapturingRegexParsingExpression(Regex regex, Func<IMatch<Match>, TProduct> matchAction) {
+		public CapturingRegexParsingExpression(Regex regex, Func<IMatch<Match>, TProduct> matchAction)
+			: base(regex)
+		{
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
 
 			_matchAction = matchAction;
