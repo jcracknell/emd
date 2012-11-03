@@ -54,28 +54,29 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 
 		#region Regex
 
-		public IParsingExpression<Nil> Regex(Regex regex) {
-			return new NonCapturingRegexParsingExpression(regex);
-		}
-
 		public IParsingExpression<Nil> Regex(string regex) {
 			return Regex(regex, RegexOptions);
 		}
 
 		public IParsingExpression<Nil> Regex(string regex, RegexOptions regexOptions) {
-			return Regex(new Regex("^" + regex, regexOptions));
-		}
-
-		public IParsingExpression<TProduct> Regex<TProduct>(string regex, RegexOptions regexOptions, Func<IMatch<Match>, TProduct> matchAction) {
-			return Regex(new Regex("^" + regex, regexOptions), matchAction);
-		}
-
-		public IParsingExpression<TProduct> Regex<TProduct>(Regex regex, Func<IMatch<Match>, TProduct> matchAction) {
-			return new CapturingRegexParsingExpression<TProduct>(regex, matchAction);
+			return new NonCapturingRegexParsingExpression(new Regex(FixRegexString(regex), regexOptions));
 		}
 
 		public IParsingExpression<TProduct> Regex<TProduct>(string regex, Func<IMatch<Match>, TProduct> matchAction) {
 			return Regex(regex, RegexOptions, matchAction);
+		}
+
+		public IParsingExpression<TProduct> Regex<TProduct>(string regex, RegexOptions regexOptions, Func<IMatch<Match>, TProduct> matchAction) {
+			return new CapturingRegexParsingExpression<TProduct>(new Regex(FixRegexString(regex), regexOptions), matchAction);
+		}
+
+		private string FixRegexString(string regex) {
+			// This is here because the .NET regex class does not provide a method for matching
+			// a regex at a specific position; handily as ^ is zero width, we can tack one on at
+			// the beginning of every regex.
+			return 0 != regex.Length && '^' == regex[0]
+				? regex
+				: "^" + regex;
 		}
 
 		#endregion

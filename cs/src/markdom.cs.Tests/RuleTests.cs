@@ -431,6 +431,10 @@ a@42) Item 2.
 
 			var references = new markdom.cs.Conversion.ReferenceCollection(document);
 
+			var regex = new System.Text.RegularExpressions.Regex("abc");
+			var match = regex.Match(" abc", 0);
+			match.ToString();
+
 			stopwatch.ToString();
 			Assert.IsTrue(matchResult.Succeeded);
 		}
