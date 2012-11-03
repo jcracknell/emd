@@ -54,5 +54,13 @@ namespace pegleg.cs.ExtensionMethods {
 		/// Puts the current value in an array with itself as the only entry.
 		/// </summary>
 		public static T[] InArray<T>(this T o) { return new T[] { o }; }
+
+		/// <summary>
+		/// Returns the value of the current <see cref="Nullable`1"/>, or the provided <paramref name="@default"/> value.
+		/// Concise way of writing <code>(nullable.HasValue ? nullable.Value : @default)</code>.
+		/// </summary>
+		public static T ValueOr<T>(this Nullable<T> nullable, T @default) where T : struct {
+			return nullable.HasValue ? nullable.Value : @default;
+		}
 	}
 }

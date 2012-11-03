@@ -48,11 +48,11 @@ namespace markdom.cs {
 
 		public class EnumeratorCounterStyleInfo {
 			public readonly OrderedListCounterStyle Style;
-			public readonly int SuggestedValue;
+			public readonly int? InterpretedValue;
 
-			public EnumeratorCounterStyleInfo(OrderedListCounterStyle style, int suggestedValue) {
+			public EnumeratorCounterStyleInfo(OrderedListCounterStyle style, int? interpretedValue) {
 				Style = style;
-				SuggestedValue = suggestedValue;
+				InterpretedValue = interpretedValue;
 			}
 		}
 
@@ -359,8 +359,8 @@ namespace markdom.cs {
 						Reference(() => CAt),
 						AtLeast(1, Reference(() => Digit), match => match.String.ParseDefault(1)),
 						match => match.Product.Of2),
-					match => match.Product,
-					noMatch => 1);
+					match => new int?(match.Product),
+					noMatch => new int?());
 
 			var enumeratorCounterStyleDefinitions = new EnumeratorCounterStyleDefinition[] {
 				new EnumeratorCounterStyleDefinition(
@@ -373,25 +373,25 @@ namespace markdom.cs {
 					Sequence(
 						enumeratorCounterStyleLowerRomanChar,
 						AtLeast(0, enumeratorCounterStyleRomanChar),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerRoman, 1))),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerRoman, new int?()))),
 				new EnumeratorCounterStyleDefinition(
 					OrderedListCounterStyle.UpperRoman,
 					Sequence(
 						enumeratorCounterStyleUpperRomanChar,
 						AtLeast(0, enumeratorCounterStyleRomanChar),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperRoman, 1))),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperRoman, new int?()))),
 				new EnumeratorCounterStyleDefinition(
 					OrderedListCounterStyle.LowerAlpha,
 					Sequence(
 						Reference(() => EnglishLowerAlpha),
 						AtLeast(0, Reference(() => EnglishAlpha)),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerAlpha, 1))),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerAlpha, new int?()))),
 				new EnumeratorCounterStyleDefinition(
 					OrderedListCounterStyle.UpperAlpha,
 					Sequence(
 						Reference(() => EnglishUpperAlpha),
 						AtLeast(0, Reference(() => EnglishAlpha)),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperAlpha, 1)))
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperAlpha, new int?())))
 			};
 
 			var enumeratorSeparatorStyleDefinitions = new EnumeratorSeparatorStyleDefinition[] {
@@ -426,7 +426,7 @@ namespace markdom.cs {
 											enumeratorPreamble, cd.Expression, enumeratorValue, enumeratorPostamble,
 											match => new InitialEnumeratorInfo(
 												cd.CounterStyle, sd.SeparatorStyle,
-												1 == match.Product.Of3 ? match.Product.Of2.SuggestedValue : match.Product.Of3))),
+												match.Product.Of3.ValueOr(match.Product.Of2.InterpretedValue.ValueOr(1))))),
 								ContinuationEnumerator =
 									Named("ContinuationEnumerator" + cd.CounterStyle.ToString() + sd.SeparatorStyle.ToString(),
 										Sequence(
