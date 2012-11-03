@@ -39,10 +39,12 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		IParsingExpression<Nil> CharacterIn(IEnumerable<char> chars);
 		IParsingExpression<Nil> CharacterNotIn(IEnumerable<char> chars);
 
-		IParsingExpression<Match> Regex(Regex regex);
-		IParsingExpression<Match> Regex(string regex);
+		IParsingExpression<Nil> Regex(Regex regex);
+		IParsingExpression<Nil> Regex(string regex);
+		IParsingExpression<Nil> Regex(string regex, RegexOptions regexOptions);
 		IParsingExpression<TProduct> Regex<TProduct>(Regex regex, Func<IMatch<Match>, TProduct> matchAction);
 		IParsingExpression<TProduct> Regex<TProduct>(string regex, Func<IMatch<Match>, TProduct> matchAction);
+		IParsingExpression<TProduct> Regex<TProduct>(string regex, RegexOptions regexOptions, Func<IMatch<Match>, TProduct> matchAction);
 
 		IParsingExpression<Nil> EndOfInput();
 		IParsingExpression<TProduct> EndOfInput<TProduct>(Func<IMatch<Nil>, TProduct> matchAction);

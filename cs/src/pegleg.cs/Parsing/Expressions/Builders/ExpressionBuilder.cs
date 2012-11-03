@@ -50,21 +50,33 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return Literal(literal.ToString(), matchAction);
 		}
 
-		public IParsingExpression<Match> Regex(Regex regex) {
-			return new RegexParsingExpression<Match>(regex, null);
+		#region Regex
+
+		public IParsingExpression<Nil> Regex(Regex regex) {
+			return new NonCapturingRegexParsingExpression(regex);
 		}
 
-		public IParsingExpression<Match> Regex(string regex) {
-			return new RegexParsingExpression<Match>(new Regex(regex, REGEX_OPTIONS), null);
+		public IParsingExpression<Nil> Regex(string regex) {
+			return Regex(regex, REGEX_OPTIONS);
+		}
+
+		public IParsingExpression<Nil> Regex(string regex, RegexOptions regexOptions) {
+			return Regex(new Regex("^" + regex, regexOptions));
+		}
+
+		public IParsingExpression<TProduct> Regex<TProduct>(string regex, RegexOptions regexOptions, Func<IMatch<Match>, TProduct> matchAction) {
+			return Regex(new Regex("^" + regex, regexOptions), matchAction);
 		}
 
 		public IParsingExpression<TProduct> Regex<TProduct>(Regex regex, Func<IMatch<Match>, TProduct> matchAction) {
-			return new RegexParsingExpression<TProduct>(regex, matchAction);
+			return new CapturingRegexParsingExpression<TProduct>(regex, matchAction);
 		}
 
 		public IParsingExpression<TProduct> Regex<TProduct>(string regex, Func<IMatch<Match>, TProduct> matchAction) {
-			return Regex(new Regex(regex, REGEX_OPTIONS), matchAction);
+			return Regex(regex, REGEX_OPTIONS, matchAction);
 		}
+
+		#endregion
 
 		public IParsingExpression<Nil> EndOfInput() {
 			return new EndOfInputParsingExpression<Nil>(null);
@@ -492,6 +504,8 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		#endregion
+
+
 
 	}
 }

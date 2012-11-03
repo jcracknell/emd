@@ -102,6 +102,18 @@ namespace pegleg.cs.Parsing {
 			}
 		}
 
+		public bool ConsumesMatching(Regex regex) {
+			CodeContract.ArgumentIsNotNull(() => regex, regex);
+
+			var match = regex.Match(_consumable, _consumed);
+			if(match.Success && match.Index == _consumed) {
+				Consume(match.Length);
+				return true;
+			}
+
+			return false;
+		}
+
 		public bool ConsumesMatching(Regex regex, out Match match) {
 			CodeContract.ArgumentIsNotNull(() => regex, regex);
 

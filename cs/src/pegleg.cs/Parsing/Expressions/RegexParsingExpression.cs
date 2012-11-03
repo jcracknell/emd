@@ -6,44 +6,54 @@ using System.Text.RegularExpressions;
 
 namespace pegleg.cs.Parsing.Expressions {
 	public abstract class RegexParsingExpression : BaseParsingExpression {
-		public RegexParsingExpression() : base(ParsingExpressionKind.Regex) { }
+		protected readonly Regex _regex;
 
-		public abstract Regex Regex { get; }
-	} 
-
-	public class RegexParsingExpression<TProduct> : RegexParsingExpression, IParsingExpression<TProduct> {
-		private readonly Regex _regex;
-		private readonly Func<IMatch<Match>, TProduct> _matchAction;
-
-		public RegexParsingExpression(Regex regex, Func<IMatch<Match>, TProduct> matchAction) {
+		public RegexParsingExpression(Regex regex)
+			: base(ParsingExpressionKind.Regex)
+		{
 			CodeContract.ArgumentIsNotNull(() => regex, regex);
 
 			_regex = regex;
+		}
+
+
+		public RegexParsingExpression() : base(ParsingExpressionKind.Regex) { }
+
+		public Regex Regex { get { return _regex; } }
+
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+			return handler.Handle(this);
+		}
+	} 
+
+	public class NonCapturingRegexParsingExpression : RegexParsingExpression, IParsingExpression<Nil> {
+		public NonCapturingRegexParsingExpression(Regex regex) : base(regex) { }
+
+		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+			if(context.ConsumesMatching(_regex))
+				return SuccessfulMatchingResult.NilProduct;
+			return new UnsuccessfulMatchingResult();	
+		}
+	}
+
+	public class CapturingRegexParsingExpression<TProduct> : RegexParsingExpression, IParsingExpression<TProduct> {
+		private readonly Func<IMatch<Match>, TProduct> _matchAction;
+
+		public CapturingRegexParsingExpression(Regex regex, Func<IMatch<Match>, TProduct> matchAction) {
+			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
+
 			_matchAction = matchAction;
 		}
 
-		public override Regex Regex { get { return _regex; } }
-
 		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+			var matchBuilder = context.StartMatch();
+
 			Match regexMatch;
-			if(null != _matchAction) {
-				var matchBuilder = context.StartMatch();
-				
-				if(!context.ConsumesMatching(_regex, out regexMatch))
-					return new UnsuccessfulMatchingResult();
+			if(!context.ConsumesMatching(_regex, out regexMatch))
+				return new UnsuccessfulMatchingResult();
 
-				var product = _matchAction(matchBuilder.CompleteMatch(this, regexMatch));
-
-				return new SuccessfulMatchingResult(product);
-			} else {
-				if(!context.ConsumesMatching(_regex, out regexMatch))
-					return new UnsuccessfulMatchingResult();
-				return new SuccessfulMatchingResult(regexMatch);
-			}
-		}
-
-		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
-			return this.HandleWith(handler);
+			var product = _matchAction(matchBuilder.CompleteMatch(this, regexMatch));
+			return new SuccessfulMatchingResult(product);
 		}
 	}
 }
