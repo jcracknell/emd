@@ -50,6 +50,9 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Grammar\OrderedListTests.cs" />
+    <Compile Include="Grammar\GrammarTestFixture.cs" />
+    <Compile Include="Grammar\RuleTestingExtensionMethods.cs" />
     <Compile Include="Model\Nodes\ImplementationTests.cs" />
     <Compile Include="Grammar\MarkdomGrammarTests.cs" />
     <Compile Include="Model\Nodes\NodeEqualityTestingHandler.cs" />

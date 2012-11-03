@@ -12,18 +12,8 @@ using System.Threading.Tasks;
 
 namespace markdom.cs.Grammar {
 	[TestClass]
-	public class RuleTests {
-		private readonly MarkdomGrammar Grammar = new MarkdomGrammar();
+	public class RuleTests : GrammarTestFixture {
 
-		private IMatchingResult Match(IParsingExpression expression, params string[] input) {
-			var context = new MatchingContext(string.Join("", input));
-			var match = expression.Matches(context);
-			return match;
-		}
-
-		private void AssertNodesAreEqual(INode expected, object actual) {
-			((INode)actual).HandleWith(new NodeEqualityTestingHandler(expected));
-		}
 
 		[TestMethod]
 		public void AutoLink_matches_uri_only() {
@@ -33,7 +23,7 @@ namespace markdom.cs.Grammar {
 				new MarkdomSourceRange(0, 23, 1, 0));
 
 			var matchResult =
-				Match(Grammar.AutoLink,
+				Grammar.AutoLink.Match(
 					//0....:....0....:....0....:....0....:....0....:....0....:....0
 					@"<http://www.google.com>");
 
@@ -49,7 +39,7 @@ namespace markdom.cs.Grammar {
 				new MarkdomSourceRange(0, 30, 1, 0)); 
 
 			var matchResult =
-				Match(Grammar.AutoLink,
+				Grammar.AutoLink.Match(
 					//0....:....0....:....0....:....0....:....0....:....0....:....0
 					@"<http://slashdot.org>('title')");
 
@@ -59,7 +49,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void CommentBlock_matches_single_line_comment() {
-			var matchResult = Match(Grammar.CommentBlock, "// text");
+			var matchResult = Grammar.CommentBlock.Match("// text");
 
 			Assert.IsTrue(matchResult.Succeeded);
 		}
@@ -67,7 +57,7 @@ namespace markdom.cs.Grammar {
 		[TestMethod]
 		public void CommentBlock_matches_indented_single_line_comment() {
 			var matchResult =
-				Match(Grammar.CommentBlock,
+				Grammar.CommentBlock.Match(
 					"    // text");
 
 			Assert.IsTrue(matchResult.Succeeded);
@@ -76,7 +66,7 @@ namespace markdom.cs.Grammar {
 		[TestMethod]
 		public void CommentBlock_does_not_match_multi_line_comment_with_trailing_content() {
 			var matchResult =
-				Match(Grammar.CommentBlock, 
+				Grammar.CommentBlock.Match(
 					"/* This is a multi-line comment\n",
 					"with trailing content */ text");
 
@@ -87,7 +77,7 @@ namespace markdom.cs.Grammar {
 		public void Entity_matches_decimal_html_entity() {
 			var expected = new EntityNode(233, new MarkdomSourceRange(0, 6, 1, 0));
 
-			var matchResult = Match(Grammar.Entity, "&#233;");
+			var matchResult = Grammar.Entity.Match("&#233;");
 
 			Assert.IsTrue(matchResult.Succeeded);
 			AssertNodesAreEqual(expected, matchResult.Product);
@@ -96,7 +86,7 @@ namespace markdom.cs.Grammar {
 		[TestMethod]
 		public void Entity_matches_hexadecimal_html_entity() {
 			var expected = new EntityNode(233, new MarkdomSourceRange(0, 6, 1, 0));
-			var matchResult = Match(Grammar.Entity, "&#xE9;");
+			var matchResult = Grammar.Entity.Match("&#xE9;");
 
 			Assert.IsTrue(matchResult.Succeeded);
 			AssertNodesAreEqual(expected, matchResult.Product);
@@ -106,7 +96,7 @@ namespace markdom.cs.Grammar {
 		public void Entity_matches_named_html_entity() {
 			var expected = new EntityNode(233, new MarkdomSourceRange(0, 8, 1, 0));
 
-			var matchResult = Match(Grammar.Entity, "&eacute;");
+			var matchResult = Grammar.Entity.Match("&eacute;");
 
 			Assert.IsTrue(matchResult.Succeeded);
 			AssertNodesAreEqual(expected, matchResult.Product);
@@ -128,7 +118,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void Link_matches_explicit_link() {
-			var matchResult = Match(Grammar.Link, "[Slashdot: News for nerds, stuff that matters](http://slashdot.org)");
+			var matchResult = Grammar.Link.Match("[Slashdot: News for nerds, stuff that matters](http://slashdot.org)");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
@@ -145,7 +135,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void Link_matches_hybrid_link() {
-			var matchResult = Match(Grammar.Link, "[Slashdot: News for nerds, stuff that matters][slashdot.org](http://slashdot.org)");
+			var matchResult = Grammar.Link.Match("[Slashdot: News for nerds, stuff that matters][slashdot.org](http://slashdot.org)");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
@@ -162,7 +152,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void Link_matches_reference_link() {
-			var matchResult = Match(Grammar.Link, "[Slashdot: News for nerds, stuff that matters][slashdot.org]");
+			var matchResult = Grammar.Link.Match("[Slashdot: News for nerds, stuff that matters][slashdot.org]");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
@@ -173,7 +163,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void NumericLiteral_matches_integer() {
-			var match = Match(Grammar.NumericLiteralExpression, "42");
+			var match = Grammar.NumericLiteralExpression.Match("42");
 
 			Assert.IsTrue(match.Succeeded);
 
@@ -185,7 +175,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void NumericLiteral_matches_with_no_integer_part() {
-			var match = Match(Grammar.NumericLiteralExpression, ".123");
+			var match = Grammar.NumericLiteralExpression.Match(".123");
 
 			Assert.IsTrue(match.Succeeded);
 
@@ -197,7 +187,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void NumericLiteral_matches_with_exponent_part() {
-			var match = Match(Grammar.NumericLiteralExpression, "4.2E1");
+			var match = Grammar.NumericLiteralExpression.Match("4.2E1");
 
 			Assert.IsTrue(match.Succeeded);
 
@@ -209,14 +199,14 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void bla() {
-			var match = Match(Grammar.NumericLiteralExpression, "123456789123456789123456789123456789.123456789123456789123456789123456789");
+			var match = Grammar.NumericLiteralExpression.Match("123456789123456789123456789123456789.123456789123456789123456789123456789");
 
 			match.ToString();
 		}
 
 		[TestMethod]
 		public void NumericLiteral_matches_hexadecimal_integer() {
-			var match = Match(Grammar.NumericLiteralExpression, "0xdeadbeef");
+			var match = Grammar.NumericLiteralExpression.Match("0xdeadbeef");
 
 			Assert.IsTrue(match.Succeeded);
 
@@ -228,7 +218,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void NumericLiteral_does_not_match_signed_integer() {
-			var match = Match(Grammar.NumericLiteralExpression, "-42");
+			var match = Grammar.NumericLiteralExpression.Match("-42");
 
 			Assert.IsFalse(match.Succeeded);
 		}
@@ -237,7 +227,7 @@ namespace markdom.cs.Grammar {
 		public void ObjectExpression_matches_empty_object() {
 			var expected = new ObjectLiteralExpression(new PropertyAssignment[0], new MarkdomSourceRange(0, 2, 1, 0));
 
-			var matchResult = Match(Grammar.ObjectLiteralExpression, "{}");
+			var matchResult = Grammar.ObjectLiteralExpression.Match("{}");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
@@ -257,7 +247,7 @@ namespace markdom.cs.Grammar {
 						new MarkdomSourceRange(2, 11, 1, 2)) },
 				new MarkdomSourceRange(0, 15, 1, 0));  
 
-			var matchResult = Match(Grammar.ObjectLiteralExpression, "{ 'a' : 'foo' }");
+			var matchResult = Grammar.ObjectLiteralExpression.Match("{ 'a' : 'foo' }");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
@@ -284,7 +274,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void RomanNumeral_matches_base_case() { 
-			var matchResult = Match(Grammar.RomanNumeral, "MCMXIV");
+			var matchResult = Grammar.RomanNumeral.Match("MCMXIV");
 
 			Assert.IsTrue(matchResult.Succeeded);
 			Assert.AreEqual(1914, matchResult.Product);
@@ -301,7 +291,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void StringExpression_matches_single_quoted_string() {
-			var matchResult = Match(Grammar.StringLiteralExpression, "'string'");
+			var matchResult = Grammar.StringLiteralExpression.Match("'string'");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
@@ -314,7 +304,7 @@ namespace markdom.cs.Grammar {
 		[TestMethod]
 		public void StringExpression_matches_double_quoted_string() {
 			var expected = new StringLiteralExpression("string", new MarkdomSourceRange(0, 8, 1, 0));
-			var matchResult = Match(Grammar.StringLiteralExpression, @"""string""");
+			var matchResult = Grammar.StringLiteralExpression.Match(@"""string""");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
@@ -351,14 +341,14 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void UriExpression_matches_remote_uri() {
-			var matchResult = Match(Grammar.UriLiteralExpression, "http://www.google.com");
+			var matchResult = Grammar.UriLiteralExpression.Match("http://www.google.com");
 
 			Assert.IsTrue(matchResult.Succeeded);
 		}
 
 		[TestMethod]
 		public void UriExpression_matches_uri_with_balanced_parentheses() {
-			var matchResult = Match(Grammar.UriLiteralExpression, "http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx");
+			var matchResult = Grammar.UriLiteralExpression.Match("http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
@@ -370,7 +360,7 @@ namespace markdom.cs.Grammar {
 
 		[TestMethod]
 		public void UriExpression_discards_characters_following_unbalanced_parentheses() {
-			var matchResult = Match(Grammar.UriLiteralExpression, "http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71).aspx");
+			var matchResult = Grammar.UriLiteralExpression.Match("http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71).aspx");
 
 			Assert.IsTrue(matchResult.Succeeded);
 
@@ -424,7 +414,7 @@ a@42) Item 2.
 			var stopwatch = new System.Diagnostics.Stopwatch();
 
 			stopwatch.Start();
-			var matchResult = Match(Grammar.Document, input);
+			var matchResult = Grammar.Document.Match(input);
 			stopwatch.Stop();
 
 			var document = matchResult.Product as MarkdomDocumentNode;
