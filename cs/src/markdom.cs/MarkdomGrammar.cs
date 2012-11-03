@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace markdom.cs {
 	public class MarkdomGrammar : Grammar<MarkdomDocumentNode> {
@@ -140,7 +141,8 @@ namespace markdom.cs {
 		public IParsingExpression<HeadingNode> Heading { get; private set; }
 		public IParsingExpression<int> HeadingAnnouncement { get; private set; }
 		public IParsingExpression<OrderedListNode> OrderedList { get; private set; }
-		public IParsingExpression<InitialEnumeratorInfo> Enumerator { get; private set; }
+		public IParsingExpression<Nil> Enumerator { get; private set; }
+		public IParsingExpression<Nil> Enumeratorish { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedList { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedListTight { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedListLoose { get; private set; }
@@ -440,7 +442,13 @@ namespace markdom.cs {
 
 			// This works because the continuation enumerator is a special case of the initial
 			Define(() => Enumerator,
-				ChoiceUnordered(orderedListStyleDefinitions.Select(ls => ls.InitialEnumerator)));
+				Sequence(
+					Reference(() => Enumeratorish),
+					ChoiceUnordered(orderedListStyleDefinitions.Select(ls => ls.InitialEnumerator))));
+
+			Define(() => Enumeratorish,
+				Ahead(
+					Regex(@"\ {0,3}(\(|\[)?([0-9]+|[a-zA-Z]+)(@[0-9]+)?(\.|(\ *-)|\)|\])")));
 
 			var orderedListBlockLine =
 				Sequence(
@@ -457,83 +465,86 @@ namespace markdom.cs {
 					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2, match.Product.Of3));
 
 			Define(() => OrderedList,
-				ChoiceOrdered(orderedListStyleDefinitions.Select(listStyle => {
-					var initialOrderedListItemInitialBlock =
-						Sequence(
-							listStyle.InitialEnumerator,
-							Reference(() => BlockLine),
-							orderedListBlockLines,
-							match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
-
-					var subsequentOrderedListItemInitialBlock =
-						Sequence(
-							listStyle.ContinuationEnumerator,
-							Reference(() => BlockLine),
-							orderedListBlockLines,
-							match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
-
-					var initialOrderedListItemTight =
-						Reference( () => initialOrderedListItemInitialBlock, BlockLineInfo.FromMatch);
-
-					var subsequentOrderedListItemTight =
-						Reference(() => subsequentOrderedListItemInitialBlock, BlockLineInfo.FromMatch);
-
-					var initialOrderedListItemLoose =
-						Sequence(
+				Sequence(
+					Reference(() => Enumeratorish),
+					ChoiceOrdered(orderedListStyleDefinitions.Select(listStyle => {
+						var initialOrderedListItemInitialBlock =
 							Sequence(
-								initialOrderedListItemInitialBlock,
-								AtLeast(0, orderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
-								match => new BlockLineInfo(ArrayUtils.Combine(match.Product.Of1, match.Product.Of2), match.SourceRange)),
-							Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
-							match => match.Product.Of1);
+								listStyle.InitialEnumerator,
+								Reference(() => BlockLine),
+								orderedListBlockLines,
+								match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
 
-					var subsequentOrderedListItemLoose = 
-						Sequence(
+						var subsequentOrderedListItemInitialBlock =
 							Sequence(
-								subsequentOrderedListItemInitialBlock,
-								AtLeast(0, orderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
-								match => new BlockLineInfo(ArrayUtils.Combine(match.Product.Of1, match.Product.Of2), match.SourceRange)),
-							Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
-							match => match.Product.Of1);
+								listStyle.ContinuationEnumerator,
+								Reference(() => BlockLine),
+								orderedListBlockLines,
+								match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
 
-					var orderedListContinuesLoose =
-						ChoiceUnordered(
-							Sequence(Reference(() => BlankLines), listStyle.ContinuationEnumerator),
-							listItemContinues);
+						var initialOrderedListItemTight =
+							Reference( () => initialOrderedListItemInitialBlock, BlockLineInfo.FromMatch);
 
-					var orderedListTight =
-						Sequence(
-							Reference(() => BlankLines),
-							initialOrderedListItemTight,
-							AtLeast(0, subsequentOrderedListItemTight),
-							NotAhead(orderedListContinuesLoose),
-							match => {
-								var items = match.Product.Of2.InArray().Concat(match.Product.Of3)
-									.Select(itemBlockInfo =>
-										new OrderedListItemNode(
-											ParseLinesAs(Inlines, itemBlockInfo.Lines),
-											new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
-									.ToArray();
-								return new OrderedListNode(listStyle.CounterStyle, listStyle.SeparatorStyle, 1, items, MarkdomSourceRange.FromMatch(match));
-							});
+						var subsequentOrderedListItemTight =
+							Reference(() => subsequentOrderedListItemInitialBlock, BlockLineInfo.FromMatch);
 
-					var orderedListLoose =
-						Sequence(
-							Reference(() => BlankLines),
-							initialOrderedListItemLoose,
-							AtLeast(0, subsequentOrderedListItemLoose),
-							match => {
-								var items = match.Product.Of2.InArray().Concat(match.Product.Of3)
-									.Select(itemBlockInfo =>
-										new OrderedListItemNode(
-											ParseLinesAs(Blocks, itemBlockInfo.Lines),
-											new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
-									.ToArray();
-								return new OrderedListNode(listStyle.CounterStyle, listStyle.SeparatorStyle, 1, items, MarkdomSourceRange.FromMatch(match));
-							});
+						var initialOrderedListItemLoose =
+							Sequence(
+								Sequence(
+									initialOrderedListItemInitialBlock,
+									AtLeast(0, orderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
+									match => new BlockLineInfo(ArrayUtils.Combine(match.Product.Of1, match.Product.Of2), match.SourceRange)),
+								Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
+								match => match.Product.Of1);
 
-					return ChoiceOrdered(orderedListTight, orderedListLoose);
-			})));
+						var subsequentOrderedListItemLoose = 
+							Sequence(
+								Sequence(
+									subsequentOrderedListItemInitialBlock,
+									AtLeast(0, orderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
+									match => new BlockLineInfo(ArrayUtils.Combine(match.Product.Of1, match.Product.Of2), match.SourceRange)),
+								Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
+								match => match.Product.Of1);
+
+						var orderedListContinuesLoose =
+							ChoiceUnordered(
+								Sequence(Reference(() => BlankLines), listStyle.ContinuationEnumerator),
+								listItemContinues);
+
+						var orderedListTight =
+							Sequence(
+								Reference(() => BlankLines),
+								initialOrderedListItemTight,
+								AtLeast(0, subsequentOrderedListItemTight),
+								NotAhead(orderedListContinuesLoose),
+								match => {
+									var items = match.Product.Of2.InArray().Concat(match.Product.Of3)
+										.Select(itemBlockInfo =>
+											new OrderedListItemNode(
+												ParseLinesAs(Inlines, itemBlockInfo.Lines),
+												new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
+										.ToArray();
+									return new OrderedListNode(listStyle.CounterStyle, listStyle.SeparatorStyle, 1, items, MarkdomSourceRange.FromMatch(match));
+								});
+
+						var orderedListLoose =
+							Sequence(
+								Reference(() => BlankLines),
+								initialOrderedListItemLoose,
+								AtLeast(0, subsequentOrderedListItemLoose),
+								match => {
+									var items = match.Product.Of2.InArray().Concat(match.Product.Of3)
+										.Select(itemBlockInfo =>
+											new OrderedListItemNode(
+												ParseLinesAs(Blocks, itemBlockInfo.Lines),
+												new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
+										.ToArray();
+									return new OrderedListNode(listStyle.CounterStyle, listStyle.SeparatorStyle, 1, items, MarkdomSourceRange.FromMatch(match));
+								});
+
+						return ChoiceOrdered(orderedListTight, orderedListLoose);
+			})),
+			match => match.Product.Of2));
 		#endregion
 
 			#region Unordered List
