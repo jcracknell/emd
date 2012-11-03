@@ -442,15 +442,22 @@ namespace markdom.cs {
 			Define(() => Enumerator,
 				ChoiceUnordered(orderedListStyleDefinitions.Select(ls => ls.InitialEnumerator)));
 
+			var orderedListBlockLine =
+				Sequence(
+					NotAhead(Reference(() => Enumerator)), listBlockLine,
+					m => m.Product.Of2);
+
+			var orderedListBlockLines = AtLeast(0, orderedListBlockLine);
+
+			var orderedListItemSubsequentBlock =
+				Sequence(
+					listItemContinues,
+					orderedListBlockLines,
+					Reference(() => BlankLines),
+					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2, match.Product.Of3));
+
 			Define(() => OrderedList,
 				ChoiceOrdered(orderedListStyleDefinitions.Select(listStyle => {
-					var orderedListBlockLine =
-						Sequence(
-							NotAhead(Reference(() => Enumerator)), listBlockLine,
-							m => m.Product.Of2);
-
-					var orderedListBlockLines = AtLeast(0, orderedListBlockLine);
-
 					var initialOrderedListItemInitialBlock =
 						Sequence(
 							listStyle.InitialEnumerator,
@@ -464,13 +471,6 @@ namespace markdom.cs {
 							Reference(() => BlockLine),
 							orderedListBlockLines,
 							match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
-
-					var orderedListItemSubsequentBlock =
-						Sequence(
-							listItemContinues,
-							orderedListBlockLines,
-							Reference(() => BlankLines),
-							match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2, match.Product.Of3));
 
 					var initialOrderedListItemTight =
 						Reference( () => initialOrderedListItemInitialBlock, BlockLineInfo.FromMatch);
