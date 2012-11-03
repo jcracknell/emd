@@ -8,14 +8,16 @@ using System.Text.RegularExpressions;
 
 namespace pegleg.cs.Parsing.Expressions.Builders {
 	public class ExpressionBuilder : IExpressionBuilder {
-		private const RegexOptions REGEX_OPTIONS = RegexOptions.Compiled | RegexOptions.Singleline;
 		private IExpressionNamingConvention _namingConvention = new DefaultExpressionNamingConvention();
 
 		public void SetExpressionNamingConvention(IExpressionNamingConvention namingConvention) {
 			CodeContract.ArgumentIsNotNull(() => namingConvention, namingConvention);
 
 			_namingConvention = namingConvention;
+			RegexOptions = RegexOptions.Compiled | RegexOptions.Singleline;
 		}
+
+		public RegexOptions RegexOptions { get; set; }
 
 		#region Helpers
 
@@ -57,7 +59,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<Nil> Regex(string regex) {
-			return Regex(regex, REGEX_OPTIONS);
+			return Regex(regex, RegexOptions);
 		}
 
 		public IParsingExpression<Nil> Regex(string regex, RegexOptions regexOptions) {
@@ -73,7 +75,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<TProduct> Regex<TProduct>(string regex, Func<IMatch<Match>, TProduct> matchAction) {
-			return Regex(regex, REGEX_OPTIONS, matchAction);
+			return Regex(regex, RegexOptions, matchAction);
 		}
 
 		#endregion
