@@ -104,37 +104,41 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 				match => matchAction(UpcastExpressionMatch(match, product => (T)product)));
 		}
 
-		public IParsingExpression<T[]> AtLeast<T>(uint n, IParsingExpression<T> expression) {
-			return new RepetitionParsingExpression<T, T[]>(n, RepetitionParsingExpression.UNBOUNDED, expression, null);
+		#region Repetition
+
+		public IParsingExpression<IEnumerable<T>> AtLeast<T>(uint minOccurs, IParsingExpression<T> expression) {
+			return new NonCapturingRepetitionParsingExpression<T>(minOccurs, RepetitionParsingExpression.UNBOUNDED, expression);
 		}
 
-		public IParsingExpression<TProduct> AtLeast<T, TProduct>(uint n, IParsingExpression<T> expression, Func<IMatch<T[]>, TProduct> matchAction) {
-			return new RepetitionParsingExpression<T, TProduct>(n, 0, expression, matchAction);
+		public IParsingExpression<TProduct> AtLeast<T, TProduct>(uint minOccurs, IParsingExpression<T> expression, Func<IMatch<IEnumerable<T>>, TProduct> matchAction) {
+			return new CapturingRepetitionParsingExpression<T, TProduct>(minOccurs, RepetitionParsingExpression.UNBOUNDED, expression, matchAction);
 		}
 
-		public IParsingExpression<T[]> AtMost<T>(uint maxOccurs, IParsingExpression<T> expression) {
-			return new RepetitionParsingExpression<T, T[]>(RepetitionParsingExpression.UNBOUNDED, maxOccurs, expression, null);
+		public IParsingExpression<IEnumerable<T>> AtMost<T>(uint maxOccurs, IParsingExpression<T> expression) {
+			return new NonCapturingRepetitionParsingExpression<T>(RepetitionParsingExpression.UNBOUNDED, maxOccurs, expression);
 		}
 
-		public IParsingExpression<TProduct> AtMost<T, TProduct>(uint maxOccurs, IParsingExpression<T> expression, Func<IMatch<T[]>, TProduct> matchAction) {
-			return new RepetitionParsingExpression<T, TProduct>(0, maxOccurs, expression, matchAction);
+		public IParsingExpression<TProduct> AtMost<T, TProduct>(uint maxOccurs, IParsingExpression<T> expression, Func<IMatch<IEnumerable<T>>, TProduct> matchAction) {
+			return new CapturingRepetitionParsingExpression<T, TProduct>(0, maxOccurs, expression, matchAction);
 		}
 
-		public IParsingExpression<T[]> Between<T>(uint minOccurs, uint maxOccurs, IParsingExpression<T> expression) {
-			return new RepetitionParsingExpression<T, T[]>(minOccurs, maxOccurs, expression, null);
+		public IParsingExpression<IEnumerable<T>> Between<T>(uint minOccurs, uint maxOccurs, IParsingExpression<T> expression) {
+			return new NonCapturingRepetitionParsingExpression<T>(minOccurs, maxOccurs, expression);
 		}
 
-		public IParsingExpression<TProduct> Between<T, TProduct>(uint minOccurs, uint maxOccurs, IParsingExpression<T> expression, Func<IMatch<T[]>, TProduct> matchAction) {
-			return new RepetitionParsingExpression<T, TProduct>(minOccurs, maxOccurs, expression, matchAction);
+		public IParsingExpression<TProduct> Between<T, TProduct>(uint minOccurs, uint maxOccurs, IParsingExpression<T> expression, Func<IMatch<IEnumerable<T>>, TProduct> matchAction) {
+			return new CapturingRepetitionParsingExpression<T, TProduct>(minOccurs, maxOccurs, expression, matchAction);
 		}
 
-		public IParsingExpression<T[]> Exactly<T>(uint occurs, IParsingExpression<T> expression) {
-			return new RepetitionParsingExpression<T, T[]>(occurs, occurs, expression, null);
+		public IParsingExpression<IEnumerable<T>> Exactly<T>(uint occurs, IParsingExpression<T> expression) {
+			return new NonCapturingRepetitionParsingExpression<T>(occurs, occurs, expression);
 		}
 
-		public IParsingExpression<TProduct> Exactly<T, TProduct>(uint occurs, IParsingExpression<T> expression, Func<IMatch<T[]>, TProduct> matchAction) {
-			return new RepetitionParsingExpression<T, TProduct>(occurs, occurs, expression, matchAction);
+		public IParsingExpression<TProduct> Exactly<T, TProduct>(uint occurs, IParsingExpression<T> expression, Func<IMatch<IEnumerable<T>>, TProduct> matchAction) {
+			return new CapturingRepetitionParsingExpression<T, TProduct>(occurs, occurs, expression, matchAction);
 		}
+
+		#endregion
 
 		public IParsingExpression<Nil> NotAhead<T>(IParsingExpression<T> expression) {
 			return new NotAheadParsingExpression<Nil>(expression, null);

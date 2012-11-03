@@ -58,14 +58,14 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		IParsingExpression<T> Ahead<T>(IParsingExpression<T> expression);
 		IParsingExpression<TProduct> Ahead<T, TProduct>(IParsingExpression<T> expression, Func<IMatch<T>, TProduct> matchAction);
 
-		IParsingExpression<T[]> AtLeast<T>(uint minOccurs, IParsingExpression<T> expression);
-		IParsingExpression<TProduct> AtLeast<T, TProduct>(uint minOccurs, IParsingExpression<T> expression, Func<IMatch<T[]>, TProduct> matchAction);
-		IParsingExpression<T[]> AtMost<T>(uint maxOccurs, IParsingExpression<T> expression);
-		IParsingExpression<TProduct> AtMost<T, TProduct>(uint maxOccurs, IParsingExpression<T> expression, Func<IMatch<T[]>, TProduct> matchAction);
-		IParsingExpression<T[]> Between<T>(uint minOccurs, uint maxOccurs, IParsingExpression<T> expression);
-		IParsingExpression<TProduct> Between<T, TProduct>(uint minOccurs, uint maxOccurs, IParsingExpression<T> expression, Func<IMatch<T[]>, TProduct> matchAction);
-		IParsingExpression<T[]> Exactly<T>(uint occurs, IParsingExpression<T> expression);
-		IParsingExpression<TProduct> Exactly<T, TProduct>(uint occurs, IParsingExpression<T> expression, Func<IMatch<T[]>, TProduct> matchAction);
+		IParsingExpression<IEnumerable<T>> AtLeast<T>(uint minOccurs, IParsingExpression<T> expression);
+		IParsingExpression<TProduct> AtLeast<T, TProduct>(uint minOccurs, IParsingExpression<T> expression, Func<IMatch<IEnumerable<T>>, TProduct> matchAction);
+		IParsingExpression<IEnumerable<T>> AtMost<T>(uint maxOccurs, IParsingExpression<T> expression);
+		IParsingExpression<TProduct> AtMost<T, TProduct>(uint maxOccurs, IParsingExpression<T> expression, Func<IMatch<IEnumerable<T>>, TProduct> matchAction);
+		IParsingExpression<IEnumerable<T>> Between<T>(uint minOccurs, uint maxOccurs, IParsingExpression<T> expression);
+		IParsingExpression<TProduct> Between<T, TProduct>(uint minOccurs, uint maxOccurs, IParsingExpression<T> expression, Func<IMatch<IEnumerable<T>>, TProduct> matchAction);
+		IParsingExpression<IEnumerable<T>> Exactly<T>(uint occurs, IParsingExpression<T> expression);
+		IParsingExpression<TProduct> Exactly<T, TProduct>(uint occurs, IParsingExpression<T> expression, Func<IMatch<IEnumerable<T>>, TProduct> matchAction);
 
 		IParsingExpression<Nil> NotAhead<T>(IParsingExpression<T> expression);
 		IParsingExpression<TProduct> NotAhead<T, TProduct>(IParsingExpression<T> expression, Func<IMatch<Nil>, TProduct> matchAction);

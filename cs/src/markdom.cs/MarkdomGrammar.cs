@@ -29,15 +29,15 @@ namespace markdom.cs {
 		}
 
 		public class BlockLineInfo {
-			public readonly LineInfo[] Lines;
+			public readonly IEnumerable<LineInfo> Lines;
 			public readonly SourceRange SourceRange;
 
-			public BlockLineInfo(LineInfo[] lines, SourceRange sourceRange) {
+			public BlockLineInfo(IEnumerable<LineInfo> lines, SourceRange sourceRange) {
 				Lines = lines;
 				SourceRange = sourceRange;
 			}
 
-			public static BlockLineInfo FromMatch(IMatch<LineInfo[]> match) {
+			public static BlockLineInfo FromMatch(IMatch<IEnumerable<LineInfo>> match) {
 				return new BlockLineInfo(match.Product, match.SourceRange);
 			}
 
@@ -107,7 +107,7 @@ namespace markdom.cs {
 
 		public IParsingExpression<MarkdomDocumentNode> Document { get; private set; }
 
-		public IParsingExpression<IBlockNode[]> Blocks { get; private set; }
+		public IParsingExpression<IEnumerable<IBlockNode>> Blocks { get; private set; }
 		public IParsingExpression<IBlockNode> Block { get; private set; }
 
 		public IParsingExpression<LineInfo> CommentBlock { get; private set; }
@@ -130,11 +130,11 @@ namespace markdom.cs {
 		public IParsingExpression<Nil> BlockLineAtomic { get; private set; }
 		public IParsingExpression<Nil> Atomic { get; private set; }
 
-		public IParsingExpression<IInlineNode[]> Inlines { get; private set; }
+		public IParsingExpression<IEnumerable<IInlineNode>> Inlines { get; private set; }
 		public IParsingExpression<IInlineNode> Inline { get; private set; }
 		public IParsingExpression<AutoLinkNode> AutoLink { get; private set; }
 		public IParsingExpression<LinkNode> Link { get; private set; }
-		public IParsingExpression<IInlineNode[]> Label { get; private set; }
+		public IParsingExpression<IEnumerable<IInlineNode>> Label { get; private set; }
 		public IParsingExpression<StrongNode> Strong { get; private set; }
 		public IParsingExpression<EmphasisNode> Emphasis { get; private set; }
 		public IParsingExpression<InlineExpressionNode> InlineExpression { get; private set; }
@@ -148,7 +148,7 @@ namespace markdom.cs {
 
 		public IParsingExpression<IExpression> Expression { get; private set; }
 		public IParsingExpression<IExpression> LiteralExpression { get; private set; }
-		public IParsingExpression<IExpression[]> ArgumentList { get; private set; }
+		public IParsingExpression<IEnumerable<IExpression>> ArgumentList { get; private set; }
 		public IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression { get; private set; }
 		public IParsingExpression<ObjectLiteralExpression> ObjectBodyExpression { get; private set; }
 		public IParsingExpression<NumericLiteralExpression> NumericLiteralExpression { get; private set; }
@@ -170,7 +170,7 @@ namespace markdom.cs {
 		/// A whitespace character; space, tab or newline.
 		/// </summary>
 		public IParsingExpression<Nil> Whitespace { get; private set; }
-		public IParsingExpression<Nil[]> Whitespaces { get; private set; }
+		public IParsingExpression<IEnumerable<Nil>> Whitespaces { get; private set; }
 		/// <summary>
 		/// A newline character.
 		/// </summary>
@@ -186,7 +186,7 @@ namespace markdom.cs {
 		/// <summary>
 		/// A blank line; composed of any number of spaces followed by a line end.
 		/// </summary>
-		public IParsingExpression<LineInfo[]> BlankLines { get; private set; }
+		public IParsingExpression<IEnumerable<LineInfo>> BlankLines { get; private set; }
 		public IParsingExpression<LineInfo> BlankLine { get; private set; }
 		public IParsingExpression<LineInfo> NonTerminalBlankLine { get; private set; }
 		public IParsingExpression<Nil> Digit { get; private set; }
@@ -251,7 +251,7 @@ namespace markdom.cs {
 		public MarkdomGrammar() {
 
 			Define(() => Document,
-				Reference(() => Blocks, match => new MarkdomDocumentNode(match.Product, MarkdomSourceRange.FromMatch(match))));
+				Reference(() => Blocks, match => new MarkdomDocumentNode(match.Product.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			#region Comments
 
@@ -464,7 +464,7 @@ namespace markdom.cs {
 					listItemContinues,
 					orderedListBlockLines,
 					Reference(() => BlankLines),
-					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2, match.Product.Of3));
+					match => match.Product.Of1.Concat(match.Product.Of2).Concat(match.Product.Of3));
 
 			Define(() => OrderedList,
 				Sequence(
@@ -479,13 +479,13 @@ namespace markdom.cs {
 									Sequence(
 										csd.InitialEnumerator, Reference(() => BlockLine),
 										orderedListBlockLines,
-										match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
+										match => match.Product.Of2.InArray().Concat(match.Product.Of3));
 
 								var subsequentOrderedListItemInitialBlock =
 									Sequence(
 										csd.ContinuationEnumerator, Reference(() => BlockLine),
 										orderedListBlockLines,
-										match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
+										match => match.Product.Of2.InArray().Concat(match.Product.Of3));
 
 								var initialOrderedListItemTight =
 									Reference(() => initialOrderedListItemInitialBlock, BlockLineInfo.FromMatch);
@@ -497,8 +497,8 @@ namespace markdom.cs {
 									Sequence(
 										Sequence(
 											initialOrderedListItemInitialBlock,
-											AtLeast(0, orderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
-											match => new BlockLineInfo(ArrayUtils.Combine(match.Product.Of1, match.Product.Of2), match.SourceRange)),
+											AtLeast(0, orderedListItemSubsequentBlock),
+											match => new BlockLineInfo(match.Product.Of1.Concat(match.Product.Of2.Flatten()), match.SourceRange)),
 										Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
 										match => match.Product.Of1);
 
@@ -506,8 +506,8 @@ namespace markdom.cs {
 									Sequence(
 										Sequence(
 											subsequentOrderedListItemInitialBlock,
-											AtLeast(0, orderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
-											match => new BlockLineInfo(ArrayUtils.Combine(match.Product.Of1, match.Product.Of2), match.SourceRange)),
+											AtLeast(0, orderedListItemSubsequentBlock),
+											match => new BlockLineInfo(match.Product.Of1.Concat(match.Product.Of2.Flatten()), match.SourceRange)),
 										Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
 										match => match.Product.Of1);
 
@@ -526,7 +526,7 @@ namespace markdom.cs {
 											var items = match.Product.Of2.InArray().Concat(match.Product.Of3)
 												.Select(itemBlockInfo =>
 													new OrderedListItemNode(
-														ParseLinesAs(Inlines, itemBlockInfo.Lines),
+														ParseLinesAs(Inlines, itemBlockInfo.Lines.ToArray()).ToArray(),
 														new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
 												.ToArray();
 											return new OrderedListNode(csd.CounterStyle, ssd.SeparatorStyle, 1, items, MarkdomSourceRange.FromMatch(match));
@@ -541,7 +541,7 @@ namespace markdom.cs {
 											var items = match.Product.Of2.InArray().Concat(match.Product.Of3)
 												.Select(itemBlockInfo =>
 													new OrderedListItemNode(
-														ParseLinesAs(Blocks, itemBlockInfo.Lines),
+														ParseLinesAs(Blocks, itemBlockInfo.Lines.ToArray()).ToArray(),
 														new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
 												.ToArray();
 											return new OrderedListNode(csd.CounterStyle, ssd.SeparatorStyle, 1, items, MarkdomSourceRange.FromMatch(match));
@@ -589,14 +589,14 @@ namespace markdom.cs {
 					Reference(() => Bullet),
 					Reference(() => BlockLine), // Allow for an empty list item
 					unorderedListBlockLines,
-					match => ArrayUtils.Prepend(match.Product.Of2, match.Product.Of3));
+					match => match.Product.Of2.InArray().Concat(match.Product.Of3));
 
 			var unorderedListItemSubsequentBlock =
 				Sequence(
 					listItemContinues,
 					unorderedListBlockLines,
 					Reference(() => BlankLines),
-					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2, match.Product.Of3));
+					match => match.Product.Of1.Concat(match.Product.Of2).Concat(match.Product.Of3));
 
 			var unorderedListItemTight =
 				Reference(
@@ -607,8 +607,8 @@ namespace markdom.cs {
 				Sequence(
 					Sequence(
 						unorderedListItemInitialBlock,
-						AtLeast(0, unorderedListItemSubsequentBlock, match => ArrayUtils.Flatten(match.Product)),
-						match => new BlockLineInfo(ArrayUtils.Combine(match.Product.Of1, match.Product.Of2), match.SourceRange)),
+						AtLeast(0, unorderedListItemSubsequentBlock),
+						match => new BlockLineInfo(match.Product.Of1.Concat(match.Product.Of2.Flatten()), match.SourceRange)),
 					Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
 					match => match.Product.Of1);
 
@@ -626,7 +626,7 @@ namespace markdom.cs {
 						var items = match.Product.Of2
 							.Select(itemBlockInfo =>
 								new UnorderedListItemNode(
-									ParseLinesAs(Inlines, itemBlockInfo.Lines),
+									ParseLinesAs(Inlines, itemBlockInfo.Lines.ToArray()).ToArray(),
 									new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
 							.ToArray();
 						return new UnorderedListNode(items, MarkdomSourceRange.FromMatch(match));
@@ -640,7 +640,7 @@ namespace markdom.cs {
 						var items = match.Product.Of2
 							.Select(itemBlockInfo =>
 								new UnorderedListItemNode(
-									ParseLinesAs(Blocks, itemBlockInfo.Lines),
+									ParseLinesAs(Blocks, itemBlockInfo.Lines.ToArray()).ToArray(),
 									new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
 							.ToArray();
 						return new UnorderedListNode(items, MarkdomSourceRange.FromMatch(match));
@@ -661,7 +661,7 @@ namespace markdom.cs {
 			Define(() => HeadingAnnouncement,
 				Sequence(
 					Reference(() => SpaceChars),
-					AtLeast(1, Literal("#"), match => match.Product.Length),
+					AtLeast(1, Literal("#"), match => match.String.Length),
 					match => match.Product.Of2));
 			#endregion
 
@@ -675,14 +675,14 @@ namespace markdom.cs {
 					ChoiceUnordered(
 						Reference(() => UriLiteralExpression, match => match.Product.InArray()),
 						Reference(() => ArgumentList)),
-					match => new ReferenceNode(match.Product.Of2, match.Product.Of6, MarkdomSourceRange.FromMatch(match))));
+					match => new ReferenceNode(match.Product.Of2, match.Product.Of6.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			#region Paragraph
 
 			Define(() => Paragraph,
 				AtLeast(1,
 					Reference(() => NonEmptyBlockLine),
-					match => new ParagraphNode(ParseLinesAs(Inlines, match.Product), MarkdomSourceRange.FromMatch(match))));
+					match => new ParagraphNode(ParseLinesAs(Inlines, match.Product.ToArray()).ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -721,7 +721,7 @@ namespace markdom.cs {
 						Reference(() => TableRow),
 						AtLeast(0, Reference(() => TableRowSeparator)),
 						match => match.Product.Of2),
-					match => new TableNode(match.Product, MarkdomSourceRange.FromMatch(match))));
+					match => new TableNode(match.Product.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			var tableCellContents =
 				AtLeast(0,
@@ -770,7 +770,7 @@ namespace markdom.cs {
 						new TableHeaderCellNode(
 							match.Product.Of1.ColumnSpan,
 							match.Product.Of1.RowSpan,
-							ParseLinesAs(Inlines, match.Product.Of2.InArray()),
+							ParseLinesAs(Inlines, match.Product.Of2.InArray()).ToArray(),
 							MarkdomSourceRange.FromMatch(match)));
 
 			var tableDataCell =
@@ -780,7 +780,7 @@ namespace markdom.cs {
 					match => new TableDataCellNode(
 						match.Product.Of1.ColumnSpan,
 						match.Product.Of1.RowSpan,
-						ParseLinesAs(Inlines, match.Product.Of2.InArray()),
+						ParseLinesAs(Inlines, match.Product.Of2.InArray()).ToArray(),
 						MarkdomSourceRange.FromMatch(match)));
 
 			var tableRowEnd =
@@ -801,7 +801,7 @@ namespace markdom.cs {
 					Reference(() => SpaceChars),
 					AtLeast(1, Reference(() => tableCell)),
 					tableRowEnd,
-					match => new TableRowNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
+					match => new TableRowNode(match.Product.Of2.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => TableRowSeparator,
 				Sequence(
@@ -850,7 +850,7 @@ namespace markdom.cs {
 						Reference(() => ArgumentList),
 						match => match.Product,
 						noMatch => new IExpression[0]),
-					match => new AutoLinkNode(match.Product.Of3, match.Product.Of6, MarkdomSourceRange.FromMatch(match))));
+					match => new AutoLinkNode(match.Product.Of3, match.Product.Of6.ToArray(), MarkdomSourceRange.FromMatch(match))));
 			#endregion
 
 			#region Link
@@ -867,8 +867,8 @@ namespace markdom.cs {
 							match => Tuple.Create(match.Product.Of1, match.Product.Of3)),
 						Reference(
 							() => ReferenceLabel,
-							match => Tuple.Create(match.Product, new IExpression[0]))),
-					match => new LinkNode(match.Product.Of1, match.Product.Of3.Item1, match.Product.Of3.Item2, MarkdomSourceRange.FromMatch(match))));
+							match => Tuple.Create(match.Product, Enumerable.Empty<IExpression>()))),
+					match => new LinkNode(match.Product.Of1.ToArray(), match.Product.Of3.Item1, match.Product.Of3.Item2.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => ReferenceLabel,
 				Sequence(
@@ -898,28 +898,28 @@ namespace markdom.cs {
 					Literal("**"),
 					AtLeast(0, Sequence(NotAhead(Literal("**")), Reference(() => Inline), match => match.Product.Of2)),
 					Optional(Literal("**")),
-					match => new StrongNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
+					match => new StrongNode(match.Product.Of2.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => Emphasis,
 				Sequence(
 					Reference(() => CAsterix),
 					AtLeast(0, Sequence(NotAhead(Reference(() => CAsterix)), Reference(() => Inline), match => match.Product.Of2)),
 					Optional(Reference(() => CAsterix)),
-					match => new EmphasisNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
+					match => new EmphasisNode(match.Product.Of2.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			var singleQuoted =
 				Sequence(
 					Reference(() => CSingleQuote),
 					AtLeast(0, Sequence(NotAhead(Reference(() => CSingleQuote)), Reference(() => Inline), match => match.Product.Of2)),
 					Reference(() => CSingleQuote),
-					match => new QuotedNode(QuoteType.Single, match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
+					match => new QuotedNode(QuoteType.Single, match.Product.Of2.ToArray(), MarkdomSourceRange.FromMatch(match)));
 
 			var doubleQuoted =
 				Sequence(
 					Reference(() => CDoubleQuote),
 					AtLeast(0, Sequence(NotAhead(Reference(() => CDoubleQuote)), Reference(() => Inline), match => match.Product.Of2)),
 					Reference(() => CDoubleQuote),
-					match => new QuotedNode(QuoteType.Double, match.Product.Of2, MarkdomSourceRange.FromMatch(match)));
+					match => new QuotedNode(QuoteType.Double, match.Product.Of2.ToArray(), MarkdomSourceRange.FromMatch(match)));
 
 			Define(() => Quoted,
 				ChoiceOrdered(doubleQuoted, singleQuoted));
@@ -1010,7 +1010,7 @@ namespace markdom.cs {
 					Sequence(
 						Reference(() => Expression),
 						AtLeast(0, Sequence( argumentSeparator, Reference(() => Expression), match => match.Product.Of2)),
-						match => ArrayUtils.Prepend(match.Product.Of1, match.Product.Of2)));
+						match => match.Product.Of1.InArray().Concat(match.Product.Of2)));
 
 			Define(() => ArgumentList,
 				Sequence(
@@ -1158,7 +1158,9 @@ namespace markdom.cs {
 					Sequence(
 						objectPropertyAssignment,
 						AtLeast(0, Sequence(argumentSeparator, objectPropertyAssignment, match => match.Product.Of2)),
-						match => ArrayUtils.Combine(match.Product.Of1.InArray(), match.Product.Of2)));
+						match => match.Product.Of1.InArray().Concat(match.Product.Of2)),
+					match => match.Product,
+					noMatch => Enumerable.Empty<PropertyAssignment>());
 
 			var objectExpressionStart =
 				Sequence( Reference(() => CLBrace), Reference(() => ExpressionWhitespace));
@@ -1169,10 +1171,10 @@ namespace markdom.cs {
 			Define(() => ObjectLiteralExpression,
 				Sequence(
 					objectExpressionStart, objectPropertyAssignments, objectExpressionEnd,
-					match => new ObjectLiteralExpression(match.Product.Of2 ?? new PropertyAssignment[0], MarkdomSourceRange.FromMatch(match))));
+					match => new ObjectLiteralExpression(match.Product.Of2.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => ObjectBodyExpression,
-				Reference(() => objectPropertyAssignments, match => new ObjectLiteralExpression(match.Product, MarkdomSourceRange.FromMatch(match))));
+				Reference(() => objectPropertyAssignments, match => new ObjectLiteralExpression(match.Product.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -1183,7 +1185,7 @@ namespace markdom.cs {
 			//   * Cannot start with `@`, `'`, or `"'
 
 			IParsingExpression<object> uriExpressionPart = null;
-			IParsingExpression<object[]> uriExpressionRegularPart = null;
+			IParsingExpression<IEnumerable<Nil>> uriExpressionRegularPart = null;
 			IParsingExpression<Nil> uriExpressionParenthesizedPart = null;
 
 			uriExpressionPart = 
@@ -1229,7 +1231,7 @@ namespace markdom.cs {
 							match => LineInfo.FromMatch(match)),
 						Reference(() => endBraces),
 						match => new DocumentLiteralExpression(
-							ParseLinesAs(Blocks, match.Product.Of2.InArray()),
+							ParseLinesAs(Blocks, match.Product.Of2.InArray()).ToArray(),
 							MarkdomSourceRange.FromMatch(match)));
 				}));
 
@@ -1298,11 +1300,10 @@ namespace markdom.cs {
 					Optional(
 						Sequence(
 							AtLeast(0, Reference(() => SpaceChar)),
-							EndOfInput(),
-							match => LineInfo.FromMatch(match).InArray()),
-						match => match.Product,
-						noMatch => new LineInfo[0]),
-					match => ArrayUtils.Combine(match.Product.Of1, match.Product.Of2)));
+							EndOfInput()),
+						match => LineInfo.FromMatch(match).InArray(),
+						noMatch => Enumerable.Empty<LineInfo>()),
+					match => match.Product.Of1.Concat(match.Product.Of2)));
 
 			// NEVER EVER EVER USE THIS IN A REPETITION CONTEXT
 			Define(() => BlankLine,

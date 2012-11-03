@@ -62,5 +62,9 @@ namespace pegleg.cs.ExtensionMethods {
 		public static T ValueOr<T>(this Nullable<T> nullable, T @default) where T : struct {
 			return nullable.HasValue ? nullable.Value : @default;
 		}
+
+		public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerableEnumerable) {
+			return enumerableEnumerable.SelectMany(i => i);
+		}
 	}
 }
