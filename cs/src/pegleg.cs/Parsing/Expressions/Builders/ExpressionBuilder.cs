@@ -14,10 +14,10 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			CodeContract.ArgumentIsNotNull(() => namingConvention, namingConvention);
 
 			_namingConvention = namingConvention;
-			RegexOptions = RegexOptions.Compiled | RegexOptions.Singleline;
+			DefaultRegexOptions = RegexOptions.Compiled | RegexOptions.Singleline;
 		}
 
-		public RegexOptions RegexOptions { get; set; }
+		public RegexOptions DefaultRegexOptions { get; set; }
 
 		#region Helpers
 
@@ -55,7 +55,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		#region Regex
 
 		public IParsingExpression<Nil> Regex(string regex) {
-			return Regex(regex, RegexOptions);
+			return Regex(regex, DefaultRegexOptions);
 		}
 
 		public IParsingExpression<Nil> Regex(string regex, RegexOptions regexOptions) {
@@ -63,7 +63,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<TProduct> Regex<TProduct>(string regex, Func<IMatch<Match>, TProduct> matchAction) {
-			return Regex(regex, RegexOptions, matchAction);
+			return Regex(regex, DefaultRegexOptions, matchAction);
 		}
 
 		public IParsingExpression<TProduct> Regex<TProduct>(string regex, RegexOptions regexOptions, Func<IMatch<Match>, TProduct> matchAction) {
