@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class RepetitionParsingExpression : BaseParsingExpression {
+	public abstract class RepetitionParsingExpression<TBody, TProduct> : BaseParsingExpression<TProduct> {
 		public const uint UNBOUNDED = 0;
 
 		protected readonly uint _minOccurs;
 		protected readonly uint _maxOccurs;
-		protected readonly IParsingExpression _body;
+		protected readonly IParsingExpression<TBody> _body;
 
-		public RepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression body)
+		public RepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression<TBody> body)
 			: base(ParsingExpressionKind.Repetition)
 		{
 			CodeContract.ArgumentIsNotNull(() => body, body);
@@ -24,19 +24,19 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public uint MinOccurs { get { return _minOccurs; } }
 		public uint MaxOccurs { get { return _maxOccurs; } }
-		public IParsingExpression Body { get { return _body; } }
+		public IParsingExpression<TBody> Body { get { return _body; } }
 
 		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 	}
 
-	public class NonCapturingRepetitionParsingExpression<TBody> : RepetitionParsingExpression, IParsingExpression<IEnumerable<TBody>> {
-		public NonCapturingRepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression body)
+	public class NonCapturingRepetitionParsingExpression<TBody> : RepetitionParsingExpression<TBody, IEnumerable<TBody>> {
+		public NonCapturingRepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression<TBody> body)
 			: base(minOccurs, maxOccurs, body)
 		{ }
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<IEnumerable<TBody>> MatchesCore(IMatchingContext context) {
 			uint iterationCount = 0;
 			var iterationProducts = new LinkedList<TBody>();
 			while(true) {
@@ -44,7 +44,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				var iterationResult = _body.Matches(iterationContext);
 
 				if(iterationResult.Succeeded) {
-					iterationProducts.AddLast((TBody)iterationResult.Product);
+					iterationProducts.AddLast(iterationResult.Product);
 					context.Assimilate(iterationContext);
 					iterationCount++;
 
@@ -52,16 +52,16 @@ namespace pegleg.cs.Parsing.Expressions {
 						break;
 				} else {
 					if(_minOccurs > iterationCount)
-						return new UnsuccessfulMatchingResult();
+						return UnsuccessfulMatchingResult.Create(this);
 					break;
 				}
 			}
 
-			return new SuccessfulMatchingResult(iterationProducts);
+			return SuccessfulMatchingResult.Create(iterationProducts);
 		}
 	}
 
-	public class CapturingRepetitionParsingExpression<TBody, TProduct> : RepetitionParsingExpression, IParsingExpression<TProduct> {
+	public class CapturingRepetitionParsingExpression<TBody, TProduct> : RepetitionParsingExpression<TBody, TProduct> {
 		private readonly Func<IMatch<IEnumerable<TBody>>, TProduct> _matchAction;
 
 		public CapturingRepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression<TBody> body, Func<IMatch<IEnumerable<TBody>>, TProduct> matchAction)
@@ -72,7 +72,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;	
 		}
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 			
 			uint iterationCount = 0;
@@ -82,7 +82,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				var iterationResult = _body.Matches(iterationContext);
 
 				if(iterationResult.Succeeded) {
-					iterationProducts.AddLast((TBody)iterationResult.Product);
+					iterationProducts.AddLast(iterationResult.Product);
 					context.Assimilate(iterationContext);
 					iterationCount++;
 
@@ -90,13 +90,13 @@ namespace pegleg.cs.Parsing.Expressions {
 						break;
 				} else {
 					if(_minOccurs > iterationCount)
-						return new UnsuccessfulMatchingResult();
+						return UnsuccessfulMatchingResult.Create(this);
 					break;
 				}
 			}
 
 			var product = _matchAction(matchBuilder.CompleteMatch(this, iterationProducts));
-			return new SuccessfulMatchingResult(product);
+			return SuccessfulMatchingResult.Create(product);
 		}
 	}
 }

@@ -4,49 +4,68 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class OptionalParsingExpression : BaseParsingExpression {
-		public OptionalParsingExpression() : base(ParsingExpressionKind.Optional) { }
-		public abstract IParsingExpression Body { get; }
-	}
+	public abstract class OptionalParsingExpression<TBody, TProduct> : BaseParsingExpression<TProduct> {
+		protected readonly IParsingExpression<TBody> _body;
 
-	public class OptionalParsingExpression<TProduct> : OptionalParsingExpression, IParsingExpression<TProduct> {
-		private readonly IParsingExpression _body;
-		private readonly Func<IMatch<object>, TProduct> _matchAction;
-		private readonly Func<IMatch<Nil>, TProduct> _noMatchAction;
-
-		public OptionalParsingExpression(IParsingExpression body, Func<IMatch<object>, TProduct> matchAction, Func<IMatch<Nil>, TProduct> noMatchAction) {
+		public OptionalParsingExpression(IParsingExpression<TBody> body)
+			: base(ParsingExpressionKind.Optional)
+		{
 			CodeContract.ArgumentIsNotNull(() => body, body);
 
 			_body = body;
+		}
+
+		public IParsingExpression<TBody> Body { get { return _body; } }
+
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+			return handler.Handle(this);
+		}
+	}
+
+	public class NonCapturingOptionalParsingExpression<TBody> : OptionalParsingExpression<TBody, TBody> {
+		public NonCapturingOptionalParsingExpression(IParsingExpression<TBody> body) : base(body) { }
+
+		protected override IMatchingResult<TBody> MatchesCore(IMatchingContext context) {
+			var bodyMatchingContext = context.Clone();
+			var bodyMatchResult = _body.Matches(bodyMatchingContext);
+
+			if(bodyMatchResult.Succeeded) {
+				context.Assimilate(bodyMatchingContext);
+				return bodyMatchResult;
+			}
+
+			return SuccessfulMatchingResult.Create(default(TBody));
+		}
+	}
+
+	public class CapturingOptionalParsingExpression<TBody, TProduct> : OptionalParsingExpression<TBody, TProduct> {
+		private readonly Func<IMatch<TBody>, TProduct> _matchAction;
+		private readonly Func<IMatch<Nil>, TProduct> _noMatchAction;
+
+		public CapturingOptionalParsingExpression(IParsingExpression<TBody> body, Func<IMatch<TBody>, TProduct> matchAction, Func<IMatch<Nil>, TProduct> noMatchAction)
+			: base(body)
+		{
+			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
+			CodeContract.ArgumentIsNotNull(() => noMatchAction, noMatchAction);
+
 			_matchAction = matchAction;
 			_noMatchAction = noMatchAction;
 		}
 
-		public override IParsingExpression Body { get { return _body; } }
-
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
-			var bodyApplicationContext = context.Clone();
-			var bodyMatchResult = _body.Matches(bodyApplicationContext);
+			var bodyMatchingContext = context.Clone();
+			var bodyMatchResult = _body.Matches(bodyMatchingContext);
 
-			if(!bodyMatchResult.Succeeded)
-				return new SuccessfulMatchingResult(
-					null != _noMatchAction
-						? _noMatchAction(matchBuilder.CompleteMatch(this, Nil.Value))
-						: default(TProduct));
-
-			context.Assimilate(bodyApplicationContext);
-
-			return new SuccessfulMatchingResult(
-				null != _matchAction
-					? _matchAction(matchBuilder.CompleteMatch(this, bodyMatchResult.Product))
-					: bodyMatchResult.Product);
-		}
-
-
-		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
-			return handler.Handle(this);
+			if(bodyMatchResult.Succeeded) {
+				context.Assimilate(bodyMatchingContext);
+				
+				var product = _matchAction(matchBuilder.CompleteMatch(this, bodyMatchResult.Product));	
+				return SuccessfulMatchingResult.Create(product);
+			} else {
+				return SuccessfulMatchingResult.Create(_noMatchAction(matchBuilder.CompleteMatch(this, Nil.Value)));
+			}
 		}
 	}
 }

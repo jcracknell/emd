@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public class PredicateParsingExpression : BaseParsingExpression, IParsingExpression<Nil> {
+	public class PredicateParsingExpression : BaseParsingExpression<Nil> {
 		private Func<bool> _predicate;
 
 		public PredicateParsingExpression(Func<bool> predicate)
@@ -19,11 +19,11 @@ namespace pegleg.cs.Parsing.Expressions {
 			return handler.Handle(this);
 		}
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
 			if(_predicate()) {
-				return new SuccessfulMatchingResult(Nil.Value);
+				return SuccessfulMatchingResult.NilProduct;
 			} else {
-				return new UnsuccessfulMatchingResult();
+				return UnsuccessfulMatchingResult.Create(this);
 			}
 		}
 	}

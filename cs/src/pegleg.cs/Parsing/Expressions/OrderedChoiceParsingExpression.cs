@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class OrderedChoiceParsingExpression : BaseParsingExpression {
-		protected readonly IParsingExpression[] _choices;
+	public abstract class OrderedChoiceParsingExpression<TChoice, TProduct> : BaseParsingExpression<TProduct> {
+		protected readonly IParsingExpression<TChoice>[] _choices;
 
-		public OrderedChoiceParsingExpression(IParsingExpression[] choices)
+		public OrderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices)
 			: base(ParsingExpressionKind.OrderedChoice)
 		{
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
@@ -16,17 +16,17 @@ namespace pegleg.cs.Parsing.Expressions {
 			_choices = choices;
 		}
 
-		public IEnumerable<IParsingExpression> Choices { get { return _choices; }  }
+		public IEnumerable<IParsingExpression<TChoice>> Choices { get { return _choices; }  }
 
 		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
 		}
 	}
 
-	public class NonCapturingOrderedChoiceParsingExpression : OrderedChoiceParsingExpression, IParsingExpression<Nil> {
-		public NonCapturingOrderedChoiceParsingExpression(IParsingExpression[] choices) : base(choices) { }
+	public class NonCapturingOrderedChoiceParsingExpression : OrderedChoiceParsingExpression<object, Nil> {
+		public NonCapturingOrderedChoiceParsingExpression(IParsingExpression<object>[] choices) : base(choices) { }
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
 			for(int i = 0; i < _choices.Length; i++) {
 				var choice = _choices[i];
 				var choiceMatchingContext = context.Clone();
@@ -38,14 +38,14 @@ namespace pegleg.cs.Parsing.Expressions {
 				}
 			}
 
-			return new UnsuccessfulMatchingResult();
+			return UnsuccessfulMatchingResult.Create(this);
 		}
 	}
 
-	public class NonCapturingOrderedChoiceParsingExpression<TChoice> : OrderedChoiceParsingExpression, IParsingExpression<TChoice> {
-		public NonCapturingOrderedChoiceParsingExpression(IParsingExpression[] choices) : base(choices) { }
+	public class NonCapturingOrderedChoiceParsingExpression<TChoice> : OrderedChoiceParsingExpression<TChoice, TChoice> {
+		public NonCapturingOrderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices) : base(choices) { }
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TChoice> MatchesCore(IMatchingContext context) {
 			for(int i = 0; i < _choices.Length; i++) {
 				var choice = _choices[i];
 				var choiceMatchingContext = context.Clone();
@@ -57,14 +57,14 @@ namespace pegleg.cs.Parsing.Expressions {
 				}
 			}
 
-			return new UnsuccessfulMatchingResult();
+			return UnsuccessfulMatchingResult.Create(this);
 		}
 	}
 
-	public class CapturingOrderedChoiceParsingExpression<TChoice, TProduct> : OrderedChoiceParsingExpression, IParsingExpression<TProduct> {
+	public class CapturingOrderedChoiceParsingExpression<TChoice, TProduct> : OrderedChoiceParsingExpression<TChoice, TProduct> {
 		private Func<IMatch<TChoice>, TProduct> _matchAction;
 
-		public CapturingOrderedChoiceParsingExpression(IParsingExpression[] choices, Func<IMatch<TChoice>, TProduct> matchAction)
+		public CapturingOrderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices, Func<IMatch<TChoice>, TProduct> matchAction)
 			: base(choices)
 		{
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
@@ -72,7 +72,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			for(int i = 0; i < _choices.Length; i++) {
@@ -83,11 +83,11 @@ namespace pegleg.cs.Parsing.Expressions {
 				if(choiceMatchingResult.Succeeded) {
 					context.Assimilate(choiceMatchingContext);
 					var product = _matchAction(matchBuilder.CompleteMatch(this, (TChoice)choiceMatchingResult.Product));
-					return new SuccessfulMatchingResult(product);
+					return SuccessfulMatchingResult.Create(product);
 				}
 			}
 
-			return new UnsuccessfulMatchingResult();
+			return UnsuccessfulMatchingResult.Create(this);
 		}
 	}
 }

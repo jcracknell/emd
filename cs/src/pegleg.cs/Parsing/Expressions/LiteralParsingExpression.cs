@@ -7,44 +7,59 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class LiteralParsingExpression : BaseParsingExpression {
-		public LiteralParsingExpression() : base(ParsingExpressionKind.Literal) { }
+	public abstract class LiteralParsingExpression<TProduct> : BaseParsingExpression<TProduct> {
+		protected readonly string _literal;
+		protected readonly StringComparison _comparison;
 
-		public abstract string Literal { get; }
-	}
-
-	public class LiteralParsingExpression<TProduct> : LiteralParsingExpression, IParsingExpression<TProduct> {
-		private readonly string _literal;
-		private readonly Func<IMatch<string>, TProduct> _matchAction;
-
-		public LiteralParsingExpression(string literal, Func<IMatch<string>, TProduct> matchAction) {
+		public LiteralParsingExpression(string literal, StringComparison comparison)
+			: base(ParsingExpressionKind.Literal)
+		{
 			CodeContract.ArgumentIsNotNull(() => literal, literal);
 
 			_literal = literal;
-			_matchAction = matchAction;
+			_comparison = comparison;
 		}
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
-			if(null != _matchAction) {
-				var matchBuilder = context.StartMatch();
+		public string Literal { get { return _literal; } }
 
-				if(!context.ConsumesMatching(_literal))
-					return new UnsuccessfulMatchingResult();
-
-				var product = _matchAction(matchBuilder.CompleteMatch(this, _literal));
-
-				return new SuccessfulMatchingResult(product);
-			} else {
-				if(!context.ConsumesMatching(_literal))
-					return new UnsuccessfulMatchingResult();
-				return new SuccessfulMatchingResult(_literal);
-			}
-		}
-
-		public override string Literal { get { return _literal; } }
+		public StringComparison Comparison { get { return _comparison; } }
 
 		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
+		}
+	}
+
+	public class NonCapturingLiteralParsingExpression : LiteralParsingExpression<string> {
+		public NonCapturingLiteralParsingExpression(string literal, StringComparison comparison) : base(literal, comparison) { }
+
+		protected override IMatchingResult<string> MatchesCore(IMatchingContext context) {
+			if(context.ConsumesMatching(_literal, _comparison))
+				return SuccessfulMatchingResult.Create(_literal);
+			else
+				return UnsuccessfulMatchingResult.Create(this);
+		}
+	}
+
+	public class CapturingLiteralParsingExpression<TProduct> : LiteralParsingExpression<TProduct> {
+		private readonly Func<IMatch<string>, TProduct> _matchAction;
+
+		public CapturingLiteralParsingExpression(string literal, StringComparison comparison, Func<IMatch<string>, TProduct> matchAction)
+			: base(literal, comparison)
+		{
+			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
+
+			_matchAction = matchAction;
+		}
+
+		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
+			var matchBuilder = context.StartMatch();
+
+			if(context.ConsumesMatching(_literal, _comparison)) {
+				var product = _matchAction(matchBuilder.CompleteMatch(this, _literal));
+				return SuccessfulMatchingResult.Create(product);
+			}
+
+			return UnsuccessfulMatchingResult.Create(this);
 		}
 	}
 }

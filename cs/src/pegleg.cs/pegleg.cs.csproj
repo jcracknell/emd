@@ -48,7 +48,7 @@
     <Compile Include="Grammar.cs" />
     <Compile Include="Parsing\Expressions\Builders\IExpressionNamingConvention.cs" />
     <Compile Include="Parsing\Expressions\Builders\ExpressionBuilder.cs" />
-    <Compile Include="Parsing\Expressions\AheadExpression.cs" />
+    <Compile Include="Parsing\Expressions\AheadParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\UnorderedChoiceParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\SequenceProducts.cs" />
     <Compile Include="Parsing\Expressions\CharacterRangeParsingExpression.cs" />

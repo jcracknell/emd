@@ -8,4 +8,8 @@ namespace pegleg.cs.Parsing {
 		bool Succeeded { get; }
 		object Product { get; }
 	}
+
+	public interface IMatchingResult<out TProduct> : IMatchingResult {
+		new TProduct Product { get; }
+	}
 }

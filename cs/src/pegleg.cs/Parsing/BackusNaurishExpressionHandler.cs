@@ -7,22 +7,22 @@ using System.Text;
 namespace pegleg.cs.Parsing {
 	public class BackusNaurishExpressionHandler : IParsingExpressionHandler<string> {
 		public class PrecedenceExpressionHandler : IParsingExpressionHandler<int> {
-			public int Handle(DynamicParsingExpression expression) { return 100; }
-			public int Handle(ReferenceParsingExpression expression) { return 100; }
-			public int Handle(PredicateParsingExpression expression) { return 4; }
+			public int Handle<TBody,TProduct>(AheadParsingExpression<TBody,TProduct> expression) { return 3; }
 			public int Handle(CharacterRangeParsingExpression expression) { return 4; }
-			public int Handle(LiteralParsingExpression expression) { return 4; }
+			public int Handle<TProduct>(DynamicParsingExpression<TProduct> expression) { return 100; }
 			public int Handle(EndOfInputParsingExpression expression) { return 4; }
-			public int Handle(WildcardParsingExpression expression) { return 4; }
-			public int Handle(RegexParsingExpression expression) { return 4; }
-			public int Handle(NamedParsingExpression expression) { return 4; }
-			public int Handle(AheadExpression expression) { return 3; }
+			public int Handle<TProduct>(LiteralParsingExpression<TProduct> expression) { return 4; }
+			public int Handle<TProduct>(NamedParsingExpression<TProduct> expression) { return 4; }
 			public int Handle(NotAheadParsingExpression expression) { return 3; }
-			public int Handle(OptionalParsingExpression expression) { return 2; }
-			public int Handle(RepetitionParsingExpression expression) { return 2; }
-			public int Handle(SequenceParsingExpression expression) { return 1; }
-			public int Handle(OrderedChoiceParsingExpression expression) { return 0; }
-			public int Handle(UnorderedChoiceParsingExpression expression) { return 0; }
+			public int Handle<TBody,TProduct>(OptionalParsingExpression<TBody,TProduct> expression) { return 2; }
+			public int Handle<TChoice,TProduct>(OrderedChoiceParsingExpression<TChoice,TProduct> expression) { return 0; }
+			public int Handle(PredicateParsingExpression expression) { return 4; }
+			public int Handle<TReferenced,TProduct>(ReferenceParsingExpression<TReferenced,TProduct> expression) { return 100; }
+			public int Handle<TProduct>(RegexParsingExpression<TProduct> expression) { return 4; }
+			public int Handle<TBody,TProduct>(RepetitionParsingExpression<TBody,TProduct> expression) { return 2; }
+			public int Handle<TProduct>(SequenceParsingExpression<TProduct> expression) { return 1; }
+			public int Handle<TChoice,TProduct>(UnorderedChoiceParsingExpression<TChoice,TProduct> expression) { return 0; }
+			public int Handle(WildcardParsingExpression expression) { return 4; }
 		}
 
 		private readonly PrecedenceExpressionHandler _precedenceHandler = new PrecedenceExpressionHandler();
@@ -35,7 +35,7 @@ namespace pegleg.cs.Parsing {
 			return expression.HandleWith(_precedenceHandler);
 		}
 
-		public string Handle(OrderedChoiceParsingExpression expression) {
+		public string Handle<TChoice,TProduct>(OrderedChoiceParsingExpression<TChoice,TProduct> expression) {
 			var precedence = expression.HandleWith(_precedenceHandler);
 			var choiceStrings = expression.Choices.Select(childExpression => {
 				var childPrecedence = childExpression.HandleWith(_precedenceHandler);
@@ -49,7 +49,7 @@ namespace pegleg.cs.Parsing {
 			return string.Join(" / ", choiceStrings.ToArray());
 		}
 
-		public string Handle(UnorderedChoiceParsingExpression expression) {
+		public string Handle<TChoice,TProduct>(UnorderedChoiceParsingExpression<TChoice,TProduct> expression) {
 			var precedence = expression.HandleWith(_precedenceHandler);
 			var choiceStrings = expression.Choices.Select(childExpression => {
 				var childPrecedence = childExpression.HandleWith(_precedenceHandler);
@@ -63,11 +63,11 @@ namespace pegleg.cs.Parsing {
 			return string.Join(" | ", choiceStrings.ToArray());
 		}
 
-		public string Handle(LiteralParsingExpression expression) {
+		public string Handle<TProduct>(LiteralParsingExpression<TProduct> expression) {
 			return StringUtils.LiteralEncode(expression.Literal);
 		}
 
-		public string Handle(OptionalParsingExpression expression) {
+		public string Handle<TBody,TProduct>(OptionalParsingExpression<TBody,TProduct> expression) {
 			var precedence = expression.HandleWith(_precedenceHandler);
 			var childPrecedence = expression.Body.HandleWith(_precedenceHandler);
 			var childString = expression.Body.HandleWith(this);
@@ -77,11 +77,11 @@ namespace pegleg.cs.Parsing {
 				: string.Concat(childString, "?");
 		}
 
-		public string Handle(RegexParsingExpression expression) {
+		public string Handle<TProduct>(RegexParsingExpression<TProduct> expression) {
 			return string.Concat("/", expression.Regex.ToString(), "/");
 		}
 
-		public string Handle(SequenceParsingExpression expression) {
+		public string Handle<TProduct>(SequenceParsingExpression<TProduct> expression) {
 			var precedence = expression.HandleWith(_precedenceHandler);
 			var childStrings = expression.Sequence.Select(childExpression => {
 				var childPrecedence = childExpression.HandleWith(_precedenceHandler);
@@ -95,7 +95,7 @@ namespace pegleg.cs.Parsing {
 			return string.Join(" ", childStrings.ToArray());
 		}
 
-		public string Handle(AheadExpression expression) {
+		public string Handle<TBody,TProduct>(AheadParsingExpression<TBody,TProduct> expression) {
 			var childString = expression.Body.HandleWith(this);
 
 			if(PrecedenceOf(expression) > PrecedenceOf(expression.Body))
@@ -114,11 +114,11 @@ namespace pegleg.cs.Parsing {
 			return string.Concat("!", childString);
 		}
 
-		public string Handle(NamedParsingExpression expression) {
+		public string Handle<TProduct>(NamedParsingExpression<TProduct> expression) {
 			return string.Concat(expression.Name);
 		}
 
-		public string Handle(RepetitionParsingExpression expression) {
+		public string Handle<TBody,TProduct>(RepetitionParsingExpression<TBody,TProduct> expression) {
 			var childString = expression.Body.HandleWith(this);
 
 			if(PrecedenceOf(expression) > PrecedenceOf(expression.Body))
@@ -133,11 +133,11 @@ namespace pegleg.cs.Parsing {
 			return string.Concat(childString, "{", expression.MinOccurs, ",", expression.MaxOccurs, "}");
 		}
 
-		public string Handle(DynamicParsingExpression expression) {
+		public string Handle<TProduct>(DynamicParsingExpression<TProduct> expression) {
 			return "<DYNAMIC>";
 		}
 
-		public string Handle(ReferenceParsingExpression expression) {
+		public string Handle<TReferenced,TProduct>(ReferenceParsingExpression<TReferenced,TProduct> expression) {
 			return expression.Referenced.HandleWith(this);
 		}
 

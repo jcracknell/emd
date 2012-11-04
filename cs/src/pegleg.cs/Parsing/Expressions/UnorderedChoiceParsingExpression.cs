@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class UnorderedChoiceParsingExpression : BaseParsingExpression {
-		private readonly IParsingExpression[] _choices;
+	public abstract class UnorderedChoiceParsingExpression<TChoice, TProduct> : BaseParsingExpression<TProduct> {
+		private readonly IParsingExpression<TChoice>[] _choices;
 		private readonly int _choiceCount;
 		private readonly int[] _choiceOrder;
 		private readonly uint[] _choiceHits;
 
-		public UnorderedChoiceParsingExpression(IParsingExpression[] choices)
+		public UnorderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices)
 			: base(ParsingExpressionKind.UnorderedChoice)
 		{
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
@@ -25,13 +25,13 @@ namespace pegleg.cs.Parsing.Expressions {
 				_choiceOrder[i] = i;
 		}
 
-		public IEnumerable<IParsingExpression> Choices { get { return _choices; } }
+		public IEnumerable<IParsingExpression<TChoice>> Choices { get { return _choices; } }
 
-		public IEnumerable<Tuple<uint, IParsingExpression>> CurrentChoiceOrder {
+		public IEnumerable<Tuple<uint, IParsingExpression<TChoice>>> CurrentChoiceOrder {
 			get { return _choiceOrder.Select(i => Tuple.Create(_choiceHits[i], _choices[i])).ToArray(); }
 		}
 
-		protected IMatchingResult MatchChoices(IMatchingContext context) {
+		protected IMatchingResult<TChoice> MatchChoices(IMatchingContext context) {
 			for(var i = 0; i != _choiceCount; i++) {
 				// Ordering of choices is determined by the choice order array
 				var currentChoice = _choices[_choiceOrder[i]];
@@ -85,29 +85,29 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 	}
 
-	public class NonCapturingUnorderedChoiceParsingExpression : UnorderedChoiceParsingExpression, IParsingExpression<Nil> {
-		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression[] choices) : base(choices) { }
+	public class NonCapturingUnorderedChoiceParsingExpression : UnorderedChoiceParsingExpression<object, Nil> {
+		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression<object>[] choices) : base(choices) { }
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
 			if(null == MatchChoices(context))
-				return new UnsuccessfulMatchingResult();
+				return UnsuccessfulMatchingResult.Create(this);
 
 			return SuccessfulMatchingResult.NilProduct;
 		}
 	}
 
-	public class NonCapturingUnorderedChoiceParsingExpression<TChoice> : UnorderedChoiceParsingExpression, IParsingExpression<TChoice> {
-		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression[] choices) : base(choices) { }
+	public class NonCapturingUnorderedChoiceParsingExpression<TChoice> : UnorderedChoiceParsingExpression<TChoice, TChoice> {
+		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices) : base(choices) { }
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
-			return MatchChoices(context) ?? new UnsuccessfulMatchingResult();
+		protected override IMatchingResult<TChoice> MatchesCore(IMatchingContext context) {
+			return MatchChoices(context) ?? UnsuccessfulMatchingResult.Create(this);
 		}
 	}
 
-	public class CapturingUnorderedChoiceParsingExpression<TChoice, TProduct> : UnorderedChoiceParsingExpression, IParsingExpression<TProduct> {
+	public class CapturingUnorderedChoiceParsingExpression<TChoice, TProduct> : UnorderedChoiceParsingExpression<TChoice, TProduct> {
 		private readonly Func<IMatch<TChoice>, TProduct> _matchAction;
 
-		public CapturingUnorderedChoiceParsingExpression(IParsingExpression[] choices, Func<IMatch<TChoice>, TProduct> matchAction)
+		public CapturingUnorderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices, Func<IMatch<TChoice>, TProduct> matchAction)
 			: base(choices)	
 		{
 			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
@@ -115,15 +115,15 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			var choiceResult = MatchChoices(context);
 			if(null == choiceResult)
-				return new UnsuccessfulMatchingResult();
+				return UnsuccessfulMatchingResult.Create(this);
 
-			var product = _matchAction(matchBuilder.CompleteMatch(this, (TChoice)choiceResult.Product));
-			return new SuccessfulMatchingResult(product);
+			var product = _matchAction(matchBuilder.CompleteMatch(this, choiceResult.Product));
+			return SuccessfulMatchingResult.Create(product);
 		}
 	}
 }

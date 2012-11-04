@@ -14,5 +14,6 @@ namespace pegleg.cs {
 	}
 
 	public interface IParsingExpression<out TProduct> : IParsingExpression {
+		new IMatchingResult<TProduct> Matches(IMatchingContext context);
 	}
 }

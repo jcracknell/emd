@@ -1151,10 +1151,9 @@ namespace markdom.cs.Grammar {
 
 			Define(() => ExpressionWhitespace,
 				AtLeast(0,
-					ChoiceUnordered(new IParsingExpression[] {
+					ChoiceUnordered(
 						Reference(() => Whitespace),
-						Reference(() => Comment)
-					}),
+						Reference(() => Comment)),
 					match => Nil.Value));
 
 			#endregion
@@ -1188,10 +1187,10 @@ namespace markdom.cs.Grammar {
 			// NEVER EVER EVER USE THIS IN A REPETITION CONTEXT
 			Define(() => BlankLine,
 				Sequence(
-					new IParsingExpression[] {
-						AtLeast(0, Reference(() => SpaceChar)),
-						ChoiceUnordered(
-							new IParsingExpression[] { Reference(() => NewLine), EndOfInput() }) },
+					Reference(() => SpaceChars),
+					ChoiceUnordered(
+						Reference(() => NewLine),
+						EndOfInput()),
 					match => LineInfo.FromMatch(match)));
 
 			Define(() => Indent,

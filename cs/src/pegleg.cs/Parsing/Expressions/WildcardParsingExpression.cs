@@ -4,45 +4,26 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class WildcardParsingExpression : BaseParsingExpression {
-		public WildcardParsingExpression() : base(ParsingExpressionKind.Wildcard) { }
+	public class WildcardParsingExpression : BaseParsingExpression<Nil> {
+		private static readonly WildcardParsingExpression _instance;
 
-		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
-			return handler.Handle(this);
+		static WildcardParsingExpression() {
+			_instance = new WildcardParsingExpression();
 		}
-	}
 
-	public class NonCapturingWildcardParsingExpression : WildcardParsingExpression, IParsingExpression<Nil> {
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
-			if(context.AtEndOfInput)
-				return new UnsuccessfulMatchingResult();
+		public static WildcardParsingExpression Instance { get { return _instance; } }
 
+		private WildcardParsingExpression() : base(ParsingExpressionKind.Wildcard) { }
+
+		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
 			if(context.ConsumesAnyCharacter())
 				return SuccessfulMatchingResult.NilProduct;
 
-			return new UnsuccessfulMatchingResult();
-		}
-	}
-
-	public class CapturingWildcardParsingExpression<TProduct> : WildcardParsingExpression, IParsingExpression<TProduct> {
-		private readonly Func<IMatch<char>, TProduct> _matchAction = null;
-
-		public CapturingWildcardParsingExpression(Func<IMatch<char>, TProduct> matchAction) {
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
-			_matchAction = matchAction;			
+			return UnsuccessfulMatchingResult.Create(this);
 		}
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
-			if(context.AtEndOfInput)
-				return new UnsuccessfulMatchingResult();
-
-			var matchBuilder = context.StartMatch();
-			char c;
-			if(!context.ConsumesAnyCharacter(out c))
-				return new UnsuccessfulMatchingResult();
-
-			var product = _matchAction(matchBuilder.CompleteMatch(this, c));
-			return new SuccessfulMatchingResult(product);
+		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+			return handler.Handle(this);
 		}
 	}
 }

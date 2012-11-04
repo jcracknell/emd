@@ -10,8 +10,8 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class SequenceExpressionTests {
 		[TestMethod]
 		public void SequenceExpression_constructor_works_as_expected() {
-			var literalExpressionA = new LiteralParsingExpression<string>("a", c => "A");
-			var literalExpressionB = new LiteralParsingExpression<string>("b", c => "B");
+			var literalExpressionA = new CapturingLiteralParsingExpression<string>("a", StringComparison.Ordinal, c => "A");
+			var literalExpressionB = new CapturingLiteralParsingExpression<string>("b", StringComparison.Ordinal, c => "B");
 
 			var sequenceExpression = new CapturingSequenceParsingExpression<string>(
 				new IParsingExpression[] { literalExpressionA, literalExpressionB },
@@ -22,8 +22,8 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void SequenceExpression_accepts_sequence_of_literals() {
-			var literalExpressionA = new LiteralParsingExpression<string>("a", c => "A");
-			var literalExpressionB = new LiteralParsingExpression<string>("b", c => "B");
+			var literalExpressionA = new CapturingLiteralParsingExpression<string>("a", StringComparison.Ordinal, c => "A");
+			var literalExpressionB = new CapturingLiteralParsingExpression<string>("b", StringComparison.Ordinal, c => "B");
 
 			var sequenceExpression = new CapturingSequenceParsingExpression<string>(
 				new IParsingExpression[] { literalExpressionA, literalExpressionB },

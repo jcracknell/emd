@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class SequenceParsingExpression : BaseParsingExpression {
+	public abstract class SequenceParsingExpression<TProduct> : BaseParsingExpression<TProduct> {
 		protected readonly IParsingExpression[] _sequence;
 
 		public SequenceParsingExpression(IParsingExpression[] sequence)
@@ -23,10 +23,10 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 	}
 
-	public class NonCapturingSequenceParsingExpression : SequenceParsingExpression, IParsingExpression<Nil> {
+	public class NonCapturingSequenceParsingExpression : SequenceParsingExpression<Nil> {
 		public NonCapturingSequenceParsingExpression(IParsingExpression[] sequence) : base(sequence) { }
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			for(int i = 0; i < _sequence.Length; i++) {
@@ -34,14 +34,14 @@ namespace pegleg.cs.Parsing.Expressions {
 				var currentExpressionApplicationResult = currentExpression.Matches(context);
 
 				if(!currentExpressionApplicationResult.Succeeded)
-					return currentExpressionApplicationResult;
+					return UnsuccessfulMatchingResult.Create(this);
 			}
 
 			return SuccessfulMatchingResult.NilProduct;
 		}
 	}
 
-	public class CapturingSequenceParsingExpression<TProduct> : SequenceParsingExpression, IParsingExpression<TProduct> {
+	public class CapturingSequenceParsingExpression<TProduct> : SequenceParsingExpression<TProduct> {
 		private readonly Func<IMatch<SequenceProducts>, TProduct> _matchAction;
 
 		public CapturingSequenceParsingExpression(IParsingExpression[] sequence, Func<IMatch<SequenceProducts>, TProduct> matchAction)
@@ -52,7 +52,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			var expressionProducts = new object[_sequence.Length];
@@ -62,13 +62,13 @@ namespace pegleg.cs.Parsing.Expressions {
 				var currentExpressionApplicationResult = currentExpression.Matches(context);
 				
 				if(!currentExpressionApplicationResult.Succeeded)
-					return currentExpressionApplicationResult;
+					return UnsuccessfulMatchingResult.Create(this);
 
 				expressionProducts[i] = currentExpressionApplicationResult.Product;
 			}
 
 			var product = _matchAction(matchBuilder.CompleteMatch(this, new SequenceProducts(expressionProducts)));
-			return new SuccessfulMatchingResult(product);
+			return SuccessfulMatchingResult.Create(product);
 		}
 	}
 }

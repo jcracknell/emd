@@ -10,7 +10,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class RepetitionExpressionTests {
 		[TestMethod]
 		public void RepetitionExpression_constructor_works_as_expected() {
-			var literalExpression = new LiteralParsingExpression<string>("a", m => m.Product);
+			var literalExpression = new CapturingLiteralParsingExpression<string>("a", StringComparison.Ordinal, m => m.Product);
 			var repetitionExpression = new CapturingRepetitionParsingExpression<string, string>(42, 0, literalExpression, m => "match");
 
 			Assert.AreEqual(ParsingExpressionKind.Repetition, repetitionExpression.Kind);
@@ -22,7 +22,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public void RepetitionExpression_matches_nothing_with_minOccurs_0() {
 			var repetitionExpression = new CapturingRepetitionParsingExpression<string, string>(
 				0, 0,
-				new LiteralParsingExpression<string>("abcd", m => m.Product),
+				new CapturingLiteralParsingExpression<string>("abcd", StringComparison.Ordinal, m => m.Product),
 				match => {
 					Assert.AreEqual(0, match.SourceRange.Index);
 					Assert.AreEqual(0, match.SourceRange.Length);

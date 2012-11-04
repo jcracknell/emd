@@ -4,37 +4,24 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class NotAheadParsingExpression : BaseParsingExpression {
-		public NotAheadParsingExpression() : base(ParsingExpressionKind.NegativeLookahead) { }
-		public abstract IParsingExpression Body { get; }
-	}
+	public class NotAheadParsingExpression : BaseParsingExpression<Nil> {
+		protected readonly IParsingExpression _body;
 
-	public class NotAheadParsingExpression<TProduct> : NotAheadParsingExpression, IParsingExpression<TProduct> {
-		private readonly IParsingExpression _body;
-		private readonly Func<IMatch<Nil>, TProduct> _matchAction;
-
-		public NotAheadParsingExpression(IParsingExpression body, Func<IMatch<Nil>, TProduct> matchAction) {
+		public NotAheadParsingExpression(IParsingExpression body)
+			: base(ParsingExpressionKind.NegativeLookahead)
+		{
 			CodeContract.ArgumentIsNotNull(() => body, body);
-
+			
 			_body = body;
-			_matchAction = matchAction;
 		}
 
-		public override IParsingExpression Body { get { return _body; } }
+		public IParsingExpression Body { get { return _body; } }
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
-			var bodyMatchingContext = context.Clone();
-			var bodyMatchingResult = _body.Matches(bodyMatchingContext);
-
-			if(bodyMatchingResult.Succeeded) {
-				return new UnsuccessfulMatchingResult();
-			} else {
-				if(null == _matchAction)
-					return new SuccessfulMatchingResult(Nil.Value);
-
-				var product = _matchAction(context.StartMatch().CompleteMatch(this, Nil.Value));
-				return new SuccessfulMatchingResult(product);
-			}
+		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
+			var bodyMatch = _body.Matches(context.Clone());
+			if(bodyMatch.Succeeded)
+				return UnsuccessfulMatchingResult.Create(this);
+			return SuccessfulMatchingResult.NilProduct;
 		}
 
 		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {

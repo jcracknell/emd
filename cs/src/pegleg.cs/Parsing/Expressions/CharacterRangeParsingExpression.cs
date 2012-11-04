@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class CharacterRangeParsingExpression : BaseParsingExpression {
+	public class CharacterRangeParsingExpression : BaseParsingExpression<Nil> {
 		protected readonly char _rangeStart;
 		protected readonly char _rangeEnd;
 
@@ -20,23 +20,19 @@ namespace pegleg.cs.Parsing.Expressions {
 			}
 		}
 
+		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
+			if(context.ConsumesCharInRange(_rangeStart, _rangeEnd)) {
+				return SuccessfulMatchingResult.NilProduct;
+			} else {
+				return UnsuccessfulMatchingResult.Create(this);
+			}
+		}
+
 		public char RangeStart { get { return _rangeStart; } }
 		public char RangeEnd { get { return _rangeEnd; } }
 
 		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
-		}
-	}
-
-	public class NonCapturingCharacterRangeParsingExpression : CharacterRangeParsingExpression, IParsingExpression<Nil> {
-		public NonCapturingCharacterRangeParsingExpression(char rangeStart, char rangeEnd) : base(rangeStart, rangeEnd) { }
-
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
-			if(context.ConsumesCharInRange(_rangeStart, _rangeEnd)) {
-				return SuccessfulMatchingResult.NilProduct;
-			} else {
-				return new UnsuccessfulMatchingResult();
-			}
 		}
 	}
 }

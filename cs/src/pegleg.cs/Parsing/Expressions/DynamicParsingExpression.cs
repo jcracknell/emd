@@ -4,26 +4,22 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class DynamicParsingExpression : BaseParsingExpression {
-		public DynamicParsingExpression() : base(ParsingExpressionKind.Closure) { }
-
-		public abstract IParsingExpression ConstructExpression();
-	}
-
-	public class DynamicParsingExpression<TProduct> : DynamicParsingExpression, IParsingExpression<TProduct> {
+	public class DynamicParsingExpression<TProduct> : BaseParsingExpression<TProduct> {
 		private readonly Func<IParsingExpression<TProduct>> _expression;
 
-		public DynamicParsingExpression(Func<IParsingExpression<TProduct>> expression) {
+		public DynamicParsingExpression(Func<IParsingExpression<TProduct>> expression)
+			: base(ParsingExpressionKind.Closure)
+		{
 			CodeContract.ArgumentIsNotNull(() => expression, expression);
 
 			_expression = expression;
 		}
 
-		public override IParsingExpression ConstructExpression() {
+		public IParsingExpression ConstructExpression() {
 			return _expression();
 		}
 
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
 			var closed = _expression();
 			return closed.Matches(context);
 		}

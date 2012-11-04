@@ -88,14 +88,15 @@ namespace pegleg.cs.Parsing {
 			return _consumable.Substring(index, length);
 		}
 
-		public bool ConsumesMatching(string literal) {
+		public bool ConsumesMatching(string literal, StringComparison comparison) {
 			CodeContract.ArgumentIsNotNull(() => literal, literal);
 			
-			if(literal.Length > _consumable.Length - _consumed)
+			var len = literal.Length;
+			if(len > _consumable.Length - _consumed)
 				return false;
 
-			if(0 == string.CompareOrdinal(_consumable, _consumed, literal, 0, literal.Length)) {
-				Consume(literal.Length);
+			if(0 == string.Compare(_consumable, _consumed, literal, 0, len, comparison)) {
+				Consume(len);
 				return true;
 			} else {
 				return false;

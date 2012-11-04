@@ -52,7 +52,6 @@
   <ItemGroup>
     <Compile Include="Expect.cs" />
     <Compile Include="Parsing\CharacterLocationTests.cs" />
-    <Compile Include="Parsing\Expressions\ChoiceExpressionTests.cs" />
     <Compile Include="Parsing\Expressions\LiteralExpressionTests.cs" />
     <Compile Include="Parsing\Expressions\RegexExpressionTests.cs" />
     <Compile Include="Parsing\Expressions\RepetitionExpressionTests.cs" />

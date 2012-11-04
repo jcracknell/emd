@@ -10,7 +10,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class LiteralExpressionTests {
 		[TestMethod]
 		public void LiteralExpression_constructor_works_as_expected() {
-			var literalExpression = new LiteralParsingExpression<string>("cat", c => "match");
+			var literalExpression = new CapturingLiteralParsingExpression<string>("cat", StringComparison.Ordinal, c => "match");
 
 			Assert.AreEqual("cat", literalExpression.Literal);
 			Assert.AreEqual(ParsingExpressionKind.Literal, literalExpression.Kind);
@@ -18,7 +18,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void LiteralExpression_accepts_exact_string() {
-			var literalExpression = new LiteralParsingExpression<string>("cat", matchContext => {
+			var literalExpression = new CapturingLiteralParsingExpression<string>("cat", StringComparison.Ordinal, matchContext => {
 				Assert.AreEqual(0, matchContext.SourceRange.Index);
 				Assert.AreEqual(3, matchContext.SourceRange.Length);
 
@@ -36,7 +36,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void LiteralExpression_accepts_start() {
-			var literalExpression = new LiteralParsingExpression<string>("cat", matchContext => {
+			var literalExpression = new CapturingLiteralParsingExpression<string>("cat", StringComparison.Ordinal, matchContext => {
 				Assert.AreEqual(0, matchContext.SourceRange.Index);
 				Assert.AreEqual(3, matchContext.SourceRange.Length);
 
@@ -53,7 +53,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void LiteralExpression_rejects_invalid() {
-			var literalExpression = new LiteralParsingExpression<string>("cat", matchContext => {
+			var literalExpression = new CapturingLiteralParsingExpression<string>("cat", StringComparison.Ordinal, matchContext => {
 				Assert.Fail("action called");
 				return "";
 			});
@@ -66,7 +66,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		[TestMethod]
 		public void LiteralExpression_rejects_short_input() {
-			var literalExpression = new LiteralParsingExpression<string>("cat", matchContext => {
+			var literalExpression = new CapturingLiteralParsingExpression<string>("cat", StringComparison.Ordinal, matchContext => {
 				Assert.Fail("action called");
 				return "";
 			});

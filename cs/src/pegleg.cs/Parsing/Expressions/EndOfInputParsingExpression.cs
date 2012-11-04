@@ -4,30 +4,25 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class EndOfInputParsingExpression : BaseParsingExpression {
-		public EndOfInputParsingExpression() : base(ParsingExpressionKind.EndOfInput) { }
-	}
+	public class EndOfInputParsingExpression : BaseParsingExpression<Nil> {
+		private static readonly EndOfInputParsingExpression _instance;
 
-	public class EndOfInputParsingExpression<TProduct> : EndOfInputParsingExpression, IParsingExpression<TProduct> {
-		private readonly Func<IMatch<Nil>, TProduct> _matchAction;
+		public static EndOfInputParsingExpression Instance { get { return _instance; } }
 
-		public EndOfInputParsingExpression(Func<IMatch<Nil>, TProduct> matchAction) {
-			_matchAction = matchAction;
+		static EndOfInputParsingExpression() {
+			_instance = new EndOfInputParsingExpression();
+		}
+
+		private EndOfInputParsingExpression() : base(ParsingExpressionKind.EndOfInput) { }
+
+		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
+			if(context.AtEndOfInput)
+				return SuccessfulMatchingResult.NilProduct;
+			return UnsuccessfulMatchingResult.Create(this);
 		}
 
 		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
 			return handler.Handle(this);
-		}
-
-		protected override IMatchingResult MatchesCore(IMatchingContext context) {
-			if(!context.AtEndOfInput)
-				return new UnsuccessfulMatchingResult();
-
-			if(null == _matchAction)
-				return new SuccessfulMatchingResult(Nil.Value);
-
-			var product = _matchAction(context.StartMatch().CompleteMatch(this, Nil.Value));
-			return new SuccessfulMatchingResult(product);
 		}
 	}
 }

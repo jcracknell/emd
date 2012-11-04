@@ -37,11 +37,15 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<string> Literal(string literal) {
-			return new LiteralParsingExpression<string>(literal, null);
+			return Literal(literal, StringComparison.Ordinal);
+		}
+
+		public IParsingExpression<string> Literal(string literal, StringComparison comparison) {
+			return new NonCapturingLiteralParsingExpression(literal, comparison);
 		}
 
 		public IParsingExpression<TProduct> Literal<TProduct>(string literal, Func<IMatch<string>, TProduct> matchAction) {
-			return new LiteralParsingExpression<TProduct>(literal, matchAction);
+			return Literal(literal, StringComparison.Ordinal, matchAction);
 		}
 
 		public IParsingExpression<string> Literal(char literal) {
@@ -50,6 +54,10 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 
 		public IParsingExpression<TProduct> Literal<TProduct>(char literal, Func<IMatch<string>, TProduct> matchAction) {
 			return Literal(literal.ToString(), matchAction);
+		}
+
+		public IParsingExpression<TProduct> Literal<TProduct>(string literal, StringComparison comparison, Func<IMatch<string>, TProduct> matchAction) {
+			return new CapturingLiteralParsingExpression<TProduct>(literal, comparison, matchAction);
 		}
 
 		#region Regex
@@ -80,11 +88,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		#endregion
 
 		public IParsingExpression<Nil> EndOfInput() {
-			return new EndOfInputParsingExpression<Nil>(null);
-		}
-
-		public IParsingExpression<TProduct> EndOfInput<TProduct>(Func<IMatch<Nil>, TProduct> matchAction) {
-			return new EndOfInputParsingExpression<TProduct>(matchAction);
+			return EndOfInputParsingExpression.Instance;
 		}
 
 		public IParsingExpression<T> Dynamic<T>(Func<IParsingExpression<T>> closure) {
@@ -96,26 +100,25 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<T> Ahead<T>(IParsingExpression<T> expression) {
-			return new AheadExpression<T>(expression, null);
+			return new NonCapturingAheadParsingExpression<T>(expression);
 		}
 
 		public IParsingExpression<TProduct> Ahead<T, TProduct>(IParsingExpression<T> expression, Func<IMatch<T>, TProduct> matchAction) {
-			return new AheadExpression<TProduct>(expression,
-				match => matchAction(UpcastExpressionMatch(match, product => (T)product)));
+			return new CapturingAheadParsingExpression<T, TProduct>(expression, matchAction);
 		}
 
 		#region Repetition
 
 		public IParsingExpression<IEnumerable<T>> AtLeast<T>(uint minOccurs, IParsingExpression<T> expression) {
-			return new NonCapturingRepetitionParsingExpression<T>(minOccurs, RepetitionParsingExpression.UNBOUNDED, expression);
+			return new NonCapturingRepetitionParsingExpression<T>(minOccurs, 0, expression);
 		}
 
 		public IParsingExpression<TProduct> AtLeast<T, TProduct>(uint minOccurs, IParsingExpression<T> expression, Func<IMatch<IEnumerable<T>>, TProduct> matchAction) {
-			return new CapturingRepetitionParsingExpression<T, TProduct>(minOccurs, RepetitionParsingExpression.UNBOUNDED, expression, matchAction);
+			return new CapturingRepetitionParsingExpression<T, TProduct>(minOccurs, 0, expression, matchAction);
 		}
 
 		public IParsingExpression<IEnumerable<T>> AtMost<T>(uint maxOccurs, IParsingExpression<T> expression) {
-			return new NonCapturingRepetitionParsingExpression<T>(RepetitionParsingExpression.UNBOUNDED, maxOccurs, expression);
+			return new NonCapturingRepetitionParsingExpression<T>(0, maxOccurs, expression);
 		}
 
 		public IParsingExpression<TProduct> AtMost<T, TProduct>(uint maxOccurs, IParsingExpression<T> expression, Func<IMatch<IEnumerable<T>>, TProduct> matchAction) {
@@ -141,23 +144,15 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		#endregion
 
 		public IParsingExpression<Nil> NotAhead<T>(IParsingExpression<T> expression) {
-			return new NotAheadParsingExpression<Nil>(expression, null);
-		}
-
-		public IParsingExpression<TProduct> NotAhead<T, TProduct>(IParsingExpression<T> expression, Func<IMatch<Nil>, TProduct> matchAction) {
-			return new NotAheadParsingExpression<TProduct>(expression, matchAction);
+			return new NotAheadParsingExpression(expression);
 		}
 
 		public IParsingExpression<T> Optional<T>(IParsingExpression<T> expression) {
-			return new OptionalParsingExpression<T>(expression, null, null);
-		}
-
-		public IParsingExpression<TProduct> Optional<T, TProduct>(IParsingExpression<T> expression, Func<IMatch<T>, TProduct> matchAction) {
-			return new OptionalParsingExpression<TProduct>(expression, match => matchAction(UpcastExpressionMatch(match, product => (T)product)), null);
+			return new NonCapturingOptionalParsingExpression<T>(expression);
 		}
 
 		public IParsingExpression<TProduct> Optional<T, TProduct>(IParsingExpression<T> expression, Func<IMatch<T>, TProduct> matchAction, Func<IMatch<Nil>, TProduct> noMatchAction) {
-			return new OptionalParsingExpression<TProduct>(expression, match => matchAction(UpcastExpressionMatch(match, product => (T)product)), noMatchAction);
+			return new CapturingOptionalParsingExpression<T, TProduct>(expression, matchAction, noMatchAction);
 		}
 
 		public IParsingExpression<T> Reference<T>(Func<IParsingExpression<T>> reference) {
@@ -169,15 +164,11 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<Nil> Wildcard() {
-			return new NonCapturingWildcardParsingExpression();
-		}
-
-		public IParsingExpression<TProduct> Wildcard<TProduct>(Func<IMatch<char>, TProduct> matchAction) {
-			return new CapturingWildcardParsingExpression<TProduct>(matchAction);
+			return WildcardParsingExpression.Instance;
 		}
 
 		public IParsingExpression<Nil> CharacterInRange(char rangeStart, char rangeEnd) {
-			return new NonCapturingCharacterRangeParsingExpression(rangeStart, rangeEnd);
+			return new CharacterRangeParsingExpression(rangeStart, rangeEnd);
 		}
 
 		public IParsingExpression<Nil> CharacterIn(IEnumerable<char> chars) {
@@ -234,16 +225,12 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 
 		#region ChoiceOrdered
 
-		public IParsingExpression<Nil> ChoiceOrdered(params IParsingExpression[] choices) {
+		public IParsingExpression<Nil> ChoiceOrdered(params IParsingExpression<object>[] choices) {
 			return new NonCapturingOrderedChoiceParsingExpression(choices);
 		}
 
-		public IParsingExpression<Nil> ChoiceOrdered(IEnumerable<IParsingExpression> choices) {
+		public IParsingExpression<Nil> ChoiceOrdered(IEnumerable<IParsingExpression<object>> choices) {
 			return ChoiceOrdered(choices.ToArray());
-		}
-
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IEnumerable<IParsingExpression> choices, Func<IMatch<object>, TProduct> matchAction) {
-			return new CapturingOrderedChoiceParsingExpression<object, TProduct>(choices.ToArray(), matchAction);
 		}
 
 		public IParsingExpression<TChoice> ChoiceOrdered<TChoice>(params IParsingExpression<TChoice>[] choices) {
@@ -258,80 +245,76 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new CapturingOrderedChoiceParsingExpression<TChoice, TProduct>(choices.ToArray(), matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, IParsingExpression<object> e12, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, IParsingExpression<object> e12, IParsingExpression<object> e13, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, IParsingExpression e14, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, IParsingExpression<object> e12, IParsingExpression<object> e13, IParsingExpression<object> e14, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, IParsingExpression e14, IParsingExpression e15, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, IParsingExpression<object> e12, IParsingExpression<object> e13, IParsingExpression<object> e14, IParsingExpression<object> e15, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, IParsingExpression e14, IParsingExpression e15, IParsingExpression e16, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceOrdered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceOrdered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, IParsingExpression<object> e12, IParsingExpression<object> e13, IParsingExpression<object> e14, IParsingExpression<object> e15, IParsingExpression<object> e16, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceOrdered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16 }, matchAction);
 		}
 
 		#endregion
 
 		#region ChoiceUnordered
 
-		public IParsingExpression<Nil> ChoiceUnordered(params IParsingExpression[] choices) {
+		public IParsingExpression<Nil> ChoiceUnordered(params IParsingExpression<object>[] choices) {
 			return new NonCapturingUnorderedChoiceParsingExpression(choices);
 		}
 
-		public IParsingExpression<Nil> ChoiceUnordered(IEnumerable<IParsingExpression> choices) {
+		public IParsingExpression<Nil> ChoiceUnordered(IEnumerable<IParsingExpression<object>> choices) {
 			return ChoiceUnordered(choices.ToArray());
-		}
-
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IEnumerable<IParsingExpression> choices, Func<IMatch<object>, TProduct> matchAction) {
-			return new CapturingUnorderedChoiceParsingExpression<object, TProduct>(choices.ToArray(), matchAction);
 		}
 
 		public IParsingExpression<TChoice> ChoiceUnordered<TChoice>(params IParsingExpression<TChoice>[] choices) {
@@ -346,64 +329,64 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new CapturingUnorderedChoiceParsingExpression<TChoice, TProduct>(choices.ToArray(), matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, IParsingExpression<object> e12, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, IParsingExpression<object> e12, IParsingExpression<object> e13, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, IParsingExpression e14, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, IParsingExpression<object> e12, IParsingExpression<object> e13, IParsingExpression<object> e14, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, IParsingExpression e14, IParsingExpression e15, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, IParsingExpression<object> e12, IParsingExpression<object> e13, IParsingExpression<object> e14, IParsingExpression<object> e15, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15 }, matchAction);
 		}
 
-		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression e1, IParsingExpression e2, IParsingExpression e3, IParsingExpression e4, IParsingExpression e5, IParsingExpression e6, IParsingExpression e7, IParsingExpression e8, IParsingExpression e9, IParsingExpression e10, IParsingExpression e11, IParsingExpression e12, IParsingExpression e13, IParsingExpression e14, IParsingExpression e15, IParsingExpression e16, Func<IMatch<object>, TProduct> matchAction) {
-			return ChoiceUnordered(new IParsingExpression[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16 }, matchAction);
+		public IParsingExpression<TProduct> ChoiceUnordered<TProduct>(IParsingExpression<object> e1, IParsingExpression<object> e2, IParsingExpression<object> e3, IParsingExpression<object> e4, IParsingExpression<object> e5, IParsingExpression<object> e6, IParsingExpression<object> e7, IParsingExpression<object> e8, IParsingExpression<object> e9, IParsingExpression<object> e10, IParsingExpression<object> e11, IParsingExpression<object> e12, IParsingExpression<object> e13, IParsingExpression<object> e14, IParsingExpression<object> e15, IParsingExpression<object> e16, Func<IMatch<object>, TProduct> matchAction) {
+			return ChoiceUnordered(new IParsingExpression<object>[] { e1, e2, e3, e4, e5, e6, e7, e8, e9, e10, e11, e12, e13, e14, e15, e16 }, matchAction);
 		}
 
 		#endregion
