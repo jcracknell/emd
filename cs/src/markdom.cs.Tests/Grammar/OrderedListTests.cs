@@ -119,5 +119,15 @@ namespace markdom.cs.Grammar {
 		public void Enumerator_matches_decimal_bracketed() {
 			Grammar.Enumerator.AssertMatch("[42]");
 		}
+
+		[TestMethod]
+		public void EnumeratorValue_matches_base_case() {
+			Grammar.EnumeratorValue.AssertMatch("@123");
+		}
+
+		[TestMethod]
+		public void EnumeratorValue_matches_0() {
+			Grammar.EnumeratorValue.AssertMatch("@0");
+		}
 	}
 }

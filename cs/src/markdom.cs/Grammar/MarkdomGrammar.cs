@@ -119,6 +119,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<OrderedListNode> OrderedList { get; private set; }
 		public IParsingExpression<Nil> Enumerator { get; private set; }
 		public IParsingExpression<Nil> EnumeratorishAhead { get; private set; }
+		public IParsingExpression<int?> EnumeratorValue { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedList { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedListTight { get; private set; }
 		public IParsingExpression<UnorderedListNode> UnorderedListLoose { get; private set; }
@@ -353,14 +354,14 @@ namespace markdom.cs.Grammar {
 			var enumeratorCounterStyleUpperRomanChar = CharacterIn(enumeratorCounterStyleUpperRomanCharValues);
 			var enumeratorCounterStyleRomanChar = CharacterIn(enumeratorCounterStyleLowerRomanCharValues.Concat(enumeratorCounterStyleUpperRomanCharValues));
 
-			var enumeratorValue =
+			Define(() => EnumeratorValue,
 				Optional(
 					Sequence(
-						Reference(() => CAt),
+						Literal("@"),
 						AtLeast(1, Reference(() => Digit), match => match.String.ParseDefault(1)),
 						match => match.Product.Of2),
 					match => new int?(match.Product),
-					noMatch => new int?());
+					noMatch => new int?()));
 
 			var enumeratorCounterStyleDefinitions = new EnumeratorCounterStyleDefinition[] {
 				new EnumeratorCounterStyleDefinition(
@@ -423,7 +424,7 @@ namespace markdom.cs.Grammar {
 								InitialEnumerator =
 									Named("InitialEnumerator" + cd.CounterStyle.ToString() + sd.SeparatorStyle.ToString(),
 										Sequence(
-											enumeratorPreamble, cd.Expression, enumeratorValue, enumeratorPostamble,
+											enumeratorPreamble, cd.Expression, Reference(() => EnumeratorValue), enumeratorPostamble,
 											match => new InitialEnumeratorInfo(
 												cd.CounterStyle, sd.SeparatorStyle,
 												match.Product.Of3.ValueOr(match.Product.Of2.InterpretedValue.ValueOr(1))))),
@@ -445,7 +446,7 @@ namespace markdom.cs.Grammar {
 						enumeratorStyleDefinitions.Select(sd =>
 							Sequence(
 								Ahead(sd.EnumeratorPreamble), 
-								ChoiceOrdered(sd.Counters.Select(cd => cd.ContinuationEnumerator)))
+								ChoiceOrdered(sd.Counters.Select(cd => cd.InitialEnumerator)))
 						))));
 
 			Define(() => EnumeratorishAhead,
