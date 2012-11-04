@@ -66,5 +66,9 @@ namespace pegleg.cs.ExtensionMethods {
 		public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerableEnumerable) {
 			return enumerableEnumerable.SelectMany(i => i);
 		}
+
+		public static IEnumerable<T> InEnumerable<T>(this T obj) {
+			yield return obj;
+		}
 	}
 }

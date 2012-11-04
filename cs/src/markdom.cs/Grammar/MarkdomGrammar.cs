@@ -22,6 +22,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<IBlockNode> Block { get; private set; }
 
 		public IParsingExpression<LineInfo> CommentBlock { get; private set; }
+		public IParsingExpression<BlockquoteNode> Blockquote { get; private set; }
 		public IParsingExpression<TableNode> Table { get; private set; }
 		public IParsingExpression<TableRowNode> TableRow { get; private set; }
 		public IParsingExpression<LineInfo> TableRowSeparator { get; private set; }
@@ -178,6 +179,7 @@ namespace markdom.cs.Grammar {
 					ChoiceOrdered<IBlockNode>(
 						Reference(() => Heading),
 						Reference(() => ReferenceBlock),
+						Reference(() => Blockquote),
 						Reference(() => UnorderedList),
 						Reference(() => Table),
 						Reference(() => OrderedList),
@@ -542,6 +544,39 @@ namespace markdom.cs.Grammar {
 					Reference(() => SpaceChars),
 					AtLeast(1, Literal("#"), match => match.String.Length),
 					match => match.Product.Of2));
+			#endregion
+
+			#region Blockquote
+
+			var blockquoteAnnouncement =
+				Sequence(Literal(">"), Optional(Literal(" ")));
+
+			var blockquoteAnnouncedLine =
+				Sequence(
+					blockquoteAnnouncement, Reference(() => BlockLine),
+					match => match.Product.Of2);
+
+			var blockquotePart =
+				Sequence(
+					blockquoteAnnouncedLine,
+					AtLeast(0,
+						ChoiceOrdered(
+							blockquoteAnnouncedLine,
+							Reference(() => NonEmptyBlockLine))),
+					match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2));
+
+			Define(() => Blockquote,
+				Sequence(
+					blockquotePart,
+					AtLeast(0,
+						Sequence(
+							Reference(() => BlankLines),
+							blockquotePart,
+							match => match.Product.Of1.Concat(match.Product.Of2))),
+					match => new BlockquoteNode(
+						ParseLinesAs(Blocks, match.Product.Of1.Concat(match.Product.Of2.Flatten())).ToArray(),
+						MarkdomSourceRange.FromMatch(match))));
+
 			#endregion
 
 			Define(() => ReferenceBlock,
@@ -1212,7 +1247,8 @@ namespace markdom.cs.Grammar {
 		}
 
 		private int _parseLinesCount = 0;
-		private T ParseLinesAs<T>(IParsingExpression<T> expression, LineInfo[] lines) {
+		private T ParseLinesAs<T>(IParsingExpression<T> expression, IEnumerable<LineInfo> lines) {
+			lines = lines.ToList();
 			_parseLinesCount++;
 			var expressionMatchingContext =
 				new MatchingContext(

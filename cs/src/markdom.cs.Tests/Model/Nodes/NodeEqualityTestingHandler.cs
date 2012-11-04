@@ -183,5 +183,9 @@ namespace markdom.cs.Model.Nodes {
 		public void Handle(MarkdomDocumentNode node) {
 			AssertNodeIsAsExpected(node);
 		}
+
+		public void Handle(BlockquoteNode node) {
+			AssertNodeIsAsExpected(node);
+		}
 	}
 }

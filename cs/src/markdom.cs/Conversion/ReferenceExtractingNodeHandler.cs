@@ -99,5 +99,9 @@ namespace markdom.cs.Conversion {
 		public IEnumerable<ReferenceNode> Handle(UnorderedListItemNode node) {
 			return node.Children.SelectMany(item => item.HandleWith(this));
 		}
+
+		public IEnumerable<ReferenceNode> Handle(BlockquoteNode node) {
+			return node.Children.SelectMany(item => item.HandleWith(this));
+		}
 	}
 }

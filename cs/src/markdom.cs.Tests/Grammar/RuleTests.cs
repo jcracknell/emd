@@ -390,6 +390,17 @@ Yet another @{{*emphasis*}}.
 	| @{{**strong**}} | baz
 }}
 
+> blockquote
+with a second line
+
+>and a second paragraph
+
+* Paragraph
+
+	> blockquote
+
+	> blockquote continues
+
 [slashdot.org]: http://slashdot.org
 [google.com]: (http://google.com, {'title': 'Google home page'})
 

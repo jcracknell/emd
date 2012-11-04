@@ -7,6 +7,7 @@ using System.Text;
 namespace markdom.cs.Model{
 	public interface INodeHandler {
 		void Handle(AutoLinkNode node);
+		void Handle(BlockquoteNode node);
 		void Handle(EmphasisNode node);
 		void Handle(EntityNode node);
 		void Handle(HeadingNode node);
@@ -33,6 +34,7 @@ namespace markdom.cs.Model{
 
 	public interface INodeHandler<T> {
 		T Handle(AutoLinkNode node);
+		T Handle(BlockquoteNode node);
 		T Handle(EmphasisNode node);
 		T Handle(EntityNode node);
 		T Handle(HeadingNode node);
