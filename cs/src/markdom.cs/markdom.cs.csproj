@@ -44,6 +44,13 @@
     <Compile Include="CodeContract.cs" />
     <Compile Include="Conversion\ReferenceCollection.cs" />
     <Compile Include="Conversion\ReferenceExtractingNodeHandler.cs" />
+    <Compile Include="Grammar\BlockLineInfo.cs" />
+    <Compile Include="Grammar\EnumeratorCounterStyleDefinition.cs" />
+    <Compile Include="Grammar\EnumeratorCounterStyleInfo.cs" />
+    <Compile Include="Grammar\EnumeratorInfo.cs" />
+    <Compile Include="Grammar\EnumeratorSeparatorStyleDefinition.cs" />
+    <Compile Include="Grammar\LineInfo.cs" />
+    <Compile Include="Grammar\TableCellSpanningInfo.cs" />
     <Compile Include="Model\Expressions\DocumentLiteralExpression.cs" />
     <Compile Include="Model\Expressions\NumericLiteralExpression.cs" />
     <Compile Include="Model\Expressions\UriLiteralExpression.cs" />

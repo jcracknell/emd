@@ -12,95 +12,6 @@ using System.Text.RegularExpressions;
 
 namespace markdom.cs.Grammar {
 	public class MarkdomGrammar : Grammar<MarkdomDocumentNode> {
-		#region Intermediate data structures
-
-		public class LineInfo {
-			public readonly string LineString;
-			public readonly SourceRange SourceRange;
-
-			public LineInfo(string lineString, SourceRange sourceRange) {
-				LineString = lineString;
-				SourceRange = sourceRange;
-			}
-
-			public static LineInfo FromMatch(IMatch match) {
-				return new LineInfo(match.String, match.SourceRange);
-			}
-		}
-
-		public class BlockLineInfo {
-			public readonly IEnumerable<LineInfo> Lines;
-			public readonly SourceRange SourceRange;
-
-			public BlockLineInfo(IEnumerable<LineInfo> lines, SourceRange sourceRange) {
-				Lines = lines;
-				SourceRange = sourceRange;
-			}
-
-			public static BlockLineInfo FromMatch(IMatch<IEnumerable<LineInfo>> match) {
-				return new BlockLineInfo(match.Product, match.SourceRange);
-			}
-
-			public static BlockLineInfo FromMatch(IMatch<LineInfo> match) {
-				return new BlockLineInfo(match.Product.InArray(), match.SourceRange);
-			}
-		}
-
-		public class EnumeratorCounterStyleInfo {
-			public readonly OrderedListCounterStyle Style;
-			public readonly int? InterpretedValue;
-
-			public EnumeratorCounterStyleInfo(OrderedListCounterStyle style, int? interpretedValue) {
-				Style = style;
-				InterpretedValue = interpretedValue;
-			}
-		}
-
-		public class EnumeratorCounterStyleDefinition {
-			public readonly OrderedListCounterStyle CounterStyle;
-			public IParsingExpression<EnumeratorCounterStyleInfo> Expression;
-
-			public EnumeratorCounterStyleDefinition(OrderedListCounterStyle style, IParsingExpression<EnumeratorCounterStyleInfo> expression) {
-				CounterStyle = style;
-				Expression = expression;
-			}
-		}
-
-		public class EnumeratorSeparatorStyleDefinition {
-			public readonly OrderedListSeparatorStyle SeparatorStyle;
-			public readonly IParsingExpression<object> Preceding;
-			public readonly IParsingExpression<object> Following;
-			public EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle style, IParsingExpression<object> preceding, IParsingExpression<object> following) {
-				SeparatorStyle = style;
-				Preceding = preceding;
-				Following = following;
-			}
-		}
-
-		public class InitialEnumeratorInfo {
-			public readonly OrderedListCounterStyle CounterStyle;
-			public readonly OrderedListSeparatorStyle SeparatorStyle;
-			public readonly int Value;
-
-			public InitialEnumeratorInfo(OrderedListCounterStyle counterStyle, OrderedListSeparatorStyle separatorStyle, int value) {
-				CounterStyle = counterStyle;
-				SeparatorStyle = separatorStyle;
-				Value = value;
-			}
-		}
-
-		public class TableCellSpanningInfo {
-			public readonly int ColumnSpan;
-			public readonly int RowSpan;
-
-			public TableCellSpanningInfo(int columnSpan, int rowSpan) {
-				ColumnSpan = columnSpan;
-				RowSpan = rowSpan;
-			}
-		}
-
-		#endregion
-		
 		public IParsingExpression<LineInfo> Comment { get; private set; }
 		public IParsingExpression<LineInfo> MultiLineComment { get; private set; }
 		public IParsingExpression<LineInfo> SingleLineComment { get; private set; }
@@ -425,7 +336,7 @@ namespace markdom.cs.Grammar {
 									Named("InitialEnumerator" + cd.CounterStyle.ToString() + sd.SeparatorStyle.ToString(),
 										Sequence(
 											enumeratorPreamble, cd.Expression, Reference(() => EnumeratorValue), enumeratorPostamble,
-											match => new InitialEnumeratorInfo(
+											match => new EnumeratorInfo(
 												cd.CounterStyle, sd.SeparatorStyle,
 												match.Product.Of3.ValueOr(match.Product.Of2.InterpretedValue.ValueOr(1))))),
 								ContinuationEnumerator =
