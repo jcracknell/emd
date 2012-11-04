@@ -96,7 +96,7 @@
     <Compile Include="Grammar\MarkdomGrammar.cs" />
     <Compile Include="HashCodeBuilder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RomanNumeralUtils.cs" />
+    <Compile Include="NumeralUtils.cs" />
     <Compile Include="TextUtils.cs" />
   </ItemGroup>
   <ItemGroup>

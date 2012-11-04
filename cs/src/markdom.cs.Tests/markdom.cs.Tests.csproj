@@ -50,6 +50,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="NumeralUtilTests.cs" />
     <Compile Include="Grammar\OrderedListTests.cs" />
     <Compile Include="Grammar\GrammarTestFixture.cs" />
     <Compile Include="Grammar\RuleTestingExtensionMethods.cs" />

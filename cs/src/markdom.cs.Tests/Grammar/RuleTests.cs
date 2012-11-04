@@ -273,14 +273,6 @@ namespace markdom.cs.Grammar {
 		}
 
 		[TestMethod]
-		public void RomanNumeral_matches_base_case() { 
-			var matchResult = Grammar.RomanNumeral.Match("MCMXIV");
-
-			Assert.IsTrue(matchResult.Succeeded);
-			Assert.AreEqual(1914, matchResult.Product);
-		}
-
-		[TestMethod]
 		public void SingleLineComment_matches_base_case() {
 			var input = new MatchingContext("// text");
 
@@ -403,6 +395,7 @@ Yet another @{{*emphasis*}}.
 
 1. Item 1.
 a@42) Item 2.
+XVII - Roman.
 
 * Loose item 1.
 * Loose item 2.

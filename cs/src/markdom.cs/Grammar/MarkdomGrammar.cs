@@ -69,10 +69,6 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<DocumentLiteralExpression> DocumentLiteralExpression { get; private set; }
 		public IParsingExpression<Nil> ExpressionWhitespace { get; private set; }
 
-		public IParsingExpression<int> LowerRomanNumeral { get; private set; }
-		public IParsingExpression<int> UpperRomanNumeral { get; private set; }
-		public IParsingExpression<int> RomanNumeral { get; private set; }
-
 		/// <summary>
 		/// A tab or a space.
 		/// </summary>
@@ -259,25 +255,25 @@ namespace markdom.cs.Grammar {
 					Sequence(
 						enumeratorCounterStyleLowerRomanChar,
 						AtLeast(0, enumeratorCounterStyleRomanChar),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerRoman, new int?()))),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerRoman, NumeralUtils.ParseRomanNumeral(match.String)))),
 				new EnumeratorCounterStyleDefinition(
 					OrderedListCounterStyle.UpperRoman,
 					Sequence(
 						enumeratorCounterStyleUpperRomanChar,
 						AtLeast(0, enumeratorCounterStyleRomanChar),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperRoman, new int?()))),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperRoman, NumeralUtils.ParseRomanNumeral(match.String)))),
 				new EnumeratorCounterStyleDefinition(
 					OrderedListCounterStyle.LowerAlpha,
 					Sequence(
 						Reference(() => EnglishLowerAlpha),
 						AtLeast(0, Reference(() => EnglishAlpha)),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerAlpha, new int?()))),
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerAlpha, NumeralUtils.ParseAlphaNumeral(match.String)))),
 				new EnumeratorCounterStyleDefinition(
 					OrderedListCounterStyle.UpperAlpha,
 					Sequence(
 						Reference(() => EnglishUpperAlpha),
 						AtLeast(0, Reference(() => EnglishAlpha)),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperAlpha, new int?())))
+						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperAlpha, NumeralUtils.ParseAlphaNumeral(match.String))))
 			};
 
 			var enumeratorSeparatorStyleDefinitions = new EnumeratorSeparatorStyleDefinition[] {
@@ -1128,38 +1124,6 @@ namespace markdom.cs.Grammar {
 
 			#endregion
 
-			#region Roman Numerals
-
-			Define(() => UpperRomanNumeral,
-				Sequence(
-					Ahead(ChoiceUnordered("IVXLCDM".Select(Literal))),
-					Reference(() => RomanNumeral),
-					match => match.Product.Of2));
-
-			Define(() => LowerRomanNumeral,
-				Sequence(
-					Ahead(ChoiceUnordered("ivxlcdm".Select(Literal))),
-					Reference(() => RomanNumeral),
-					match => match.Product.Of2));
-
-			var romanNumeralI = ChoiceUnordered(Literal("i", m => 1), Literal("I", m => 1));
-			var romanNumeralV = ChoiceUnordered(Literal("v", m => 5), Literal("V", m => 5));
-			var romanNumeralX = ChoiceUnordered(Literal("x", m => 10), Literal("X", m => 10));
-			var romanNumeralL = ChoiceUnordered(Literal("l", m => 50), Literal("L", m => 50));
-			var romanNumeralC = ChoiceUnordered(Literal("c", m => 100), Literal("C", m => 100));
-			var romanNumeralD = ChoiceUnordered(Literal("d", m => 500), Literal("D", m => 500));
-			var romanNumeralM = ChoiceUnordered(Literal("m", m => 1000), Literal("M", m => 1000));
-
-			Define(() => RomanNumeral,
-				Sequence(
-					AtMost(3, romanNumeralM, match => match.Product.Sum()),
-					RomanNumeralDecade(romanNumeralM, romanNumeralD, romanNumeralC),
-					RomanNumeralDecade(romanNumeralC, romanNumeralL, romanNumeralX),
-					RomanNumeralDecade(romanNumeralX, romanNumeralV, romanNumeralI),
-					match => match.Product.Of1 + match.Product.Of2 + match.Product.Of3 + match.Product.Of4));
-
-			#endregion
-
 			#region Text, Character Classes, etc
 
 			Define(() => Line,
@@ -1261,14 +1225,6 @@ namespace markdom.cs.Grammar {
 				return default(T);
 
 			return (T)expressionMatchingResult.Product;
-		}
-
-		private IParsingExpression<int> RomanNumeralDecade(IParsingExpression<int> decem, IParsingExpression<int> quintum, IParsingExpression<int> unit) {
-			return ChoiceOrdered(
-				Sequence(unit, decem, match => match.Product.Of2 - match.Product.Of1),
-				Sequence(unit, quintum, match => match.Product.Of2 - match.Product.Of1),
-				Sequence(quintum, AtMost(3, unit), match => match.Product.Of1 + match.Product.Of2.Sum()),
-				AtMost(3, unit, match => match.Product.Sum()));
 		}
 	}
 }
