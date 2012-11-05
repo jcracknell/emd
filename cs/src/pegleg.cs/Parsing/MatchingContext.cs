@@ -175,6 +175,27 @@ namespace pegleg.cs.Parsing {
 			return true;
 		}
 
+		public void ConsumeUntil(char[] ends) {
+			var index = _consumable.IndexOfAny(ends, _consumed);
+			if(index > _consumed)
+				Consume(index - _consumed);	
+		}
+
+		public void ConsumeUntil(string[] strings, StringComparison comparison) {
+			bool matched = false;
+			int minIndex = int.MaxValue;
+			for(var i = 0; i < strings.Length; i++) {
+				var index = _consumable.IndexOf(strings[i], _consumed, comparison);
+				if(-1 != index) {
+					matched = true;
+					if(minIndex > index) minIndex = index;
+				}
+			}
+
+			if(matched && minIndex != _consumed)
+				Consume(minIndex - _consumed);
+		}
+
 		public bool AtEndOfInput { get { return _consumable.Length == _consumed; } }
 
 		public IMatchingContext Clone() {

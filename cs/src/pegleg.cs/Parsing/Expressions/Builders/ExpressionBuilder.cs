@@ -60,6 +60,42 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new CapturingLiteralParsingExpression<TProduct>(literal, comparison, matchAction);
 		}
 
+		#region Until
+
+		public IParsingExpression<Nil> Until(params char[] ends) {
+			return new NonCapturingUntilCharParsingExpression(ends);
+		}
+
+		public IParsingExpression<Nil> Until(IEnumerable<char> ends) {
+			return new NonCapturingUntilCharParsingExpression(ends.ToArray());
+		}
+
+		public IParsingExpression<TProduct> Until<TProduct>(IEnumerable<char> ends, Func<IMatch<Nil>, TProduct> matchAction) {
+			return new CapturingUntilCharParsingExpression<TProduct>(ends.ToArray(), matchAction);
+		}
+
+		public IParsingExpression<Nil> Until(params string[] ends) {
+			return new NonCapturingUntilStringParsingExpression(ends, StringComparison.Ordinal);
+		}
+
+		public IParsingExpression<Nil> Until(IEnumerable<string> ends) {
+			return Until(ends, StringComparison.Ordinal);
+		}
+
+		public IParsingExpression<Nil> Until(IEnumerable<string> ends, StringComparison comparison) {
+			return new NonCapturingUntilStringParsingExpression(ends.ToArray(), comparison);
+		}
+
+		public IParsingExpression<TProduct> Until<TProduct>(IEnumerable<string> ends, Func<IMatch<Nil>, TProduct> matchAction) {
+			return Until(ends, StringComparison.Ordinal, matchAction);
+		}
+
+		public IParsingExpression<TProduct> Until<TProduct>(IEnumerable<string> ends, StringComparison comparison, Func<IMatch<Nil>, TProduct> matchAction) {
+			return new CapturingUntilStringParsingExpression<TProduct>(ends.ToArray(), comparison, matchAction);
+		}
+
+		#endregion
+
 		#region Regex
 
 		public IParsingExpression<Nil> Regex(string regex) {
@@ -171,6 +207,8 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new CharacterRangeParsingExpression(rangeStart, rangeEnd);
 		}
 
+		#region CharacterIn/NotIn
+
 		public IParsingExpression<Nil> CharacterIn(IEnumerable<char> chars) {
 			var ranges = new List<IParsingExpression<Nil>>();
 			var enumerator = chars.OrderBy(c => c).Distinct().GetEnumerator();
@@ -222,6 +260,8 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 
 			return ChoiceUnordered(ranges);
 		}
+
+		#endregion
 
 		#region ChoiceOrdered
 
@@ -492,8 +532,5 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		#endregion
-
-
-
 	}
 }

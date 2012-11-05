@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using pegleg.cs.ExtensionMethods;
 
 namespace pegleg.cs.Parsing {
 	public class BackusNaurishExpressionHandler : IParsingExpressionHandler<string> {
@@ -23,6 +24,8 @@ namespace pegleg.cs.Parsing {
 			public int Handle<TProduct>(SequenceParsingExpression<TProduct> expression) { return 1; }
 			public int Handle<TChoice,TProduct>(UnorderedChoiceParsingExpression<TChoice,TProduct> expression) { return 0; }
 			public int Handle(WildcardParsingExpression expression) { return 4; }
+			public int Handle<TProduct>(UntilCharParsingExpression<TProduct> expression) { return 100; }
+			public int Handle<TProduct>(UntilStringParsingExpression<TProduct> expression) { return 100; }
 		}
 
 		private readonly PrecedenceExpressionHandler _precedenceHandler = new PrecedenceExpressionHandler();
@@ -161,6 +164,14 @@ namespace pegleg.cs.Parsing {
 
 		public string Handle(PredicateParsingExpression expression) {
 			return "<PREDICATE>";
+		}
+
+		public string Handle<TProduct>(UntilCharParsingExpression<TProduct> expression) {
+			return string.Concat("=>(", expression.Ends.Select(c => Charcode(c)).JoinStrings(" | "), ")");
+		}
+
+		public string Handle<TProduct>(UntilStringParsingExpression<TProduct> expression) {
+			return string.Concat("=>(", expression.Ends.Select(StringUtils.LiteralEncode).JoinStrings(" | "), ")");
 		}
 	}
 }
