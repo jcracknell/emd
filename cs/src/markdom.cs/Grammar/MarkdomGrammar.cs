@@ -582,9 +582,11 @@ namespace markdom.cs.Grammar {
 			#region Paragraph
 
 			Define(() => Paragraph,
-				AtLeast(1,
-					Reference(() => NonEmptyBlockLine),
-					match => new ParagraphNode(ParseLinesAs(Inlines, match.Product.ToArray()).ToArray(), MarkdomSourceRange.FromMatch(match))));
+				Sequence(
+					Reference(() => SpaceChars),
+					AtLeast(1, Reference(() => Inline)),
+					Reference(() => BlankLine),
+					match => new ParagraphNode(match.Product.Of2.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
 			#endregion
 
@@ -809,6 +811,8 @@ namespace markdom.cs.Grammar {
 					Optional(Literal("*")),
 					match => new EmphasisNode(match.Product.Of2.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
+			#region Quoted
+
 			var singleQuoted =
 				Sequence(
 					Literal("'"),
@@ -830,6 +834,8 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					new IParsingExpression[] { Literal(@"\\"), Reference(() => SpaceChars), Reference(() => NewLine) },
 					match => new LineBreakNode(MarkdomSourceRange.FromMatch(match))));
+
+			#endregion
 
 			#region Entities
 
@@ -873,8 +879,18 @@ namespace markdom.cs.Grammar {
 					Reference(() => NormalChar),
 					match => new TextNode(match.String, MarkdomSourceRange.FromMatch(match))));
 
+			var spaceNewline =
+				Sequence(
+					Reference(() => NewLine),
+					NotAhead(Reference(() => BlankLine)));
+
 			Define(() => Space,
-				AtLeast(1, Reference(() => Whitespace), match => new SpaceNode(MarkdomSourceRange.FromMatch(match))));
+				ChoiceUnordered(
+					Sequence(
+						AtLeast(1, Reference(() => SpaceChar)),
+						Optional(spaceNewline)),
+					spaceNewline,
+					match => new SpaceNode(MarkdomSourceRange.FromMatch(match))));
 
 			Define(() => NormalChar,
 				CharacterNotIn(whitespaceCharValues.Concat(specialCharValues)));
