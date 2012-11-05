@@ -347,8 +347,7 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					listItemContinues,
 					orderedListBlockLines,
-					Reference(() => BlankLines),
-					match => match.Product.Of1.Concat(match.Product.Of2).Concat(match.Product.Of3));
+					match => match.Product.Of1.Concat(match.Product.Of2));
 
 			Define(() => OrderedList,
 				Sequence(
@@ -401,11 +400,7 @@ namespace markdom.cs.Grammar {
 								var orderedListTight =
 									Sequence(
 										initialOrderedListItemTight,
-										AtLeast(0,
-											Sequence(
-												Reference(() => BlankLines),
-												subsequentOrderedListItemTight,
-												match => match.Product.Of2)),
+										AtLeast(0, subsequentOrderedListItemTight),
 										NotAhead(orderedListContinuesLoose),
 										match => {
 											var items = match.Product.Of1.InEnumerable().Concat(match.Product.Of2)
@@ -472,33 +467,23 @@ namespace markdom.cs.Grammar {
 
 			var unorderedListBlockLines = AtLeast(0, unorderedListBlockLine);
 
-			var unorderedListItemInitialBlock =
+			var unorderedListItemTight =
 				Sequence(
-					Reference(() => Bullet),
-					Reference(() => BlockLine), // Allow for an empty list item
+					Reference(() => Bullet), Reference(() => BlockLine),
 					unorderedListBlockLines,
-					match => match.Product.Of2.InArray().Concat(match.Product.Of3));
+					match => new BlockLineInfo(match.Product.Of2.InEnumerable().Concat(match.Product.Of3), match.SourceRange));
 
 			var unorderedListItemSubsequentBlock =
 				Sequence(
 					listItemContinues,
 					unorderedListBlockLines,
-					Reference(() => BlankLines),
-					match => match.Product.Of1.Concat(match.Product.Of2).Concat(match.Product.Of3));
-
-			var unorderedListItemTight =
-				Reference(
-					() => unorderedListItemInitialBlock,
-					BlockLineInfo.FromMatch);
+					match => match.Product.Of1.Concat(match.Product.Of2));
 
 			var unorderedListItemLoose =
 				Sequence(
-					Sequence(
-						unorderedListItemInitialBlock,
-						AtLeast(0, unorderedListItemSubsequentBlock),
-						match => new BlockLineInfo(match.Product.Of1.Concat(match.Product.Of2.Flatten()), match.SourceRange)),
-					Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
-					match => match.Product.Of1);
+					unorderedListItemTight,
+					AtLeast(0, unorderedListItemSubsequentBlock),
+					match => new BlockLineInfo(match.Product.Of1.Lines.Concat(match.Product.Of2.Flatten()), match.SourceRange));
 
 			var unorderedListContinuesLoose =
 				ChoiceUnordered(
@@ -507,33 +492,29 @@ namespace markdom.cs.Grammar {
 
 			Define(() => UnorderedListTight,
 				Sequence(
-					Reference(() => BlankLines),
 					AtLeast(1, unorderedListItemTight),
 					NotAhead(unorderedListContinuesLoose),
 					match => {
-						var items = match.Product.Of2
-							.Select(itemBlockInfo =>
-								new UnorderedListItemNode(
-									ParseLinesAs(Inlines, itemBlockInfo.Lines.ToArray()).ToArray(),
-									new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
+						var items = match.Product.Of1
+							.Select(i => new UnorderedListItemNode(ParseLinesAs(Inlines, i.Lines.ToArray()).ToArray(), MarkdomSourceRange.FromSource(i.SourceRange)))
 							.ToArray();
 						return new UnorderedListNode(items, MarkdomSourceRange.FromMatch(match));
 					}));
 
 			Define(() => UnorderedListLoose,
 				Sequence(
-					Reference(() => BlankLines),
-					AtLeast(1, unorderedListItemLoose),
+					unorderedListItemLoose,
+					AtLeast(0,
+						Sequence(
+							Reference(() => BlankLines),
+							unorderedListItemLoose,
+							match => match.Product.Of2)),
 					match => {
-						var items = match.Product.Of2
-							.Select(itemBlockInfo =>
-								new UnorderedListItemNode(
-									ParseLinesAs(Blocks, itemBlockInfo.Lines.ToArray()).ToArray(),
-									new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
+						var items = match.Product.Of1.InEnumerable().Concat(match.Product.Of2)
+							.Select(i => new UnorderedListItemNode(ParseLinesAs(Blocks, i.Lines).ToArray(), MarkdomSourceRange.FromSource(i.SourceRange)))
 							.ToArray();
 						return new UnorderedListNode(items, MarkdomSourceRange.FromMatch(match));
 					}));
-
 			#endregion
 
 			#endregion
