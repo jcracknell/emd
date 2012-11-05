@@ -359,39 +359,43 @@ namespace markdom.cs.Grammar {
 							// Perform early abort of match if the separator style will not match
 							Ahead(ssd.EnumeratorPreamble),
 							ChoiceOrdered(ssd.Counters.Select(csd => {
-								var initialOrderedListItemInitialBlock =
+								var initialOrderedListItemTight =
 									Sequence(
 										csd.InitialEnumerator, Reference(() => BlockLine),
 										orderedListBlockLines,
-										match => match.Product.Of2.InArray().Concat(match.Product.Of3));
+										match => new OrderedListItemLineInfo(
+											match.Product.Of1,
+											match.Product.Of2.InEnumerable().Concat(match.Product.Of3),
+											match.SourceRange));
 
-								var subsequentOrderedListItemInitialBlock =
+								var subsequentOrderedListItemTight =
 									Sequence(
 										csd.ContinuationEnumerator, Reference(() => BlockLine),
 										orderedListBlockLines,
-										match => match.Product.Of2.InArray().Concat(match.Product.Of3));
-
-								var initialOrderedListItemTight =
-									Reference(() => initialOrderedListItemInitialBlock, BlockLineInfo.FromMatch);
-
-								var subsequentOrderedListItemTight =
-									Reference(() => subsequentOrderedListItemInitialBlock, BlockLineInfo.FromMatch);
+										match => new BlockLineInfo(
+											match.Product.Of2.InArray().Concat(match.Product.Of3),
+											match.SourceRange));
 
 								var initialOrderedListItemLoose =
 									Sequence(
 										Sequence(
-											initialOrderedListItemInitialBlock,
+											initialOrderedListItemTight,
 											AtLeast(0, orderedListItemSubsequentBlock),
-											match => new BlockLineInfo(match.Product.Of1.Concat(match.Product.Of2.Flatten()), match.SourceRange)),
+											match => new OrderedListItemLineInfo(
+												match.Product.Of1.Enumerator,
+												match.Product.Of1.Lines.Concat(match.Product.Of2.Flatten()),
+												match.SourceRange)),
 										Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
 										match => match.Product.Of1);
 
 								var subsequentOrderedListItemLoose = 
 									Sequence(
 										Sequence(
-											subsequentOrderedListItemInitialBlock,
+											subsequentOrderedListItemTight,
 											AtLeast(0, orderedListItemSubsequentBlock),
-											match => new BlockLineInfo(match.Product.Of1.Concat(match.Product.Of2.Flatten()), match.SourceRange)),
+											match => new BlockLineInfo(
+												match.Product.Of1.Lines.Concat(match.Product.Of2.Flatten()),
+												match.SourceRange)),
 										Reference(() => BlankLines), // chew up any blank lines after an initial block with no subsequent
 										match => match.Product.Of1);
 
@@ -407,13 +411,14 @@ namespace markdom.cs.Grammar {
 										AtLeast(0, subsequentOrderedListItemTight),
 										NotAhead(orderedListContinuesLoose),
 										match => {
-											var items = match.Product.Of2.InArray().Concat(match.Product.Of3)
-												.Select(itemBlockInfo =>
-													new OrderedListItemNode(
-														ParseLinesAs(Inlines, itemBlockInfo.Lines.ToArray()).ToArray(),
-														new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
+											var items = match.Product.Of2.InEnumerable().Concat(match.Product.Of3)
+												.Select(i => new OrderedListItemNode(ParseLinesAs(Inlines, i.Lines).ToArray(), MarkdomSourceRange.FromSource(i.SourceRange)))
 												.ToArray();
-											return new OrderedListNode(csd.CounterStyle, ssd.SeparatorStyle, 1, items, MarkdomSourceRange.FromMatch(match));
+											return new OrderedListNode(
+												csd.CounterStyle, ssd.SeparatorStyle,
+												match.Product.Of2.Enumerator.Value,
+												items,
+												MarkdomSourceRange.FromMatch(match));
 										});
 
 								var orderedListLoose =
@@ -422,13 +427,14 @@ namespace markdom.cs.Grammar {
 										initialOrderedListItemLoose,
 										AtLeast(0, subsequentOrderedListItemLoose),
 										match => {
-											var items = match.Product.Of2.InArray().Concat(match.Product.Of3)
-												.Select(itemBlockInfo =>
-													new OrderedListItemNode(
-														ParseLinesAs(Blocks, itemBlockInfo.Lines.ToArray()).ToArray(),
-														new MarkdomSourceRange(itemBlockInfo.SourceRange.Index, itemBlockInfo.SourceRange.Length, itemBlockInfo.SourceRange.Line, itemBlockInfo.SourceRange.LineIndex)))
+											var items = match.Product.Of2.InEnumerable().Concat(match.Product.Of3)
+												.Select(i => new OrderedListItemNode(ParseLinesAs(Blocks, i.Lines).ToArray(), MarkdomSourceRange.FromSource(i.SourceRange)))
 												.ToArray();
-											return new OrderedListNode(csd.CounterStyle, ssd.SeparatorStyle, 1, items, MarkdomSourceRange.FromMatch(match));
+											return new OrderedListNode(
+												csd.CounterStyle, ssd.SeparatorStyle,
+												match.Product.Of2.Enumerator.Value,
+												items,
+												MarkdomSourceRange.FromMatch(match));
 										});
 
 								return

@@ -24,12 +24,16 @@ namespace markdom.cs.Model {
 			LineIndex = lineIndex;
 		}
 
-		public static MarkdomSourceRange FromMatch(IMatch match) {
+		public static MarkdomSourceRange FromSource(SourceRange sourceRange) {
 			return new MarkdomSourceRange(
-				match.SourceRange.Index,
-				match.SourceRange.Length,
-				match.SourceRange.Line,
-				match.SourceRange.LineIndex);
+				sourceRange.Index,
+				sourceRange.Length,
+				sourceRange.Line,
+				sourceRange.LineIndex);
+		}
+
+		public static MarkdomSourceRange FromMatch(IMatch match) {
+			return FromSource(match.SourceRange);
 		}
 	}
 }
