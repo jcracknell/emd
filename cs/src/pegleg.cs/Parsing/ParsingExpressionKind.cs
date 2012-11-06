@@ -21,8 +21,6 @@ namespace pegleg.cs.Parsing {
 		Repetition,
 		Sequence,
 		UnorderedChoice,
-		UntilChar,
-		UntilString,
 		Wildcard
 	}
 }

@@ -5,11 +5,11 @@ using System.Text;
 
 namespace pegleg.cs.ExtensionMethods {
 	public static class PeglegExtensionMethods {
-		public static string JoinStrings(this IEnumerable<string> parts) {
-			return JoinStrings(parts, "");
+		public static string Join(this IEnumerable<string> parts) {
+			return Join(parts, "");
 		}
 
-		public static string JoinStrings(this IEnumerable<string> parts, string separator) {
+		public static string Join(this IEnumerable<string> parts, string separator) {
 			var sb = new StringBuilder();
 			var enumerator = parts.GetEnumerator();
 

@@ -42,8 +42,6 @@
   <ItemGroup>
     <Compile Include="CodeContract.cs" />
     <Compile Include="Parsing\BaseParsingExpression.cs" />
-    <Compile Include="Parsing\Expressions\UntilCharParsingExpression.cs" />
-    <Compile Include="Parsing\Expressions\UntilStringParsingExpression.cs" />
     <Compile Include="Parsing\MatchBuilder.cs" />
     <Compile Include="Parsing\Expressions\Builders\AdaptedExpressionMatch.cs" />
     <Compile Include="Parsing\Expressions\Builders\DefaultExpressionNamingConvention.cs" />

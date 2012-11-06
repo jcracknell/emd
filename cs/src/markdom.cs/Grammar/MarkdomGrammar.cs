@@ -152,7 +152,9 @@ namespace markdom.cs.Grammar {
 			Define(() => MultiLineComment,
 				Sequence(
 					Literal("/*"),
-					Until("*/"),
+					AtLeast(0,
+						Sequence( NotAhead(Literal("*/")), Wildcard() ),
+						match => match.String),
 					Literal("*/"),
 					match => LineInfo.FromMatch(match)));
 
@@ -1028,7 +1030,7 @@ namespace markdom.cs.Grammar {
 							NotAhead(ChoiceUnordered(Literal("'"), Reference(() => NewLine))),
 							Wildcard(),
 							match => match.String)),
-					match => match.Product.JoinStrings());
+					match => match.Product.Join());
 
 			var doubleQuotedStringExpressionContent =
 				AtLeast(0,
@@ -1039,7 +1041,7 @@ namespace markdom.cs.Grammar {
 							NotAhead(ChoiceUnordered(Literal("\""), Reference(() => NewLine))),
 							Wildcard(),
 							match => match.String)),
-					match => match.Product.JoinStrings());
+					match => match.Product.Join());
 
 			var singleQuotedStringExpression =
 				Sequence(
@@ -1164,7 +1166,10 @@ namespace markdom.cs.Grammar {
 
 			Define(() => Line,
 				Sequence(
-					Until(new char[] { '\n', '\r' }),
+					AtLeast(0,
+						Sequence(
+							NotAhead(Reference(() => NewLine)),
+							Wildcard())),
 					Optional(Reference(() => NewLine)),
 					match => LineInfo.FromMatch(match)));
 
@@ -1250,7 +1255,7 @@ namespace markdom.cs.Grammar {
 			_parseLinesCount++;
 			var expressionMatchingContext =
 				new MatchingContext(
-					lines.Select(line => line.LineString).JoinStrings(),
+					lines.Select(line => line.LineString).Join(),
 					lines.Select(line => line.SourceRange).ToArray());
 			
 			var expressionMatchingResult = expression.Matches(expressionMatchingContext);

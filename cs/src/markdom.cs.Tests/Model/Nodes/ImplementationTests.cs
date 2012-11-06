@@ -22,7 +22,7 @@ namespace markdom.cs.Model.Nodes {
 				Assert.Fail(
 					nodeTypeFieldsWhichAreNotReadOnly
 					.Select(f => "Field " + f.DeclaringType.FullName + "::" + f.Name + " is not readonly.")
-					.JoinStrings("\n"));
+					.Join("\n"));
 		}
 
 		[TestMethod]
@@ -37,7 +37,7 @@ namespace markdom.cs.Model.Nodes {
 				Assert.Fail(
 					nodeTypeFieldsWhichArePublic
 					.Select(f => "Field " + f.DeclaringType.FullName + "::" + f.Name + " is public.")
-					.JoinStrings("\n"));
+					.Join("\n"));
 		}
 
 		[TestMethod]
@@ -52,7 +52,7 @@ namespace markdom.cs.Model.Nodes {
 				Assert.Fail(
 					publicNodePropertiesDeclaringSetters
 					.Select(p => "Property " + p.DeclaringType.FullName + "::" + p.Name + " declares a public setter.")
-					.JoinStrings("\n"));
+					.Join("\n"));
 		}
 
 		[TestMethod]
@@ -67,7 +67,7 @@ namespace markdom.cs.Model.Nodes {
 				Assert.Fail(
 					publicNodePropertiesWithArrayType
 					.Select(p => "Property " + p.DeclaringType.FullName + "::" + p.Name + " has array type.")
-					.JoinStrings("\n"));
+					.Join("\n"));
 		}
 	}
 }

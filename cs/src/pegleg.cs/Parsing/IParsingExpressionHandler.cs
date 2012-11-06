@@ -21,8 +21,6 @@ namespace pegleg.cs.Parsing {
 		T Handle<TBody,TProduct>(RepetitionParsingExpression<TBody,TProduct> expression);
 		T Handle<TProduct>(SequenceParsingExpression<TProduct> expression);
 		T Handle<TChoice,TProduct>(UnorderedChoiceParsingExpression<TChoice, TProduct> expression);
-		T Handle<TProduct>(UntilCharParsingExpression<TProduct> expression);
-		T Handle<TProduct>(UntilStringParsingExpression<TProduct> expression);
 		T Handle(WildcardParsingExpression expression);
 	}
 }

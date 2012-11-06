@@ -50,15 +50,6 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 
 		IParsingExpression<Nil> Wildcard();
 
-		IParsingExpression<Nil> Until(params char[] ends);
-		IParsingExpression<Nil> Until(IEnumerable<char> ends);
-		IParsingExpression<TProduct> Until<TProduct>(IEnumerable<char> ends, Func<IMatch<Nil>,TProduct> matchAction);
-		IParsingExpression<Nil> Until(params string[] ends);
-		IParsingExpression<Nil> Until(IEnumerable<string> ends);
-		IParsingExpression<Nil> Until(IEnumerable<string> ends, StringComparison comparison);
-		IParsingExpression<TProduct> Until<TProduct>(IEnumerable<string> ends, Func<IMatch<Nil>,TProduct> matchAction);
-		IParsingExpression<TProduct> Until<TProduct>(IEnumerable<string> ends, StringComparison comparison, Func<IMatch<Nil>,TProduct> matchAction);
-
 		// # Non-terminals
 
 		IParsingExpression<T> Dynamic<T>(Func<IParsingExpression<T>> closure);
