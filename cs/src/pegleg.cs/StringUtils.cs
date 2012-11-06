@@ -8,13 +8,57 @@ using System.Text;
 
 namespace pegleg.cs {
 	internal static class StringUtils {
-		public static string LiteralEncode(string s) {
-			using(var stringWriter = new StringWriter())
-			using(var csharpCodeProvider = new CSharpCodeProvider()) {
-				var primitiveExpression = new CodePrimitiveExpression(s);
-				csharpCodeProvider.GenerateCodeFromExpression(primitiveExpression, stringWriter, null);
-				return stringWriter.GetStringBuilder().ToString();
+		private static readonly char[] LITERALENCODE_ESCAPE_CHARS;
+
+		static StringUtils() {
+			// Initialize array of characters to be escaped during literal encoding
+			// Per http://msdn.microsoft.com/en-us/library/h21280bw.aspx
+			LITERALENCODE_ESCAPE_CHARS = new char[93];
+			LITERALENCODE_ESCAPE_CHARS['\a'] = 'a';
+			LITERALENCODE_ESCAPE_CHARS['\b'] = 'b';
+			LITERALENCODE_ESCAPE_CHARS['\f'] = 'f';
+			LITERALENCODE_ESCAPE_CHARS['\n'] = 'n';
+			LITERALENCODE_ESCAPE_CHARS['\r'] = 'r';
+			LITERALENCODE_ESCAPE_CHARS['\t'] = 't';
+			LITERALENCODE_ESCAPE_CHARS['"'] = '"';
+			LITERALENCODE_ESCAPE_CHARS['\\'] = '\\';
+			LITERALENCODE_ESCAPE_CHARS['?'] = '?';
+		}
+
+		/// <summary>
+		/// Convert the string to the equivalent C# string literal, enclosing the string in double quotes and inserting
+		/// escape sequences as necessary.
+		/// </summary>
+		/// <param name="s">The string to be converted to a C# string literal.</param>
+		/// <returns><paramref name="s"/> represented as a C# string literal.</returns>
+		public static string LiteralEncode(this string s) {
+			CodeContract.ArgumentIsValid(() => s, int.MaxValue / 6 > s.Length, "string is too long");
+
+			var buffer = new char[s.Length * 6];
+			buffer[0] = '"';
+
+			var wp = 1;
+			var rp = 0;
+			while(rp < s.Length) {
+				var c = s[rp++];
+				if(c < LITERALENCODE_ESCAPE_CHARS.Length && 0 != LITERALENCODE_ESCAPE_CHARS[c]) {
+					buffer[wp++] = '\\';
+					buffer[wp++] = LITERALENCODE_ESCAPE_CHARS[c];
+				} else if(' ' <= c && c <= '~' || char.IsLetter(c)) {
+					buffer[wp++] = c;
+				} else {
+					buffer[wp++] = '\\';
+					buffer[wp++] = 'x';
+					var hex = ((int)c).ToString("X").PadLeft(4, '0');
+					for(int hi = 0; hi < hex.Length; hi++) {
+						buffer[wp++] = hex[hi];
+					}
+				}
 			}
+			
+			buffer[wp++] = '"';
+
+			return new string(buffer, 0, wp);
 		}
 	}
 }
