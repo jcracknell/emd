@@ -67,6 +67,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression { get; private set; }
 		public IParsingExpression<ObjectLiteralExpression> ObjectBodyExpression { get; private set; }
 		public IParsingExpression<IExpression> LiteralExpression { get; private set; }
+		public IParsingExpression<NullLiteralExpression> NullLiteralExpression { get; private set; }
 		public IParsingExpression<BooleanLiteralExpression> BooleanLiteralExpression { get; private set; }
 		public IParsingExpression<NumericLiteralExpression> NumericLiteralExpression { get; private set; }
 		public IParsingExpression<StringLiteralExpression> StringLiteralExpression { get; private set; }
@@ -1009,10 +1010,14 @@ namespace markdom.cs.Grammar {
 
 			Define(() => LiteralExpression,
 				ChoiceOrdered<IExpression>(
+					Reference(() => NullLiteralExpression),
 					Reference(() => BooleanLiteralExpression),
 					Reference(() => NumericLiteralExpression),
 					Reference(() => StringLiteralExpression),
 					Reference(() => UriLiteralExpression)));
+
+			Define(() => NullLiteralExpression,
+				Literal("null", match => new NullLiteralExpression(MarkdomSourceRange.FromMatch(match))));
 
 			#region BooleanLiteralExpression
 
