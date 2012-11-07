@@ -7,6 +7,7 @@ using System.Text;
 namespace markdom.cs.Model {
 	public interface IExpressionHandler {
 		void Handle(DocumentLiteralExpression expression);
+		void Handle(IdentifierExpression expression);
 		void Handle(NumericLiteralExpression expression);
 		void Handle(ObjectLiteralExpression expression);
 		void Handle(StringLiteralExpression expression);
@@ -15,6 +16,7 @@ namespace markdom.cs.Model {
 
 	public interface IExpressionHandler<T> {
 		T Handle(DocumentLiteralExpression expression);
+		T Handle(IdentifierExpression expression);
 		T Handle(NumericLiteralExpression expression);
 		T Handle(ObjectLiteralExpression expression);
 		T Handle(StringLiteralExpression expression);

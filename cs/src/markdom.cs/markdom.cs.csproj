@@ -53,6 +53,7 @@
     <Compile Include="Grammar\LineInfo.cs" />
     <Compile Include="Grammar\TableCellSpanningInfo.cs" />
     <Compile Include="Model\Expressions\DocumentLiteralExpression.cs" />
+    <Compile Include="Model\Expressions\IdentifierExpression.cs" />
     <Compile Include="Model\Expressions\NumericLiteralExpression.cs" />
     <Compile Include="Model\Expressions\UriLiteralExpression.cs" />
     <Compile Include="Model\IExpressionHandler.cs" />
