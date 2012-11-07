@@ -60,6 +60,9 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<SymbolNode> Symbol { get; private set; }
 
 		public IParsingExpression<IExpression> Expression { get; private set; }
+		public IParsingExpression<IExpression> AtExpression { get; private set; }
+		public IParsingExpression<IExpression> AtExpressionRequired { get; private set; }
+		public IParsingExpression<IExpression> PrimaryExpression { get; private set; }
 		public IParsingExpression<IExpression> LiteralExpression { get; private set; }
 		public IParsingExpression<IEnumerable<IExpression>> ArgumentList { get; private set; }
 		public IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression { get; private set; }
@@ -792,8 +795,8 @@ namespace markdom.cs.Grammar {
 
 			Define(() => InlineExpression,
 				Sequence(
-					Literal("@"),
-					Reference(() => Expression),
+					Ahead(Literal("@")),
+					Reference(() => AtExpressionRequired),
 					Optional(Literal(";")),
 					match => new InlineExpressionNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
@@ -906,16 +909,9 @@ namespace markdom.cs.Grammar {
 			#region Expressions
 
 			Define(() => Expression,
-				Reference(() => LiteralExpression));
+				Reference(() => PrimaryExpression));
 
-			Define(() => LiteralExpression,
-				ChoiceOrdered<IExpression>(
-					Reference(() => NumericLiteralExpression),
-					Reference(() => StringLiteralExpression),
-					Reference(() => ObjectLiteralExpression),
-					Reference(() => UriLiteralExpression),
-					Reference(() => DocumentLiteralExpression)));
-			
+			#region Call Expression
 			var argumentSeparator =
 				Sequence(
 					Reference(() => ExpressionWhitespace),
@@ -936,6 +932,85 @@ namespace markdom.cs.Grammar {
 					argumentListArguments,
 					Sequence(Reference(() => ExpressionWhitespace), Literal(")")),
 					match => match.Product.Of2 ?? new IExpression[0]));
+
+			#endregion
+
+			Define(() => AtExpression,
+				ChoiceOrdered(
+					Reference(() => AtExpressionRequired),
+					Reference(() => PrimaryExpression)));
+
+			Define(() => AtExpressionRequired,
+				Sequence(
+					Literal("@"), Reference(() => PrimaryExpression),
+					match => new AtExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
+
+			Define(() => PrimaryExpression,
+				ChoiceUnordered(
+					Reference(() => LiteralExpression),
+					Reference(() => ObjectLiteralExpression),
+					Reference(() => DocumentLiteralExpression),
+					Sequence(
+						Literal("("), Reference(() => ExpressionWhitespace), Reference(() => Expression), Reference(() => ExpressionWhitespace), Literal(")"),
+						match => match.Product.Of3)));
+					
+			#region ObjectExpression
+
+			var objectPropertyAssignment =
+				Sequence(
+					Reference(() => StringLiteralExpression), // TODO: Identifier / String / Uri
+					Reference(() => ExpressionWhitespace),
+					Literal(":"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => Expression),
+					match => new PropertyAssignment(match.Product.Of1, match.Product.Of5, MarkdomSourceRange.FromMatch(match)));
+
+			var objectPropertyAssignments =
+				Optional(
+					Sequence(
+						objectPropertyAssignment,
+						AtLeast(0, Sequence(argumentSeparator, objectPropertyAssignment, match => match.Product.Of2)),
+						match => match.Product.Of1.InArray().Concat(match.Product.Of2)),
+					match => match.Product,
+					noMatch => Enumerable.Empty<PropertyAssignment>());
+
+			Define(() => ObjectLiteralExpression,
+				Sequence(
+					Literal("{"),
+					Reference(() => ExpressionWhitespace),
+					objectPropertyAssignments,
+					Reference(() => ExpressionWhitespace),
+					Literal("}"),
+					match => new ObjectLiteralExpression(match.Product.Of3.ToArray(), MarkdomSourceRange.FromMatch(match))));
+
+			Define(() => ObjectBodyExpression,
+				Reference(() => objectPropertyAssignments, match => new ObjectLiteralExpression(match.Product.ToArray(), MarkdomSourceRange.FromMatch(match))));
+
+			#endregion
+
+			#region DocumentLiteralExpression
+
+			Define(() => DocumentLiteralExpression,
+				Dynamic(() => {
+					IParsingExpression<string> endBraces = null;
+					return Sequence(
+						AtLeast(2, Literal("{"), m => { endBraces = Literal("".PadLeft(m.Length, '}')); return Nil.Value; }),
+						AtLeast(0,
+							Sequence(NotAhead(Reference(() => endBraces)), Reference(() => Atomic)),
+							match => LineInfo.FromMatch(match)),
+						Reference(() => endBraces),
+						match => new DocumentLiteralExpression(
+							ParseLinesAs(Blocks, match.Product.Of2.InArray()).ToArray(),
+							MarkdomSourceRange.FromMatch(match)));
+				}));
+
+			#endregion
+
+			Define(() => LiteralExpression,
+				ChoiceOrdered<IExpression>(
+					Reference(() => NumericLiteralExpression),
+					Reference(() => StringLiteralExpression),
+					Reference(() => UriLiteralExpression)));
 
 			#region NumberExpression
 
@@ -1012,7 +1087,7 @@ namespace markdom.cs.Grammar {
 
 			#endregion
 
-			#region StringExpression
+			#region StringLiteralExpression
 			
 			var stringExpressionEscapes =
 				ChoiceUnordered(
@@ -1060,41 +1135,7 @@ namespace markdom.cs.Grammar {
 
 			#endregion
 
-			#region ObjectExpression
-
-			var objectPropertyAssignment =
-				Sequence(
-					Reference(() => StringLiteralExpression), // TODO: Identifier / String / Uri
-					Reference(() => ExpressionWhitespace),
-					Literal(":"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => Expression),
-					match => new PropertyAssignment(match.Product.Of1, match.Product.Of5, MarkdomSourceRange.FromMatch(match)));
-
-			var objectPropertyAssignments =
-				Optional(
-					Sequence(
-						objectPropertyAssignment,
-						AtLeast(0, Sequence(argumentSeparator, objectPropertyAssignment, match => match.Product.Of2)),
-						match => match.Product.Of1.InArray().Concat(match.Product.Of2)),
-					match => match.Product,
-					noMatch => Enumerable.Empty<PropertyAssignment>());
-
-			Define(() => ObjectLiteralExpression,
-				Sequence(
-					Literal("{"),
-					Reference(() => ExpressionWhitespace),
-					objectPropertyAssignments,
-					Reference(() => ExpressionWhitespace),
-					Literal("}"),
-					match => new ObjectLiteralExpression(match.Product.Of3.ToArray(), MarkdomSourceRange.FromMatch(match))));
-
-			Define(() => ObjectBodyExpression,
-				Reference(() => objectPropertyAssignments, match => new ObjectLiteralExpression(match.Product.ToArray(), MarkdomSourceRange.FromMatch(match))));
-
-			#endregion
-
-			#region UriExpression
+			#region UriLiteralExpression
 			//   * Cannot contain `,` (commas), which are ordinarily legal URI characters.
 			//     This is to disambiguate URI expressions in argument lists
 			//   * Parentheses inside of a URI expression must be balanced
@@ -1135,23 +1176,6 @@ namespace markdom.cs.Grammar {
 
 			#endregion
 
-			#region MarkdomExpression
-
-			Define(() => DocumentLiteralExpression,
-				Dynamic(() => {
-					IParsingExpression<string> endBraces = null;
-					return Sequence(
-						AtLeast(2, Literal("{"), m => { endBraces = Literal("".PadLeft(m.Length, '}')); return Nil.Value; }),
-						AtLeast(0,
-							Sequence(NotAhead(Reference(() => endBraces)), Reference(() => Atomic)),
-							match => LineInfo.FromMatch(match)),
-						Reference(() => endBraces),
-						match => new DocumentLiteralExpression(
-							ParseLinesAs(Blocks, match.Product.Of2.InArray()).ToArray(),
-							MarkdomSourceRange.FromMatch(match)));
-				}));
-
-			#endregion
 
 			Define(() => ExpressionWhitespace,
 				AtLeast(0,
