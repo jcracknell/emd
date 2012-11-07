@@ -52,6 +52,7 @@
     <Compile Include="Grammar\EnumeratorSeparatorStyleDefinition.cs" />
     <Compile Include="Grammar\LineInfo.cs" />
     <Compile Include="Grammar\TableCellSpanningInfo.cs" />
+    <Compile Include="Model\Expressions\AtExpression.cs" />
     <Compile Include="Model\Expressions\DocumentLiteralExpression.cs" />
     <Compile Include="Model\Expressions\IdentifierExpression.cs" />
     <Compile Include="Model\Expressions\NumericLiteralExpression.cs" />
