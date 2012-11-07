@@ -9,6 +9,7 @@ namespace markdom.cs.Model {
 		BooleanLiteral,
 		DocumentLiteral,
 		Identifier,
+		NullLiteral,
 		NumericLiteral,
 		ObjectLiteral,
 		StringLiteral,
