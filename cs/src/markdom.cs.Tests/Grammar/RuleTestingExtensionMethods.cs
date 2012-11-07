@@ -23,7 +23,7 @@ namespace markdom.cs.Grammar {
 
 		public static IMatchingResult<TProduct> AssertNoMatch<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
 			var match = expression.Match(input);
-			Assert.IsTrue(match.Succeeded, "Expression matches.\nExpression:\n" + expression.ToString() + "\nInput:\n" + string.Join("", input));
+			Assert.IsFalse(match.Succeeded, "Expression matches.\nExpression:\n" + expression.ToString() + "\nInput:\n" + string.Join("", input));
 			return match;
 		}
 	}

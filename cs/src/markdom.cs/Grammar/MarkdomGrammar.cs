@@ -63,10 +63,11 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<IExpression> AtExpression { get; private set; }
 		public IParsingExpression<IExpression> AtExpressionRequired { get; private set; }
 		public IParsingExpression<IExpression> PrimaryExpression { get; private set; }
-		public IParsingExpression<IExpression> LiteralExpression { get; private set; }
 		public IParsingExpression<IEnumerable<IExpression>> ArgumentList { get; private set; }
 		public IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression { get; private set; }
 		public IParsingExpression<ObjectLiteralExpression> ObjectBodyExpression { get; private set; }
+		public IParsingExpression<IExpression> LiteralExpression { get; private set; }
+		public IParsingExpression<BooleanLiteralExpression> BooleanLiteralExpression { get; private set; }
 		public IParsingExpression<NumericLiteralExpression> NumericLiteralExpression { get; private set; }
 		public IParsingExpression<StringLiteralExpression> StringLiteralExpression { get; private set; }
 		public IParsingExpression<UriLiteralExpression> UriLiteralExpression { get; private set; }
@@ -1008,9 +1009,19 @@ namespace markdom.cs.Grammar {
 
 			Define(() => LiteralExpression,
 				ChoiceOrdered<IExpression>(
+					Reference(() => BooleanLiteralExpression),
 					Reference(() => NumericLiteralExpression),
 					Reference(() => StringLiteralExpression),
 					Reference(() => UriLiteralExpression)));
+
+			#region BooleanLiteralExpression
+
+			Define(() => BooleanLiteralExpression,
+				ChoiceUnordered(
+					Literal("true", match => new BooleanLiteralExpression(true, MarkdomSourceRange.FromMatch(match))),
+					Literal("false", match => new BooleanLiteralExpression(false, MarkdomSourceRange.FromMatch(match)))));
+
+			#endregion
 
 			#region NumberExpression
 
