@@ -60,6 +60,7 @@
     <Compile Include="Grammar\CommentBlockTests.cs" />
     <Compile Include="Grammar\EmphasisTests.cs" />
     <Compile Include="Grammar\EntityTests.cs" />
+    <Compile Include="Grammar\IdentifierExpressionTests.cs" />
     <Compile Include="Grammar\LinkTests.cs" />
     <Compile Include="Grammar\LiteralExpressionTests.cs" />
     <Compile Include="Grammar\NullLiteralExpressionTests.cs" />

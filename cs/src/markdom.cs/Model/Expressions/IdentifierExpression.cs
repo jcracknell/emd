@@ -16,6 +16,8 @@ namespace markdom.cs.Model.Expressions {
 			_sourceRange = sourceRange;
 		}
 
+		public string Name { get { return _name; } }
+
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public ExpressionKind Kind { get { return ExpressionKind.Identifier; } }

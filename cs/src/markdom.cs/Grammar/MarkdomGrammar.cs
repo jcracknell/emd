@@ -62,6 +62,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<IExpression> Expression { get; private set; }
 		public IParsingExpression<IExpression> AtExpression { get; private set; }
 		public IParsingExpression<IExpression> AtExpressionRequired { get; private set; }
+		public IParsingExpression<IdentifierExpression> IdentifierExpression { get; private set; }
 		public IParsingExpression<IExpression> PrimaryExpression { get; private set; }
 		public IParsingExpression<IEnumerable<IExpression>> ArgumentList { get; private set; }
 		public IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression { get; private set; }
@@ -73,6 +74,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<StringLiteralExpression> StringLiteralExpression { get; private set; }
 		public IParsingExpression<UriLiteralExpression> UriLiteralExpression { get; private set; }
 		public IParsingExpression<DocumentLiteralExpression> DocumentLiteralExpression { get; private set; }
+		public IParsingExpression<string> ExpressionKeyword { get; private set; }
 		public IParsingExpression<Nil> ExpressionWhitespace { get; private set; }
 
 		/// <summary>
@@ -944,8 +946,35 @@ namespace markdom.cs.Grammar {
 
 			Define(() => AtExpressionRequired,
 				Sequence(
-					Literal("@"), Reference(() => PrimaryExpression),
-					match => new AtExpression(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
+					Literal("@"),
+					ChoiceOrdered(
+						Reference(() => IdentifierExpression),
+						Reference(() => PrimaryExpression)),
+					match => match.Product.Of2));
+
+			#region IdentifierExpression
+
+			// TODO: IdentifierExpression should support unicode names per ECMAScript spec
+
+			var identifierExpressionStart =
+				ChoiceUnordered(
+					Reference(() => EnglishAlpha),
+					Literal("$"),
+					Literal("_"));
+
+			var identifierExpressionPart =
+					ChoiceUnordered(
+						identifierExpressionStart,
+						Reference(() => Digit));
+
+			Define(() => IdentifierExpression,
+				Sequence(
+					NotAhead(Reference(() => ExpressionKeyword)),
+					identifierExpressionStart,
+					AtLeast(0, identifierExpressionPart),
+					match => new IdentifierExpression(match.String, MarkdomSourceRange.FromMatch(match))));
+
+			#endregion
 
 			Define(() => PrimaryExpression,
 				ChoiceUnordered(
@@ -1192,6 +1221,49 @@ namespace markdom.cs.Grammar {
 
 			#endregion
 
+			#region ExpressionKeyword
+
+			Define(() => ExpressionKeyword,
+				ChoiceUnordered(new string[] {
+					"break",
+					"case",
+					"catch",
+					"class",
+					"const",
+					"continue",
+					"debugger",
+					"default",
+					"delete",
+					"do",
+					"else",
+					"enum",
+					"export",
+					"extends",
+					"false",
+					"finally",
+					"for",
+					"function",
+					"if",
+					"import",
+					"instanceof",
+					"in",
+					"new",
+					"null",
+					"return",
+					"super",
+					"switch",
+					"this",
+					"throw",
+					"true",
+					"try",
+					"typeof",
+					"var",
+					"void",
+					"while",
+					"with"
+				}.Select(Literal)));
+
+			#endregion
 
 			Define(() => ExpressionWhitespace,
 				AtLeast(0,
