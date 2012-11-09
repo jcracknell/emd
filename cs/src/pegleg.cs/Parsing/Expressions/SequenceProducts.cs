@@ -13,10 +13,6 @@ namespace pegleg.cs.Parsing.Expressions {
 			_products = products;	
 		}
 
-		protected T E<T>(int index) {
-			return (T)_products[index];
-		}
-
 		public object this[int index] {
 			get { return _products[index]; }
 		}
