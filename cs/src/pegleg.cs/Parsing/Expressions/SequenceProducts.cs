@@ -166,7 +166,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public T9 Of9 { get { return (T9)_products[8]; } }
 		public T10 Of10 { get { return (T10)_products[9]; } }
 		public T11 Of11 { get { return (T11)_products[10]; } }
-		public T12 Of12 { get { return (T12)_products[12]; } }
+		public T12 Of12 { get { return (T12)_products[11]; } }
 	}
 
 	public class SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13> : SequenceProducts {
@@ -182,8 +182,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		public T9 Of9 { get { return (T9)_products[8]; } }
 		public T10 Of10 { get { return (T10)_products[9]; } }
 		public T11 Of11 { get { return (T11)_products[10]; } }
-		public T12 Of12 { get { return (T12)_products[12]; } }
-		public T13 Of13 { get { return (T13)_products[13]; } }
+		public T12 Of12 { get { return (T12)_products[11]; } }
+		public T13 Of13 { get { return (T13)_products[12]; } }
 	}
 
 	public class SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14> : SequenceProducts {
@@ -199,9 +199,9 @@ namespace pegleg.cs.Parsing.Expressions {
 		public T9 Of9 { get { return (T9)_products[8]; } }
 		public T10 Of10 { get { return (T10)_products[9]; } }
 		public T11 Of11 { get { return (T11)_products[10]; } }
-		public T12 Of12 { get { return (T12)_products[12]; } }
-		public T13 Of13 { get { return (T13)_products[13]; } }
-		public T14 Of14 { get { return (T14)_products[14]; } }
+		public T12 Of12 { get { return (T12)_products[11]; } }
+		public T13 Of13 { get { return (T13)_products[12]; } }
+		public T14 Of14 { get { return (T14)_products[13]; } }
 	}
 
 	public class SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15> : SequenceProducts {
@@ -217,10 +217,10 @@ namespace pegleg.cs.Parsing.Expressions {
 		public T9 Of9 { get { return (T9)_products[8]; } }
 		public T10 Of10 { get { return (T10)_products[9]; } }
 		public T11 Of11 { get { return (T11)_products[10]; } }
-		public T12 Of12 { get { return (T12)_products[12]; } }
-		public T13 Of13 { get { return (T13)_products[13]; } }
-		public T14 Of14 { get { return (T14)_products[14]; } }
-		public T15 Of15 { get { return (T15)_products[15]; } }
+		public T12 Of12 { get { return (T12)_products[11]; } }
+		public T13 Of13 { get { return (T13)_products[12]; } }
+		public T14 Of14 { get { return (T14)_products[13]; } }
+		public T15 Of15 { get { return (T15)_products[14]; } }
 	}
 
 	public class SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16> : SequenceProducts {
@@ -236,10 +236,10 @@ namespace pegleg.cs.Parsing.Expressions {
 		public T9 Of9 { get { return (T9)_products[8]; } }
 		public T10 Of10 { get { return (T10)_products[9]; } }
 		public T11 Of11 { get { return (T11)_products[10]; } }
-		public T12 Of12 { get { return (T12)_products[12]; } }
-		public T13 Of13 { get { return (T13)_products[13]; } }
-		public T14 Of14 { get { return (T14)_products[14]; } }
-		public T15 Of15 { get { return (T15)_products[15]; } }
-		public T16 Of16 { get { return (T16)_products[16]; } }
+		public T12 Of12 { get { return (T12)_products[11]; } }
+		public T13 Of13 { get { return (T13)_products[12]; } }
+		public T14 Of14 { get { return (T14)_products[13]; } }
+		public T15 Of15 { get { return (T15)_products[14]; } }
+		public T16 Of16 { get { return (T16)_products[15]; } }
 	}
 }
