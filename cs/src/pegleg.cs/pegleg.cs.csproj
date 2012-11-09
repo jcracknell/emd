@@ -43,7 +43,6 @@
     <Compile Include="CodeContract.cs" />
     <Compile Include="Parsing\BaseParsingExpression.cs" />
     <Compile Include="Parsing\MatchBuilder.cs" />
-    <Compile Include="Parsing\Expressions\Builders\AdaptedExpressionMatch.cs" />
     <Compile Include="Parsing\Expressions\Builders\DefaultExpressionNamingConvention.cs" />
     <Compile Include="Grammar.cs" />
     <Compile Include="Parsing\Expressions\Builders\IExpressionNamingConvention.cs" />
@@ -76,6 +75,7 @@
     <Compile Include="Parsing\Expressions\SequenceParsingExpression.cs" />
     <Compile Include="HashCodeBuilder.cs" />
     <Compile Include="Parsing\Expressions\Builders\IExpressionBuilder.cs" />
+    <Compile Include="Parsing\ProductShadowingMatch.cs" />
     <Compile Include="Parsing\SourceRange.cs" />
     <Compile Include="Parsing\SourceLocation.cs" />
     <Compile Include="Nil.cs" />

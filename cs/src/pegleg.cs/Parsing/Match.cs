@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public class ExpressionMatch<TProduct> : IMatch<TProduct> {
+	public class Match<TProduct> : IMatch<TProduct> {
 		private readonly IMatchingContext _context;
 		private readonly IParsingExpression _expression;
 		private readonly TProduct _product;
@@ -12,7 +12,7 @@ namespace pegleg.cs.Parsing {
 		private readonly int _length;
 		private readonly SourceRange _matchRange;
 
-		public ExpressionMatch(IMatchingContext context, IParsingExpression expression, TProduct product, int index, int length, SourceRange matchRange) {
+		public Match(IMatchingContext context, IParsingExpression expression, TProduct product, int index, int length, SourceRange matchRange) {
 			CodeContract.ArgumentIsNotNull(() => context, context);
 			CodeContract.ArgumentIsNotNull(() => expression, expression);
 			CodeContract.ArgumentIsValid(() => index, index >= 0, "must be a non-negative integer");

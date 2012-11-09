@@ -12,35 +12,6 @@ using Xunit;
 
 namespace markdom.cs.Grammar {
 	public class RuleTests : GrammarTestFixture {
-
-
-	
-
-		
-
-		
-
-		
-
-		
-
-		
-
-
-		
-
-		
-
-		
-
-		
-
-		
-
-		
-
-		
-
 		[Fact]
 		public void Bla() {
 			var input = @" // This is a single line comment

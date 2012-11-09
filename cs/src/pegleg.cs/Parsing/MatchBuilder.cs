@@ -21,7 +21,7 @@ namespace pegleg.cs.Parsing {
 				_initialSourceLocation,
 				_matchingContext.SourceLocation.Index - _initialSourceLocation.Index);
 
-			return new ExpressionMatch<TProduct>(_matchingContext, expression, product, _initialConsumed, matchLength, matchSourceRange);
+			return new Match<TProduct>(_matchingContext, expression, product, _initialConsumed, matchLength, matchSourceRange);
 		}
 	}
 }
