@@ -1,142 +1,142 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace markdom.cs {
-	[TestClass]
 	public class NumeralUtilTests {
-		[TestMethod]
+		[Fact]
 		public void AlphaNumeral_renders_int_MaxValue() {
 			NumeralUtils.AlphaNumeral(int.MaxValue);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AlphaNumeral_renders_int_MinValue() {
 			NumeralUtils.AlphaNumeral(int.MinValue);
 		}
 
 		public void AlphaNumeral_renders_0() {
-			Assert.AreEqual("", NumeralUtils.AlphaNumeral(0));
+			NumeralUtils.AlphaNumeral(0).Should().Be("");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AlphaNumeral_renders_1() {
-			Assert.AreEqual("a", NumeralUtils.AlphaNumeral(1));
+			NumeralUtils.AlphaNumeral(1).Should().Be("a");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AlphaNumeral_renders_26() {
-			Assert.AreEqual("z", NumeralUtils.AlphaNumeral(26));
+			NumeralUtils.AlphaNumeral(26).Should().Be("z");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AlphaNumeral_renders_27() {
-			Assert.AreEqual("aa", NumeralUtils.AlphaNumeral(27));
+			NumeralUtils.AlphaNumeral(27).Should().Be("aa");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AlphaNumeral_renders_17603() {
-			Assert.AreEqual("zaa", NumeralUtils.AlphaNumeral(17603));
+			NumeralUtils.AlphaNumeral(17603).Should().Be("zaa");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void AlphaNumeral_renders_negative_17603() {
-			Assert.AreEqual("-zaa", NumeralUtils.AlphaNumeral(-17603));
+			NumeralUtils.AlphaNumeral(-17603).Should().Be("-zaa");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ParseAlphaNumeral_parses_a() {
-			Assert.AreEqual(1, NumeralUtils.ParseAlphaNumeral("a"));
+			NumeralUtils.ParseAlphaNumeral("a").Should().Be(1);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ParseAlphaNumeral_parses_aa() {
-			Assert.AreEqual(27, NumeralUtils.ParseAlphaNumeral("aa"));
+			NumeralUtils.ParseAlphaNumeral("aa").Should().Be(27);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ParseAlphaNumeral_parses_zaa() {
-			Assert.AreEqual(17603, NumeralUtils.ParseAlphaNumeral("zaa"));
+			NumeralUtils.ParseAlphaNumeral("zaa").Should().Be(17603);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_1() {
-			Assert.AreEqual("i", NumeralUtils.RomanNumeral(1));
+			NumeralUtils.RomanNumeral(1).Should().Be("i");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_2() {
-			Assert.AreEqual("ii", NumeralUtils.RomanNumeral(2));
+			NumeralUtils.RomanNumeral(2).Should().Be("ii");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_3() {
-			Assert.AreEqual("iii", NumeralUtils.RomanNumeral(3));
+			NumeralUtils.RomanNumeral(3).Should().Be("iii");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_4() {
-			Assert.AreEqual("iv", NumeralUtils.RomanNumeral(4));
+			NumeralUtils.RomanNumeral(4).Should().Be("iv");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_5() {
-			Assert.AreEqual("v", NumeralUtils.RomanNumeral(5));
+			NumeralUtils.RomanNumeral(5).Should().Be("v");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_6() {
-			Assert.AreEqual("vi", NumeralUtils.RomanNumeral(6));
+			NumeralUtils.RomanNumeral(6).Should().Be("vi");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_7() {
-			Assert.AreEqual("vii", NumeralUtils.RomanNumeral(7));
+			NumeralUtils.RomanNumeral(7).Should().Be("vii");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_8() {
-			Assert.AreEqual("viii", NumeralUtils.RomanNumeral(8));
+			NumeralUtils.RomanNumeral(8).Should().Be("viii");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_9() {
-			Assert.AreEqual("ix", NumeralUtils.RomanNumeral(9));
+			NumeralUtils.RomanNumeral(9).Should().Be("ix");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_1914() {
-			Assert.AreEqual("mcmxiv", NumeralUtils.RomanNumeral(1914));
+			NumeralUtils.RomanNumeral(1914).Should().Be("mcmxiv");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_renders_2012() {
-			Assert.AreEqual("mmxii", NumeralUtils.RomanNumeral(2012));
+			NumeralUtils.RomanNumeral(2012).Should().Be("mmxii");
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ParseRomanNumeral_parses_mcmxiv() {
-			Assert.AreEqual(1914, NumeralUtils.ParseRomanNumeral("mcmxiv"));
+			NumeralUtils.ParseRomanNumeral("mcmxiv").Should().Be(1914);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ParseRomanNumeral_parses_3909() {
-			Assert.AreEqual(3909, NumeralUtils.ParseRomanNumeral("mmmcmix"));
+			NumeralUtils.ParseRomanNumeral("mmmcmix").Should().Be(3909);
 		}
 
-		[TestMethod]
+		[Fact]
 		public void ParseRomanNumeral_does_not_parse_admiralty_arch() {
-			Assert.AreEqual(new int?(), NumeralUtils.ParseRomanNumeral("mdccccx"));
+			NumeralUtils.ParseRomanNumeral("mdccccx").Should().Be(new int?());
 		}
 
-		[TestMethod]
+		[Fact]
 		public void RomanNumeral_round_trip() {
 			for(int i = -3999; i <= 3999; i++) {
 				if(0 != i)
-					Assert.AreEqual(i, NumeralUtils.ParseRomanNumeral(NumeralUtils.RomanNumeral(i)));
+					NumeralUtils.ParseRomanNumeral(NumeralUtils.RomanNumeral(i)).Should().Be(i);
 			}
 		}
 	}

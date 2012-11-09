@@ -1,133 +1,167 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace markdom.cs.Grammar {
-	[TestClass]
 	public class OrderedListTests : GrammarTestFixture {
-		[TestMethod]
-		public void EnumeratorishAhead_matches_decimal_dot() {
-			Grammar.EnumeratorishAhead.AssertMatch("42.");
+		[Fact] public void EnumeratorishAhead_matches_decimal_dot() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("42.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_decimal_dot() {
-			Grammar.Enumerator.AssertMatch("42.");
+		[Fact] public void Enumerator_matches_decimal_dot() {
+			var match = Grammar.Enumerator.ShouldMatch("42.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorishAhead_matches_decimal_dot_with_value() {
-			Grammar.EnumeratorishAhead.AssertMatch("42@43.");
+		[Fact] public void EnumeratorishAhead_matches_decimal_dot_with_value() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("42@43.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_decimal_dot_with_value() {
-			Grammar.Enumerator.AssertMatch("42@43.");
+		[Fact] public void Enumerator_matches_decimal_dot_with_value() {
+			var match = Grammar.Enumerator.ShouldMatch("42@43.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorishAhead_matches_lower_roman_dot() {
-			Grammar.EnumeratorishAhead.AssertMatch("ix.");
+		[Fact] public void EnumeratorishAhead_matches_lower_roman_dot() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("ix.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_lower_roman_dot() {
-			Grammar.Enumerator.AssertMatch("ix.");
+		[Fact] public void Enumerator_matches_lower_roman_dot() {
+			var match = Grammar.Enumerator.ShouldMatch("ix.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorishAhead_matches_upper_roman_dot() {
-			Grammar.EnumeratorishAhead.AssertMatch("XVIII.");
+		[Fact] public void EnumeratorishAhead_matches_upper_roman_dot() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("XVIII.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_upper_roman_dot() {
-			Grammar.Enumerator.AssertMatch("XVIII.");
+		[Fact] public void Enumerator_matches_upper_roman_dot() {
+			var match = Grammar.Enumerator.ShouldMatch("XVIII.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorishAhead_matches_lower_alpha_dot() {
-			Grammar.EnumeratorishAhead.AssertMatch("abc.");
+		[Fact] public void EnumeratorishAhead_matches_lower_alpha_dot() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("abc.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_lower_alpha_dot() {
-			Grammar.Enumerator.AssertMatch("abc.");
+		[Fact] public void Enumerator_matches_lower_alpha_dot() {
+			var match = Grammar.Enumerator.ShouldMatch("abc.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorishAhead_matches_upper_alpha_dot() {
-			Grammar.EnumeratorishAhead.AssertMatch("ABC.");
+		[Fact] public void EnumeratorishAhead_matches_upper_alpha_dot() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("ABC.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_upper_alpha_dot() {
-			Grammar.Enumerator.AssertMatch("ABC.");
+		[Fact] public void Enumerator_matches_upper_alpha_dot() {
+			var match = Grammar.Enumerator.ShouldMatch("ABC.");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorishAhead_matches_decimal_dash() {
-			Grammar.EnumeratorishAhead.AssertMatch("42-");
-			Grammar.EnumeratorishAhead.AssertMatch("42 -");
+		[Fact] public void EnumeratorishAhead_matches_decimal_dash() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("42-");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_decimal_dash() {
-			Grammar.Enumerator.AssertMatch("42-");
-			Grammar.Enumerator.AssertMatch("42 -");
+		[Fact] public void EnumeratorishAhead_matches_decimal_dash_with_optional_space() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("42 -");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorishAhead_matches_decimal_parenthesis() {
-			Grammar.EnumeratorishAhead.AssertMatch("42)");
+		[Fact] public void Enumerator_matches_decimal_dash() {
+			var match = Grammar.Enumerator.ShouldMatch("42-");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_decimal_parenthesis() {
-			Grammar.Enumerator.AssertMatch("42)");
+		[Fact] public void Enumerator_matches_decimal_dash_with_optional_space() {
+			var match =Grammar.Enumerator.ShouldMatch("42 -");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorishAhead_matches_alpha_parethesis_with_value() {
-			Grammar.EnumeratorishAhead.AssertMatch("a@42)");
+		[Fact] public void EnumeratorishAhead_matches_decimal_parenthesis() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("42)");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_alpha_parenthesis_with_value() {
-			Grammar.Enumerator.AssertMatch("a@42)");
+		[Fact] public void Enumerator_matches_decimal_parenthesis() {
+			var match = Grammar.Enumerator.ShouldMatch("42)");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorishAheah_matches_decimal_parentheses() {
-			Grammar.EnumeratorishAhead.AssertMatch("(42)");
+		[Fact] public void EnumeratorishAhead_matches_alpha_parethesis_with_value() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("a@42)");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_decimal_parentheses() {
-			Grammar.Enumerator.AssertMatch("(42)");
+		[Fact] public void Enumerator_matches_alpha_parenthesis_with_value() {
+			var match = Grammar.Enumerator.ShouldMatch("a@42)");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorishAhead_matches_decimal_bracketed() {
-			Grammar.EnumeratorishAhead.AssertMatch("[42]");
+		[Fact] public void EnumeratorishAheah_matches_decimal_parentheses() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("(42)");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void Enumerator_matches_decimal_bracketed() {
-			Grammar.Enumerator.AssertMatch("[42]");
+		[Fact] public void Enumerator_matches_decimal_parentheses() {
+			var match = Grammar.Enumerator.ShouldMatch("(42)");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorValue_matches_base_case() {
-			Grammar.EnumeratorValue.AssertMatch("@123");
+		[Fact] public void EnumeratorishAhead_matches_decimal_bracketed() {
+			var match = Grammar.EnumeratorishAhead.ShouldMatch("[42]");
+
+			match.Succeeded.Should().BeTrue();
 		}
 
-		[TestMethod]
-		public void EnumeratorValue_matches_0() {
-			Grammar.EnumeratorValue.AssertMatch("@0");
+		[Fact] public void Enumerator_matches_decimal_bracketed() {
+			var match = Grammar.Enumerator.ShouldMatch("[42]");
+
+			match.Succeeded.Should().BeTrue();
+		}
+
+		[Fact] public void EnumeratorValue_matches_base_case() {
+			var match = Grammar.EnumeratorValue.ShouldMatch("@123");
+
+			match.Succeeded.Should().BeTrue();
+		}
+
+		[Fact] public void EnumeratorValue_matches_0() {
+			var match = Grammar.EnumeratorValue.ShouldMatch("@0");
+
+			match.Succeeded.Should().BeTrue();
 		}
 	}
 }

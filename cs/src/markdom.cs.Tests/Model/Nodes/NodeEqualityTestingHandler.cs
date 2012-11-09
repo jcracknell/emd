@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using FluentAssertions;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace markdom.cs.Model.Nodes {
 	public class NodeEqualityTestingHandler : INodeHandler {
@@ -18,11 +19,9 @@ namespace markdom.cs.Model.Nodes {
 		}
 
 		private void AssertNodeIsAsExpected(INode actual) {
-			if(_expected == actual)
-				Assert.Fail("This IS the expected node you ass.");
+			Assert.NotSame(_expected, actual);
 
-			Assert.AreEqual(_expected.GetType(), actual.GetType(),
-				"Node type does not match the expected node type.");
+			actual.GetType().Should().Be(_expected.GetType());
 
 			var publicProperties = actual.GetType().GetProperties();
 			foreach(var publicProperty in publicProperties)
@@ -40,32 +39,32 @@ namespace markdom.cs.Model.Nodes {
 		}
 
 		private void AssertNodePropertyIsAsExpected(INode actual, PropertyInfo property) {
-			var expectedNode = (INode)property.GetValue(_expected);
-			var actualNode = (INode)property.GetValue(actual);
+			var expectedNode = (INode)property.GetValue(_expected, null);
+			var actualNode = (INode)property.GetValue(actual, null);
 
 			actualNode.HandleWith(new NodeEqualityTestingHandler(expectedNode));
 		}
 
 		private void AssertEnumerableNodePropertyIsAsExpected(INode actual, PropertyInfo property) {
-			var expectedNodeEnumerable = (IEnumerable<INode>)property.GetValue(_expected);
-			var actualNodeEnumerable = (IEnumerable<INode>)property.GetValue(actual);
+			var expectedNodeEnumerable = (IEnumerable<INode>)property.GetValue(_expected, null);
+			var actualNodeEnumerable = (IEnumerable<INode>)property.GetValue(actual, null);
 			
 			var expectedEnumerator = expectedNodeEnumerable.GetEnumerator();
 			var actualEnumerator = actualNodeEnumerable.GetEnumerator();
 			while(expectedEnumerator.MoveNext()) {
-				Assert.IsTrue(actualEnumerator.MoveNext(), "Expected additional nodes.");
+				actualEnumerator.MoveNext().Should().BeTrue("because the expected node has additional nodes");
 				actualEnumerator.Current.HandleWith(new NodeEqualityTestingHandler(expectedEnumerator.Current));
 			}
 
-			Assert.IsFalse(actualEnumerator.MoveNext(), "Expected end of node sequence.");
+			actualEnumerator.MoveNext().Should().BeFalse("because the expected node has no more nodes");
 		}
 
 		private void AssertNonNodePropertyIsAsExpected(INode actual, PropertyInfo property) {
-			var expectedPropertyValue = property.GetValue(_expected);
-			var actualPropertyValue = property.GetValue(actual);
+			var expectedPropertyValue = property.GetValue(_expected, null);
+			var actualPropertyValue = property.GetValue(actual, null);
 
 			if(TypeEqualityIsVerifiable(property.PropertyType)) {
-				Assert.AreEqual(expectedPropertyValue, actualPropertyValue);			
+				actualPropertyValue.Should().Be(expectedPropertyValue);
 				return;
 			} 
 
@@ -78,10 +77,10 @@ namespace markdom.cs.Model.Nodes {
 				var actualEnumerable = (IEnumerable<object>)actualPropertyValue;
 
 				if(TypeEqualityIsVerifiable(propertyTypeEnumerableImplementation.GetGenericArguments()[0])) {
-					Assert.IsTrue(Enumerable.SequenceEqual(expectedEnumerable, actualEnumerable));
+					actualEnumerable.Should().Equal(expectedEnumerable);
 					return;
 				} else {
-					Assert.AreEqual(expectedEnumerable.Count(), actualEnumerable.Count());
+					actualEnumerable.Count().Should().Be(expectedEnumerable.Count());
 				}
 			}
 		}

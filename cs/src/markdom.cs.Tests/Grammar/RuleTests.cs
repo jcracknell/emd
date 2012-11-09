@@ -1,7 +1,6 @@
 ﻿using markdom.cs.Model;
 using markdom.cs.Model.Expressions;
 using markdom.cs.Model.Nodes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using pegleg.cs;
 using pegleg.cs.Parsing;
 using System;
@@ -9,360 +8,40 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace markdom.cs.Grammar {
-	[TestClass]
 	public class RuleTests : GrammarTestFixture {
 
 
-		[TestMethod]
-		public void AutoLink_matches_uri_only() {
-			var expected = new AutoLinkNode(
-				new UriLiteralExpression("http://www.google.com", new MarkdomSourceRange(1, 21, 1, 1)),
-				new IExpression[0],
-				new MarkdomSourceRange(0, 23, 1, 0));
+	
 
-			var matchResult =
-				Grammar.AutoLink.Match(
-					//0....:....0....:....0....:....0....:....0....:....0....:....0
-					@"<http://www.google.com>");
+		
 
-			Assert.IsTrue(matchResult.Succeeded);
-			AssertNodesAreEqual(expected, matchResult.Product);
-		}
+		
 
-		[TestMethod]
-		public void AutoLink_matches_with_arguments() {
-			var expected = new AutoLinkNode(
-				new UriLiteralExpression("http://slashdot.org", new MarkdomSourceRange(1, 19, 1, 1)),
-				new IExpression[] { new StringLiteralExpression("title", new MarkdomSourceRange(22, 7, 1, 22)) },
-				new MarkdomSourceRange(0, 30, 1, 0)); 
+		
 
-			var matchResult =
-				Grammar.AutoLink.Match(
-					//0....:....0....:....0....:....0....:....0....:....0....:....0
-					@"<http://slashdot.org>('title')");
+		
 
-			Assert.IsTrue(matchResult.Succeeded);
-			AssertNodesAreEqual(expected, matchResult.Product);
-		}
+		
 
-		[TestMethod]
-		public void CommentBlock_matches_single_line_comment() {
-			var matchResult = Grammar.CommentBlock.Match("// text");
 
-			Assert.IsTrue(matchResult.Succeeded);
-		}
+		
 
-		[TestMethod]
-		public void CommentBlock_matches_indented_single_line_comment() {
-			var matchResult =
-				Grammar.CommentBlock.Match(
-					"    // text");
+		
 
-			Assert.IsTrue(matchResult.Succeeded);
-		}
+		
 
-		[TestMethod]
-		public void CommentBlock_does_not_match_multi_line_comment_with_trailing_content() {
-			var matchResult =
-				Grammar.CommentBlock.Match(
-					"/* This is a multi-line comment\n",
-					"with trailing content */ text");
+		
 
-			Assert.IsFalse(matchResult.Succeeded);
-		}
+		
 
-		[TestMethod]
-		public void Entity_matches_decimal_html_entity() {
-			var expected = new EntityNode(233, new MarkdomSourceRange(0, 6, 1, 0));
+		
 
-			var matchResult = Grammar.Entity.Match("&#233;");
+		
 
-			Assert.IsTrue(matchResult.Succeeded);
-			AssertNodesAreEqual(expected, matchResult.Product);
-		}
-
-		[TestMethod]
-		public void Entity_matches_hexadecimal_html_entity() {
-			var expected = new EntityNode(233, new MarkdomSourceRange(0, 6, 1, 0));
-			var matchResult = Grammar.Entity.Match("&#xE9;");
-
-			Assert.IsTrue(matchResult.Succeeded);
-			AssertNodesAreEqual(expected, matchResult.Product);
-		}
-
-		[TestMethod]
-		public void Entity_matches_named_html_entity() {
-			var expected = new EntityNode(233, new MarkdomSourceRange(0, 8, 1, 0));
-
-			var matchResult = Grammar.Entity.Match("&eacute;");
-
-			Assert.IsTrue(matchResult.Succeeded);
-			AssertNodesAreEqual(expected, matchResult.Product);
-		}
-
-		[TestMethod]
-		public void Emphasis_matches_base_case() {
-			var input = new MatchingContext("*text*");
-			var expected = new EmphasisNode(
-				new IInlineNode[] {
-					new TextNode("text", new MarkdomSourceRange(1, 4, 1, 1)) },
-				new MarkdomSourceRange(0, 6, 1, 0));
-
-			var matchResult = Grammar.Emphasis.Matches(input);
-			
-			Assert.IsTrue(matchResult.Succeeded);
-			AssertNodesAreEqual(expected, matchResult.Product);
-		}
-
-		[TestMethod]
-		public void Link_matches_explicit_link() {
-			var matchResult = Grammar.Link.Match("[Slashdot: News for nerds, stuff that matters](http://slashdot.org)");
-
-			Assert.IsTrue(matchResult.Succeeded);
-
-			var linkNode = matchResult.Product as LinkNode;
-
-			Assert.IsNotNull(linkNode);
-			Assert.AreEqual(1, linkNode.Arguments.Count());
-
-			var uriExpression = linkNode.Arguments.ElementAt(0) as UriLiteralExpression;
-
-			Assert.IsNotNull(uriExpression);
-			Assert.AreEqual("http://slashdot.org", uriExpression.Value);
-		}
-
-		[TestMethod]
-		public void Link_matches_hybrid_link() {
-			var matchResult = Grammar.Link.Match("[Slashdot: News for nerds, stuff that matters][slashdot.org](http://slashdot.org)");
-
-			Assert.IsTrue(matchResult.Succeeded);
-
-			var linkNode = matchResult.Product as LinkNode;
-
-			Assert.IsNotNull(linkNode);
-			Assert.AreEqual(1, linkNode.Arguments.Count());
-
-			var uriExpression = linkNode.Arguments.ElementAt(0) as UriLiteralExpression;
-
-			Assert.IsNotNull(uriExpression);
-			Assert.AreEqual("http://slashdot.org", uriExpression.Value);
-		}
-
-		[TestMethod]
-		public void Link_matches_reference_link() {
-			var matchResult = Grammar.Link.Match("[Slashdot: News for nerds, stuff that matters][slashdot.org]");
-
-			Assert.IsTrue(matchResult.Succeeded);
-
-			var linkNode = matchResult.Product as LinkNode;
-
-			Assert.IsNotNull(linkNode);
-		}
-
-		[TestMethod]
-		public void NumericLiteral_matches_integer() {
-			var match = Grammar.NumericLiteralExpression.Match("42");
-
-			Assert.IsTrue(match.Succeeded);
-
-			var numericLiteral = match.Product as NumericLiteralExpression;
-
-			Assert.IsNotNull(numericLiteral);
-			Assert.AreEqual(42d, numericLiteral.Value);
-		}
-
-		[TestMethod]
-		public void NumericLiteral_matches_with_no_integer_part() {
-			var match = Grammar.NumericLiteralExpression.Match(".123");
-
-			Assert.IsTrue(match.Succeeded);
-
-			var numericLiteral = match.Product as NumericLiteralExpression;
-
-			Assert.IsNotNull(numericLiteral);
-			Assert.AreEqual(0.123d, numericLiteral.Value);
-		}
-
-		[TestMethod]
-		public void NumericLiteral_matches_with_exponent_part() {
-			var match = Grammar.NumericLiteralExpression.Match("4.2E1");
-
-			Assert.IsTrue(match.Succeeded);
-
-			var numericLiteral = match.Product as NumericLiteralExpression;
-
-			Assert.IsNotNull(numericLiteral);
-			Assert.AreEqual(42d, numericLiteral.Value);
-		}
-
-		[TestMethod]
-		public void bla() {
-			var match = Grammar.NumericLiteralExpression.Match("123456789123456789123456789123456789.123456789123456789123456789123456789");
-
-			match.ToString();
-		}
-
-		[TestMethod]
-		public void NumericLiteral_matches_hexadecimal_integer() {
-			var match = Grammar.NumericLiteralExpression.Match("0xdeadbeef");
-
-			Assert.IsTrue(match.Succeeded);
-
-			var numericLiteral = match.Product as NumericLiteralExpression;
-
-			Assert.IsNotNull(numericLiteral);
-			Assert.AreEqual(3735928559d, numericLiteral.Value);
-		}
-
-		[TestMethod]
-		public void NumericLiteral_does_not_match_signed_integer() {
-			var match = Grammar.NumericLiteralExpression.Match("-42");
-
-			Assert.IsFalse(match.Succeeded);
-		}
-
-		[TestMethod]
-		public void ObjectExpression_matches_empty_object() {
-			var expected = new ObjectLiteralExpression(new PropertyAssignment[0], new MarkdomSourceRange(0, 2, 1, 0));
-
-			var matchResult = Grammar.ObjectLiteralExpression.Match("{}");
-
-			Assert.IsTrue(matchResult.Succeeded);
-
-			var objectExpression = matchResult.Product as ObjectLiteralExpression;
-
-			Assert.IsNotNull(objectExpression);
-			Assert.AreEqual(0, objectExpression.PropertyAssignments.Count());
-		}
-
-		[TestMethod]
-		public void ObjectExpression_matches_object_with_string_propertyname() {
-			var expected = new ObjectLiteralExpression(
-				new PropertyAssignment[] {
-					new PropertyAssignment(
-						new StringLiteralExpression("a", new MarkdomSourceRange(2, 3, 1, 2)),
-						new StringLiteralExpression("foo", new MarkdomSourceRange(8, 5, 1, 8)),
-						new MarkdomSourceRange(2, 11, 1, 2)) },
-				new MarkdomSourceRange(0, 15, 1, 0));  
-
-			var matchResult = Grammar.ObjectLiteralExpression.Match("{ 'a' : 'foo' }");
-
-			Assert.IsTrue(matchResult.Succeeded);
-
-			var objectExpression = matchResult.Product as ObjectLiteralExpression;
-
-			Assert.IsNotNull(objectExpression);
-			Assert.AreEqual(1, objectExpression.PropertyAssignments.Count());
-		}
-
-		[TestMethod]
-		public void Quoted_matches_single_quoted() {
-			var input = new MatchingContext("'text'");
-			var expected = new QuotedNode(
-				QuoteType.Single,
-				new IInlineNode[] {
-					new TextNode("text", new MarkdomSourceRange(1, 4, 1, 1)) },
-				new MarkdomSourceRange(0, 6, 1, 0));
-
-			var matchResult = Grammar.Quoted.Matches(input);
-
-			Assert.IsTrue(matchResult.Succeeded);
-			AssertNodesAreEqual(expected, matchResult.Product);
-		}
-
-		[TestMethod]
-		public void SingleLineComment_matches_base_case() {
-			var input = new MatchingContext("// text");
-
-			var matchResult = Grammar.SingleLineComment.Matches(input);
-
-			Assert.IsTrue(matchResult.Succeeded);
-		}
-
-		[TestMethod]
-		public void StringExpression_matches_single_quoted_string() {
-			var matchResult = Grammar.StringLiteralExpression.Match("'string'");
-
-			Assert.IsTrue(matchResult.Succeeded);
-
-			var stringExpression = matchResult.Product as StringLiteralExpression;
-
-			Assert.IsNotNull(stringExpression);
-			Assert.AreEqual("string", stringExpression.Value);
-		}
-
-		[TestMethod]
-		public void StringExpression_matches_double_quoted_string() {
-			var expected = new StringLiteralExpression("string", new MarkdomSourceRange(0, 8, 1, 0));
-			var matchResult = Grammar.StringLiteralExpression.Match(@"""string""");
-
-			Assert.IsTrue(matchResult.Succeeded);
-
-			var stringExpression = matchResult.Product as StringLiteralExpression;
-
-			Assert.IsNotNull(stringExpression);
-			Assert.AreEqual("string", stringExpression.Value);
-		}
-
-		[TestMethod]
-		public void Strong_matches_base_case() {
-			var input = new MatchingContext("**text**");
-			var expected = new StrongNode(
-				new IInlineNode[] {
-					new TextNode("text", new MarkdomSourceRange(2, 4, 1, 2)) },
-				new MarkdomSourceRange(0, 8, 1, 0));
-
-			var matchResult = Grammar.Strong.Matches(input);
-
-			Assert.IsTrue(matchResult.Succeeded);
-			AssertNodesAreEqual(expected, matchResult.Product);
-		}
-
-		[TestMethod]
-		public void Symbol_matches_asterix() {
-			var input = new MatchingContext("*");
-			var expected = new SymbolNode("*", new MarkdomSourceRange(0, 1, 1, 0));
-
-			var matchResult = Grammar.Symbol.Matches(input);
-
-			Assert.IsTrue(matchResult.Succeeded);
-			AssertNodesAreEqual(expected, matchResult.Product);
-		}
-
-		[TestMethod]
-		public void UriExpression_matches_remote_uri() {
-			var matchResult = Grammar.UriLiteralExpression.Match("http://www.google.com");
-
-			Assert.IsTrue(matchResult.Succeeded);
-		}
-
-		[TestMethod]
-		public void UriExpression_matches_uri_with_balanced_parentheses() {
-			var matchResult = Grammar.UriLiteralExpression.Match("http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx");
-
-			Assert.IsTrue(matchResult.Succeeded);
-
-			var uriExpression = matchResult.Product as UriLiteralExpression;
-
-			Assert.IsNotNull(uriExpression);
-			Assert.AreEqual("http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx", uriExpression.Value);
-		}
-
-		[TestMethod]
-		public void UriExpression_discards_characters_following_unbalanced_parentheses() {
-			var matchResult = Grammar.UriLiteralExpression.Match("http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71).aspx");
-
-			Assert.IsTrue(matchResult.Succeeded);
-
-			var uriExpression = matchResult.Product as UriLiteralExpression;
-
-			Assert.IsNotNull(uriExpression);
-			Assert.AreEqual("http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71", uriExpression.Value);
-		}
-
-		[TestMethod]
+		[Fact]
 		public void Bla() {
 			var input = @" // This is a single line comment
 # Heading 1
@@ -418,15 +97,14 @@ XVII - Roman.
 			var stopwatch = new System.Diagnostics.Stopwatch();
 
 			stopwatch.Start();
-			var matchResult = Grammar.Document.Match(input);
+			var match = Grammar.Document.ShouldMatch(input);
 			stopwatch.Stop();
 
-			var document = matchResult.Product as MarkdomDocumentNode;
+			var document = match.Product as MarkdomDocumentNode;
 
 			var references = new markdom.cs.Conversion.ReferenceCollection(document);
 
 			stopwatch.ToString();
-			Assert.IsTrue(matchResult.Succeeded);
 		}
 	}
 }

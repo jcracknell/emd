@@ -35,5 +35,14 @@ namespace markdom.cs.Model {
 		public static MarkdomSourceRange FromMatch(IMatch match) {
 			return FromSource(match.SourceRange);
 		}
+
+		public override bool Equals(object obj) {
+			var other = obj as MarkdomSourceRange;
+			return null != other
+				&& this.Index == other.Index
+				&& this.Length == other.Length
+				&& this.Line == other.Line
+				&& this.LineIndex == other.LineIndex;
+		}
 	}
 }

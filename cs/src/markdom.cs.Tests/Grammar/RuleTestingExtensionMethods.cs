@@ -1,29 +1,29 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using pegleg.cs;
+﻿using pegleg.cs;
 using pegleg.cs.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 
 namespace markdom.cs.Grammar {
 	public static class RuleTestingExtensionMethods {
-		public static IMatchingResult<TProduct> Match<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
+		public static IMatchingResult<TProduct> ShouldMatch<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
 			var context = new MatchingContext(string.Join("", input));
 			var match = expression.Matches(context);
+
+			match.Succeeded.Should().BeTrue();
+
 			return match;
 		}
 
-		public static IMatchingResult<TProduct> AssertMatch<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
-			var match = expression.Match(input);
-			Assert.IsTrue(match.Succeeded, "Expression does not match.\nExpression:\n" + expression.ToString() + "\nInput:\n" + string.Join("", input));
-			return match;
-		}
+		public static IMatchingResult<TProduct> ShouldNotMatch<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
+			var context = new MatchingContext(string.Join("", input));
+			var match = expression.Matches(context);
 
-		public static IMatchingResult<TProduct> AssertNoMatch<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
-			var match = expression.Match(input);
-			Assert.IsFalse(match.Succeeded, "Expression matches.\nExpression:\n" + expression.ToString() + "\nInput:\n" + string.Join("", input));
+			match.Succeeded.Should().BeFalse();
+
 			return match;
 		}
 	}

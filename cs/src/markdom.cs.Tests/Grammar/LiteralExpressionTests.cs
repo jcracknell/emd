@@ -1,71 +1,69 @@
-﻿using markdom.cs.Model;
+﻿using FluentAssertions;
+using markdom.cs.Model;
 using markdom.cs.Model.Expressions;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Xunit;
 
 namespace markdom.cs.Grammar {
-	[TestClass]
 	public class LiteralExpressionTests : GrammarTestFixture {
-		[TestMethod]
-		public void LiteralExpression_matches_null() {
-			var match = Grammar.LiteralExpression.AssertMatch("null");
+		[Fact] public void LiteralExpression_matches_null() {
+			var match = Grammar.LiteralExpression.ShouldMatch("null");
 			
-			Assert.AreEqual(ExpressionKind.NullLiteral, match.Product.Kind);
+			match.Succeeded.Should().BeTrue();
+			match.Product.Kind.Should().Be(ExpressionKind.NullLiteral);
 		}
 
-		[TestMethod]
-		public void LiteralExpression_matches_true() {
-			var match = Grammar.LiteralExpression.AssertMatch("true");
+		[Fact] public void LiteralExpression_matches_true() {
+			var match = Grammar.LiteralExpression.ShouldMatch("true");
 
-			Assert.AreEqual(ExpressionKind.BooleanLiteral, match.Product.Kind);
+			match.Succeeded.Should().BeTrue();
+			match.Product.Kind.Should().Be(ExpressionKind.BooleanLiteral);
 		}
 
-		[TestMethod]
-		public void LiteralExpression_matches_false() {
-			var match = Grammar.LiteralExpression.AssertMatch("false");
+		[Fact] public void LiteralExpression_matches_false() {
+			var match = Grammar.LiteralExpression.ShouldMatch("false");
 
-			Assert.AreEqual(ExpressionKind.BooleanLiteral, match.Product.Kind);
+			match.Succeeded.Should().BeTrue();
+			match.Product.Kind.Should().Be(ExpressionKind.BooleanLiteral);
 		}
 
-		[TestMethod]
-		public void LiteralExpression_matches_integer_literal() {
-			var match = Grammar.LiteralExpression.AssertMatch("42");
+		[Fact] public void LiteralExpression_matches_integer_literal() {
+			var match = Grammar.LiteralExpression.ShouldMatch("42");
 
-			Assert.AreEqual(ExpressionKind.NumericLiteral, match.Product.Kind);
-			Assert.AreEqual(2, match.Product.SourceRange.Length);
+			match.Succeeded.Should().BeTrue();
+			match.Product.Kind.Should().Be(ExpressionKind.NumericLiteral);
 		}
 
-		[TestMethod]
-		public void LiteralExpression_matches_floating_point_literal() {
-			var match = Grammar.LiteralExpression.AssertMatch("42.123");
+		[Fact] public void LiteralExpression_matches_floating_point_literal() {
+			var match = Grammar.LiteralExpression.ShouldMatch("42.123");
 
-			Assert.AreEqual(ExpressionKind.NumericLiteral, match.Product.Kind);
-			Assert.AreEqual(6, match.Product.SourceRange.Length);
+			match.Succeeded.Should().BeTrue();
+			match.Product.Kind.Should().Be(ExpressionKind.NumericLiteral);
 		}
 
-		[TestMethod]
-		public void LiteralExpression_matches_single_quoted_string_literal() {
-			var match = Grammar.LiteralExpression.AssertMatch("'foobar'");
-			Assert.AreEqual(ExpressionKind.StringLiteral, match.Product.Kind);
-			Assert.AreEqual(8, match.Product.SourceRange.Length);
+		[Fact] public void LiteralExpression_matches_single_quoted_string_literal() {
+			var match = Grammar.LiteralExpression.ShouldMatch("'foobar'");
+
+			match.Succeeded.Should().BeTrue();
+			match.Product.Kind.Should().Be(ExpressionKind.StringLiteral);
 		}
 
-		[TestMethod]
-		public void LiteralExpression_matches_double_quoted_string_literal() {
-			var match = Grammar.LiteralExpression.AssertMatch("\"fizzbuzz\"");
-			Assert.AreEqual(ExpressionKind.StringLiteral, match.Product.Kind);
-			Assert.AreEqual(10, match.Product.SourceRange.Length);
+		[Fact] public void LiteralExpression_matches_double_quoted_string_literal() {
+			var match = Grammar.LiteralExpression.ShouldMatch("\"fizzbuzz\"");
+
+			match.Succeeded.Should().BeTrue();
+			match.Product.Kind.Should().Be(ExpressionKind.StringLiteral);
 		}
 
-		[TestMethod]
-		public void LiteralExpression_matches_uri_literal() {
-			var match = Grammar.LiteralExpression.AssertMatch("http://reddit.com");
-			Assert.AreEqual(ExpressionKind.UriLiteral, match.Product.Kind);
-			Assert.AreEqual(17, match.Product.SourceRange.Length);
+		[Fact] public void LiteralExpression_matches_uri_literal() {
+			var match = Grammar.LiteralExpression.ShouldMatch("http://reddit.com");
+
+			match.Succeeded.Should().BeTrue();
+			match.Product.Kind.Should().Be(ExpressionKind.UriLiteral);
 		}
 	}
 }
