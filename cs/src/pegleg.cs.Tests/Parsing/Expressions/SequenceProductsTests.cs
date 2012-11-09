@@ -29,7 +29,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C1(), new C2()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2>();
+			var annotated = sequenceProducts.Annotate<C1,C2>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -40,7 +40,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C1(), new C2(), new C3()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -52,7 +52,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C1(), new C2(), new C3(), new C4()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -65,7 +65,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C1(), new C2(), new C3(), new C4(), new C5()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -79,7 +79,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C1(), new C2(), new C3(), new C4(), new C5(), new C6()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -94,7 +94,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C1(), new C2(), new C3(), new C4(), new C5(), new C6(), new C7()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6,C7>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6,C7>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -110,7 +110,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C1(), new C2(), new C3(), new C4(), new C5(), new C6(), new C7(), new C8()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6,C7,C8>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6,C7,C8>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -128,7 +128,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C9()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6,C7,C8,C9>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6,C7,C8,C9>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -147,7 +147,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C9(), new C10()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -167,7 +167,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C9(), new C10(), new C11()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -188,7 +188,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C9(), new C10(), new C11(), new C12()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -210,7 +210,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C9(), new C10(), new C11(), new C12(), new C13()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -233,7 +233,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C9(), new C10(), new C11(), new C12(), new C13(), new C14()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -257,7 +257,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C9(), new C10(), new C11(), new C12(), new C13(), new C14(), new C15()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();
@@ -282,7 +282,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				new C9(), new C10(), new C11(), new C12(), new C13(), new C14(), new C15(), new C16()
 			});
 
-			var annotated = sequenceProducts.Upcast<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15,C16>();
+			var annotated = sequenceProducts.Annotate<C1,C2,C3,C4,C5,C6,C7,C8,C9,C10,C11,C12,C13,C14,C15,C16>();
 
 			annotated.Of1.Should().BeAssignableTo<C1>();
 			annotated.Of2.Should().BeAssignableTo<C2>();

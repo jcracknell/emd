@@ -25,21 +25,21 @@ namespace pegleg.cs.Parsing.Expressions {
 			return _products.GetEnumerator();	
 		}
 
-		public SequenceProducts<T1,T2> Upcast<T1,T2>() { return new SequenceProducts<T1,T2>(_products); }
-		public SequenceProducts<T1,T2,T3> Upcast<T1,T2,T3>() { return new SequenceProducts<T1,T2,T3>(_products); }
-		public SequenceProducts<T1,T2,T3,T4> Upcast<T1,T2,T3,T4>() { return new SequenceProducts<T1,T2,T3,T4>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5> Upcast<T1,T2,T3,T4,T5>() { return new SequenceProducts<T1,T2,T3,T4,T5>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6> Upcast<T1,T2,T3,T4,T5,T6>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7> Upcast<T1,T2,T3,T4,T5,T6,T7>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8> Upcast<T1,T2,T3,T4,T5,T6,T7,T8>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9> Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10> Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11> Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12> Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13> Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14> Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15> Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15>(_products); }
-		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16> Upcast<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16>(_products); }
+		public SequenceProducts<T1,T2> Annotate<T1,T2>() { return new SequenceProducts<T1,T2>(_products); }
+		public SequenceProducts<T1,T2,T3> Annotate<T1,T2,T3>() { return new SequenceProducts<T1,T2,T3>(_products); }
+		public SequenceProducts<T1,T2,T3,T4> Annotate<T1,T2,T3,T4>() { return new SequenceProducts<T1,T2,T3,T4>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5> Annotate<T1,T2,T3,T4,T5>() { return new SequenceProducts<T1,T2,T3,T4,T5>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6> Annotate<T1,T2,T3,T4,T5,T6>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7> Annotate<T1,T2,T3,T4,T5,T6,T7>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8> Annotate<T1,T2,T3,T4,T5,T6,T7,T8>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9> Annotate<T1,T2,T3,T4,T5,T6,T7,T8,T9>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10> Annotate<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11> Annotate<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12> Annotate<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13> Annotate<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14> Annotate<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15> Annotate<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15>(_products); }
+		public SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16> Annotate<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16>() { return new SequenceProducts<T1,T2,T3,T4,T5,T6,T7,T8,T9,T10,T11,T12,T13,T14,T15,T16>(_products); }
 	}
 
 	// There is a lot of duplication here that could be eliminated through inheritance,
