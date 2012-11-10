@@ -47,5 +47,13 @@ namespace pegleg.cs.Utils {
 				.And.Contain(new CharacterRange('e', 'l'))
 				.And.Contain(new CharacterRange('o', char.MaxValue));
 		}
+
+		[Fact] public void LiteralEncode_converts_visible_ascii_to_char_literal() {
+			CharUtils.LiteralEncode('a').Should().Be("'a'");
+		}
+
+		[Fact] public void LiteralEncode_converts_non_visible_ascii_to_hex_literal() {
+			CharUtils.LiteralEncode((char)1).Should().Be("'\\x0001'");
+		}
 	}
 }

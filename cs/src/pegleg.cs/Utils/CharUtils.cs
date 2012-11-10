@@ -56,5 +56,11 @@ namespace pegleg.cs.Utils {
 
 			return ranges;
 		}
+
+		public static string LiteralEncode(char c) {
+			if(' ' <= c && c <= '~')
+				return string.Concat("'", c, "'");
+			return string.Concat("'\\x", ((int)c).ToString("X").PadLeft(4, '0'), "'");
+		}
 	}
 }

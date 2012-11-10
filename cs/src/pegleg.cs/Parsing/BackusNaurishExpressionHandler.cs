@@ -1,4 +1,5 @@
 ﻿using pegleg.cs.Parsing.Expressions;
+using pegleg.cs.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -150,13 +151,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public string Handle(CharacterSetParsingExpression expression) {
-			return "(" + string.Join(" | ", expression.Characters.Select(Charcode).ToArray()) + ")";
-		}
-
-		private string Charcode(char c) {
-			if(char.IsLetterOrDigit(c))
-				return string.Concat("'", c, "'");
-			return string.Concat("\\", (int)c);
+			return "(" + string.Join(" | ", expression.Characters.Select(CharUtils.LiteralEncode).ToArray()) + ")";
 		}
 
 		public string Handle(PredicateParsingExpression expression) {
