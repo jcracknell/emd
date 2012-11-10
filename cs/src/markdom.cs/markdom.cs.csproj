@@ -104,6 +104,7 @@
     <Compile Include="NumeralUtils.cs" />
     <Compile Include="TextUtils.cs" />
     <Compile Include="UnicodeCategories.cs" />
+    <Compile Include="UnicodeCategories.Data.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\pegleg.cs\pegleg.cs.csproj">
