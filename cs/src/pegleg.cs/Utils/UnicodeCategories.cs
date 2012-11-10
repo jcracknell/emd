@@ -10,39 +10,38 @@ namespace pegleg.cs.Utils {
 		private static UnicodeCodePoint C(char first) { return new UnicodeCodePoint(first); }
 		private static UnicodeCodePoint C(char first, char second) { return new UnicodeCodePoint(first, second); }
 
-		public static IEnumerable<IEnumerable<UnicodeCodePoint>> All {
+		public static IEnumerable<UnicodeCodePoint> All {
 			get {
-				#region yields
-				yield return Cc;
-				yield return Cf;
-				yield return Co;
-				yield return Cs;
-				yield return Ll;
-				yield return Lm;
-				yield return Lo;
-				yield return Lt;
-				yield return Lu;
-				yield return Mc;
-				yield return Me;
-				yield return Mn;
-				yield return Nd;
-				yield return Nl;
-				yield return No;
-				yield return Pc;
-				yield return Pd;
-				yield return Pe;
-				yield return Pf;
-				yield return Pi;
-				yield return Po;
-				yield return Ps;
-				yield return Sc;
-				yield return Sk;
-				yield return Sm;
-				yield return So;
-				yield return Zl;
-				yield return Zp;
-				yield return Zs;
-				#endregion
+				return 
+					UCc
+					.Concat(UCf)
+					.Concat(UCo)
+					.Concat(UCs)
+					.Concat(ULl)
+					.Concat(ULm)
+					.Concat(ULo)
+					.Concat(ULt)
+					.Concat(ULu)
+					.Concat(UMc)
+					.Concat(UMe)
+					.Concat(UMn)
+					.Concat(UNd)
+					.Concat(UNl)
+					.Concat(UNo)
+					.Concat(UPc)
+					.Concat(UPd)
+					.Concat(UPe)
+					.Concat(UPf)
+					.Concat(UPi)
+					.Concat(UPo)
+					.Concat(UPs)
+					.Concat(USc)
+					.Concat(USk)
+					.Concat(USm)
+					.Concat(USo)
+					.Concat(UZl)
+					.Concat(UZp)
+					.Concat(UZs);
 			}
 		}
 
