@@ -13,8 +13,10 @@ namespace pegleg.cs {
 			GetArgumentName(arg);
 			#endif
 
-			if(null == actual)
-				throw new ArgumentNullException(GetArgumentName(arg));
+			if(null != actual) return;
+
+			var argumentName = GetArgumentName(arg);
+			throw new ArgumentNullException(argumentName, string.Concat("Argument ", argumentName, " cannot be null."));
 		}
 
 		public static void ArgumentIsValid(Expression<Func<object>> arg, bool valid, string assertion) {
@@ -27,9 +29,7 @@ namespace pegleg.cs {
 
 			var argumentName = GetArgumentName(arg);
 
-			throw new ArgumentException(
-				string.Concat(argumentName, " is invalid: ", assertion),
-				assertion);
+			throw new ArgumentException(string.Concat("Argument ", argumentName, " is invalid: ", assertion), argumentName);
 		}
 
 		public static void ThrowArgumentException(Expression<Func<object>> arg, string message) {
@@ -39,9 +39,7 @@ namespace pegleg.cs {
 			#endif
 
 			var argumentName = GetArgumentName(arg);
-			throw new ArgumentException(
-				string.Concat(argumentName, " ", message),
-				argumentName);
+			throw new ArgumentException(string.Concat(argumentName, " ", message), argumentName);
 		}
 
 		private static string GetArgumentName(LambdaExpression arg) {
