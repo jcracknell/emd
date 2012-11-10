@@ -29,5 +29,12 @@ namespace pegleg.cs.Utils {
 			var other = obj as CharacterRange;
 			return null != other && this.Start == other.Start && this.End == other.End;
 		}
+
+		public override string ToString() {
+			if(Start == End)
+				return CharUtils.LiteralEncode(Start);
+
+			return string.Concat(CharUtils.LiteralEncode(Start), "-", CharUtils.LiteralEncode(End));
+		}
 	}
 }

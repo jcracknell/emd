@@ -151,7 +151,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public string Handle(CharacterSetParsingExpression expression) {
-			return "(" + string.Join(" | ", expression.Characters.Select(CharUtils.LiteralEncode).ToArray()) + ")";
+			return "(" + string.Join(" | ", CharUtils.RangesCovering(expression.Characters)) + ")";
 		}
 
 		public string Handle(PredicateParsingExpression expression) {
