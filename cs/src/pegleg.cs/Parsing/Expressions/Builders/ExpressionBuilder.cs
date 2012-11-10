@@ -176,15 +176,15 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return CharacterIn(chars.AsEnumerable());
 		}
 
-		public IParsingExpression<Nil> CharacterIn(IEnumerable<char> chars) {
-			return new CharacterSetParsingExpression(chars);
+		public IParsingExpression<Nil> CharacterIn(params IEnumerable<char>[] chars) {
+			return new CharacterSetParsingExpression(chars.SelectMany(c => c));
 		}
 
 		public IParsingExpression<Nil> CharacterNotIn(params char[] chars) {
 			return CharacterNotIn(chars.AsEnumerable());
 		}
 
-		public IParsingExpression<Nil> CharacterNotIn(IEnumerable<char> chars) {
+		public IParsingExpression<Nil> CharacterNotIn(params IEnumerable<char>[] chars) {
 			return Sequence(NotAhead(CharacterIn(chars)), Wildcard());
 		}
 

@@ -3,6 +3,7 @@ using markdom.cs.Model.Expressions;
 using markdom.cs.Model.Nodes;
 using pegleg.cs;
 using pegleg.cs.Parsing;
+using pegleg.cs.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -113,10 +114,16 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<Nil> EnglishAlpha { get; private set; }
 		public IParsingExpression<Nil> UnicodeCharacter { get; private set; }
 
-		#region char sets
-
-		private static readonly char[] specialCharValues =
-			new char[] {
+		public MarkdomGrammar() {
+			#region char sets
+			var spaceCharValues = new char[] { ' ', '\t' };
+			var whitespaceCharValues = spaceCharValues.Concat(new char[] { '\n', '\r' });
+			var englishLowerAlphaCharValues = CharUtils.Range('a','z');
+			var englishUpperAlphaCharValues = CharUtils.Range('A','Z');
+			var englishAlphaCharValues = englishLowerAlphaCharValues.Concat(englishUpperAlphaCharValues);
+			var digitCharValues = CharUtils.Range('0','9');
+			var hexadecimalCharValues = digitCharValues.Concat(CharUtils.Range('A','F')).Concat(CharUtils.Range('a','f'));
+			var specialCharValues = new char[] {
 				'*', // strong, emphasis
 				'&', // entities
 				'\'', '"', // quotes
@@ -128,18 +135,7 @@ namespace markdom.cs.Grammar {
 				'|', // table cell delimiter
 				'@' // expressions
 			};
-
-		private static readonly char[] spaceCharValues =
-			new char[] { ' ', '\t' };
-
-		private static readonly char[] whitespaceCharValues =
-			spaceCharValues
-			.Concat(new char[] { '\n', '\r' })
-			.ToArray();
-
-		#endregion
-
-		public MarkdomGrammar() {
+			#endregion
 
 			Define(() => Document,
 				Reference(() => Blocks, match => new MarkdomDocumentNode(match.Product.ToArray(), MarkdomSourceRange.FromMatch(match))));
@@ -1209,9 +1205,10 @@ namespace markdom.cs.Grammar {
 			uriExpressionRegularPart =
 				AtLeast(1, 
 					ChoiceUnordered(
-						Reference(() => EnglishAlpha),
-						Reference(() => Digit),
-						CharacterIn('/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';'),
+						CharacterIn(
+							englishAlphaCharValues,
+							digitCharValues,
+							new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' }),
 						Sequence(
 							Literal("%"),
 							Exactly(2, Reference(() => HexDigit)))));
@@ -1357,10 +1354,7 @@ namespace markdom.cs.Grammar {
 				CharacterInRange('1', '9'));
 
 			Define(() => HexDigit,
-				ChoiceOrdered(
-					Reference(() => Digit),
-					CharacterInRange('a', 'f'),
-					CharacterInRange('A', 'F')));
+				CharacterIn(hexadecimalCharValues));
 
 			Define(() => EnglishLowerAlpha,
 				CharacterInRange('a', 'z'));
@@ -1369,9 +1363,7 @@ namespace markdom.cs.Grammar {
 				CharacterInRange('A', 'Z'));
 
 			Define(() => EnglishAlpha,
-				ChoiceUnordered(
-					Reference(() => EnglishLowerAlpha),
-					Reference(() => EnglishUpperAlpha)));
+				CharacterIn(englishAlphaCharValues));
 
 			Define(() => UnicodeCharacter,
 				CharacterIn(UnicodeCategories.All));
