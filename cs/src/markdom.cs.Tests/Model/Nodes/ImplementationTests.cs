@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Reflection;
-using pegleg.cs.ExtensionMethods;
 using Xunit;
 
 namespace markdom.cs.Model.Nodes {

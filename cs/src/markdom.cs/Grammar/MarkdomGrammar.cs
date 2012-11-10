@@ -3,7 +3,6 @@ using markdom.cs.Model.Expressions;
 using markdom.cs.Model.Nodes;
 using pegleg.cs;
 using pegleg.cs.Parsing;
-using pegleg.cs.ExtensionMethods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -379,7 +378,7 @@ namespace markdom.cs.Grammar {
 										csd.ContinuationEnumerator, Reference(() => BlockLine),
 										orderedListBlockLines,
 										match => new BlockLineInfo(
-											match.Product.Of2.InArray().Concat(match.Product.Of3),
+											match.Product.Of2.InEnumerable().Concat(match.Product.Of3),
 											match.SourceRange));
 
 								var initialOrderedListItemLoose =
@@ -582,7 +581,7 @@ namespace markdom.cs.Grammar {
 					Literal(":"),
 					Reference(() => SpaceChars),
 					ChoiceUnordered(
-						Reference(() => UriLiteralExpression, match => match.Product.InArray()),
+						Reference(() => UriLiteralExpression, match => match.Product.InEnumerable()),
 						Reference(() => ArgumentList)),
 					match => new ReferenceNode(match.Product.Of2, match.Product.Of6.ToArray(), MarkdomSourceRange.FromMatch(match))));
 
@@ -681,7 +680,7 @@ namespace markdom.cs.Grammar {
 						new TableHeaderCellNode(
 							match.Product.Of1.ColumnSpan,
 							match.Product.Of1.RowSpan,
-							ParseLinesAs(Inlines, match.Product.Of2.InArray()).ToArray(),
+							ParseLinesAs(Inlines, match.Product.Of2.InEnumerable()).ToArray(),
 							MarkdomSourceRange.FromMatch(match)));
 
 			var tableDataCell =
@@ -691,7 +690,7 @@ namespace markdom.cs.Grammar {
 					match => new TableDataCellNode(
 						match.Product.Of1.ColumnSpan,
 						match.Product.Of1.RowSpan,
-						ParseLinesAs(Inlines, match.Product.Of2.InArray()).ToArray(),
+						ParseLinesAs(Inlines, match.Product.Of2.InEnumerable()).ToArray(),
 						MarkdomSourceRange.FromMatch(match)));
 
 			var tableRowEnd =
@@ -928,7 +927,7 @@ namespace markdom.cs.Grammar {
 					Sequence(
 						Reference(() => Expression),
 						AtLeast(0, Sequence( argumentSeparator, Reference(() => Expression), match => match.Product.Of2)),
-						match => match.Product.Of1.InArray().Concat(match.Product.Of2)));
+						match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2)));
 
 			Define(() => ArgumentList,
 				Sequence(
@@ -1001,7 +1000,7 @@ namespace markdom.cs.Grammar {
 					Sequence(
 						objectPropertyAssignment,
 						AtLeast(0, Sequence(argumentSeparator, objectPropertyAssignment, match => match.Product.Of2)),
-						match => match.Product.Of1.InArray().Concat(match.Product.Of2)),
+						match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2)),
 					match => match.Product,
 					noMatch => Enumerable.Empty<PropertyAssignment>());
 
@@ -1031,7 +1030,7 @@ namespace markdom.cs.Grammar {
 							match => LineInfo.FromMatch(match)),
 						Reference(() => endBraces),
 						match => new DocumentLiteralExpression(
-							ParseLinesAs(Blocks, match.Product.Of2.InArray()).ToArray(),
+							ParseLinesAs(Blocks, match.Product.Of2.InEnumerable()).ToArray(),
 							MarkdomSourceRange.FromMatch(match)));
 				}));
 
@@ -1150,7 +1149,7 @@ namespace markdom.cs.Grammar {
 							NotAhead(ChoiceUnordered(Literal("'"), Reference(() => NewLine))),
 							Wildcard(),
 							match => match.String)),
-					match => match.Product.Join());
+					match => match.Product.JoinStrings());
 
 			var doubleQuotedStringExpressionContent =
 				AtLeast(0,
@@ -1161,7 +1160,7 @@ namespace markdom.cs.Grammar {
 							NotAhead(ChoiceUnordered(Literal("\""), Reference(() => NewLine))),
 							Wildcard(),
 							match => match.String)),
-					match => match.Product.Join());
+					match => match.Product.JoinStrings());
 
 			var singleQuotedStringExpression =
 				Sequence(
@@ -1296,7 +1295,7 @@ namespace markdom.cs.Grammar {
 						Sequence(
 							AtLeast(0, Reference(() => SpaceChar)),
 							EndOfInput()),
-						match => LineInfo.FromMatch(match).InArray(),
+						match => LineInfo.FromMatch(match).InEnumerable(),
 						noMatch => Enumerable.Empty<LineInfo>()),
 					match => match.Product.Of1.Concat(match.Product.Of2)));
 
@@ -1367,7 +1366,7 @@ namespace markdom.cs.Grammar {
 			_parseLinesCount++;
 			var expressionMatchingContext =
 				new MatchingContext(
-					lines.Select(line => line.LineString).Join(),
+					lines.Select(line => line.LineString).JoinStrings(),
 					lines.Select(line => line.SourceRange).ToArray());
 			
 			var expressionMatchingResult = expression.Matches(expressionMatchingContext);

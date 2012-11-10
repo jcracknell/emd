@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace pegleg.cs.ExtensionMethods {
-	public static class PeglegExtensionMethods {
-		public static string Join(this IEnumerable<string> parts) {
-			return Join(parts, "");
+namespace markdom.cs {
+	internal static class ExtensionMethods {
+		public static string JoinStrings(this IEnumerable<string> parts) {
+			return JoinStrings(parts, "");
 		}
 
-		public static string Join(this IEnumerable<string> parts, string separator) {
+		public static string JoinStrings(this IEnumerable<string> parts, string separator) {
 			var sb = new StringBuilder();
 			var enumerator = parts.GetEnumerator();
 
@@ -49,11 +49,6 @@ namespace pegleg.cs.ExtensionMethods {
 		public static decimal ParseDefault(this string s, decimal otherwise) {
 			decimal v; return decimal.TryParse(s, out v) ? v : otherwise;
 		}
-
-		/// <summary>
-		/// Puts the current value in an array with itself as the only entry.
-		/// </summary>
-		public static T[] InArray<T>(this T o) { return new T[] { o }; }
 
 		/// <summary>
 		/// Returns the value of the current <see cref="Nullable`1"/>, or the provided <paramref name="@default"/> value.
