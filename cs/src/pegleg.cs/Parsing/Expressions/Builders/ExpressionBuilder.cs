@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -168,22 +169,11 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<Nil> CharacterInRange(char rangeStart, char rangeEnd) {
-			if(rangeEnd < rangeStart) {
-				var c = rangeStart;
-				rangeStart = rangeEnd;
-				rangeEnd = c;
-			}
-
-			var chars = new char[rangeEnd - rangeStart + 1];
-			for(var i = rangeStart; i <= rangeEnd; i++)
-				chars[i - rangeStart] = i;
-
-			return new CharacterSetParsingExpression(chars);
+			return new CharacterSetParsingExpression(CharUtils.Range(rangeStart, rangeEnd));
 		}
 
 		public IParsingExpression<Nil> CharacterIn(IEnumerable<char> chars) {
-			var expr = new CharacterSetParsingExpression(chars);
-			return expr;
+			return new CharacterSetParsingExpression(chars);
 		}
 
 		public IParsingExpression<Nil> CharacterNotIn(IEnumerable<char> chars) {

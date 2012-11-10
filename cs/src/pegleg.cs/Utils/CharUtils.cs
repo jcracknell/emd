@@ -6,6 +6,24 @@ using System.Text;
 namespace pegleg.cs.Utils {
 	public static class CharUtils {
 		/// <summary>
+		/// Creates an enumerable containing all char values between and including the provided values.
+		/// </summary>
+		public static IEnumerable<char> Range(char start, char end) {
+			char c = start;
+			if(start <= end) {
+				while(c <= end && c != char.MaxValue)
+					yield return c++;
+				if(char.MaxValue == end)
+					yield return char.MaxValue;
+			} else {
+				while(c >= end && c != char.MinValue)
+					yield return c--;
+				if(char.MinValue == end)
+					yield return char.MinValue;
+			}
+		}
+
+		/// <summary>
 		/// Compute a minimal set of <see cref="CharacterRange"/> instances covering the provided characters.
 		/// </summary>
 		public static IEnumerable<CharacterRange> RangesCovering(IEnumerable<char> chars) {

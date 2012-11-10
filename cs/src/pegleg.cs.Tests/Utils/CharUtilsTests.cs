@@ -7,6 +7,23 @@ using Xunit;
 
 namespace pegleg.cs.Utils {
 	public class CharUtilsTests {
+		[Fact] public void Range_works_for_single_char() {
+			CharUtils.Range('a', 'a')
+				.Should().HaveCount(1)
+				.And.Contain('a');
+		}
+
+		[Fact] public void Range_works_for_a_z() {
+			CharUtils.Range('a','z')
+				.Should().HaveCount(26);
+		}
+
+		[Fact] public void Range_works_for_z_a() {
+			CharUtils.Range('z','a')
+				.Should().HaveCount(26)
+				.And.ContainInOrder(CharUtils.Range('a','z').Reverse());
+		}
+
 		[Fact] public void RangesCovering_works_as_expected_for_single_char() {
 			CharUtils.RangesCovering(new char[] { 'a' })
 				.Should().HaveCount(1)
