@@ -172,8 +172,16 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new CharacterSetParsingExpression(CharUtils.Range(rangeStart, rangeEnd));
 		}
 
+		public IParsingExpression<Nil> CharacterIn(params char[] chars) {
+			return CharacterNotIn(chars.AsEnumerable());
+		}
+
 		public IParsingExpression<Nil> CharacterIn(IEnumerable<char> chars) {
 			return new CharacterSetParsingExpression(chars);
+		}
+
+		public IParsingExpression<Nil> CharacterNotIn(params char[] chars) {
+			return CharacterNotIn(chars.AsEnumerable());
 		}
 
 		public IParsingExpression<Nil> CharacterNotIn(IEnumerable<char> chars) {
