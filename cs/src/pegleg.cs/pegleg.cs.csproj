@@ -88,9 +88,6 @@
     <Compile Include="Parsing\UnsuccessfulMatchingResult.cs" />
     <Compile Include="Utils\CharacterRange.cs" />
     <Compile Include="Utils\CharUtils.cs" />
-    <Compile Include="Utils\UnicodeCodePoint.cs" />
-    <Compile Include="Utils\UnicodeCategories.cs" />
-    <Compile Include="Utils\UnicodeCategories.Data.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

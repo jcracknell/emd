@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace pegleg.cs.Utils {
+namespace markdom.cs.Utils {
 	/// <summary>
 	/// Class representing a UTF-16 code point (character).
 	/// Can optionally be a surrogate pair consisting of two code units.
