@@ -5,6 +5,9 @@ using System.Text;
 
 namespace pegleg.cs.Utils {
 	public static class CharUtils {
+		private static readonly char[] HEX_DIGIT = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+		private const uint LOW_FOUR = 0x0000000Fu;
+
 		/// <summary>
 		/// Creates an enumerable containing all char values between and including the provided values.
 		/// </summary>
@@ -78,7 +81,19 @@ namespace pegleg.cs.Utils {
 		public static string LiteralEncode(char c) {
 			if(' ' <= c && c <= '~')
 				return string.Concat("'", c, "'");
-			return string.Concat("'\\x", ((int)c).ToString("X").PadLeft(4, '0'), "'");
+			return string.Concat("'\\x", AsHex(c), "'");
+		}
+
+		public static string AsHex(char c) {
+			uint cv = c;
+
+			char[] buffer = new char[4];
+			buffer[3] = HEX_DIGIT[cv & LOW_FOUR];
+			buffer[2] = HEX_DIGIT[(cv >>= 4) & LOW_FOUR];
+			buffer[1] = HEX_DIGIT[(cv >>= 4) & LOW_FOUR];
+			buffer[0] = HEX_DIGIT[(cv >>= 4) & LOW_FOUR];
+
+			return new string(buffer);
 		}
 	}
 }

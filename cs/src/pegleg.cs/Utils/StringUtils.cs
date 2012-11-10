@@ -49,10 +49,12 @@ namespace pegleg.cs.Utils {
 				} else {
 					buffer[wp++] = '\\';
 					buffer[wp++] = 'x';
-					var hex = ((int)c).ToString("X").PadLeft(4, '0');
-					for(int hi = 0; hi < hex.Length; hi++) {
-						buffer[wp++] = hex[hi];
-					}
+
+					var hex = CharUtils.AsHex(c);
+					buffer[wp++] = hex[0];
+					buffer[wp++] = hex[1];
+					buffer[wp++] = hex[2];
+					buffer[wp++] = hex[3];
 				}
 			}
 			

@@ -72,5 +72,9 @@ namespace pegleg.cs.Utils {
 		[Fact] public void LiteralEncode_converts_non_visible_ascii_to_hex_literal() {
 			CharUtils.LiteralEncode((char)1).Should().Be("'\\x0001'");
 		}
+
+		[Fact] public void LiteralEncode_converts_value() {
+			CharUtils.LiteralEncode('\x01FE').Should().Be("'\\x01FE'");
+		}
 	}
 }
