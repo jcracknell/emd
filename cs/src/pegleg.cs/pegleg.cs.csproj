@@ -86,6 +86,8 @@
     <Compile Include="StringUtils.cs" />
     <Compile Include="Parsing\SuccessfulMatchingResult.cs" />
     <Compile Include="Parsing\UnsuccessfulMatchingResult.cs" />
+    <Compile Include="Utils\CharacterRange.cs" />
+    <Compile Include="Utils\CharUtils.cs" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
