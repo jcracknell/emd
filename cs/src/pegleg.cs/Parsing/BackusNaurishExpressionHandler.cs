@@ -8,7 +8,7 @@ namespace pegleg.cs.Parsing {
 	public class BackusNaurishExpressionHandler : IParsingExpressionHandler<string> {
 		public class PrecedenceExpressionHandler : IParsingExpressionHandler<int> {
 			public int Handle<TBody,TProduct>(AheadParsingExpression<TBody,TProduct> expression) { return 3; }
-			public int Handle(CharacterRangeParsingExpression expression) { return 4; }
+			public int Handle(CharacterSetParsingExpression expression) { return 4; }
 			public int Handle<TProduct>(DynamicParsingExpression<TProduct> expression) { return 100; }
 			public int Handle(EndOfInputParsingExpression expression) { return 4; }
 			public int Handle<TProduct>(LiteralParsingExpression<TProduct> expression) { return 4; }
@@ -149,8 +149,8 @@ namespace pegleg.cs.Parsing {
 			return "<.>";
 		}
 
-		public string Handle(CharacterRangeParsingExpression expression) {
-			return string.Concat(Charcode(expression.RangeStart), "-", Charcode(expression.RangeEnd));
+		public string Handle(CharacterSetParsingExpression expression) {
+			return "(" + string.Join(" | ", expression.Characters.Select(Charcode).ToArray()) + ")";
 		}
 
 		private string Charcode(char c) {

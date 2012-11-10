@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="CodeContract.cs" />
     <Compile Include="Parsing\BaseParsingExpression.cs" />
+    <Compile Include="Parsing\Expressions\CharacterSetParsingExpression.cs" />
     <Compile Include="Parsing\MatchBuilder.cs" />
     <Compile Include="Parsing\Expressions\Builders\DefaultExpressionNamingConvention.cs" />
     <Compile Include="Grammar.cs" />
@@ -50,7 +51,6 @@
     <Compile Include="Parsing\Expressions\AheadParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\UnorderedChoiceParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\SequenceProducts.cs" />
-    <Compile Include="Parsing\Expressions\CharacterRangeParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\DynamicParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\EndOfInputParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\NamedParsingExpression.cs" />

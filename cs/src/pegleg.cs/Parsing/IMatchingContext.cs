@@ -14,8 +14,7 @@ namespace pegleg.cs.Parsing {
 		bool ConsumesMatching(string literal, StringComparison comparison);
 		bool ConsumesMatching(Regex regex, out Match match);
 		bool ConsumesMatching(Regex regex);
-		bool ConsumesCharInRange(char start, char end, out char matched);
-		bool ConsumesCharInRange(char start, char end);
+		bool ConsumesCharacter(bool[] acceptanceMap, int offset);
 		bool AtEndOfInput { get; }
 		IMatchingContext Clone();
 		void Assimilate(IMatchingContext clone);

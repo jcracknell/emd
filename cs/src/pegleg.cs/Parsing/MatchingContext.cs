@@ -128,33 +128,16 @@ namespace pegleg.cs.Parsing {
 			}
 		}
 
-		public bool ConsumesCharInRange(char start, char end) {
+		public bool ConsumesCharacter(bool[] acceptanceMap, int offset) {
 			if(AtEndOfInput) return false;
 
-			var c = _consumable[_consumed];
-
-			if(start <= c && c <= end) {
+			var cv = _consumable[_consumed] - offset;
+			if(0 <= cv && cv < acceptanceMap.Length && acceptanceMap[cv]) {
 				Consume(1);
 				return true;
-			}
-
-			return false;
-		}
-
-		public bool ConsumesCharInRange(char start, char end, out char matched) {
-			matched = (char)0;
-
-			if(AtEndOfInput)
+			} else {
 				return false;
-
-			var c = _consumable[_consumed];
-			if(start <= c && c <= end) {
-				matched = c;
-				Consume(1);
-				return true;
 			}
-
-			return false;
 		}
 
 		public bool ConsumesAnyCharacter(out char c) {

@@ -7,7 +7,7 @@ using System.Text;
 namespace pegleg.cs.Parsing {
 	public interface IParsingExpressionHandler<T> {
 		T Handle<TBody, TProduct>(AheadParsingExpression<TBody,TProduct> expression);
-		T Handle(CharacterRangeParsingExpression expression);
+		T Handle(CharacterSetParsingExpression expression);
 		T Handle<TProduct>(DynamicParsingExpression<TProduct> expression);
 		T Handle<TProduct>(LiteralParsingExpression<TProduct> expression);
 		T Handle(EndOfInputParsingExpression expression);

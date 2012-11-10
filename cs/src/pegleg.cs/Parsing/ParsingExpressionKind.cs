@@ -5,7 +5,7 @@ using System.Text;
 
 namespace pegleg.cs.Parsing {
 	public enum ParsingExpressionKind {
-		CharacterRange,
+		CharacterSet,
 		Closure,
 		EndOfInput,
 		Literal,
