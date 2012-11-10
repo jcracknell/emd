@@ -34,5 +34,9 @@ namespace markdom.cs.Grammar {
 
 			match.Product.Name.Should().Be("_");
 		}
+
+		[Fact] public void IdentifierExpression_matches_unicode_lowercase_omega() {
+			var match = Grammar.IdentifierExpression.ShouldMatch("ω");
+		}
 	}
 }

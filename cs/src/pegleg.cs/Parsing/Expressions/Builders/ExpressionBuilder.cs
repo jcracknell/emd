@@ -173,7 +173,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		}
 
 		public IParsingExpression<Nil> CharacterIn(params char[] chars) {
-			return CharacterNotIn(chars.AsEnumerable());
+			return CharacterIn(chars.AsEnumerable());
 		}
 
 		public IParsingExpression<Nil> CharacterIn(IEnumerable<char> chars) {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace markdom.cs.Utils {
+namespace markdom.cs.Grammar {
 	public class UnicodeCategoriesTests {
 		[Fact] public void UnicodeCategories_should_contain_all_codepoints() {
 			UnicodeCategories.All.Should().HaveCount(24429);
@@ -25,7 +25,6 @@ namespace markdom.cs.Utils {
 				.Where(cp => cp.IsSurrogatePair)
 				.GroupBy(cp => cp.FirstCodeUnit)
 				.ToDictionary(g => g.Key, g => g.Count());
-
 
 			stopwatch.Stop();
 			stopwatch.ToString();

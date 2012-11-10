@@ -75,6 +75,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<DocumentLiteralExpression> DocumentLiteralExpression { get; private set; }
 		public IParsingExpression<string> ExpressionKeyword { get; private set; }
 		public IParsingExpression<Nil> ExpressionWhitespace { get; private set; }
+		public IParsingExpression<Nil> ExpressionUnicodeEscapeSequence { get; private set; }
 
 		/// <summary>
 		/// A tab or a space.
@@ -110,6 +111,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<Nil> EnglishLowerAlpha { get; private set; }
 		public IParsingExpression<Nil> EnglishUpperAlpha { get; private set; }
 		public IParsingExpression<Nil> EnglishAlpha { get; private set; }
+		public IParsingExpression<Nil> UnicodeCharacter { get; private set; }
 
 		#region char sets
 
@@ -159,7 +161,7 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					Literal("/*"),
 					AtLeast(0,
-						Sequence( NotAhead(Literal("*/")), Wildcard() ),
+						Sequence( NotAhead(Literal("*/")), Reference(() => UnicodeCharacter)),
 						match => match.String),
 					Literal("*/"),
 					match => LineInfo.FromMatch(match)));
@@ -615,12 +617,12 @@ namespace markdom.cs.Grammar {
 
 			Define(() => Atomic,
 				ChoiceOrdered(
-					CharacterNotIn(specialCharValues),
+					Sequence(NotAhead(CharacterIn(specialCharValues)), Reference(() => UnicodeCharacter)),
 					ChoiceUnordered(
 						Reference(() => SingleLineComment),
 						Reference(() => MultiLineComment),
 						Reference(() => InlineExpression)),
-					Wildcard()));
+					Reference(() => UnicodeCharacter)));
 
 			#region Tables
 
@@ -953,18 +955,27 @@ namespace markdom.cs.Grammar {
 
 			#region IdentifierExpression
 
-			// TODO: IdentifierExpression should support unicode names per ECMAScript spec
-
 			var identifierExpressionStart =
-				ChoiceUnordered(
-					Reference(() => EnglishAlpha),
+				ChoiceOrdered(
+					CharacterIn(
+						UnicodeCategories.Lu,
+						UnicodeCategories.Ll,
+						UnicodeCategories.Lt,
+						UnicodeCategories.Lm,
+						UnicodeCategories.Nl),
 					Literal("$"),
-					Literal("_"));
+					Literal("_"),
+					Sequence(Literal("\\"), Reference(() => ExpressionUnicodeEscapeSequence)));
 
 			var identifierExpressionPart =
-					ChoiceUnordered(
-						identifierExpressionStart,
-						Reference(() => Digit));
+				ChoiceOrdered(
+					identifierExpressionStart,
+					CharacterIn(
+						UnicodeCategories.Mn,
+						UnicodeCategories.Mc,
+						UnicodeCategories.Nd,
+						UnicodeCategories.Pc),
+					CharacterIn(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D'));
 
 			Define(() => IdentifierExpression,
 				Sequence(
@@ -1147,7 +1158,7 @@ namespace markdom.cs.Grammar {
 						stringExpressionEscapes,
 						Sequence(
 							NotAhead(ChoiceUnordered(Literal("'"), Reference(() => NewLine))),
-							Wildcard(),
+							Reference(() => UnicodeCharacter),
 							match => match.String)),
 					match => match.Product.JoinStrings());
 
@@ -1158,7 +1169,7 @@ namespace markdom.cs.Grammar {
 						stringExpressionEscapes,
 						Sequence(
 							NotAhead(ChoiceUnordered(Literal("\""), Reference(() => NewLine))),
-							Wildcard(),
+							Reference(() => UnicodeCharacter),
 							match => match.String)),
 					match => match.Product.JoinStrings());
 
@@ -1200,7 +1211,7 @@ namespace markdom.cs.Grammar {
 					ChoiceUnordered(
 						Reference(() => EnglishAlpha),
 						Reference(() => Digit),
-						CharacterIn(new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' }),
+						CharacterIn('/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';'),
 						Sequence(
 							Literal("%"),
 							Exactly(2, Reference(() => HexDigit)))));
@@ -1271,6 +1282,11 @@ namespace markdom.cs.Grammar {
 						Reference(() => Comment)),
 					match => Nil.Value));
 
+			Define(() => ExpressionUnicodeEscapeSequence,
+				Sequence(
+					Literal("u"),
+					Exactly(4, Reference(() => HexDigit))));
+
 			#endregion
 
 			#region Text, Character Classes, etc
@@ -1280,7 +1296,7 @@ namespace markdom.cs.Grammar {
 					AtLeast(0,
 						Sequence(
 							NotAhead(Reference(() => NewLine)),
-							Wildcard())),
+							Reference(() => UnicodeCharacter))),
 					Optional(Reference(() => NewLine)),
 					match => LineInfo.FromMatch(match)));
 
@@ -1357,11 +1373,53 @@ namespace markdom.cs.Grammar {
 					Reference(() => EnglishLowerAlpha),
 					Reference(() => EnglishUpperAlpha)));
 
+			Define(() => UnicodeCharacter,
+				CharacterIn(UnicodeCategories.All));
+
 			#endregion
+
+		}
+		
+		protected IParsingExpression<Nil> CharacterIn(params IEnumerable<UnicodeCodePoint>[] categories) {
+			var normalCodePointDefinitions = categories.Flatten().Where(cp => !cp.IsSurrogatePair);
+			var surrogatePairCodePointDefinitions = categories.Flatten().Where(cp => cp.IsSurrogatePair);
+
+			var normalCodePoint =
+				CharacterIn(normalCodePointDefinitions.Select(cp => cp.FirstCodeUnit));
+
+			if(!surrogatePairCodePointDefinitions.Any())
+				return normalCodePoint;
+
+			// Define a rule which can be used to quickly match a valid first code unit for
+			// a surrogate pair amongst the provided code points
+			var surrogatePairLeadUnit =
+				CharacterIn(
+					categories.Flatten()
+					.Where(cp => cp.IsSurrogatePair)
+					.Select(cp => cp.FirstCodeUnit));
+
+			var surrogatePair =
+				ChoiceUnordered(
+					categories.Flatten()
+					.Where(cp => cp.IsSurrogatePair)
+					.GroupBy(cp => cp.FirstCodeUnit)
+					.Select(g =>
+						Sequence(
+							CharacterIn(g.Key),
+							CharacterIn(g.Select(cp => cp.SecondCodeUnit))
+						)
+					)
+				);
+
+			return ChoiceOrdered(
+				normalCodePoint,
+				Sequence(
+					Ahead(surrogatePairLeadUnit),
+					surrogatePair));
 		}
 
 		private int _parseLinesCount = 0;
-		private T ParseLinesAs<T>(IParsingExpression<T> expression, IEnumerable<LineInfo> lines) {
+		protected T ParseLinesAs<T>(IParsingExpression<T> expression, IEnumerable<LineInfo> lines) {
 			lines = lines.ToList();
 			_parseLinesCount++;
 			var expressionMatchingContext =

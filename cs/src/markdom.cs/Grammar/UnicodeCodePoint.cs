@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace markdom.cs.Utils {
+namespace markdom.cs.Grammar {
 	/// <summary>
 	/// Class representing a UTF-16 code point (character).
 	/// Can optionally be a surrogate pair consisting of two code units.
@@ -49,6 +49,12 @@ namespace markdom.cs.Utils {
 			return this._first == other._first
 				&& this._isSurrogatePair == other._isSurrogatePair
 				&& (!this._isSurrogatePair || (this._second == other._second));
+		}
+
+		public override string ToString() {
+			if(_isSurrogatePair)
+				return new string(new char[] { _first, _second });
+			return new string(new char[] { _first });
 		}
 	}
 }
