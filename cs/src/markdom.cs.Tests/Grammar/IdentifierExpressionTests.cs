@@ -35,6 +35,16 @@ namespace markdom.cs.Grammar {
 			match.Product.Name.Should().Be("_");
 		}
 
+		[Fact] public void IdentifierExpression_should_not_match_true_keyword() {
+			Grammar.IdentifierExpression.ShouldNotMatch("true");
+		}
+
+		[Fact] public void IdentifierExpression_should_match_true_keyword_followed_by_identifier_part() {
+			var match = Grammar.IdentifierExpression.ShouldMatch("trueish");
+
+			match.Product.Name.Should().Be("trueish");
+		}
+
 		[Fact] public void IdentifierExpression_matches_unicode_lowercase_omega() {
 			var match = Grammar.IdentifierExpression.ShouldMatch("ω");
 		}

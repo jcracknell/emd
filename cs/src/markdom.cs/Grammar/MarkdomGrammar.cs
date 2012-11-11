@@ -74,7 +74,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<StringLiteralExpression> StringLiteralExpression { get; private set; }
 		public IParsingExpression<UriLiteralExpression> UriLiteralExpression { get; private set; }
 		public IParsingExpression<DocumentLiteralExpression> DocumentLiteralExpression { get; private set; }
-		public IParsingExpression<string> ExpressionKeyword { get; private set; }
+		public IParsingExpression<Nil> ExpressionKeyword { get; private set; }
 		public IParsingExpression<Nil> ExpressionWhitespace { get; private set; }
 		public IParsingExpression<Nil> ExpressionUnicodeEscapeSequence { get; private set; }
 
@@ -1231,44 +1231,46 @@ namespace markdom.cs.Grammar {
 			#region ExpressionKeyword
 
 			Define(() => ExpressionKeyword,
-				ChoiceUnordered(new string[] {
-					"break",
-					"case",
-					"catch",
-					"class",
-					"const",
-					"continue",
-					"debugger",
-					"default",
-					"delete",
-					"do",
-					"else",
-					"enum",
-					"export",
-					"extends",
-					"false",
-					"finally",
-					"for",
-					"function",
-					"if",
-					"import",
-					"instanceof",
-					"in",
-					"new",
-					"null",
-					"return",
-					"super",
-					"switch",
-					"this",
-					"throw",
-					"true",
-					"try",
-					"typeof",
-					"var",
-					"void",
-					"while",
-					"with"
-				}.Select(Literal)));
+				Sequence(
+					ChoiceUnordered(new string[] {
+						"break",
+						"case",
+						"catch",
+						"class",
+						"const",
+						"continue",
+						"debugger",
+						"default",
+						"delete",
+						"do",
+						"else",
+						"enum",
+						"export",
+						"extends",
+						"false",
+						"finally",
+						"for",
+						"function",
+						"if",
+						"import",
+						"instanceof",
+						"in",
+						"new",
+						"null",
+						"return",
+						"super",
+						"switch",
+						"this",
+						"throw",
+						"true",
+						"try",
+						"typeof",
+						"var",
+						"void",
+						"while",
+						"with"
+					}.Select(Literal)),
+					NotAhead(identifierExpressionPart)));
 
 			#endregion
 
