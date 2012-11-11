@@ -6,18 +6,22 @@ using System.Text;
 namespace markdom.cs.Model.Expressions {
 	public class IndexerExpression : IExpression {
 		private readonly IExpression _body;
-		private readonly IExpression _name;
+		private readonly IExpression _memberName;
 		private readonly MarkdomSourceRange _sourceRange;
 
-		public IndexerExpression(IExpression body, IExpression name, MarkdomSourceRange sourceRange) {
+		public IndexerExpression(IExpression body, IExpression memberName, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
-			CodeContract.ArgumentIsNotNull(() => name, name);
+			CodeContract.ArgumentIsNotNull(() => memberName, memberName);
 			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_body = body;
-			_name = name;
+			_memberName = memberName;
 			_sourceRange = sourceRange;
 		}
+
+		public IExpression Body { get { return _body; } }
+
+		public IExpression MemberName { get { return _memberName; } }
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 

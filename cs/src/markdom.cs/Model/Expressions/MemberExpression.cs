@@ -20,6 +20,10 @@ namespace markdom.cs.Model.Expressions {
 			_sourceRange = sourceRange;
 		}
 
+		public IExpression Body { get { return _body; } }
+		
+		public string MemberName { get { return _memberName; } }
+
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public ExpressionKind Kind { get { return ExpressionKind.Member; } }

@@ -19,6 +19,10 @@ namespace markdom.cs.Model.Expressions {
 			_sourceRange = sourceRange;
 		}
 
+		public IExpression Body { get { return _body; } }
+
+		public IEnumerable<IExpression> Arguments { get { return _arguments; } }
+
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
 		public ExpressionKind Kind { get { return ExpressionKind.Call; } }
