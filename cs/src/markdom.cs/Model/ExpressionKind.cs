@@ -6,8 +6,11 @@ using System.Text;
 namespace markdom.cs.Model {
 	public enum ExpressionKind {
 		BooleanLiteral,
+		Call,
 		DocumentLiteral,
 		Identifier,
+		Indexer,
+		Member,
 		NullLiteral,
 		NumericLiteral,
 		ObjectLiteral,
