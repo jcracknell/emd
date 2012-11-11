@@ -65,5 +65,11 @@ namespace markdom.cs {
 		public static IEnumerable<T> InEnumerable<T>(this T obj) {
 			yield return obj;
 		}
+
+		public static TMemo Reduce<T, TMemo>(this IEnumerable<T> enumerable, TMemo memo, Func<TMemo, T, TMemo> reduce) {
+			foreach(var item in enumerable)
+				memo = reduce(memo, item);
+			return memo;
+		}
 	}
 }
