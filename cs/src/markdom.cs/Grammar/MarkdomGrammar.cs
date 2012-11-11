@@ -995,7 +995,10 @@ namespace markdom.cs.Grammar {
 
 			var objectPropertyAssignment =
 				Sequence(
-					Reference(() => StringLiteralExpression), // TODO: Identifier / String / Uri
+					ChoiceUnordered<IExpression>(
+						Reference(() => IdentifierExpression),
+						Reference(() => StringLiteralExpression),
+						Reference(() => NumericLiteralExpression)),
 					Reference(() => ExpressionWhitespace),
 					Literal(":"),
 					Reference(() => ExpressionWhitespace),
