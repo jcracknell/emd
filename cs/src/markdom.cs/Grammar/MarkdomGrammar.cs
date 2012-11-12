@@ -1248,10 +1248,24 @@ namespace markdom.cs.Grammar {
 					Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
 					match => new StringLiteralExpression(match.Product.Of2, match.SourceRange));
 
+			var verbatimStringExpression =
+				ChoiceOrdered(
+					Enumerable.Range(1,16).Reverse()
+					.Select(i => "".PadRight(i, '`'))
+					.Select(ticks =>
+						Sequence(
+							Literal(ticks),
+							AtLeast(0,
+								Sequence(NotAhead(Literal(ticks)), Reference(() => UnicodeCharacter)),
+								match => match.String),
+							Literal(ticks),
+							match => new StringLiteralExpression(match.Product.Of2, match.SourceRange))));
+
 			Define(() => StringLiteralExpression,
-				ChoiceUnordered(
+				ChoiceOrdered(
 					singleQuotedStringExpression,
-					doubleQuotedStringExpression));
+					doubleQuotedStringExpression,
+					verbatimStringExpression));
 
 			#endregion
 

@@ -19,7 +19,11 @@ This is a [paragraph] with **bold text**.
 
 ## Heading 2
 
-Another @paragraph.
+Another @code({lang:'js'}, `
+(function(){
+	alert('bink!');
+})()
+`).
 
  * This is a tight list.
  * With two items, one of which is spread
