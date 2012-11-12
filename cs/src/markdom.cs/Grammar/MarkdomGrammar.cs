@@ -21,7 +21,6 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<BlockquoteNode> Blockquote;
 		public readonly IParsingExpression<TableNode> Table;
 		public readonly IParsingExpression<TableRowNode> TableRow;
-		public readonly IParsingExpression<LineInfo> TableRowSeparator;
 		public readonly IParsingExpression<HeadingNode> Heading;
 		public readonly IParsingExpression<int> HeadingAnnouncement;
 		public readonly IParsingExpression<OrderedListNode> OrderedList;
@@ -151,7 +150,6 @@ namespace markdom.cs.Grammar {
 
 			// Ordering notes:
 			//   * Paragraph must come last, because it will sweep up just about anything
-			//   * Table must precede unordered list, because of fancy row separators starting with +/-
 			Define(() => Block,
 				Sequence(
 					Reference(() => BlankLines),
@@ -596,11 +594,7 @@ namespace markdom.cs.Grammar {
 
 			Define(() => Table,
 				AtLeast(1,
-					Sequence(
-						AtLeast(0, Reference(() => TableRowSeparator)),
-						Reference(() => TableRow),
-						AtLeast(0, Reference(() => TableRowSeparator)),
-						match => match.Product.Of2),
+					Reference(() => TableRow),
 					match => new TableNode(match.Product.ToArray(), match.SourceRange)));
 
 			var tableCellContents =
@@ -682,14 +676,6 @@ namespace markdom.cs.Grammar {
 					AtLeast(1, Reference(() => tableCell)),
 					tableRowEnd,
 					match => new TableRowNode(match.Product.Of2.ToArray(), match.SourceRange)));
-
-			Define(() => TableRowSeparator,
-				Sequence(
-					Reference(() => SpaceChars),
-					CharacterIn(new char[] { '+', '-', '=' }),
-					AtLeast(0, CharacterIn(new char[] { '+', '-', '=', ' ', '\t' })),
-					Reference(() => BlankLine),
-					match => LineInfo.FromMatch(match)));
 
 			#endregion
 

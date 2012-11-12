@@ -33,13 +33,9 @@ across several lines.
 
 Yet another @{{*emphasis*}}.
 
-+==============+
 |2c= The Title |
-+=======+======+
 |=   a  |=  b  |
-+=======+======+
 |     1 |    2 |
-+-------+------+
 |@{{
 	| foo | bar
 	| @{{**strong**}} | baz
