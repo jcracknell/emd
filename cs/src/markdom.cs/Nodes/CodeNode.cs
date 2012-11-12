@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Nodes {
-	public class CodeNode : IInlineNode {
+	public class CodeNode : IFormattedInlineNode {
 		private readonly string _text;
 		private readonly SourceRange _sourceRange;
 		
