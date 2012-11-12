@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public struct SourceLocation {
+	public class SourceLocation {
 		public readonly int Index;
 		public readonly int Line;
 		public readonly int LineIndex;

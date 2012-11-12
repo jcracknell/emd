@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public struct SourceRange {
+	public class SourceRange {
 		public readonly int Index;
 		public readonly int Line;
 		public readonly int LineIndex;
@@ -26,6 +26,22 @@ namespace pegleg.cs.Parsing {
 		public SourceRange(SourceLocation sourceLocation, int length)
 			: this(sourceLocation.Index, length, sourceLocation.Line, sourceLocation.LineIndex)
 		{ }
+
+		public override int GetHashCode() {
+			return ((Index << 16) | (Index >> 16))
+				^ Length
+				^ (Line << 16)
+				^ (LineIndex << 8);
+		}
+
+		public override bool Equals(object obj) {
+			var other = obj as SourceRange;
+			return null != other
+				&& this.Index == other.Index
+				&& this.Length == other.Length
+				&& this.Line == other.Line
+				&& this.LineIndex == other.LineIndex;
+		}
 
 		public override string ToString() {
 			return string.Concat("{ Index: ", Index, ", Length: ", Length, ", Line: ", Line, ", LineIndex: ", LineIndex, " }");
