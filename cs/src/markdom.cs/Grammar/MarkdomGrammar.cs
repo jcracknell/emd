@@ -60,6 +60,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<SymbolNode> Symbol { get; private set; }
 
 		public IParsingExpression<IExpression> Expression { get; private set; }
+		public IParsingExpression<IExpression> CallExpression { get; private set; }
 		public IParsingExpression<IExpression> MemberExpression { get; private set; }
 		public IParsingExpression<IExpression> AtExpression { get; private set; }
 		public IParsingExpression<IExpression> AtExpressionRequired { get; private set; }
@@ -914,32 +915,8 @@ namespace markdom.cs.Grammar {
 			Define(() => Expression,
 				Reference(() => AtExpression));
 
-			#region Call Expression
-			var argumentSeparator =
-				Sequence(
-					Reference(() => ExpressionWhitespace),
-					Literal(","),
-					Reference(() => ExpressionWhitespace));
-
-			// TODO: argument list accepts optional final object body expression
-			var argumentListArguments =
-				Optional(
-					Sequence(
-						Reference(() => Expression),
-						AtLeast(0, Sequence( argumentSeparator, Reference(() => Expression), match => match.Product.Of2)),
-						match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2)));
-
-			Define(() => ArgumentList,
-				Sequence(
-					Sequence(Literal("("), Reference(() => ExpressionWhitespace)),
-					argumentListArguments,
-					Sequence(Reference(() => ExpressionWhitespace), Literal(")")),
-					match => match.Product.Of2 ?? new IExpression[0]));
-
-			#endregion
-
-			#region MemberExpression
-
+			#region LeftHandSideExpression
+			
 			var dynamicPropertyExpressionPart =
 				Sequence(
 					Literal("["), Reference(() => ExpressionWhitespace),
@@ -967,6 +944,57 @@ namespace markdom.cs.Grammar {
 						return asm;
 					});
 
+			var callExpressionPart =
+				Reference(
+					() => ArgumentList,
+					match => {
+						Func<IExpression, IExpression> asm = body =>
+							new CallExpression(
+								body, match.Product.ToArray(),
+								new MarkdomSourceRange(body.SourceRange.Index, match.SourceRange.Index - body.SourceRange.Index + match.SourceRange.Length, body.SourceRange.Line, body.SourceRange.LineIndex)
+							);
+						return asm;
+					});
+
+			#region Call Expression
+
+			Define(() => CallExpression,
+				Sequence(
+					Reference(() => MemberExpression),
+					AtLeast(0,
+						Sequence(
+							Reference(() => ExpressionWhitespace),
+							ChoiceUnordered(
+								callExpressionPart,
+								staticPropertyExpressionPart,
+								dynamicPropertyExpressionPart),
+							match => match.Product.Of2)),
+					match => match.Product.Of2.Reduce(match.Product.Of1, (body, asm) => asm(body))));
+
+			var argumentSeparator =
+				Sequence(
+					Reference(() => ExpressionWhitespace),
+					Literal(","),
+					Reference(() => ExpressionWhitespace));
+
+			var argumentListArguments =
+				Optional(
+					Sequence(
+						Reference(() => Expression),
+						AtLeast(0, Sequence( argumentSeparator, Reference(() => Expression), match => match.Product.Of2)),
+						match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2)));
+
+			Define(() => ArgumentList,
+				Sequence(
+					Sequence(Literal("("), Reference(() => ExpressionWhitespace)),
+					argumentListArguments,
+					Sequence(Reference(() => ExpressionWhitespace), Literal(")")),
+					match => match.Product.Of2 ?? new IExpression[0]));
+
+			#endregion
+
+			#region MemberExpression
+
 			// Divergence: should also reference NewExpression/FunctionExpression as body
 			Define(() => MemberExpression,
 				Sequence(
@@ -977,6 +1005,8 @@ namespace markdom.cs.Grammar {
 							ChoiceUnordered(dynamicPropertyExpressionPart, staticPropertyExpressionPart),
 							match => match.Product.Of2)),
 					match => match.Product.Of2.Reduce(match.Product.Of1, (body, asm) => asm(body))));
+
+			#endregion
 
 			#endregion
 
