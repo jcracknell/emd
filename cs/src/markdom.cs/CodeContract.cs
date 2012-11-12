@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -12,8 +13,10 @@ namespace markdom.cs {
 			GetArgumentName(arg);
 			#endif
 
-			if(null == actual)
-				throw new ArgumentNullException(GetArgumentName(arg));
+			if(null != actual) return;
+
+			var argumentName = GetArgumentName(arg);
+			throw new ArgumentNullException(argumentName, string.Concat("Argument ", argumentName, " cannot be null."));
 		}
 
 		public static void ArgumentIsValid(Expression<Func<object>> arg, bool valid, string assertion) {
@@ -26,9 +29,7 @@ namespace markdom.cs {
 
 			var argumentName = GetArgumentName(arg);
 
-			throw new ArgumentException(
-				string.Concat(argumentName, " is invalid: ", assertion),
-				assertion);
+			throw new ArgumentException(string.Concat("Argument ", argumentName, " is invalid: ", assertion), argumentName);
 		}
 
 		public static void ThrowArgumentException(Expression<Func<object>> arg, string message) {
@@ -38,22 +39,12 @@ namespace markdom.cs {
 			#endif
 
 			var argumentName = GetArgumentName(arg);
-			throw new ArgumentException(
-				string.Concat(argumentName, " ", message),
-				argumentName);
+			throw new ArgumentException(string.Concat(argumentName, " ", message), argumentName);
 		}
 
 		private static string GetArgumentName(LambdaExpression arg) {
-			var body = arg.Body;
-			
-			while(ExpressionType.Convert == body.NodeType)
-				body = ((UnaryExpression)body).Operand;
+			var member = ReflectionUtils.GetMemberFrom(arg);
 
-			var memberExpression = body as MemberExpression;
-			if(null == memberExpression)
-				throw new ArgumentException("Invalid " + typeof(CodeContract).Name + " usage: provided argument expression does not reference a member.");
-
-			var member = memberExpression.Member;
 			if(MemberTypes.Field != member.MemberType)
 				throw new ArgumentException("Invalid " + typeof(CodeContract).Name + " usage: provided argument expression does not reference a field.");
 

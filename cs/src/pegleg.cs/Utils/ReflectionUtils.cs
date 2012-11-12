@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Text;
 
 namespace pegleg.cs.Utils {
-	internal static class ReflectionUtils {
+	public static class ReflectionUtils {
 		public static MemberExpression GetMemberExpressionFrom(LambdaExpression expression) {
 			var body = expression.Body;
 
