@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
-using markdom.cs.Model;
-using markdom.cs.Model.Nodes;
+using markdom.cs.Nodes;
 using pegleg.cs.Parsing;
 using System;
 using System.Collections.Generic;

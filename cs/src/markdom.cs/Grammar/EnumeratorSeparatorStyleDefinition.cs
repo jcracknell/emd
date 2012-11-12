@@ -1,4 +1,4 @@
-﻿using markdom.cs.Model.Nodes;
+﻿using markdom.cs.Nodes;
 using pegleg.cs;
 using System;
 using System.Collections.Generic;

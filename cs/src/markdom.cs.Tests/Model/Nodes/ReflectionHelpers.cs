@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace markdom.cs.Model.Nodes {
+namespace markdom.cs.Nodes {
 	public static class ReflectionHelpers {
 		public static bool IsNodeClassOrInterface(Type candidate) {
 			return typeof(INode).Equals(candidate)

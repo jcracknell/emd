@@ -1,11 +1,11 @@
-﻿using markdom.cs.Model;
-using Xunit;
+﻿using Xunit;
 using FluentAssertions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using markdom.cs.Expressions;
 
 namespace markdom.cs.Grammar {
 	public class BooleanLiteralExpressionTests : GrammarTestFixture {

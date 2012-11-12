@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Reflection;
 using Xunit;
 
-namespace markdom.cs.Model.Nodes {
+namespace markdom.cs.Nodes {
 	public class ImplementationTests {
 		[Fact] public void All_fields_on_INode_implementations_are_readonly() {
 			var nodeTypeFieldsWhichAreNotReadOnly =

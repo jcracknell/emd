@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
-using markdom.cs.Model;
-using markdom.cs.Model.Expressions;
+using markdom.cs.Expressions;
 using System;
 using System.Collections.Generic;
 using System.Linq;

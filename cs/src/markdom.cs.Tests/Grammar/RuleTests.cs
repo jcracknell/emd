@@ -1,6 +1,5 @@
-﻿using markdom.cs.Model;
-using markdom.cs.Model.Expressions;
-using markdom.cs.Model.Nodes;
+﻿using markdom.cs.Expressions;
+using markdom.cs.Nodes;
 using pegleg.cs;
 using pegleg.cs.Parsing;
 using System;

@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace markdom.cs.Model.Nodes {
+namespace markdom.cs.Nodes {
 	public class NodeEqualityTestingHandler : INodeHandler {
 		private readonly INode _expected;
 

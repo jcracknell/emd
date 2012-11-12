@@ -1,4 +1,4 @@
-﻿using markdom.cs.Model.Nodes;
+﻿using markdom.cs.Nodes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
