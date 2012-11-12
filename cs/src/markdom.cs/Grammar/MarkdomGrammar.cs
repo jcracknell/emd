@@ -1538,8 +1538,11 @@ namespace markdom.cs.Grammar {
 		}
 
 		protected IParsingExpression<Nil> UnicodeCharacterNotIn(params IEnumerable<char>[] chars) {
-			var forbiddenChars = new HashSet<char>(chars.Flatten());
-			return UnicodeCharacterIn(UnicodeCategories.All.Where(cp => cp.IsSurrogatePair || !forbiddenChars.Contains(cp.FirstCodeUnit)));
+			bool[] forbiddenChars = new bool[char.MaxValue + 1];
+			foreach(var forbiddenChar in chars.Flatten())
+				forbiddenChars[forbiddenChar] = true;
+
+			return UnicodeCharacterIn(UnicodeCategories.All.Where(cp => cp.IsSurrogatePair || !forbiddenChars[cp.FirstCodeUnit]));
 		}
 
 		private IParsingExpression<Nil> UnicodeCharacterNotIn(params char[] chars) {
