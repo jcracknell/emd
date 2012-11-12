@@ -12,109 +12,109 @@ using System.Text.RegularExpressions;
 
 namespace markdom.cs.Grammar {
 	public class MarkdomGrammar : Grammar<MarkdomDocumentNode> {
-		public IParsingExpression<LineInfo> Comment { get; private set; }
-		public IParsingExpression<LineInfo> MultiLineComment { get; private set; }
-		public IParsingExpression<LineInfo> SingleLineComment { get; private set; }
+		public readonly IParsingExpression<LineInfo> Comment;
+		public readonly IParsingExpression<LineInfo> MultiLineComment;
+		public readonly IParsingExpression<LineInfo> SingleLineComment;
 
-		public IParsingExpression<MarkdomDocumentNode> Document { get; private set; }
+		public readonly IParsingExpression<MarkdomDocumentNode> Document;
 
-		public IParsingExpression<IEnumerable<IBlockNode>> Blocks { get; private set; }
-		public IParsingExpression<IBlockNode> Block { get; private set; }
+		public readonly IParsingExpression<IEnumerable<IBlockNode>> Blocks;
+		public readonly IParsingExpression<IBlockNode> Block;
 
-		public IParsingExpression<LineInfo> CommentBlock { get; private set; }
-		public IParsingExpression<BlockquoteNode> Blockquote { get; private set; }
-		public IParsingExpression<TableNode> Table { get; private set; }
-		public IParsingExpression<TableRowNode> TableRow { get; private set; }
-		public IParsingExpression<LineInfo> TableRowSeparator { get; private set; }
-		public IParsingExpression<HeadingNode> Heading { get; private set; }
-		public IParsingExpression<int> HeadingAnnouncement { get; private set; }
-		public IParsingExpression<OrderedListNode> OrderedList { get; private set; }
-		public IParsingExpression<Nil> Enumerator { get; private set; }
-		public IParsingExpression<Nil> EnumeratorishAhead { get; private set; }
-		public IParsingExpression<int?> EnumeratorValue { get; private set; }
-		public IParsingExpression<UnorderedListNode> UnorderedList { get; private set; }
-		public IParsingExpression<UnorderedListNode> UnorderedListTight { get; private set; }
-		public IParsingExpression<UnorderedListNode> UnorderedListLoose { get; private set; }
-		public IParsingExpression<Nil> Bullet { get; private set; }
-		public IParsingExpression<ParagraphNode> Paragraph { get; private set; }
-		public IParsingExpression<ReferenceNode> ReferenceBlock { get; private set; }
-		public IParsingExpression<LineInfo> NonEmptyBlockLine { get; private set; }
-		public IParsingExpression<LineInfo> BlockLine { get; private set; }
-		public IParsingExpression<Nil> BlockLineAtomic { get; private set; }
-		public IParsingExpression<Nil> Atomic { get; private set; }
+		public readonly IParsingExpression<LineInfo> CommentBlock;
+		public readonly IParsingExpression<BlockquoteNode> Blockquote;
+		public readonly IParsingExpression<TableNode> Table;
+		public readonly IParsingExpression<TableRowNode> TableRow;
+		public readonly IParsingExpression<LineInfo> TableRowSeparator;
+		public readonly IParsingExpression<HeadingNode> Heading;
+		public readonly IParsingExpression<int> HeadingAnnouncement;
+		public readonly IParsingExpression<OrderedListNode> OrderedList;
+		public readonly IParsingExpression<Nil> Enumerator;
+		public readonly IParsingExpression<Nil> EnumeratorishAhead;
+		public readonly IParsingExpression<int?> EnumeratorValue;
+		public readonly IParsingExpression<UnorderedListNode> UnorderedList;
+		public readonly IParsingExpression<UnorderedListNode> UnorderedListTight;
+		public readonly IParsingExpression<UnorderedListNode> UnorderedListLoose;
+		public readonly IParsingExpression<Nil> Bullet;
+		public readonly IParsingExpression<ParagraphNode> Paragraph;
+		public readonly IParsingExpression<ReferenceNode> ReferenceBlock;
+		public readonly IParsingExpression<LineInfo> NonEmptyBlockLine;
+		public readonly IParsingExpression<LineInfo> BlockLine;
+		public readonly IParsingExpression<Nil> BlockLineAtomic;
+		public readonly IParsingExpression<Nil> Atomic;
 
-		public IParsingExpression<IEnumerable<IInlineNode>> Inlines { get; private set; }
-		public IParsingExpression<IInlineNode> Inline { get; private set; }
-		public IParsingExpression<AutoLinkNode> AutoLink { get; private set; }
-		public IParsingExpression<LinkNode> Link { get; private set; }
-		public IParsingExpression<IEnumerable<IInlineNode>> Label { get; private set; }
-		public IParsingExpression<StrongNode> Strong { get; private set; }
-		public IParsingExpression<EmphasisNode> Emphasis { get; private set; }
-		public IParsingExpression<InlineExpressionNode> InlineExpression { get; private set; }
-		public IParsingExpression<QuotedNode> Quoted { get; private set; }
-		public IParsingExpression<LineBreakNode> LineBreak { get; private set; }
-		public IParsingExpression<TextNode> Text { get; private set; }
-		public IParsingExpression<SpaceNode> Space { get; private set; }
-		public IParsingExpression<EntityNode> Entity { get; private set; }
-		public IParsingExpression<ReferenceId> ReferenceLabel { get; private set; }
-		public IParsingExpression<SymbolNode> Symbol { get; private set; }
+		public readonly IParsingExpression<IEnumerable<IInlineNode>> Inlines;
+		public readonly IParsingExpression<IInlineNode> Inline;
+		public readonly IParsingExpression<AutoLinkNode> AutoLink;
+		public readonly IParsingExpression<LinkNode> Link;
+		public readonly IParsingExpression<IEnumerable<IInlineNode>> Label;
+		public readonly IParsingExpression<StrongNode> Strong;
+		public readonly IParsingExpression<EmphasisNode> Emphasis;
+		public readonly IParsingExpression<InlineExpressionNode> InlineExpression;
+		public readonly IParsingExpression<QuotedNode> Quoted;
+		public readonly IParsingExpression<LineBreakNode> LineBreak;
+		public readonly IParsingExpression<TextNode> Text;
+		public readonly IParsingExpression<SpaceNode> Space;
+		public readonly IParsingExpression<EntityNode> Entity;
+		public readonly IParsingExpression<ReferenceId> ReferenceLabel;
+		public readonly IParsingExpression<SymbolNode> Symbol;
 
-		public IParsingExpression<IExpression> Expression { get; private set; }
-		public IParsingExpression<IExpression> LeftHandSideExpression { get; private set; }
-		public IParsingExpression<IExpression> AtExpression { get; private set; }
-		public IParsingExpression<IExpression> AtExpressionRequired { get; private set; }
-		public IParsingExpression<IdentifierExpression> IdentifierExpression { get; private set; }
-		public IParsingExpression<string> IdentifierName { get; private set; }
-		public IParsingExpression<IExpression> PrimaryExpression { get; private set; }
-		public IParsingExpression<IEnumerable<IExpression>> ArgumentList { get; private set; }
-		public IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression { get; private set; }
-		public IParsingExpression<ObjectLiteralExpression> ObjectBodyExpression { get; private set; }
-		public IParsingExpression<IExpression> LiteralExpression { get; private set; }
-		public IParsingExpression<NullLiteralExpression> NullLiteralExpression { get; private set; }
-		public IParsingExpression<BooleanLiteralExpression> BooleanLiteralExpression { get; private set; }
-		public IParsingExpression<NumericLiteralExpression> NumericLiteralExpression { get; private set; }
-		public IParsingExpression<StringLiteralExpression> StringLiteralExpression { get; private set; }
-		public IParsingExpression<UriLiteralExpression> UriLiteralExpression { get; private set; }
-		public IParsingExpression<DocumentLiteralExpression> DocumentLiteralExpression { get; private set; }
-		public IParsingExpression<Nil> ExpressionKeyword { get; private set; }
-		public IParsingExpression<Nil> ExpressionWhitespace { get; private set; }
-		public IParsingExpression<Nil> ExpressionUnicodeEscapeSequence { get; private set; }
+		public readonly IParsingExpression<IExpression> Expression;
+		public readonly IParsingExpression<IExpression> LeftHandSideExpression;
+		public readonly IParsingExpression<IExpression> AtExpression;
+		public readonly IParsingExpression<IExpression> AtExpressionRequired;
+		public readonly IParsingExpression<IdentifierExpression> IdentifierExpression;
+		public readonly IParsingExpression<string> IdentifierName;
+		public readonly IParsingExpression<IExpression> PrimaryExpression;
+		public readonly IParsingExpression<IEnumerable<IExpression>> ArgumentList;
+		public readonly IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression;
+		public readonly IParsingExpression<ObjectLiteralExpression> ObjectBodyExpression;
+		public readonly IParsingExpression<IExpression> LiteralExpression;
+		public readonly IParsingExpression<NullLiteralExpression> NullLiteralExpression;
+		public readonly IParsingExpression<BooleanLiteralExpression> BooleanLiteralExpression;
+		public readonly IParsingExpression<NumericLiteralExpression> NumericLiteralExpression;
+		public readonly IParsingExpression<StringLiteralExpression> StringLiteralExpression;
+		public readonly IParsingExpression<UriLiteralExpression> UriLiteralExpression;
+		public readonly IParsingExpression<DocumentLiteralExpression> DocumentLiteralExpression;
+		public readonly IParsingExpression<Nil> ExpressionKeyword;
+		public readonly IParsingExpression<Nil> ExpressionWhitespace;
+		public readonly IParsingExpression<Nil> ExpressionUnicodeEscapeSequence;
 
 		/// <summary>
 		/// A tab or a space.
 		/// </summary>
-		public IParsingExpression<Nil> SpaceChar { get; private set; }
-		public IParsingExpression<string> SpaceChars { get; private set; }
+		public readonly IParsingExpression<Nil> SpaceChar;
+		public readonly IParsingExpression<string> SpaceChars;
 		/// <summary>
 		/// A whitespace character; space, tab or newline.
 		/// </summary>
-		public IParsingExpression<Nil> Whitespace { get; private set; }
-		public IParsingExpression<IEnumerable<Nil>> Whitespaces { get; private set; }
+		public readonly IParsingExpression<Nil> Whitespace;
+		public readonly IParsingExpression<IEnumerable<Nil>> Whitespaces;
 		/// <summary>
 		/// A newline character.
 		/// </summary>
-		public IParsingExpression<string> NewLine { get; private set; }
-		public IParsingExpression<Nil> SpecialChar { get; private set; }
-		public IParsingExpression<Nil> NormalChar { get; private set; }
-		public IParsingExpression<string> Indent { get; private set; }
-		public IParsingExpression<string> NonIndentSpace { get; private set; }
+		public readonly IParsingExpression<string> NewLine;
+		public readonly IParsingExpression<Nil> SpecialChar;
+		public readonly IParsingExpression<Nil> NormalChar;
+		public readonly IParsingExpression<string> Indent;
+		public readonly IParsingExpression<string> NonIndentSpace;
 		/// <summary>
 		/// A raw line of input, including the newline character.
 		/// </summary>
-		public IParsingExpression<LineInfo> Line { get; private set; }
+		public readonly IParsingExpression<LineInfo> Line;
 		/// <summary>
 		/// A blank line; composed of any number of spaces followed by a line end.
 		/// </summary>
-		public IParsingExpression<IEnumerable<LineInfo>> BlankLines { get; private set; }
-		public IParsingExpression<LineInfo> BlankLine { get; private set; }
-		public IParsingExpression<LineInfo> NonTerminalBlankLine { get; private set; }
-		public IParsingExpression<Nil> Digit { get; private set; }
-		public IParsingExpression<Nil> NonZeroDigit { get; private set; }
-		public IParsingExpression<Nil> HexDigit { get; private set; }
-		public IParsingExpression<Nil> EnglishLowerAlpha { get; private set; }
-		public IParsingExpression<Nil> EnglishUpperAlpha { get; private set; }
-		public IParsingExpression<Nil> EnglishAlpha { get; private set; }
-		public IParsingExpression<Nil> UnicodeCharacter { get; private set; }
+		public readonly IParsingExpression<IEnumerable<LineInfo>> BlankLines;
+		public readonly IParsingExpression<LineInfo> BlankLine;
+		public readonly IParsingExpression<LineInfo> NonTerminalBlankLine;
+		public readonly IParsingExpression<Nil> Digit;
+		public readonly IParsingExpression<Nil> NonZeroDigit;
+		public readonly IParsingExpression<Nil> HexDigit;
+		public readonly IParsingExpression<Nil> EnglishLowerAlpha;
+		public readonly IParsingExpression<Nil> EnglishUpperAlpha;
+		public readonly IParsingExpression<Nil> EnglishAlpha;
+		public readonly IParsingExpression<Nil> UnicodeCharacter;
 
 		public MarkdomGrammar() {
 			#region char sets
