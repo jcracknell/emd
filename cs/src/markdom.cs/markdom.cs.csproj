@@ -40,7 +40,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ArrayUtils.cs" />
     <Compile Include="CodeContract.cs" />
     <Compile Include="Conversion\ReferenceCollection.cs" />
     <Compile Include="Conversion\ReferenceExtractingNodeHandler.cs" />
