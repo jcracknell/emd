@@ -783,7 +783,11 @@ namespace markdom.cs.Grammar {
 			Define(() => ReferenceLabel,
 				Sequence(
 					Literal("["),
-					AtLeast(0, CharacterNotIn(new char[] { ']', '\n', '\r' }), match => match.String),
+					AtLeast(0, 
+						Sequence(
+							NotAhead(CharacterIn(']', '\n', '\r')),
+							Reference(() => UnicodeCharacter)),
+						match => match.String),
 					Literal("]"),
 					match => ReferenceId.FromText(match.Product.Of2)));
 
@@ -899,7 +903,7 @@ namespace markdom.cs.Grammar {
 					match => new SpaceNode(match.SourceRange)));
 
 			Define(() => NormalChar,
-				CharacterNotIn(whitespaceCharValues.Concat(specialCharValues)));
+				UnicodeCharacterNotIn(whitespaceCharValues, specialCharValues));
 
 			Define(() => Symbol,
 				Reference(() => SpecialChar, match => new SymbolNode(match.String, match.SourceRange)));
@@ -1015,7 +1019,7 @@ namespace markdom.cs.Grammar {
 
 			var identifierExpressionStart =
 				ChoiceOrdered(
-					CharacterIn(
+					UnicodeCharacterIn(
 						UnicodeCategories.Lu,
 						UnicodeCategories.Ll,
 						UnicodeCategories.Lt,
@@ -1028,7 +1032,7 @@ namespace markdom.cs.Grammar {
 			var identifierExpressionPart =
 				ChoiceOrdered(
 					identifierExpressionStart,
-					CharacterIn(
+					UnicodeCharacterIn(
 						UnicodeCategories.Mn,
 						UnicodeCategories.Mc,
 						UnicodeCategories.Nd,
@@ -1451,13 +1455,13 @@ namespace markdom.cs.Grammar {
 				CharacterIn(englishAlphaCharValues));
 
 			Define(() => UnicodeCharacter,
-				CharacterIn(UnicodeCategories.All));
+				UnicodeCharacterIn(UnicodeCategories.All));
 
 			#endregion
 
 		}
 		
-		protected IParsingExpression<Nil> CharacterIn(params IEnumerable<UnicodeCodePoint>[] categories) {
+		protected IParsingExpression<Nil> UnicodeCharacterIn(params IEnumerable<UnicodeCodePoint>[] categories) {
 			var normalCodePointDefinitions = categories.Flatten().Where(cp => !cp.IsSurrogatePair);
 			var surrogatePairCodePointDefinitions = categories.Flatten().Where(cp => cp.IsSurrogatePair);
 
@@ -1493,6 +1497,20 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					Ahead(surrogatePairLeadUnit),
 					surrogatePair));
+		}
+
+		protected IParsingExpression<Nil> UnicodeCharacterNotIn(params IEnumerable<char>[] chars) {
+			var forbiddenChars = new HashSet<char>(chars.Flatten());
+			return UnicodeCharacterIn(UnicodeCategories.All.Where(cp => cp.IsSurrogatePair || !forbiddenChars.Contains(cp.FirstCodeUnit)));
+		}
+
+		private IParsingExpression<Nil> UnicodeCharacterNotIn(params char[] chars) {
+			return UnicodeCharacterNotIn(chars.AsEnumerable());
+		}
+
+		private IParsingExpression<Nil> UnicodeCharacterNotIn(params IEnumerable<UnicodeCodePoint>[] categories) {
+			var forbiddenCodepoints = new HashSet<UnicodeCodePoint>(categories.Flatten());
+			return UnicodeCharacterIn(UnicodeCategories.All.Where(cp => !forbiddenCodepoints.Contains(cp)));
 		}
 
 		private int _parseLinesCount = 0;
