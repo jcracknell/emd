@@ -52,6 +52,7 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<EmphasisNode> Emphasis;
 		public readonly IParsingExpression<InlineExpressionNode> InlineExpression;
 		public readonly IParsingExpression<QuotedNode> Quoted;
+		public readonly IParsingExpression<CodeNode> Code;
 		public readonly IParsingExpression<LineBreakNode> LineBreak;
 		public readonly IParsingExpression<TextNode> Text;
 		public readonly IParsingExpression<SpaceNode> Space;
@@ -90,6 +91,7 @@ namespace markdom.cs.Grammar {
 		/// </summary>
 		public readonly IParsingExpression<Nil> Whitespace;
 		public readonly IParsingExpression<IEnumerable<Nil>> Whitespaces;
+		public readonly IParsingExpression<IEnumerable<Nil>> WhitespacesNoBlankLine;
 		/// <summary>
 		/// A newline character.
 		/// </summary>
@@ -742,6 +744,7 @@ namespace markdom.cs.Grammar {
 						Reference(() => Link),
 						Reference(() => AutoLink),
 						Reference(() => Entity),
+						Reference(() => Code),
 						Reference(() => InlineExpression),
 						Reference(() => LineBreak)),
 					Reference(() => Symbol)));
@@ -844,6 +847,33 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					new IParsingExpression[] { Literal(@"\\"), Reference(() => SpaceChars), Reference(() => NewLine) },
 					match => new LineBreakNode(match.SourceRange)));
+
+			#endregion
+
+			#region Code
+
+			Define(() => Code,
+				Sequence(
+					Ahead(Literal("`")),
+					ChoiceOrdered(
+						Enumerable.Range(1,8).Reverse()
+						.Select(i => Literal("".PadRight(i, '`')))
+						.Select(ticks =>
+							Sequence(
+								ticks,
+								Reference(() => WhitespacesNoBlankLine),
+								AtLeast(0,
+									Sequence(
+										Reference(() => WhitespacesNoBlankLine),
+										AtLeast(1,
+											Sequence(
+												NotAhead(ChoiceUnordered(ticks, Reference(() => Whitespace))),
+												Reference(() => UnicodeCharacter)))),
+									match => match.String),
+								Reference(() => WhitespacesNoBlankLine),
+								ticks,
+								match => new CodeNode(match.Product.Of3, match.SourceRange)))),
+					match => match.Product.Of2));
 
 			#endregion
 
@@ -1426,6 +1456,14 @@ namespace markdom.cs.Grammar {
 				ChoiceUnordered(
 					Literal("\n"),
 					Literal("\r\n")));
+
+			Define(() => WhitespacesNoBlankLine,
+				AtLeast(0,
+					ChoiceOrdered(
+						Reference(() => SpaceChar),
+						Sequence(
+							Reference(() => NewLine),
+							NotAhead(Reference(() => BlankLine))))));
 
 			Define(() => Whitespace,
 				ChoiceUnordered(

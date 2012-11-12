@@ -8,6 +8,7 @@ namespace markdom.cs.Nodes{
 	public interface INodeHandler {
 		void Handle(AutoLinkNode node);
 		void Handle(BlockquoteNode node);
+		void Handle(CodeNode node);
 		void Handle(EmphasisNode node);
 		void Handle(EntityNode node);
 		void Handle(HeadingNode node);
@@ -35,6 +36,7 @@ namespace markdom.cs.Nodes{
 	public interface INodeHandler<T> {
 		T Handle(AutoLinkNode node);
 		T Handle(BlockquoteNode node);
+		T Handle(CodeNode node);
 		T Handle(EmphasisNode node);
 		T Handle(EntityNode node);
 		T Handle(HeadingNode node);

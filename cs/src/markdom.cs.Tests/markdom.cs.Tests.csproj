@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="Grammar\AutoLinkTests.cs" />
     <Compile Include="Grammar\BooleanLiteralExpressionTests.cs" />
+    <Compile Include="Grammar\CodeTests.cs" />
     <Compile Include="Grammar\CommentBlockTests.cs" />
     <Compile Include="Grammar\EmphasisTests.cs" />
     <Compile Include="Grammar\EntityTests.cs" />
@@ -78,7 +79,6 @@
     <Compile Include="Grammar\GrammarTestFixture.cs" />
     <Compile Include="Grammar\RuleTestingExtensionMethods.cs" />
     <Compile Include="Model\Nodes\ImplementationTests.cs" />
-    <Compile Include="Model\Nodes\NodeEqualityTestingHandler.cs" />
     <Compile Include="Model\Nodes\ReflectionHelpers.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Grammar\RuleTests.cs" />

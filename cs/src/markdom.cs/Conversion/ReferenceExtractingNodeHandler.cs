@@ -10,6 +10,10 @@ namespace markdom.cs.Conversion {
 			return Enumerable.Empty<ReferenceNode>();
 		}
 
+		public IEnumerable<ReferenceNode> Handle(CodeNode node) {
+			return Enumerable.Empty<ReferenceNode>();
+		}
+
 		public IEnumerable<ReferenceNode> Handle(EmphasisNode node) {
 			return node.Children.SelectMany(child => child.HandleWith(this));
 		}

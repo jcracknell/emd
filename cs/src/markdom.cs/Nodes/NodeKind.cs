@@ -7,6 +7,7 @@ namespace markdom.cs.Nodes {
 	public enum NodeKind {
 		AutoLink,
 		Blockquote,
+		Code,
 		Document,
 		Emphasis,
 		Entity,

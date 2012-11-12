@@ -10,10 +10,5 @@ using System.Threading.Tasks;
 namespace markdom.cs.Grammar {
 	public abstract class GrammarTestFixture {
 		protected readonly MarkdomGrammar Grammar = new MarkdomGrammar();
-
-
-		protected void AssertNodesAreEqual(INode expected, object actual) {
-			((INode)actual).HandleWith(new NodeEqualityTestingHandler(expected));
-		}
 	}
 }
