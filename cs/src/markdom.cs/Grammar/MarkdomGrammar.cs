@@ -91,7 +91,8 @@ namespace markdom.cs.Grammar {
 		/// </summary>
 		public readonly IParsingExpression<Nil> Whitespace;
 		public readonly IParsingExpression<IEnumerable<Nil>> Whitespaces;
-		public readonly IParsingExpression<IEnumerable<Nil>> WhitespacesNoBlankLine;
+		public readonly IParsingExpression<IEnumerable<Nil>> WhitespaceNoBlankLines;
+		public readonly IParsingExpression<Nil> WhitespaceNoBlankLine;
 		/// <summary>
 		/// A newline character.
 		/// </summary>
@@ -861,16 +862,16 @@ namespace markdom.cs.Grammar {
 						.Select(ticks =>
 							Sequence(
 								ticks,
-								Reference(() => WhitespacesNoBlankLine),
+								Reference(() => WhitespaceNoBlankLines),
 								AtLeast(0,
 									Sequence(
-										Reference(() => WhitespacesNoBlankLine),
+										Reference(() => WhitespaceNoBlankLines),
 										AtLeast(1,
 											Sequence(
 												NotAhead(ChoiceUnordered(ticks, Reference(() => Whitespace))),
 												Reference(() => UnicodeCharacter)))),
 									match => match.String),
-								Reference(() => WhitespacesNoBlankLine),
+								Reference(() => WhitespaceNoBlankLines),
 								ticks,
 								match => new CodeNode(match.Product.Of3, match.SourceRange)))),
 					match => match.Product.Of2));
@@ -919,18 +920,8 @@ namespace markdom.cs.Grammar {
 					Reference(() => NormalChar),
 					match => new TextNode(match.String, match.SourceRange)));
 
-			var spaceNewline =
-				Sequence(
-					Reference(() => NewLine),
-					NotAhead(Reference(() => BlankLine)));
-
 			Define(() => Space,
-				ChoiceUnordered(
-					Sequence(
-						AtLeast(1, Reference(() => SpaceChar)),
-						Optional(spaceNewline)),
-					spaceNewline,
-					match => new SpaceNode(match.SourceRange)));
+				AtLeast(1, Reference(() => WhitespaceNoBlankLine), match => new SpaceNode(match.SourceRange)));
 
 			Define(() => NormalChar,
 				UnicodeCharacterNotIn(whitespaceCharValues, specialCharValues));
@@ -1407,6 +1398,16 @@ namespace markdom.cs.Grammar {
 
 			#region Text, Character Classes, etc
 
+			Define(() => WhitespaceNoBlankLines,
+				AtLeast(0, Reference(() => WhitespaceNoBlankLine)));
+
+			Define(() => WhitespaceNoBlankLine,
+				ChoiceOrdered(
+					Reference(() => SpaceChar),
+					Sequence(
+						Reference(() => NewLine),
+						NotAhead(Reference(() => BlankLine)))));
+
 			Define(() => Line,
 				Sequence(
 					AtLeast(0,
@@ -1456,14 +1457,6 @@ namespace markdom.cs.Grammar {
 				ChoiceUnordered(
 					Literal("\n"),
 					Literal("\r\n")));
-
-			Define(() => WhitespacesNoBlankLine,
-				AtLeast(0,
-					ChoiceOrdered(
-						Reference(() => SpaceChar),
-						Sequence(
-							Reference(() => NewLine),
-							NotAhead(Reference(() => BlankLine))))));
 
 			Define(() => Whitespace,
 				ChoiceUnordered(
