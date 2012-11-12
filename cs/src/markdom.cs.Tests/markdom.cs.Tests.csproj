@@ -57,14 +57,13 @@
   <ItemGroup>
     <Compile Include="Grammar\AutoLinkTests.cs" />
     <Compile Include="Grammar\BooleanLiteralExpressionTests.cs" />
-    <Compile Include="Grammar\CallExpressionTests.cs" />
     <Compile Include="Grammar\CommentBlockTests.cs" />
     <Compile Include="Grammar\EmphasisTests.cs" />
     <Compile Include="Grammar\EntityTests.cs" />
     <Compile Include="Grammar\IdentifierExpressionTests.cs" />
     <Compile Include="Grammar\LinkTests.cs" />
     <Compile Include="Grammar\LiteralExpressionTests.cs" />
-    <Compile Include="Grammar\MemberExpressionTests.cs" />
+    <Compile Include="Grammar\LeftHandSideExpressionTests.cs" />
     <Compile Include="Grammar\NullLiteralExpressionTests.cs" />
     <Compile Include="Grammar\NumericLiteralExpressionTests.cs" />
     <Compile Include="Grammar\ObjectLiteralExpressionTests.cs" />

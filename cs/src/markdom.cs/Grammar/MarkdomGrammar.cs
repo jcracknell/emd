@@ -60,8 +60,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<SymbolNode> Symbol { get; private set; }
 
 		public IParsingExpression<IExpression> Expression { get; private set; }
-		public IParsingExpression<IExpression> CallExpression { get; private set; }
-		public IParsingExpression<IExpression> MemberExpression { get; private set; }
+		public IParsingExpression<IExpression> LeftHandSideExpression { get; private set; }
 		public IParsingExpression<IExpression> AtExpression { get; private set; }
 		public IParsingExpression<IExpression> AtExpressionRequired { get; private set; }
 		public IParsingExpression<IdentifierExpression> IdentifierExpression { get; private set; }
@@ -913,7 +912,7 @@ namespace markdom.cs.Grammar {
 			#region Expressions
 
 			Define(() => Expression,
-				Reference(() => AtExpression));
+				Reference(() => LeftHandSideExpression));
 
 			#region LeftHandSideExpression
 			
@@ -956,20 +955,22 @@ namespace markdom.cs.Grammar {
 						return asm;
 					});
 
-			#region Call Expression
-
-			Define(() => CallExpression,
+			Define(() => LeftHandSideExpression,
 				Sequence(
-					Reference(() => MemberExpression),
+					Reference(() => AtExpression),
 					AtLeast(0,
 						Sequence(
 							Reference(() => ExpressionWhitespace),
-							ChoiceUnordered(
+							ChoiceOrdered(
 								callExpressionPart,
 								staticPropertyExpressionPart,
 								dynamicPropertyExpressionPart),
 							match => match.Product.Of2)),
 					match => match.Product.Of2.Reduce(match.Product.Of1, (body, asm) => asm(body))));
+
+			#endregion
+
+			#region ArgumentList
 
 			var argumentSeparator =
 				Sequence(
@@ -990,23 +991,6 @@ namespace markdom.cs.Grammar {
 					argumentListArguments,
 					Sequence(Reference(() => ExpressionWhitespace), Literal(")")),
 					match => match.Product.Of2 ?? new IExpression[0]));
-
-			#endregion
-
-			#region MemberExpression
-
-			// Divergence: should also reference NewExpression/FunctionExpression as body
-			Define(() => MemberExpression,
-				Sequence(
-					Reference(() => AtExpression),
-					AtLeast(0,
-						Sequence(
-							Reference(() => ExpressionWhitespace),
-							ChoiceUnordered(dynamicPropertyExpressionPart, staticPropertyExpressionPart),
-							match => match.Product.Of2)),
-					match => match.Product.Of2.Reduce(match.Product.Of1, (body, asm) => asm(body))));
-
-			#endregion
 
 			#endregion
 
