@@ -63,6 +63,7 @@
     <Compile Include="Grammar\IdentifierExpressionTests.cs" />
     <Compile Include="Grammar\LinkTests.cs" />
     <Compile Include="Grammar\LiteralExpressionTests.cs" />
+    <Compile Include="Grammar\MemberExpressionTests.cs" />
     <Compile Include="Grammar\NullLiteralExpressionTests.cs" />
     <Compile Include="Grammar\NumericLiteralExpressionTests.cs" />
     <Compile Include="Grammar\ObjectLiteralExpressionTests.cs" />

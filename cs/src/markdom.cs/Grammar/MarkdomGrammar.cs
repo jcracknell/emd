@@ -60,6 +60,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<SymbolNode> Symbol { get; private set; }
 
 		public IParsingExpression<IExpression> Expression { get; private set; }
+		public IParsingExpression<IExpression> MemberExpression { get; private set; }
 		public IParsingExpression<IExpression> AtExpression { get; private set; }
 		public IParsingExpression<IExpression> AtExpressionRequired { get; private set; }
 		public IParsingExpression<IdentifierExpression> IdentifierExpression { get; private set; }
@@ -798,7 +799,7 @@ namespace markdom.cs.Grammar {
 			Define(() => InlineExpression,
 				Sequence(
 					Ahead(Literal("@")),
-					Reference(() => AtExpressionRequired),
+					Reference(() => Expression),
 					Optional(Literal(";")),
 					match => new InlineExpressionNode(match.Product.Of2, MarkdomSourceRange.FromMatch(match))));
 
@@ -911,7 +912,7 @@ namespace markdom.cs.Grammar {
 			#region Expressions
 
 			Define(() => Expression,
-				Reference(() => PrimaryExpression));
+				Reference(() => AtExpression));
 
 			#region Call Expression
 			var argumentSeparator =
@@ -934,6 +935,48 @@ namespace markdom.cs.Grammar {
 					argumentListArguments,
 					Sequence(Reference(() => ExpressionWhitespace), Literal(")")),
 					match => match.Product.Of2 ?? new IExpression[0]));
+
+			#endregion
+
+			#region MemberExpression
+
+			var dynamicPropertyExpressionPart =
+				Sequence(
+					Literal("["), Reference(() => ExpressionWhitespace),
+					Reference(() => Expression),
+					Reference(() => ExpressionWhitespace), Literal("]"),
+					match => {
+						Func<IExpression, IExpression> asm = body =>
+							new DynamicPropertyExpression(
+								body, match.Product.Of3,
+								new MarkdomSourceRange(body.SourceRange.Index, match.SourceRange.Index - body.SourceRange.Index + match.SourceRange.Length, body.SourceRange.Line, body.SourceRange.LineIndex)
+							);
+						return asm;
+					});
+
+			var staticPropertyExpressionPart =
+				Sequence(
+					Literal("."), Reference(() => ExpressionWhitespace),
+					Reference(() => IdentifierName),
+					match => {
+						Func<IExpression, IExpression> asm = body =>
+							new StaticPropertyExpression(
+								body, match.Product.Of3,
+								new MarkdomSourceRange(body.SourceRange.Index, match.SourceRange.Index - body.SourceRange.Index + match.SourceRange.Length, body.SourceRange.Line, body.SourceRange.LineIndex)
+							);
+						return asm;
+					});
+
+			// Divergence: should also reference NewExpression/FunctionExpression as body
+			Define(() => MemberExpression,
+				Sequence(
+					Reference(() => AtExpression),
+					AtLeast(0,
+						Sequence(
+							Reference(() => ExpressionWhitespace),
+							ChoiceUnordered(dynamicPropertyExpressionPart, staticPropertyExpressionPart),
+							match => match.Product.Of2)),
+					match => match.Product.Of2.Reduce(match.Product.Of1, (body, asm) => asm(body))));
 
 			#endregion
 

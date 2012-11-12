@@ -10,8 +10,8 @@ namespace markdom.cs.Model {
 		void Handle(CallExpression expression);
 		void Handle(DocumentLiteralExpression expression);
 		void Handle(IdentifierExpression expression);
-		void Handle(IndexerExpression expression);
-		void Handle(MemberExpression expression);
+		void Handle(DynamicPropertyExpression expression);
+		void Handle(StaticPropertyExpression expression);
 		void Handle(NullLiteralExpression expression);
 		void Handle(NumericLiteralExpression expression);
 		void Handle(ObjectLiteralExpression expression);
@@ -24,8 +24,8 @@ namespace markdom.cs.Model {
 		T Handle(CallExpression expression);
 		T Handle(DocumentLiteralExpression expression);
 		T Handle(IdentifierExpression expression);
-		T Handle(IndexerExpression expression);
-		T Handle(MemberExpression expression);
+		T Handle(DynamicPropertyExpression expression);
+		T Handle(StaticPropertyExpression expression);
 		T Handle(NullLiteralExpression expression);
 		T Handle(NumericLiteralExpression expression);
 		T Handle(ObjectLiteralExpression expression);

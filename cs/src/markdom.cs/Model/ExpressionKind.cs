@@ -8,12 +8,12 @@ namespace markdom.cs.Model {
 		BooleanLiteral,
 		Call,
 		DocumentLiteral,
+		DynamicProperty,
 		Identifier,
-		Indexer,
-		Member,
 		NullLiteral,
 		NumericLiteral,
 		ObjectLiteral,
+		StaticProperty,
 		StringLiteral,
 		UriLiteral
 	}

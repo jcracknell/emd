@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Expressions {
-	public class IndexerExpression : IExpression {
+	public class DynamicPropertyExpression : IExpression {
 		private readonly IExpression _body;
 		private readonly IExpression _memberName;
 		private readonly MarkdomSourceRange _sourceRange;
 
-		public IndexerExpression(IExpression body, IExpression memberName, MarkdomSourceRange sourceRange) {
+		public DynamicPropertyExpression(IExpression body, IExpression memberName, MarkdomSourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 			CodeContract.ArgumentIsNotNull(() => memberName, memberName);
 			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
@@ -25,7 +25,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
 
-		public ExpressionKind Kind { get { return ExpressionKind.Indexer; } }
+		public ExpressionKind Kind { get { return ExpressionKind.DynamicProperty; } }
 
 		public void HandleWith(IExpressionHandler handler) {
 			handler.Handle(this);

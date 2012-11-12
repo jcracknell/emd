@@ -56,8 +56,8 @@
     <Compile Include="Model\Expressions\CallExpression.cs" />
     <Compile Include="Model\Expressions\DocumentLiteralExpression.cs" />
     <Compile Include="Model\Expressions\IdentifierExpression.cs" />
-    <Compile Include="Model\Expressions\IndexerExpression.cs" />
-    <Compile Include="Model\Expressions\MemberExpression.cs" />
+    <Compile Include="Model\Expressions\DynamicPropertyExpression.cs" />
+    <Compile Include="Model\Expressions\StaticPropertyExpression.cs" />
     <Compile Include="Model\Expressions\NullLiteralExpression.cs" />
     <Compile Include="Model\Expressions\NumericLiteralExpression.cs" />
     <Compile Include="Model\Expressions\UriLiteralExpression.cs" />
