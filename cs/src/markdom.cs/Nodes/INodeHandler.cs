@@ -11,6 +11,7 @@ namespace markdom.cs.Nodes{
 		void Handle(CodeNode node);
 		void Handle(EmphasisNode node);
 		void Handle(EntityNode node);
+		void Handle(ExpressionBlockNode node);
 		void Handle(HeadingNode node);
 		void Handle(InlineExpressionNode node);
 		void Handle(LineBreakNode node);
@@ -39,6 +40,7 @@ namespace markdom.cs.Nodes{
 		T Handle(CodeNode node);
 		T Handle(EmphasisNode node);
 		T Handle(EntityNode node);
+		T Handle(ExpressionBlockNode node);
 		T Handle(HeadingNode node);
 		T Handle(InlineExpressionNode node);
 		T Handle(LineBreakNode node);

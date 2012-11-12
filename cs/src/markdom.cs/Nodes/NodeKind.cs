@@ -11,6 +11,7 @@ namespace markdom.cs.Nodes {
 		Document,
 		Emphasis,
 		Entity,
+		ExpressionBlock,
 		Heading,
 		InlineExpression,
 		LineBreak,

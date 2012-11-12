@@ -62,6 +62,7 @@
     <Compile Include="Expressions\UriLiteralExpression.cs" />
     <Compile Include="Expressions\IExpressionHandler.cs" />
     <Compile Include="Nodes\CodeNode.cs" />
+    <Compile Include="Nodes\ExpressionBlockNode.cs" />
     <Compile Include="Nodes\INode.cs" />
     <Compile Include="Nodes\AutoLinkNode.cs" />
     <Compile Include="Nodes\BlockquoteNode.cs" />

@@ -22,6 +22,7 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<IBlockNode> Block;
 
 		public readonly IParsingExpression<LineInfo> CommentBlock;
+		public readonly IParsingExpression<ExpressionBlockNode> ExpressionBlock;
 		public readonly IParsingExpression<BlockquoteNode> Blockquote;
 		public readonly IParsingExpression<TableNode> Table;
 		public readonly IParsingExpression<TableRowNode> TableRow;
@@ -192,6 +193,7 @@ namespace markdom.cs.Grammar {
 						Reference(() => UnorderedList),
 						Reference(() => Table),
 						Reference(() => OrderedList),
+						Reference(() => ExpressionBlock),
 						Reference(() => Paragraph)), 
 					Reference(() => BlankLines),
 					match => match.Product.Of2));
@@ -215,6 +217,21 @@ namespace markdom.cs.Grammar {
 				ChoiceUnordered<LineInfo>(
 					singleLineCommentBlock,
 					multiLineCommentBlock));
+
+			#region ExpressionBlock
+
+			Define(() => ExpressionBlock,
+				Sequence(
+					Reference(() => SpaceChars),
+					Ahead(Literal("@")),
+					Reference(() => Expression),
+					Optional(
+						Sequence(Reference(() => ExpressionWhitespace), Literal(";"))),
+					Reference(() => BlankLine), // no trailing content on same line as expression end
+					Ahead(Reference(() => BlankLine)), // expression followed by content on next line is block continuation
+					match => new ExpressionBlockNode(match.Product.Of3, match.SourceRange)));
+
+			#endregion
 
 			#region Lists
 			// We define two types of lists, a *tight* list wherein no items are separated by blank
