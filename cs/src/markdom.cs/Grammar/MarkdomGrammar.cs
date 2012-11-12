@@ -60,17 +60,22 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<IExpression> AtExpression;
 		public readonly IParsingExpression<IExpression> AtExpressionRequired;
 		public readonly IParsingExpression<IdentifierExpression> IdentifierExpression;
-		public readonly IParsingExpression<string> IdentifierName;
+		public readonly IParsingExpression<string> Identifier;
 		public readonly IParsingExpression<IExpression> PrimaryExpression;
 		public readonly IParsingExpression<IEnumerable<IExpression>> ArgumentList;
 		public readonly IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression;
 		public readonly IParsingExpression<ObjectLiteralExpression> ObjectBodyExpression;
 		public readonly IParsingExpression<IExpression> LiteralExpression;
 		public readonly IParsingExpression<NullLiteralExpression> NullLiteralExpression;
+		public readonly IParsingExpression<string> NullLiteral;
 		public readonly IParsingExpression<BooleanLiteralExpression> BooleanLiteralExpression;
+		public readonly IParsingExpression<bool> BooleanLiteral;
 		public readonly IParsingExpression<NumericLiteralExpression> NumericLiteralExpression;
+		public readonly IParsingExpression<double> NumericLiteral;
 		public readonly IParsingExpression<StringLiteralExpression> StringLiteralExpression;
+		public readonly IParsingExpression<string> StringLiteral;
 		public readonly IParsingExpression<UriLiteralExpression> UriLiteralExpression;
+		public readonly IParsingExpression<string> UriLiteral;
 		public readonly IParsingExpression<DocumentLiteralExpression> DocumentLiteralExpression;
 		public readonly IParsingExpression<Nil> ExpressionKeyword;
 		public readonly IParsingExpression<Nil> ExpressionWhitespace;
@@ -910,7 +915,7 @@ namespace markdom.cs.Grammar {
 			var staticPropertyExpressionPart =
 				Sequence(
 					Literal("."), Reference(() => ExpressionWhitespace),
-					Reference(() => IdentifierName),
+					Reference(() => Identifier),
 					match => {
 						Func<IExpression, IExpression> asm = body =>
 							new StaticPropertyExpression(
@@ -1013,10 +1018,10 @@ namespace markdom.cs.Grammar {
 					CharacterIn(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D'));
 
 			Define(() => IdentifierExpression,
-				Reference(() => IdentifierName,
+				Reference(() => Identifier,
 					match => new IdentifierExpression(match.Product, match.SourceRange)));
 
-			Define(() => IdentifierName,
+			Define(() => Identifier,
 				Sequence(
 					NotAhead(Reference(() => ExpressionKeyword)),
 					identifierExpressionStart,
@@ -1097,19 +1102,28 @@ namespace markdom.cs.Grammar {
 					Reference(() => StringLiteralExpression),
 					Reference(() => UriLiteralExpression)));
 
+			#region NullLiteralExpression
+
 			Define(() => NullLiteralExpression,
-				Literal("null", match => new NullLiteralExpression(match.SourceRange)));
+				Reference(() => NullLiteral, match => new NullLiteralExpression(match.SourceRange)));
+
+			Define(() => NullLiteral, Literal("null"));
+
+			#endregion
 
 			#region BooleanLiteralExpression
 
 			Define(() => BooleanLiteralExpression,
+				Reference(() => BooleanLiteral, match => new BooleanLiteralExpression(match.Product, match.SourceRange)));
+
+			Define(() => BooleanLiteral,
 				ChoiceUnordered(
-					Literal("true", match => new BooleanLiteralExpression(true, match.SourceRange)),
-					Literal("false", match => new BooleanLiteralExpression(false, match.SourceRange))));
+					Literal("true", match => true),
+					Literal("false", match => false)));
 
 			#endregion
 
-			#region NumberExpression
+			#region NumericLiteralExpression
 
 			var decimalIntegerLiteral =
 				ChoiceUnordered(
@@ -1134,9 +1148,7 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					Literal("0x"),
 					AtLeast(1, Reference(() => HexDigit), match => match.String),
-					match => new NumericLiteralExpression(
-						(double)Convert.ToInt64(match.String, 16),
-						match.SourceRange));
+					match => (double)Convert.ToInt64(match.String, 16));
 
 			var optionalExponentPart =
 				Optional(
@@ -1167,20 +1179,17 @@ namespace markdom.cs.Grammar {
 						decimalIntegerLiteral,
 						optionalDecimalPart,
 						optionalExponentPart,
-						m => new NumericLiteralExpression(
-							(m.Product.Of1 + m.Product.Of2) * m.Product.Of3,
-							m.SourceRange)),
+						m => (m.Product.Of1 + m.Product.Of2) * m.Product.Of3),
 					Sequence(
 						requiredDecimalPart,
 						optionalExponentPart,
-						m => new NumericLiteralExpression(
-							m.Product.Of1 * m.Product.Of2,
-							m.SourceRange)));
+						m => m.Product.Of1 * m.Product.Of2));
 
 			Define(() => NumericLiteralExpression,
-				ChoiceOrdered<NumericLiteralExpression>(
-					hexIntegerLiteral,
-					decimalLiteral));
+				Reference(() => NumericLiteral, match => new NumericLiteralExpression(match.Product, match.SourceRange)));
+
+			Define(() => NumericLiteral,
+				ChoiceOrdered(hexIntegerLiteral, decimalLiteral));
 
 			#endregion
 
@@ -1218,12 +1227,12 @@ namespace markdom.cs.Grammar {
 			var singleQuotedStringExpression =
 				Sequence(
 					Literal("'"), singleQuotedStringExpressionContent, Literal("'"),
-					match => new StringLiteralExpression(match.Product.Of2, match.SourceRange));
+					match => match.Product.Of2);
 
 			var doubleQuotedStringExpression =
 				Sequence(
 					Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
-					match => new StringLiteralExpression(match.Product.Of2, match.SourceRange));
+					match => match.Product.Of2);
 
 			var verbatimStringExpression =
 				ChoiceOrdered(
@@ -1236,9 +1245,12 @@ namespace markdom.cs.Grammar {
 								Sequence(NotAhead(Literal(ticks)), Reference(() => UnicodeCharacter)),
 								match => match.String),
 							Literal(ticks),
-							match => new StringLiteralExpression(match.Product.Of2, match.SourceRange))));
+							match => match.Product.Of2)));
 
 			Define(() => StringLiteralExpression,
+				Reference(() => StringLiteral, match => new StringLiteralExpression(match.Product, match.SourceRange)));
+
+			Define(() => StringLiteral,
 				ChoiceOrdered(
 					singleQuotedStringExpression,
 					doubleQuotedStringExpression,
@@ -1280,11 +1292,14 @@ namespace markdom.cs.Grammar {
 					Literal(")"));
 
 			Define(() => UriLiteralExpression,
+				Reference(() => UriLiteral, match => new UriLiteralExpression(match.Product, match.SourceRange)));
+
+			Define(() => UriLiteral,
 				AtLeast(1,
 					ChoiceUnordered(
 						Reference(() => uriExpressionRegularPart),
 						Reference(() => uriExpressionParenthesizedPart)),
-					match => new UriLiteralExpression(match.String, match.SourceRange)));
+					match => match.String));
 
 			#endregion
 
