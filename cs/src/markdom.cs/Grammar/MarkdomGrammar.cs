@@ -187,13 +187,14 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					Reference(() => BlankLines),
 					ChoiceOrdered<IBlockNode>(
-						Reference(() => Heading),
-						Reference(() => ReferenceBlock),
-						Reference(() => Blockquote),
-						Reference(() => UnorderedList),
-						Reference(() => Table),
-						Reference(() => OrderedList),
-						Reference(() => ExpressionBlock),
+						ChoiceUnordered<IBlockNode>(
+							Reference(() => Heading),
+							Reference(() => ReferenceBlock),
+							Reference(() => Blockquote),
+							Reference(() => Table),
+							Reference(() => UnorderedList),
+							Reference(() => OrderedList),
+							Reference(() => ExpressionBlock)),
 						Reference(() => Paragraph)), 
 					Reference(() => BlankLines),
 					match => match.Product.Of2));
