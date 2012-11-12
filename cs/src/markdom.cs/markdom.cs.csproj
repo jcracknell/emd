@@ -43,6 +43,13 @@
     <Compile Include="CodeContract.cs" />
     <Compile Include="Conversion\ReferenceCollection.cs" />
     <Compile Include="Conversion\ReferenceExtractingNodeHandler.cs" />
+    <Compile Include="Expressions\Evaluation\ArrayValue.cs" />
+    <Compile Include="Expressions\Evaluation\BooleanValue.cs" />
+    <Compile Include="Expressions\Evaluation\IValue.cs" />
+    <Compile Include="Expressions\Evaluation\NullValue.cs" />
+    <Compile Include="Expressions\Evaluation\ObjectValue.cs" />
+    <Compile Include="Expressions\Evaluation\StringValue.cs" />
+    <Compile Include="Expressions\Evaluation\UndefinedValue.cs" />
     <Compile Include="Grammar\BlockLineInfo.cs" />
     <Compile Include="Grammar\EnumeratorCounterStyleDefinition.cs" />
     <Compile Include="Grammar\EnumeratorCounterStyleInfo.cs" />
