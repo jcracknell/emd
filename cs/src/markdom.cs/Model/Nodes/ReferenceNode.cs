@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,9 @@ namespace markdom.cs.Model.Nodes {
 	public class ReferenceNode : IBlockNode {
 		private readonly ReferenceId _referenceId;
 		private readonly IExpression[] _arguments;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public ReferenceNode(ReferenceId referenceId, IExpression[] arguments, MarkdomSourceRange sourceRange) {
+		public ReferenceNode(ReferenceId referenceId, IExpression[] arguments, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => arguments, arguments);
 
 			_referenceId = referenceId;
@@ -23,7 +24,7 @@ namespace markdom.cs.Model.Nodes {
 
 		public NodeKind Kind { get { return NodeKind.Reference; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

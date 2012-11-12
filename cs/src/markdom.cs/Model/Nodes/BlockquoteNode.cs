@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Nodes {
 	public class BlockquoteNode : IBlockNode {
 		private readonly IBlockNode[] _children;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public BlockquoteNode(IBlockNode[] children, MarkdomSourceRange sourceRange) {
+		public BlockquoteNode(IBlockNode[] children, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => children, children);
 			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 			
@@ -20,7 +21,7 @@ namespace markdom.cs.Model.Nodes {
 
 		public NodeKind Kind { get { return NodeKind.Blockquote; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

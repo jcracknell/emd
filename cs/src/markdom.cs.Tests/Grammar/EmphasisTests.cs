@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using markdom.cs.Model;
 using markdom.cs.Model.Nodes;
+using pegleg.cs.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,8 +14,8 @@ namespace markdom.cs.Grammar
 	public class EmphasisTests : GrammarTestFixture {
 		[Fact] public void Emphasis_matches_base_case() {
 			var expected = new EmphasisNode(
-				new IInlineNode[] { new TextNode("text", new MarkdomSourceRange(1, 4, 1, 1)) },
-				new MarkdomSourceRange(0, 6, 1, 0)
+				new IInlineNode[] { new TextNode("text", new SourceRange(1, 4, 1, 1)) },
+				new SourceRange(0, 6, 1, 0)
 			);
 
 			var match = Grammar.Emphasis.ShouldMatch("*text*");
@@ -25,8 +26,8 @@ namespace markdom.cs.Grammar
 
 		[Fact] public void Emphasis_matches_with_missing_end_delimiter() {
 			var expected = new EmphasisNode(
-				new IInlineNode[] { new TextNode("foo", new MarkdomSourceRange(1, 3, 1, 1)) },
-				new MarkdomSourceRange(0, 4, 1, 0)
+				new IInlineNode[] { new TextNode("foo", new SourceRange(1, 3, 1, 1)) },
+				new SourceRange(0, 4, 1, 0)
 			);			
 
 			var match = Grammar.Emphasis.ShouldMatch("*foo");

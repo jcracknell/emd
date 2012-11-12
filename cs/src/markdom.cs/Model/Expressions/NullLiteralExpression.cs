@@ -1,19 +1,20 @@
-﻿using System;
+﻿using pegleg.cs.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Model.Expressions {
 	public class NullLiteralExpression : IExpression {
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public NullLiteralExpression(MarkdomSourceRange sourceRange) {
+		public NullLiteralExpression(SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_sourceRange = sourceRange;
 		}
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public ExpressionKind Kind { get { return ExpressionKind.NullLiteral; } }
 

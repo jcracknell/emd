@@ -7,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Nodes{
 	public class TableNode : IBlockNode {
 		private readonly TableRowNode[] _rows;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public TableNode(TableRowNode[] rows, MarkdomSourceRange sourceRange) {
+		public TableNode(TableRowNode[] rows, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => rows, rows);
 			CodeContract.ArgumentIsValid(() => rows, rows.Length > 0, "cannot be empty");
 
@@ -21,7 +21,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeKind Kind { get { return NodeKind.Table; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

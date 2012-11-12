@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Expressions {
 	public class BooleanLiteralExpression : IExpression {
 		private readonly bool _value;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public BooleanLiteralExpression(bool value, MarkdomSourceRange sourceRange) {
+		public BooleanLiteralExpression(bool value, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_value = value;
@@ -17,7 +18,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public bool Value { get { return _value; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public ExpressionKind Kind { get { return ExpressionKind.BooleanLiteral; } }
 

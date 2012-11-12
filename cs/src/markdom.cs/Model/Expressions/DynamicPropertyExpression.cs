@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,9 @@ namespace markdom.cs.Model.Expressions {
 	public class DynamicPropertyExpression : IExpression {
 		private readonly IExpression _body;
 		private readonly IExpression _memberName;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public DynamicPropertyExpression(IExpression body, IExpression memberName, MarkdomSourceRange sourceRange) {
+		public DynamicPropertyExpression(IExpression body, IExpression memberName, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 			CodeContract.ArgumentIsNotNull(() => memberName, memberName);
 			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
@@ -23,7 +24,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public IExpression MemberName { get { return _memberName; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public ExpressionKind Kind { get { return ExpressionKind.DynamicProperty; } }
 

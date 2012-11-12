@@ -7,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Expressions {
 	public class ObjectLiteralExpression : IExpression {
 		private readonly PropertyAssignment[] _propertyAssignments;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public ObjectLiteralExpression(PropertyAssignment[] propertyAssignments, MarkdomSourceRange sourceRange) {
+		public ObjectLiteralExpression(PropertyAssignment[] propertyAssignments, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => propertyAssignments, propertyAssignments);
 
 			_propertyAssignments = propertyAssignments;
@@ -20,7 +20,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public ExpressionKind Kind { get { return ExpressionKind.ObjectLiteral; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(IExpressionHandler handler) {
 			handler.Handle(this);

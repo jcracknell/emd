@@ -10,9 +10,9 @@ namespace markdom.cs.Model.Nodes{
 		private readonly OrderedListSeparatorStyle _separatorStyle;
 		private readonly int _start;
 		private readonly OrderedListItemNode[] _items;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public OrderedListNode(OrderedListCounterStyle counterStyle, OrderedListSeparatorStyle separatorStyle, int start, OrderedListItemNode[] items, MarkdomSourceRange sourceRange) {
+		public OrderedListNode(OrderedListCounterStyle counterStyle, OrderedListSeparatorStyle separatorStyle, int start, OrderedListItemNode[] items, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => items, items);
 			CodeContract.ArgumentIsValid(() => items, items.Length >= 1, "cannot be empty");
 
@@ -33,7 +33,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeKind Kind { get { return NodeKind.OrderedList; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

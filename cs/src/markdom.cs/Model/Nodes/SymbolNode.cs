@@ -7,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Nodes{
 	public class SymbolNode : IPlainInlineNode {
 		private readonly string _symbol;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public SymbolNode(string symbol, MarkdomSourceRange sourceRange) {
+		public SymbolNode(string symbol, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => symbol, symbol);
 			CodeContract.ArgumentIsValid(() => symbol, !string.IsNullOrEmpty(symbol), "cannot be empty");
 
@@ -21,7 +21,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeKind Kind { get { return NodeKind.Symbol; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

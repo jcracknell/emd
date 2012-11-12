@@ -7,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Expressions {
 	public class UriLiteralExpression : IExpression {
 		private readonly string _value;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public UriLiteralExpression(string value, MarkdomSourceRange sourceRange) {
+		public UriLiteralExpression(string value, SourceRange sourceRange) {
 			_value = value;
 			_sourceRange = sourceRange;
 		}
@@ -18,7 +18,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public ExpressionKind Kind { get { return ExpressionKind.UriLiteral; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(IExpressionHandler handler) {
 			handler.Handle(this);

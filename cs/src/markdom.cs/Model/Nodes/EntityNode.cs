@@ -7,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Nodes{
 	public class EntityNode : IPlainInlineNode {
 		private readonly int _value;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public EntityNode(int value, MarkdomSourceRange sourceRange) {
+		public EntityNode(int value, SourceRange sourceRange) {
 			CodeContract.ArgumentIsValid(() => value, value >= 0, "must be a non-negative integer");
 
 			_value = value;
@@ -20,7 +20,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeKind Kind { get { return NodeKind.Entity; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

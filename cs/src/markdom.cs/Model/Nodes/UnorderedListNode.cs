@@ -7,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Nodes{
 	public class UnorderedListNode : IBlockNode {
 		private readonly UnorderedListItemNode[] _items;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public UnorderedListNode(UnorderedListItemNode[] items, MarkdomSourceRange sourceRange) {
+		public UnorderedListNode(UnorderedListItemNode[] items, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => items, items);
 
 			_items = items;
@@ -20,7 +20,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeKind Kind { get { return NodeKind.UnorderedListItem; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

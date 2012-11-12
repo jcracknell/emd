@@ -6,7 +6,7 @@ using System.Text;
 
 namespace markdom.cs.Model.Nodes{
 	public class TableHeaderCellNode : TableCellNode {
-		public TableHeaderCellNode(int columnSpan, int rowSpan, IInlineNode[] children, MarkdomSourceRange sourceRange)
+		public TableHeaderCellNode(int columnSpan, int rowSpan, IInlineNode[] children, SourceRange sourceRange)
 			: base(columnSpan, rowSpan, children, sourceRange)
 		{ }
 

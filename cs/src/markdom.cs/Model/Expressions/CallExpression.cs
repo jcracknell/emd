@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,9 +8,9 @@ namespace markdom.cs.Model.Expressions {
 	public class CallExpression : IExpression {
 		private readonly IExpression _body;
 		private readonly IExpression[] _arguments;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public CallExpression(IExpression body, IExpression[] arguments, MarkdomSourceRange sourceRange) {
+		public CallExpression(IExpression body, IExpression[] arguments, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 			CodeContract.ArgumentIsNotNull(() => arguments, arguments);
 			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
@@ -23,7 +24,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public IEnumerable<IExpression> Arguments { get { return _arguments; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public ExpressionKind Kind { get { return ExpressionKind.Call; } }
 

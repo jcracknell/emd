@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using markdom.cs.Model;
 using markdom.cs.Model.Nodes;
+using pegleg.cs.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +12,7 @@ using Xunit;
 namespace markdom.cs.Grammar {
 	public class SymbolTests : GrammarTestFixture {
 		[Fact] public void Symbol_matches_asterix() {
-			var expected = new SymbolNode("*", new MarkdomSourceRange(0, 1, 1, 0));
+			var expected = new SymbolNode("*", new SourceRange(0, 1, 1, 0));
 
 			var match = Grammar.Symbol.ShouldMatch("*");
 

@@ -9,9 +9,9 @@ namespace markdom.cs.Model.Nodes{
 		private readonly int _rowSpan;
 		private readonly int _columnSpan;
 		private readonly IInlineNode[] _children;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public TableCellNode(int columnSpan, int rowSpan, IInlineNode[] children, MarkdomSourceRange sourceRange)
+		public TableCellNode(int columnSpan, int rowSpan, IInlineNode[] children, SourceRange sourceRange)
 		{
 			CodeContract.ArgumentIsNotNull(() => children, children);
 			CodeContract.ArgumentIsValid(() => rowSpan, rowSpan > 0, "must be a positive integer");
@@ -29,7 +29,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public IEnumerable<IInlineNode> Children { get { return _children; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public abstract NodeKind Kind { get; }
 

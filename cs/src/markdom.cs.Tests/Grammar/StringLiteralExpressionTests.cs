@@ -1,6 +1,7 @@
 ﻿using FluentAssertions;
 using markdom.cs.Model;
 using markdom.cs.Model.Expressions;
+using pegleg.cs.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void StringExpression_matches_double_quoted_string() {
-			var expected = new StringLiteralExpression("string", new MarkdomSourceRange(0, 8, 1, 0));
+			var expected = new StringLiteralExpression("string", new SourceRange(0, 8, 1, 0));
 			var matchResult = Grammar.StringLiteralExpression.ShouldMatch(@"""string""");
 
 			matchResult.Product.ShouldBeEquivalentTo(expected);

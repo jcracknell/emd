@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Nodes {
 	public class InlineExpressionNode : IRichInlineNode {
 		private readonly IExpression _expression;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public InlineExpressionNode(IExpression expression, MarkdomSourceRange sourceRange) {
+		public InlineExpressionNode(IExpression expression, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => expression, expression);
 
 			_expression = expression;
@@ -19,7 +20,7 @@ namespace markdom.cs.Model.Nodes {
 
 		public NodeKind Kind { get { return NodeKind.InlineExpression; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);

@@ -63,7 +63,6 @@
     <Compile Include="Model\Expressions\UriLiteralExpression.cs" />
     <Compile Include="Model\IExpressionHandler.cs" />
     <Compile Include="Model\INode.cs" />
-    <Compile Include="Model\MarkdomSourceRange.cs" />
     <Compile Include="Model\Nodes\AutoLinkNode.cs" />
     <Compile Include="Model\Nodes\BlockquoteNode.cs" />
     <Compile Include="Model\Nodes\EmphasisNode.cs" />

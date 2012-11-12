@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,16 +7,16 @@ using System.Text;
 namespace markdom.cs.Model.Expressions {
 	public class NumericLiteralExpression : IExpression {
 		private readonly double _value;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public NumericLiteralExpression(double value, MarkdomSourceRange sourceRange) {
+		public NumericLiteralExpression(double value, SourceRange sourceRange) {
 			_value = value;
 			_sourceRange = sourceRange;
 		}
 
 		public double Value { get { return _value; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public ExpressionKind Kind { get { return ExpressionKind.NumericLiteral; } }
 

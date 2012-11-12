@@ -7,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Nodes{
 	public class ParagraphNode : IBlockNode {
 		private readonly IInlineNode[] _children;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public ParagraphNode(IInlineNode[] children, MarkdomSourceRange sourceRange) {
+		public ParagraphNode(IInlineNode[] children, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => children, children);
 			
 			_children = children;
@@ -20,7 +20,7 @@ namespace markdom.cs.Model.Nodes{
 
 		public NodeKind Kind { get { return NodeKind.Paragraph; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);	

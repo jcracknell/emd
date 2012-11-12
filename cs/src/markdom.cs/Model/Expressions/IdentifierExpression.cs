@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Parsing;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,9 @@ using System.Text;
 namespace markdom.cs.Model.Expressions {
 	public class IdentifierExpression : IExpression {
 		private readonly string _name;
-		private readonly MarkdomSourceRange _sourceRange;
+		private readonly SourceRange _sourceRange;
 
-		public IdentifierExpression(string name, MarkdomSourceRange sourceRange) {
+		public IdentifierExpression(string name, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => name, name);
 			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
@@ -18,7 +19,7 @@ namespace markdom.cs.Model.Expressions {
 
 		public string Name { get { return _name; } }
 
-		public MarkdomSourceRange SourceRange { get { return _sourceRange; } }
+		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public ExpressionKind Kind { get { return ExpressionKind.Identifier; } }
 
