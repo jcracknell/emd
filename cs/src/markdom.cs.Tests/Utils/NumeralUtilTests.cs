@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Xunit;
 
-namespace markdom.cs {
+namespace markdom.cs.Utils {
 	public class NumeralUtilTests {
 		[Fact]
 		public void AlphaNumeral_renders_int_MaxValue() {

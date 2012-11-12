@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 
-namespace markdom.cs {
+namespace markdom.cs.Utils {
 	public static class TextUtils {
 		public static string RemoveDiacritics(string s) {
 			var stFormD = s.Normalize(NormalizationForm.FormD);

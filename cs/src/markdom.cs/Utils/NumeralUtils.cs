@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace markdom.cs {
+namespace markdom.cs.Utils {
 	public static class NumeralUtils {
 
 		#region Alpha

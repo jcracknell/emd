@@ -73,7 +73,7 @@
     <Compile Include="Grammar\StrongTests.cs" />
     <Compile Include="Grammar\SymbolTests.cs" />
     <Compile Include="Grammar\UriExpressionTests.cs" />
-    <Compile Include="NumeralUtilTests.cs" />
+    <Compile Include="Utils\NumeralUtilTests.cs" />
     <Compile Include="Grammar\OrderedListTests.cs" />
     <Compile Include="Grammar\GrammarTestFixture.cs" />
     <Compile Include="Grammar\RuleTestingExtensionMethods.cs" />
