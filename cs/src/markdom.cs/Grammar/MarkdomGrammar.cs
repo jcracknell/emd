@@ -63,6 +63,7 @@ namespace markdom.cs.Grammar {
 		public IParsingExpression<IExpression> AtExpression { get; private set; }
 		public IParsingExpression<IExpression> AtExpressionRequired { get; private set; }
 		public IParsingExpression<IdentifierExpression> IdentifierExpression { get; private set; }
+		public IParsingExpression<string> IdentifierName { get; private set; }
 		public IParsingExpression<IExpression> PrimaryExpression { get; private set; }
 		public IParsingExpression<IEnumerable<IExpression>> ArgumentList { get; private set; }
 		public IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression { get; private set; }
@@ -936,6 +937,8 @@ namespace markdom.cs.Grammar {
 
 			#endregion
 
+			#region AtExpression
+
 			Define(() => AtExpression,
 				ChoiceOrdered(
 					Reference(() => AtExpressionRequired),
@@ -948,6 +951,8 @@ namespace markdom.cs.Grammar {
 						Reference(() => IdentifierExpression),
 						Reference(() => PrimaryExpression)),
 					match => match.Product.Of2));
+
+			#endregion
 
 			#region IdentifierExpression
 
@@ -974,11 +979,15 @@ namespace markdom.cs.Grammar {
 					CharacterIn(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D'));
 
 			Define(() => IdentifierExpression,
+				Reference(() => IdentifierName,
+					match => new IdentifierExpression(match.Product, MarkdomSourceRange.FromMatch(match))));
+
+			Define(() => IdentifierName,
 				Sequence(
 					NotAhead(Reference(() => ExpressionKeyword)),
 					identifierExpressionStart,
 					AtLeast(0, identifierExpressionPart),
-					match => new IdentifierExpression(match.String, MarkdomSourceRange.FromMatch(match))));
+					match => match.String));
 
 			#endregion
 
