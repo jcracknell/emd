@@ -750,7 +750,6 @@ namespace markdom.cs.Grammar {
 						Reference(() => LineBreak)),
 					Reference(() => Symbol)));
 
-
 			#region AutoLink
 
 			Define(() => AutoLink,

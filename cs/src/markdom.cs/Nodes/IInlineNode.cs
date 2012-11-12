@@ -5,7 +5,7 @@ using System.Text;
 
 namespace markdom.cs.Nodes {
 	public interface IInlineNode : INode { }
-	public interface IPlainInlineNode : IInlineNode { }
-	public interface IFormattedInlineNode : IPlainInlineNode { }
-	public interface IRichInlineNode : IFormattedInlineNode { }
+	public interface IRichInlineNode : IInlineNode { }
+	public interface IFormattedInlineNode : IRichInlineNode { }
+	public interface IPlainInlineNode : IFormattedInlineNode { }
 }
