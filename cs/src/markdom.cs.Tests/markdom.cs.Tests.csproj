@@ -58,7 +58,6 @@
     <Compile Include="Grammar\AutoLinkTests.cs" />
     <Compile Include="Grammar\BooleanLiteralExpressionTests.cs" />
     <Compile Include="Grammar\CodeTests.cs" />
-    <Compile Include="Grammar\CommentBlockTests.cs" />
     <Compile Include="Grammar\EmphasisTests.cs" />
     <Compile Include="Grammar\EntityTests.cs" />
     <Compile Include="Grammar\ExpressionBlockTests.cs" />

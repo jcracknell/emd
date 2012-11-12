@@ -12,16 +12,11 @@ using System.Text.RegularExpressions;
 
 namespace markdom.cs.Grammar {
 	public class MarkdomGrammar : Grammar<MarkdomDocumentNode> {
-		public readonly IParsingExpression<LineInfo> Comment;
-		public readonly IParsingExpression<LineInfo> MultiLineComment;
-		public readonly IParsingExpression<LineInfo> SingleLineComment;
 
 		public readonly IParsingExpression<MarkdomDocumentNode> Document;
 
 		public readonly IParsingExpression<IEnumerable<IBlockNode>> Blocks;
 		public readonly IParsingExpression<IBlockNode> Block;
-
-		public readonly IParsingExpression<LineInfo> CommentBlock;
 		public readonly IParsingExpression<ExpressionBlockNode> ExpressionBlock;
 		public readonly IParsingExpression<BlockquoteNode> Blockquote;
 		public readonly IParsingExpression<TableNode> Table;
@@ -81,6 +76,9 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<Nil> ExpressionKeyword;
 		public readonly IParsingExpression<Nil> ExpressionWhitespace;
 		public readonly IParsingExpression<Nil> ExpressionUnicodeEscapeSequence;
+		public readonly IParsingExpression<LineInfo> Comment;
+		public readonly IParsingExpression<LineInfo> MultiLineComment;
+		public readonly IParsingExpression<LineInfo> SingleLineComment;
 
 		/// <summary>
 		/// A tab or a space.
@@ -146,39 +144,10 @@ namespace markdom.cs.Grammar {
 			Define(() => Document,
 				Reference(() => Blocks, match => new MarkdomDocumentNode(match.Product.ToArray(), match.SourceRange)));
 
-			#region Comments
-
-			Define(() => Comment,
-				ChoiceUnordered<LineInfo>(
-					Reference(() => SingleLineComment),
-					Reference(() => MultiLineComment)));
-
-			Define(() => SingleLineComment,
-				Sequence(
-					Literal("//"),
-					Reference(() => Line),
-					match => LineInfo.FromMatch(match)));
-
-			Define(() => MultiLineComment,
-				Sequence(
-					Literal("/*"),
-					AtLeast(0,
-						Sequence( NotAhead(Literal("*/")), Reference(() => UnicodeCharacter)),
-						match => match.String),
-					Literal("*/"),
-					match => LineInfo.FromMatch(match)));
-
-			#endregion
-
 			#region Block Rules
 
 			Define(() => Blocks,
-				AtLeast(0,
-					Sequence(
-						AtLeast(0, Reference(() => CommentBlock)),
-						Reference(() => Block),
-						AtLeast(0, Reference(() => CommentBlock)),
-						match => match.Product.Of2)));
+				AtLeast(0, Reference(() => Block)));
 
 			// Ordering notes:
 			//   * Paragraph must come last, because it will sweep up just about anything
@@ -198,26 +167,6 @@ namespace markdom.cs.Grammar {
 						Reference(() => Paragraph)), 
 					Reference(() => BlankLines),
 					match => match.Product.Of2));
-
-			var singleLineCommentBlock =
-				Sequence(
-					Reference(() => SpaceChars),
-					Reference(() => SingleLineComment),
-					Reference(() => BlankLines),
-					match => match.Product.Of2);
-
-			var multiLineCommentBlock =
-				Sequence(
-					Reference(() => SpaceChars),
-					Reference(() => MultiLineComment),
-					Reference(() => BlankLine), // no trailing content (don't match a para w/ starting mlc)
-					Reference(() => BlankLines),
-					match => match.Product.Of2);
-
-			Define(() => CommentBlock,
-				ChoiceUnordered<LineInfo>(
-					singleLineCommentBlock,
-					multiLineCommentBlock));
 
 			#region ExpressionBlock
 
@@ -1410,6 +1359,29 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					Literal("u"),
 					Exactly(4, Reference(() => HexDigit))));
+
+			#region Comments
+
+			Define(() => Comment,
+				ChoiceUnordered<LineInfo>(
+					Reference(() => SingleLineComment),
+					Reference(() => MultiLineComment)));
+
+			Define(() => SingleLineComment,
+				Sequence(
+					Literal("//"),
+					Reference(() => Line),
+					match => LineInfo.FromMatch(match)));
+
+			Define(() => MultiLineComment,
+				Sequence(
+					Literal("/*"),
+					AtLeast(0, Sequence(NotAhead(Literal("*/")), Reference(() => UnicodeCharacter))),
+					Literal("*/"),
+					match => LineInfo.FromMatch(match)));
+
+			#endregion
+
 
 			#endregion
 

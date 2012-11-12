@@ -13,8 +13,10 @@ namespace markdom.cs.Grammar {
 	public class RuleTests : GrammarTestFixture {
 		[Fact]
 		public void Bla() {
-			var input = @" // This is a single line comment
-# Heading 1
+			var input = @"# Heading 1
+
+@toc({style:float-right})
+
 This is a [paragraph] with **bold text**.
 
 ## Heading 2
