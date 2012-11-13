@@ -716,7 +716,7 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					Literal("<"),
 					Reference(() => SpaceChars),
-					Reference(() => UriLiteralExpression),
+					Reference(() => UriLiteral),
 					Reference(() => SpaceChars),
 					Literal(">"),
 					Optional(

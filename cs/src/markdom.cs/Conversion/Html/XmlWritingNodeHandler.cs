@@ -62,8 +62,8 @@ namespace markdom.cs.Conversion.Html {
 		#endregion
 
 		public void Handle(AutoLinkNode node) {
-			Write("a", new { href = node.Uri.Value }, () => {
-				WriteContent(node.Uri.Value);
+			Write("a", new { href = node.Uri }, () => {
+				WriteContent(node.Uri);
 			});
 		}
 

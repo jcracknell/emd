@@ -7,11 +7,11 @@ using System.Text;
 
 namespace markdom.cs.Nodes{
 	public class AutoLinkNode : IRichInlineNode {
-		private readonly UriLiteralExpression _uri;
+		private readonly string _uri;
 		private readonly IExpression[] _arguments;
 		private readonly SourceRange _sourceRange;
 
-		public AutoLinkNode(UriLiteralExpression uri, IExpression[] arguments, SourceRange sourceRange)
+		public AutoLinkNode(string uri, IExpression[] arguments, SourceRange sourceRange)
 		{
 			CodeContract.ArgumentIsNotNull(() => uri, uri);
 			CodeContract.ArgumentIsNotNull(() => arguments, arguments);
@@ -21,7 +21,7 @@ namespace markdom.cs.Nodes{
 			_sourceRange = sourceRange;
 		}
 
-		public UriLiteralExpression Uri { get { return _uri; } }
+		public string Uri { get { return _uri; } }
 
 		public IEnumerable<IExpression> Arguments { get { return _arguments; } }
 

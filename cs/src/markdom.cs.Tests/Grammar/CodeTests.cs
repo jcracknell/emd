@@ -26,7 +26,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void Code_should_span_multiple_lines() {
-			var expected = new CodeNode("line 1\nline2", new SourceRange(0,15,1,0));
+			var expected = new CodeNode("line 1\nline 2", new SourceRange(0,15,1,0));
 
 			var match = Grammar.Code.ShouldMatch(
 				"`line 1\n",
