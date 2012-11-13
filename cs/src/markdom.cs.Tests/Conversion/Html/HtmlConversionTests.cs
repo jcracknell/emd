@@ -1,21 +1,16 @@
-﻿using markdom.cs.Expressions;
-using markdom.cs.Nodes;
-using pegleg.cs;
-using pegleg.cs.Parsing;
+﻿using FluentAssertions;
+using markdom.cs.Grammar;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace markdom.cs.Grammar {
-	public class RuleTests : GrammarTestFixture {
-		[Fact]
-		public void Bla() {
-			var stopwatch = new System.Diagnostics.Stopwatch();
-			stopwatch.Start();
-			var match = Grammar.Document.ShouldMatch(
+namespace markdom.cs.Conversion.Html {
+	public class HtmlConversionTests {
+		[Fact] public void HtmlConversion_test() {
+			var grammar = new MarkdomGrammar();
+			var match = grammar.Document.ShouldMatch(
 				"# Heading 1\n",
 				"\n",
 				"@toc({style:float-right})\n",
@@ -68,13 +63,16 @@ namespace markdom.cs.Grammar {
 				"\n",
 				"    With a second paragraph.\n"
 			);
-			stopwatch.Stop();
 
-			var document = match.Product as MarkdomDocumentNode;
+			using(var memoryStream = new System.IO.MemoryStream()) {
+				HtmlConverter.Convert(match.Product, memoryStream);
 
-			var references = new markdom.cs.Conversion.ReferenceCollection(document);
-
-			stopwatch.ToString();
+				memoryStream.Seek(0, System.IO.SeekOrigin.Begin);
+				using(var reader = new System.IO.StreamReader(memoryStream)) {
+					var content = reader.ReadToEnd();
+					content.Should().NotBeEmpty();
+				}
+			}
 		}
 	}
 }

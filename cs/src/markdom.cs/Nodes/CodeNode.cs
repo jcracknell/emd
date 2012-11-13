@@ -17,6 +17,8 @@ namespace markdom.cs.Nodes {
 			_sourceRange = sourceRange;
 		}
 
+		public string Text { get { return _text; } }
+
 		public NodeKind Kind { get { return NodeKind.Code; } }
 
 		public SourceRange SourceRange { get { return _sourceRange; } }

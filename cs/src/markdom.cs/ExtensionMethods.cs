@@ -71,5 +71,11 @@ namespace markdom.cs {
 				memo = reduce(memo, item);
 			return memo;
 		}
+
+		public static IEnumerable<T> Each<T>(this IEnumerable<T> enumerable, Action<T> action) {
+			foreach(var item in enumerable)
+				action(item);
+			return enumerable;
+		}
 	}
 }
