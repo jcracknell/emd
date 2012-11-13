@@ -1035,6 +1035,7 @@ namespace markdom.cs.Grammar {
 			Define(() => PrimaryExpression,
 				ChoiceUnordered(
 					Reference(() => LiteralExpression),
+					Reference(() => ArrayLiteralExpression),
 					Reference(() => ObjectLiteralExpression),
 					Reference(() => DocumentLiteralExpression),
 					Sequence(
