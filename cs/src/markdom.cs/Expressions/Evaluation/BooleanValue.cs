@@ -5,9 +5,15 @@ using System.Text;
 
 namespace markdom.cs.Expressions.Evaluation {
 	public class BooleanValue {
+		private static readonly BooleanValue _trueInstance = new BooleanValue(true);
+		private static readonly BooleanValue _falseInstance = new BooleanValue(false);
+
+		public BooleanValue TrueInstance { get { return _trueInstance; } }
+		public BooleanValue FalseInstance { get { return _falseInstance; } }
+
 		private readonly bool _value;
 
-		public BooleanValue(bool value) {
+		private BooleanValue(bool value) {
 			_value = value;
 		}
 
