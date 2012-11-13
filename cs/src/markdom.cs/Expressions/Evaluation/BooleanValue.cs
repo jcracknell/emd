@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Expressions.Evaluation {
-	public class BooleanValue {
+	public class BooleanValue : IValue {
 		private static readonly BooleanValue _trueInstance = new BooleanValue(true);
 		private static readonly BooleanValue _falseInstance = new BooleanValue(false);
 
@@ -18,5 +18,9 @@ namespace markdom.cs.Expressions.Evaluation {
 		}
 
 		public bool Value { get { return _value; } }
+
+		public T HandleWith<T>(IValueHandler<T> handler) {
+			return handler.Handle(this);
+		}
 	}
 }

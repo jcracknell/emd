@@ -10,5 +10,9 @@ namespace markdom.cs.Expressions.Evaluation {
 		public static UndefinedValue Instance { get { return _instance; } }
 
 		static UndefinedValue() { }
+
+		public T HandleWith<T>(IValueHandler<T> handler) {
+			return handler.Handle(this);
+		}
 	}
 }

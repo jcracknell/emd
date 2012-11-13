@@ -48,6 +48,7 @@
     <Compile Include="Expressions\ArrayLiteralExpression.cs" />
     <Compile Include="Expressions\Evaluation\BooleanValue.cs" />
     <Compile Include="Expressions\Evaluation\IValue.cs" />
+    <Compile Include="Expressions\Evaluation\IValueHandler.cs" />
     <Compile Include="Expressions\Evaluation\NullValue.cs" />
     <Compile Include="Expressions\Evaluation\NumberValue.cs" />
     <Compile Include="Expressions\Evaluation\ObjectValue.cs" />

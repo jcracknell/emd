@@ -12,5 +12,9 @@ namespace markdom.cs.Expressions.Evaluation {
 		}
 
 		public double Value { get { return _value; } }
+
+		public T HandleWith<T>(IValueHandler<T> handler) {
+			return handler.Handle(this);
+		}
 	}
 }
