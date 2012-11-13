@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace markdom.cs.Grammar {
+namespace pegleg.cs.Unicode {
 	public static partial class UnicodeCategories {
 		#region Sets
 		private static readonly UnicodeCodePoint[] UCc = new UnicodeCodePoint[] {C('\u0000'),C('\u0001'),C('\u0002'),C('\u0003'),C('\u0004'),C('\u0005'),C('\u0006'),C('\u0007'),C('\u0008'),C('\u0009'),C('\u000A'),C('\u000B'),C('\u000C'),C('\u000D'),C('\u000E'),C('\u000F'),C('\u0010'),C('\u0011'),C('\u0012'),C('\u0013'),C('\u0014'),C('\u0015'),C('\u0016'),C('\u0017'),C('\u0018'),C('\u0019'),C('\u001A'),C('\u001B'),C('\u001C'),C('\u001D'),C('\u001E'),C('\u001F'),C('\u007F'),C('\u0080'),C('\u0081'),C('\u0082'),C('\u0083'),C('\u0084'),C('\u0085'),C('\u0086'),C('\u0087'),C('\u0088'),C('\u0089'),C('\u008A'),C('\u008B'),C('\u008C'),C('\u008D'),C('\u008E'),C('\u008F'),C('\u0090'),C('\u0091'),C('\u0092'),C('\u0093'),C('\u0094'),C('\u0095'),C('\u0096'),C('\u0097'),C('\u0098'),C('\u0099'),C('\u009A'),C('\u009B'),C('\u009C'),C('\u009D'),C('\u009E'),C('\u009F'),};

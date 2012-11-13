@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using Xunit;
 
-namespace markdom.cs.Grammar {
+namespace pegleg.cs.Unicode {
 	public class UnicodeCategoriesTests {
 		[Fact] public void UnicodeCategories_should_contain_all_codepoints() {
 			UnicodeCategories.All.Should().HaveCount(24429);

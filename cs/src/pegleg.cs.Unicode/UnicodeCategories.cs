@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace markdom.cs.Grammar {
+namespace pegleg.cs.Unicode {
 	public static partial class UnicodeCategories {
 		
 

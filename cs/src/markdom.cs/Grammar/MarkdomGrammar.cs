@@ -3,6 +3,7 @@ using markdom.cs.Nodes;
 using markdom.cs.Utils;
 using pegleg.cs;
 using pegleg.cs.Parsing;
+using pegleg.cs.Unicode;
 using pegleg.cs.Utils;
 using System;
 using System.Collections.Generic;
@@ -882,7 +883,7 @@ namespace markdom.cs.Grammar {
 				AtLeast(1, Reference(() => WhitespaceNoBlankLine), match => new SpaceNode(match.SourceRange)));
 
 			Define(() => NormalChar,
-				UnicodeCharacterNotIn(whitespaceCharValues, specialCharValues));
+				this.UnicodeCharacterNotIn(whitespaceCharValues, specialCharValues));
 
 			Define(() => Symbol,
 				Reference(() => SpecialChar, match => new SymbolNode(match.String, match.SourceRange)));
@@ -998,7 +999,7 @@ namespace markdom.cs.Grammar {
 
 			var identifierExpressionStart =
 				ChoiceOrdered(
-					UnicodeCharacterIn(
+					this.UnicodeCharacterIn(
 						UnicodeCategories.Lu,
 						UnicodeCategories.Ll,
 						UnicodeCategories.Lt,
@@ -1011,7 +1012,7 @@ namespace markdom.cs.Grammar {
 			var identifierExpressionPart =
 				ChoiceOrdered(
 					identifierExpressionStart,
-					UnicodeCharacterIn(
+					this.UnicodeCharacterIn(
 						UnicodeCategories.Mn,
 						UnicodeCategories.Mc,
 						UnicodeCategories.Nd,
@@ -1524,66 +1525,13 @@ namespace markdom.cs.Grammar {
 				CharacterIn(englishAlphaCharValues));
 
 			Define(() => UnicodeCharacter,
-				UnicodeCharacterIn(UnicodeCategories.All));
+				this.UnicodeCharacterIn(UnicodeCategories.All));
 
 			#endregion
 
 		}
 		
-		protected IParsingExpression<Nil> UnicodeCharacterIn(params IEnumerable<UnicodeCodePoint>[] categories) {
-			var normalCodePointDefinitions = categories.Flatten().Where(cp => !cp.IsSurrogatePair);
-			var surrogatePairCodePointDefinitions = categories.Flatten().Where(cp => cp.IsSurrogatePair);
-
-			var normalCodePoint =
-				CharacterIn(normalCodePointDefinitions.Select(cp => cp.FirstCodeUnit));
-
-			if(!surrogatePairCodePointDefinitions.Any())
-				return normalCodePoint;
-
-			// Define a rule which can be used to quickly match a valid first code unit for
-			// a surrogate pair amongst the provided code points
-			var surrogatePairLeadUnit =
-				CharacterIn(
-					categories.Flatten()
-					.Where(cp => cp.IsSurrogatePair)
-					.Select(cp => cp.FirstCodeUnit));
-
-			var surrogatePair =
-				ChoiceUnordered(
-					categories.Flatten()
-					.Where(cp => cp.IsSurrogatePair)
-					.GroupBy(cp => cp.FirstCodeUnit)
-					.Select(g =>
-						Sequence(
-							CharacterIn(g.Key),
-							CharacterIn(g.Select(cp => cp.SecondCodeUnit))
-						)
-					)
-				);
-
-			return ChoiceOrdered(
-				normalCodePoint,
-				Sequence(
-					Ahead(surrogatePairLeadUnit),
-					surrogatePair));
-		}
-
-		protected IParsingExpression<Nil> UnicodeCharacterNotIn(params IEnumerable<char>[] chars) {
-			bool[] forbiddenChars = new bool[char.MaxValue + 1];
-			foreach(var forbiddenChar in chars.Flatten())
-				forbiddenChars[forbiddenChar] = true;
-
-			return UnicodeCharacterIn(UnicodeCategories.All.Where(cp => cp.IsSurrogatePair || !forbiddenChars[cp.FirstCodeUnit]));
-		}
-
-		private IParsingExpression<Nil> UnicodeCharacterNotIn(params char[] chars) {
-			return UnicodeCharacterNotIn(chars.AsEnumerable());
-		}
-
-		private IParsingExpression<Nil> UnicodeCharacterNotIn(params IEnumerable<UnicodeCodePoint>[] categories) {
-			var forbiddenCodepoints = new HashSet<UnicodeCodePoint>(categories.Flatten());
-			return UnicodeCharacterIn(UnicodeCategories.All.Where(cp => !forbiddenCodepoints.Contains(cp)));
-		}
+		
 
 		private int _parseLinesCount = 0;
 		protected T ParseLinesAs<T>(IParsingExpression<T> expression, IEnumerable<LineInfo> lines) {
