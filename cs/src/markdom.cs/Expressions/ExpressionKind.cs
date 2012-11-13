@@ -5,6 +5,7 @@ using System.Text;
 
 namespace markdom.cs.Expressions {
 	public enum ExpressionKind {
+		ArrayLiteral,
 		BooleanLiteral,
 		Call,
 		DocumentLiteral,

@@ -6,6 +6,7 @@ using System.Text;
 
 namespace markdom.cs.Expressions {
 	public interface IExpressionHandler {
+		void Handle(ArrayLiteralExpression expression);
 		void Handle(BooleanLiteralExpression expression);
 		void Handle(CallExpression expression);
 		void Handle(DocumentLiteralExpression expression);
@@ -20,6 +21,7 @@ namespace markdom.cs.Expressions {
 	}
 
 	public interface IExpressionHandler<T> {
+		T Handle(ArrayLiteralExpression expression);
 		T Handle(BooleanLiteralExpression expression);
 		T Handle(CallExpression expression);
 		T Handle(DocumentLiteralExpression expression);

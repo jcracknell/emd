@@ -43,6 +43,7 @@
     <Compile Include="CodeContract.cs" />
     <Compile Include="Conversion\ReferenceCollection.cs" />
     <Compile Include="Conversion\ReferenceExtractingNodeHandler.cs" />
+    <Compile Include="Expressions\ArrayLiteralExpression.cs" />
     <Compile Include="Expressions\Evaluation\ArrayValue.cs" />
     <Compile Include="Expressions\Evaluation\BooleanValue.cs" />
     <Compile Include="Expressions\Evaluation\IValue.cs" />

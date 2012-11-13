@@ -63,6 +63,7 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<string> Identifier;
 		public readonly IParsingExpression<IExpression> PrimaryExpression;
 		public readonly IParsingExpression<IEnumerable<IExpression>> ArgumentList;
+		public readonly IParsingExpression<ArrayLiteralExpression> ArrayLiteralExpression;
 		public readonly IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression;
 		public readonly IParsingExpression<ObjectLiteralExpression> ObjectBodyExpression;
 		public readonly IParsingExpression<IExpression> LiteralExpression;
@@ -1038,7 +1039,54 @@ namespace markdom.cs.Grammar {
 					Sequence(
 						Literal("("), Reference(() => ExpressionWhitespace), Reference(() => Expression), Reference(() => ExpressionWhitespace), Literal(")"),
 						match => match.Product.Of3)));
-					
+
+			#region ArrayLiteralExpression
+
+			var arrayElementSeparator =
+				Sequence(
+					Reference(() => ExpressionWhitespace),
+					Literal(","),
+					Reference(() => ExpressionWhitespace));
+
+			var elidedElements =
+				AtLeast(0,
+					arrayElementSeparator,
+					match => match.Product.Select(elided => (IExpression)null));
+
+			// A non-elided array element preceded by any number of elided elements
+			var subsequentArrayElement =
+				Sequence(
+					arrayElementSeparator,
+					elidedElements,
+					Reference(() => Expression),
+					match => match.Product.Of2.Concat(match.Product.Of3.InEnumerable()));
+
+			var arrayElements =
+				Sequence(
+					ChoiceOrdered(
+						// initial element non-elided
+						Sequence(
+							Reference(() => Expression),
+							AtLeast(0, subsequentArrayElement),
+							match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2.Flatten())),
+						// initial element elided
+						AtLeast(1,
+							subsequentArrayElement,
+							match => ((IExpression)null).InEnumerable().Concat(match.Product.Flatten())),
+						// all elements elided
+						Reference(() => elidedElements, match => Enumerable.Empty<IExpression>())),
+					elidedElements, // trailing elided elements discarded
+					match => match.Product.Of1);
+
+			Define(() => ArrayLiteralExpression,
+				Sequence(
+					Literal("["), Reference(() => ExpressionWhitespace),
+					arrayElements,
+					Reference(() => ExpressionWhitespace), Literal("]"),
+					match => new ArrayLiteralExpression(match.Product.Of3.ToArray(), match.SourceRange)));
+
+			#endregion
+
 			#region ObjectExpression
 
 			var objectPropertyAssignment =
