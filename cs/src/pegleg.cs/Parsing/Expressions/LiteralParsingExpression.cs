@@ -32,7 +32,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingLiteralParsingExpression : LiteralParsingExpression<string> {
 		public NonCapturingLiteralParsingExpression(string literal, StringComparison comparison) : base(literal, comparison) { }
 
-		protected override IMatchingResult<string> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<string> MatchesCore(MatchingContext context) {
 			if(context.ConsumesMatching(_literal, _comparison))
 				return SuccessfulMatchingResult.Create(_literal);
 			else
@@ -51,7 +51,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			if(context.ConsumesMatching(_literal, _comparison)) {

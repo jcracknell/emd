@@ -26,7 +26,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingSequenceParsingExpression : SequenceParsingExpression<Nil> {
 		public NonCapturingSequenceParsingExpression(IParsingExpression[] sequence) : base(sequence) { }
 
-		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<Nil> MatchesCore(MatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			for(int i = 0; i < _sequence.Length; i++) {
@@ -52,7 +52,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			var expressionProducts = new object[_sequence.Length];

@@ -31,7 +31,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			get { return _choiceOrder.Select(i => Tuple.Create(_choiceHits[i], _choices[i])).ToArray(); }
 		}
 
-		protected IMatchingResult<TChoice> MatchChoices(IMatchingContext context) {
+		protected IMatchingResult<TChoice> MatchChoices(MatchingContext context) {
 			for(var i = 0; i != _choiceCount; i++) {
 				// Ordering of choices is determined by the choice order array
 				var currentChoice = _choices[_choiceOrder[i]];
@@ -88,7 +88,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingUnorderedChoiceParsingExpression : UnorderedChoiceParsingExpression<object, Nil> {
 		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression<object>[] choices) : base(choices) { }
 
-		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<Nil> MatchesCore(MatchingContext context) {
 			if(null == MatchChoices(context))
 				return UnsuccessfulMatchingResult.Create(this);
 
@@ -99,7 +99,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingUnorderedChoiceParsingExpression<TChoice> : UnorderedChoiceParsingExpression<TChoice, TChoice> {
 		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices) : base(choices) { }
 
-		protected override IMatchingResult<TChoice> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TChoice> MatchesCore(MatchingContext context) {
 			return MatchChoices(context) ?? UnsuccessfulMatchingResult.Create(this);
 		}
 	}
@@ -115,7 +115,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			var choiceResult = MatchChoices(context);

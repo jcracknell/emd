@@ -5,7 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace pegleg.cs.Parsing {
-	public class MatchingContext : IMatchingContext {
+	public class MatchingContext {
 		private readonly string _consumable;
 		private readonly SourceRange[] _parts;
 		private readonly bool _isRootContext;
@@ -160,12 +160,12 @@ namespace pegleg.cs.Parsing {
 
 		public bool AtEndOfInput { get { return _consumable.Length == _consumed; } }
 
-		public IMatchingContext Clone() {
+		public MatchingContext Clone() {
 			return new MatchingContext(
 				_consumable, _parts, _consumed, _part, _partEnd, _sourceIndex, _sourceLine, _sourceLineIndex);
 		}
 
-		public void Assimilate(IMatchingContext clone) {
+		public void Assimilate(MatchingContext clone) {
 			Consume(clone.Consumed - _consumed);
 		}
 

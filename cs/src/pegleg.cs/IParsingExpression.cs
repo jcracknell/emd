@@ -10,10 +10,10 @@ namespace pegleg.cs {
 		Guid Id { get; }
 		ParsingExpressionKind Kind { get; }
 		T HandleWith<T>(IParsingExpressionHandler<T> handler);
-		IMatchingResult Matches(IMatchingContext context);
+		IMatchingResult Matches(MatchingContext context);
 	}
 
 	public interface IParsingExpression<out TProduct> : IParsingExpression {
-		new IMatchingResult<TProduct> Matches(IMatchingContext context);
+		new IMatchingResult<TProduct> Matches(MatchingContext context);
 	}
 }

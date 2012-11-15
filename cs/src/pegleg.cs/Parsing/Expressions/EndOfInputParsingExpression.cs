@@ -15,7 +15,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		private EndOfInputParsingExpression() : base(ParsingExpressionKind.EndOfInput) { }
 
-		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<Nil> MatchesCore(MatchingContext context) {
 			if(context.AtEndOfInput)
 				return SuccessfulMatchingResult.NilProduct;
 			return UnsuccessfulMatchingResult.Create(this);

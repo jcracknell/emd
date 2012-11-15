@@ -27,7 +27,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			: base(body)
 		{ }
 
-		protected override IMatchingResult<TBody> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TBody> MatchesCore(MatchingContext context) {
 			return _body.Matches(context.Clone());
 		}
 	}
@@ -43,7 +43,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
 			var bodyMatchingContext = context.Clone();
 			var bodyMatchingResult = _body.Matches(bodyMatchingContext);
 

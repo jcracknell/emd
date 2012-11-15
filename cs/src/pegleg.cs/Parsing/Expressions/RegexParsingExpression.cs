@@ -26,7 +26,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingRegexParsingExpression : RegexParsingExpression<Nil> {
 		public NonCapturingRegexParsingExpression(Regex regex) : base(regex) { }
 
-		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<Nil> MatchesCore(MatchingContext context) {
 			if(context.ConsumesMatching(_regex))
 				return SuccessfulMatchingResult.NilProduct;
 			return UnsuccessfulMatchingResult.Create(this);
@@ -44,7 +44,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
 			var matchBuilder = context.StartMatch();
 
 			Match regexMatch;

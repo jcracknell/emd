@@ -5,11 +5,11 @@ using System.Text;
 
 namespace pegleg.cs.Parsing {
 	public class MatchBuilder : IMatchBuilder {
-		private readonly IMatchingContext _matchingContext;
+		private readonly MatchingContext _matchingContext;
 		private readonly SourceLocation _initialSourceLocation;
 		private readonly int _initialConsumed;
 
-		public MatchBuilder(IMatchingContext context) {
+		public MatchBuilder(MatchingContext context) {
 			_matchingContext = context;
 			_initialConsumed = context.Consumed;
 			_initialSourceLocation = context.SourceLocation;

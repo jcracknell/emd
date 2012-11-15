@@ -19,7 +19,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			return handler.Handle(this);
 		}
 
-		protected override IMatchingResult<Nil> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<Nil> MatchesCore(MatchingContext context) {
 			if(_predicate()) {
 				return SuccessfulMatchingResult.NilProduct;
 			} else {

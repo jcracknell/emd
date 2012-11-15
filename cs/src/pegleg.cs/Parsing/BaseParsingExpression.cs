@@ -23,7 +23,7 @@ namespace pegleg.cs.Parsing {
 		public ParsingExpressionKind Kind { get { return _kind; } }
 
 
-		public IMatchingResult<TProduct> Matches(IMatchingContext context) {
+		public IMatchingResult<TProduct> Matches(MatchingContext context) {
 			_matchExecutionCount++;
 			_matchExecution.Start();
 
@@ -33,11 +33,11 @@ namespace pegleg.cs.Parsing {
 			return result;
 		}
 
-		IMatchingResult IParsingExpression.Matches(IMatchingContext context) {
+		IMatchingResult IParsingExpression.Matches(MatchingContext context) {
 			return Matches(context);
 		}
 
-		protected abstract IMatchingResult<TProduct> MatchesCore(IMatchingContext context);
+		protected abstract IMatchingResult<TProduct> MatchesCore(MatchingContext context);
 
 		public abstract T HandleWith<T>(IParsingExpressionHandler<T> handler);
 

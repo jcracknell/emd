@@ -22,7 +22,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public IParsingExpression<TProduct> Named { get { return _named; } }
 
-		protected override IMatchingResult<TProduct> MatchesCore(IMatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
 			return _named.Matches(context);
 		}
 

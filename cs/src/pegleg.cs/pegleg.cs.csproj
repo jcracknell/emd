@@ -68,7 +68,6 @@
     <Compile Include="Parsing\IParsingExpressionHandler.cs" />
     <Compile Include="Parsing\BackusNaurishExpressionHandler.cs" />
     <Compile Include="Parsing\IMatchingResult.cs" />
-    <Compile Include="Parsing\IMatchingContext.cs" />
     <Compile Include="Parsing\Expressions\LiteralParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\OptionalParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\RegexParsingExpression.cs" />
