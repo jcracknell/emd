@@ -6,12 +6,7 @@ using System.Text;
 namespace pegleg.cs.Parsing {
 	public interface IMatch {
 		SourceRange SourceRange { get; }
-		int Index { get; }
 		int Length { get; }
-		/// <summary>
-		/// The <see cref="IParsingExpression"/> which was matched.
-		/// </summary>
-		IParsingExpression Expression { get; }
 
 		/// <summary>
 		/// The section of raw input matched by the expression.

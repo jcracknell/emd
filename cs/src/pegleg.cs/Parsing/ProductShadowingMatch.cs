@@ -23,11 +23,7 @@ namespace pegleg.cs.Parsing {
 
 		public SourceRange SourceRange { get { return _shadowed.SourceRange; } }
 
-		public int Index { get { return _shadowed.Index; } }
-
 		public int Length { get { return _shadowed.Length; } }
-
-		public IParsingExpression Expression { get { return _shadowed.Expression; } }
 
 		public string String { get { return _shadowed.String; } }
 	}

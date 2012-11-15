@@ -23,7 +23,7 @@ namespace pegleg.cs.Parsing {
 				_initialSourceLocation,
 				_matchingContext.SourceLocation.Index - _initialSourceLocation.Index);
 
-			return new Match<TRaw>(_matchingContext, _expression, product, _initialConsumed, matchLength, matchSourceRange);
+			return new Match<TRaw>(_matchingContext, product, _initialConsumed, matchLength, matchSourceRange);
 		}
 	}
 }
