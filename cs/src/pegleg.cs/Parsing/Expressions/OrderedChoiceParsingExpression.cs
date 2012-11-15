@@ -26,7 +26,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingOrderedChoiceParsingExpression : OrderedChoiceParsingExpression<object, Nil> {
 		public NonCapturingOrderedChoiceParsingExpression(IParsingExpression<object>[] choices) : base(choices) { }
 
-		protected override IMatchingResult<Nil> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			for(int i = 0; i < _choices.Length; i++) {
 				var choice = _choices[i];
 				var choiceMatchingContext = context.Clone();
@@ -45,7 +45,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingOrderedChoiceParsingExpression<TChoice> : OrderedChoiceParsingExpression<TChoice, TChoice> {
 		public NonCapturingOrderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices) : base(choices) { }
 
-		protected override IMatchingResult<TChoice> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<TChoice> Matches(MatchingContext context) {
 			for(int i = 0; i < _choices.Length; i++) {
 				var choice = _choices[i];
 				var choiceMatchingContext = context.Clone();
@@ -72,7 +72,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 
 			for(int i = 0; i < _choices.Length; i++) {

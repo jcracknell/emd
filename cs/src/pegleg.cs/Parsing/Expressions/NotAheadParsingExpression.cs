@@ -17,7 +17,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public IParsingExpression Body { get { return _body; } }
 
-		protected override IMatchingResult<Nil> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			var bodyMatch = _body.Matches(context.Clone());
 			if(bodyMatch.Succeeded)
 				return UnsuccessfulMatchingResult.Create(this);

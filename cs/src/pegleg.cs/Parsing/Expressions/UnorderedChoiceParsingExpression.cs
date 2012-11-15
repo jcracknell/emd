@@ -88,7 +88,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingUnorderedChoiceParsingExpression : UnorderedChoiceParsingExpression<object, Nil> {
 		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression<object>[] choices) : base(choices) { }
 
-		protected override IMatchingResult<Nil> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			if(null == MatchChoices(context))
 				return UnsuccessfulMatchingResult.Create(this);
 
@@ -99,7 +99,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingUnorderedChoiceParsingExpression<TChoice> : UnorderedChoiceParsingExpression<TChoice, TChoice> {
 		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices) : base(choices) { }
 
-		protected override IMatchingResult<TChoice> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<TChoice> Matches(MatchingContext context) {
 			return MatchChoices(context) ?? UnsuccessfulMatchingResult.Create(this);
 		}
 	}
@@ -115,7 +115,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 
 			var choiceResult = MatchChoices(context);

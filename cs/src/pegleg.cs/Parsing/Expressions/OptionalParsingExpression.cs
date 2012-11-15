@@ -25,7 +25,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingOptionalParsingExpression<TBody> : OptionalParsingExpression<TBody, TBody> {
 		public NonCapturingOptionalParsingExpression(IParsingExpression<TBody> body) : base(body) { }
 
-		protected override IMatchingResult<TBody> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<TBody> Matches(MatchingContext context) {
 			var bodyMatchingContext = context.Clone();
 			var bodyMatchResult = _body.Matches(bodyMatchingContext);
 
@@ -52,7 +52,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_noMatchAction = noMatchAction;
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 
 			var bodyMatchingContext = context.Clone();

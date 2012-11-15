@@ -36,7 +36,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			: base(minOccurs, maxOccurs, body)
 		{ }
 
-		protected override IMatchingResult<IEnumerable<TBody>> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<IEnumerable<TBody>> Matches(MatchingContext context) {
 			uint iterationCount = 0;
 			var iterationProducts = new LinkedList<TBody>();
 			while(true) {
@@ -72,7 +72,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;	
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 			
 			uint iterationCount = 0;

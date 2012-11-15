@@ -35,7 +35,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			}
 		}
 
-		protected override IMatchingResult<Nil> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			if(context.ConsumesCharacter(_acceptanceMap, _offset))
 				return SuccessfulMatchingResult.NilProduct;
 			else

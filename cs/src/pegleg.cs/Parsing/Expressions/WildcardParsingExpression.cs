@@ -15,7 +15,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		private WildcardParsingExpression() : base(ParsingExpressionKind.Wildcard) { }
 
-		protected override IMatchingResult<Nil> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			if(context.ConsumesAnyCharacter())
 				return SuccessfulMatchingResult.NilProduct;
 

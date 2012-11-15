@@ -27,7 +27,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingReferenceParsingExpression<TReferenced> : ReferenceParsingExpression<TReferenced, TReferenced> {
 		public NonCapturingReferenceParsingExpression(Func<IParsingExpression<TReferenced>> referenced) : base(referenced) { }
 
-		protected override IMatchingResult<TReferenced> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<TReferenced> Matches(MatchingContext context) {
 			var referenceMatchResult = Referenced.Matches(context);
 			if(referenceMatchResult.Succeeded)
 				return referenceMatchResult;
@@ -47,7 +47,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 
 			var referenceMatchResult = Referenced.Matches(context);

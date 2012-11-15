@@ -19,7 +19,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			return _expression();
 		}
 
-		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
+		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
 			var closed = _expression();
 			return closed.Matches(context);
 		}
