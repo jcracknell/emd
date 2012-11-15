@@ -29,12 +29,12 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 	}
 
-	public class NonCapturingLiteralParsingExpression : LiteralParsingExpression<string> {
+	public class NonCapturingLiteralParsingExpression : LiteralParsingExpression<Nil> {
 		public NonCapturingLiteralParsingExpression(string literal, StringComparison comparison) : base(literal, comparison) { }
 
-		public override IMatchingResult<string> Matches(MatchingContext context) {
+		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			if(context.ConsumesMatching(_literal, _comparison))
-				return SuccessfulMatchingResult.Create(_literal);
+				return SuccessfulMatchingResult.NilProduct;
 			else
 				return UnsuccessfulMatchingResult.Create(this);
 		}

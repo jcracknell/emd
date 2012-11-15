@@ -37,11 +37,11 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return new NamedParsingExpression<T>(conventionalName, expression);
 		}
 
-		public IParsingExpression<string> Literal(string literal) {
+		public IParsingExpression<Nil> Literal(string literal) {
 			return Literal(literal, StringComparison.Ordinal);
 		}
 
-		public IParsingExpression<string> Literal(string literal, StringComparison comparison) {
+		public IParsingExpression<Nil> Literal(string literal, StringComparison comparison) {
 			return new NonCapturingLiteralParsingExpression(literal, comparison);
 		}
 
@@ -49,7 +49,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 			return Literal(literal, StringComparison.Ordinal, matchAction);
 		}
 
-		public IParsingExpression<string> Literal(char literal) {
+		public IParsingExpression<Nil> Literal(char literal) {
 			return Literal(literal.ToString());
 		}
 

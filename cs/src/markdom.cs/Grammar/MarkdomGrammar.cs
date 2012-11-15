@@ -69,7 +69,7 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<ObjectLiteralExpression> ObjectBodyExpression;
 		public readonly IParsingExpression<IExpression> LiteralExpression;
 		public readonly IParsingExpression<NullLiteralExpression> NullLiteralExpression;
-		public readonly IParsingExpression<string> NullLiteral;
+		public readonly IParsingExpression<Nil> NullLiteral;
 		public readonly IParsingExpression<BooleanLiteralExpression> BooleanLiteralExpression;
 		public readonly IParsingExpression<bool> BooleanLiteral;
 		public readonly IParsingExpression<NumericLiteralExpression> NumericLiteralExpression;
@@ -101,10 +101,10 @@ namespace markdom.cs.Grammar {
 		/// <summary>
 		/// A newline character.
 		/// </summary>
-		public readonly IParsingExpression<string> NewLine;
+		public readonly IParsingExpression<Nil> NewLine;
 		public readonly IParsingExpression<Nil> SpecialChar;
 		public readonly IParsingExpression<Nil> NormalChar;
-		public readonly IParsingExpression<string> Indent;
+		public readonly IParsingExpression<Nil> Indent;
 		public readonly IParsingExpression<string> NonIndentSpace;
 		/// <summary>
 		/// A raw line of input, including the newline character.
@@ -1130,7 +1130,7 @@ namespace markdom.cs.Grammar {
 
 			Define(() => DocumentLiteralExpression,
 				Dynamic(() => {
-					IParsingExpression<string> endBraces = null;
+					IParsingExpression<Nil> endBraces = null;
 					return Sequence(
 						AtLeast(2, Literal("{"), m => { endBraces = Literal("".PadLeft(m.Length, '}')); return Nil.Value; }),
 						AtLeast(0,

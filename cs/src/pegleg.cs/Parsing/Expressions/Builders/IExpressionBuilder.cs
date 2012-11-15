@@ -30,9 +30,9 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 
 		// # Terminals
 
-		IParsingExpression<string> Literal(string literal);
-		IParsingExpression<string> Literal(char literal);
-		IParsingExpression<string> Literal(string literal, StringComparison comparison);
+		IParsingExpression<Nil> Literal(string literal);
+		IParsingExpression<Nil> Literal(char literal);
+		IParsingExpression<Nil> Literal(string literal, StringComparison comparison);
 		IParsingExpression<TProduct> Literal<TProduct>(string literal, Func<IMatch<string>, TProduct> matchAction);
 		IParsingExpression<TProduct> Literal<TProduct>(char literal, Func<IMatch<string>, TProduct> matchAction);
 		IParsingExpression<TProduct> Literal<TProduct>(string literal, StringComparison comparison, Func<IMatch<string>, TProduct> matchAction);
