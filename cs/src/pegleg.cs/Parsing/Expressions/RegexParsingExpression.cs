@@ -45,13 +45,13 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 
 		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
-			var matchBuilder = context.StartMatch();
+			var matchBuilder = context.GetMatchBuilderFor(this);
 
 			Match regexMatch;
 			if(!context.ConsumesMatching(_regex, out regexMatch))
 				return UnsuccessfulMatchingResult.Create(this);
 
-			var product = _matchAction(matchBuilder.CompleteMatch(this, regexMatch));
+			var product = _matchAction(matchBuilder.CompleteMatch(regexMatch));
 			return SuccessfulMatchingResult.Create(product);
 		}
 	}

@@ -73,7 +73,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 
 		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
-			var matchBuilder = context.StartMatch();
+			var matchBuilder = context.GetMatchBuilderFor(this);
 
 			for(int i = 0; i < _choices.Length; i++) {
 				var choice = _choices[i];
@@ -82,7 +82,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 				if(choiceMatchingResult.Succeeded) {
 					context.Assimilate(choiceMatchingContext);
-					var product = _matchAction(matchBuilder.CompleteMatch(this, (TChoice)choiceMatchingResult.Product));
+					var product = _matchAction(matchBuilder.CompleteMatch((TChoice)choiceMatchingResult.Product));
 					return SuccessfulMatchingResult.Create(product);
 				}
 			}

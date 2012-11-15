@@ -52,10 +52,10 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 
 		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
-			var matchBuilder = context.StartMatch();
+			var matchBuilder = context.GetMatchBuilderFor(this);
 
 			if(context.ConsumesMatching(_literal, _comparison)) {
-				var product = _matchAction(matchBuilder.CompleteMatch(this, _literal));
+				var product = _matchAction(matchBuilder.CompleteMatch(_literal));
 				return SuccessfulMatchingResult.Create(product);
 			}
 

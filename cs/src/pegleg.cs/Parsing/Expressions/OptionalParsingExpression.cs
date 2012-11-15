@@ -53,18 +53,18 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 
 		protected override IMatchingResult<TProduct> MatchesCore(MatchingContext context) {
-			var matchBuilder = context.StartMatch();
+			var matchBuilder = context.GetMatchBuilderFor(this);
 
 			var bodyMatchingContext = context.Clone();
 			var bodyMatchResult = _body.Matches(bodyMatchingContext);
 
 			if(bodyMatchResult.Succeeded) {
 				context.Assimilate(bodyMatchingContext);
-				
-				var product = _matchAction(matchBuilder.CompleteMatch(this, bodyMatchResult.Product));	
+
+				var product = _matchAction(matchBuilder.CompleteMatch(bodyMatchResult.Product));	
 				return SuccessfulMatchingResult.Create(product);
 			} else {
-				return SuccessfulMatchingResult.Create(_noMatchAction(matchBuilder.CompleteMatch(this, Nil.Value)));
+				return SuccessfulMatchingResult.Create(_noMatchAction(matchBuilder.CompleteMatch(Nil.Value)));
 			}
 		}
 	}
