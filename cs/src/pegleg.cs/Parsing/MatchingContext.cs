@@ -166,7 +166,12 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public void Assimilate(MatchingContext clone) {
-			Consume(clone.Consumed - _consumed);
+			_consumed = clone._consumed;
+			_part = clone._part;
+			_partEnd = clone._partEnd;
+			_sourceIndex = clone._sourceIndex;
+			_sourceLine = clone._sourceLine;
+			_sourceLineIndex = clone._sourceLineIndex;
 		}
 
 		public IMatchBuilder StartMatch() {
