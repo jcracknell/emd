@@ -55,7 +55,6 @@
     <Compile Include="Parsing\Expressions\EndOfInputParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\NamedParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\PredicateParsingExpression.cs" />
-    <Compile Include="Parsing\IMatchBuilder.cs" />
     <Compile Include="Parsing\MatchingContext.cs" />
     <Compile Include="Parsing\Expressions\NotAheadParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\ReferenceParsingExpression.cs" />

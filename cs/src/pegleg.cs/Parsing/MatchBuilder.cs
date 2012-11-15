@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public class MatchBuilder : IMatchBuilder {
+	public class MatchBuilder {
 		private readonly MatchingContext _matchingContext;
 		private readonly SourceLocation _initialSourceLocation;
 		private readonly int _initialConsumed;

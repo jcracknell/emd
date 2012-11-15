@@ -174,7 +174,7 @@ namespace pegleg.cs.Parsing {
 			_sourceLineIndex = clone._sourceLineIndex;
 		}
 
-		public IMatchBuilder StartMatch() {
+		public MatchBuilder StartMatch() {
 			return new MatchBuilder(this);
 		}
 
