@@ -25,7 +25,7 @@ namespace pegleg.cs.Parsing {
 
 		public SourceRange SourceRange { get { return _matchRange; } }
 
-		public int Length { get { return _matchRange.Length; } }
+		public int Length { get { return _length; } }
 
 		public TProduct Product { get { return _product; } }
 
