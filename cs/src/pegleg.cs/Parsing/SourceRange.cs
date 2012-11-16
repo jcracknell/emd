@@ -23,10 +23,6 @@ namespace pegleg.cs.Parsing {
 			Length = length;
 		}
 
-		public SourceRange(SourceLocation sourceLocation, int length)
-			: this(sourceLocation.Index, length, sourceLocation.Line, sourceLocation.LineIndex)
-		{ }
-
 		public override int GetHashCode() {
 			return ((Index << 16) | (Index >> 16))
 				^ Length
