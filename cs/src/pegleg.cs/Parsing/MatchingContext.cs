@@ -9,7 +9,7 @@ namespace pegleg.cs.Parsing {
 		private readonly string _consumable;
 		private readonly SourceRange[] _parts;
 		private readonly bool _isRootContext;
-		private int _consumed;
+		private int _index;
 		private int _sourceIndex;
 		private int _sourceLine;
 		private int _sourceLineIndex;
@@ -27,7 +27,7 @@ namespace pegleg.cs.Parsing {
 			_isRootContext = true;
 			_consumable = source;
 			_parts = parts;
-			_consumed = 0;
+			_index = 0;
 			_part = 0;
 			_partEnd = _parts[_part].Length;
 			_sourceIndex = _parts[_part].Index;
@@ -42,7 +42,7 @@ namespace pegleg.cs.Parsing {
 			_isRootContext = false;
 			_consumable = source;
 			_parts = parts;
-			_consumed = consumed;
+			_index = consumed;
 			_part = part;
 			_partEnd = partEnd;
 			_sourceIndex = sourceIndex;
@@ -51,9 +51,9 @@ namespace pegleg.cs.Parsing {
 		}
 
 		// mostly for debugging purposes
-		public string Unconsumed { get { return _consumable.Substring(_consumed); } }
+		public string Unconsumed { get { return _consumable.Substring(_index); } }
 
-		public int Consumed { get { return _consumed; } }
+		public int Index { get { return _index; } }
 
 		public int SourceIndex { get { return _sourceIndex; } }
 
@@ -63,14 +63,14 @@ namespace pegleg.cs.Parsing {
 
 		private void Consume(int length) {
 			for(; length != 0; length--) {
-				var c = _consumable[_consumed];
+				var c = _consumable[_index];
 				
-				_consumed++;
+				_index++;
 				_sourceIndex++;
 
 				// If we have reached the end of the current part then our source location
 				// is the beginning of the next part
-				if(_consumed == _partEnd && _consumable.Length > _consumed) {
+				if(_index == _partEnd && _consumable.Length > _index) {
 					var newPart = _parts[++_part];
 
 					_partEnd = _partEnd + newPart.Length;
@@ -96,10 +96,10 @@ namespace pegleg.cs.Parsing {
 			CodeContract.ArgumentIsNotNull(() => literal, literal);
 			
 			var len = literal.Length;
-			if(len > _consumable.Length - _consumed)
+			if(len > _consumable.Length - _index)
 				return false;
 
-			if(0 == string.Compare(_consumable, _consumed, literal, 0, len, comparison)) {
+			if(0 == string.Compare(_consumable, _index, literal, 0, len, comparison)) {
 				Consume(len);
 				return true;
 			} else {
@@ -110,8 +110,8 @@ namespace pegleg.cs.Parsing {
 		public bool ConsumesMatching(Regex regex) {
 			CodeContract.ArgumentIsNotNull(() => regex, regex);
 
-			var match = regex.Match(_consumable, _consumed);
-			if(match.Success && match.Index == _consumed) {
+			var match = regex.Match(_consumable, _index);
+			if(match.Success && match.Index == _index) {
 				Consume(match.Length);
 				return true;
 			}
@@ -122,8 +122,8 @@ namespace pegleg.cs.Parsing {
 		public bool ConsumesMatching(Regex regex, out Match match) {
 			CodeContract.ArgumentIsNotNull(() => regex, regex);
 
-			match = regex.Match(_consumable, _consumed);
-			if(match.Success && match.Index == _consumed) {
+			match = regex.Match(_consumable, _index);
+			if(match.Success && match.Index == _index) {
 				Consume(match.Length);
 				return true;
 			} else {
@@ -135,7 +135,7 @@ namespace pegleg.cs.Parsing {
 		public bool ConsumesCharacter(bool[] acceptanceMap, int offset) {
 			if(AtEndOfInput) return false;
 
-			var cv = _consumable[_consumed] - offset;
+			var cv = _consumable[_index] - offset;
 			if(0 <= cv && cv < acceptanceMap.Length && acceptanceMap[cv]) {
 				Consume(1);
 				return true;
@@ -149,7 +149,7 @@ namespace pegleg.cs.Parsing {
 				c = (char)0;
 				return false;
 			} else {
-				c = _consumable[_consumed];
+				c = _consumable[_index];
 				Consume(1);
 				return true;
 			}
@@ -162,15 +162,15 @@ namespace pegleg.cs.Parsing {
 			return true;
 		}
 
-		public bool AtEndOfInput { get { return _consumable.Length == _consumed; } }
+		public bool AtEndOfInput { get { return _consumable.Length == _index; } }
 
 		public MatchingContext Clone() {
 			return new MatchingContext(
-				_consumable, _parts, _consumed, _part, _partEnd, _sourceIndex, _sourceLine, _sourceLineIndex);
+				_consumable, _parts, _index, _part, _partEnd, _sourceIndex, _sourceLine, _sourceLineIndex);
 		}
 
 		public void Assimilate(MatchingContext clone) {
-			_consumed = clone._consumed;
+			_index = clone._index;
 			_part = clone._part;
 			_partEnd = clone._partEnd;
 			_sourceIndex = clone._sourceIndex;
