@@ -50,8 +50,10 @@ namespace pegleg.cs.Parsing {
 			_sourceLineIndex = sourceLineIndex;
 		}
 
-		// mostly for debugging purposes
-		public string Unconsumed { get { return _consumable.Substring(_index); } }
+		/// <remarks>
+		/// Useful for inspection in the debugger.
+		/// </remarks>
+		protected string Unconsumed { get { return _consumable.Substring(_index); } }
 
 		public int Index { get { return _index; } }
 
