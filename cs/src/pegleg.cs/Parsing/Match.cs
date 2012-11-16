@@ -9,21 +9,26 @@ namespace pegleg.cs.Parsing {
 		private readonly TProduct _product;
 		private readonly int _index;
 		private readonly int _length;
-		private readonly SourceRange _matchRange;
+		private readonly int _sourceIndex;
+		private readonly int _sourceLength;
+		private readonly int _sourceLine;
+		private readonly int _sourceLineIndex;
+		private SourceRange _sourceRange = null;
 
-		public Match(MatchingContext context, TProduct product, int index, int length, SourceRange matchRange) {
-			CodeContract.ArgumentIsNotNull(() => context, context);
-			CodeContract.ArgumentIsValid(() => index, index >= 0, "must be a non-negative integer");
-			CodeContract.ArgumentIsValid(() => length, length >= 0, "must be a non-negative integer");
-
+		public Match(MatchingContext context, TProduct product, int index, int length, int sourceIndex, int sourceLength, int sourceLine, int sourceLineIndex) {
 			_context = context;
 			_product = product;
 			_index = index;
 			_length = length;
-			_matchRange = matchRange;
+			_sourceIndex = sourceIndex;
+			_sourceLength = sourceLength;
+			_sourceLine = sourceLine;
+			_sourceLineIndex = sourceLineIndex;
 		}
 
-		public SourceRange SourceRange { get { return _matchRange; } }
+		public SourceRange SourceRange { 
+			get { return _sourceRange ?? (_sourceRange = new SourceRange(_sourceIndex, _sourceLength, _sourceLine, _sourceLineIndex)); }
+		}
 
 		public int Length { get { return _length; } }
 
