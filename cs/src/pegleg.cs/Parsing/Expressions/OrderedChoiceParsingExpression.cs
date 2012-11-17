@@ -29,10 +29,13 @@ namespace pegleg.cs.Parsing.Expressions {
 		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			for(int i = 0; i < _choices.Length; i++) {
 				var choice = _choices[i];
-				var choiceMatchingResult = choice.Matches(context);
+				var choiceMatchingContext = context.Clone();
+				var choiceMatchingResult = choice.Matches(choiceMatchingContext);
 
-				if(choiceMatchingResult.Succeeded)
+				if(choiceMatchingResult.Succeeded) {
+					context.Assimilate(choiceMatchingContext);
 					return SuccessfulMatchingResult.NilProduct;
+				}
 			}
 
 			return UnsuccessfulMatchingResult.Create(this);
@@ -45,10 +48,13 @@ namespace pegleg.cs.Parsing.Expressions {
 		public override IMatchingResult<TChoice> Matches(MatchingContext context) {
 			for(int i = 0; i < _choices.Length; i++) {
 				var choice = _choices[i];
-				var choiceMatchingResult = choice.Matches(context);
+				var choiceMatchingContext = context.Clone();
+				var choiceMatchingResult = choice.Matches(choiceMatchingContext);
 
-				if(choiceMatchingResult.Succeeded)
+				if(choiceMatchingResult.Succeeded) {
+					context.Assimilate(choiceMatchingContext);
 					return choiceMatchingResult;
+				}
 			}
 
 			return UnsuccessfulMatchingResult.Create(this);
@@ -71,9 +77,11 @@ namespace pegleg.cs.Parsing.Expressions {
 
 			for(int i = 0; i < _choices.Length; i++) {
 				var choice = _choices[i];
-				var choiceMatchingResult = choice.Matches(context);
+				var choiceMatchingContext = context.Clone();
+				var choiceMatchingResult = choice.Matches(choiceMatchingContext);
 
 				if(choiceMatchingResult.Succeeded) {
+					context.Assimilate(choiceMatchingContext);
 					var product = _matchAction(matchBuilder.CompleteMatch((TChoice)choiceMatchingResult.Product));
 					return SuccessfulMatchingResult.Create(product);
 				}

@@ -38,13 +38,14 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public override IMatchingResult<IEnumerable<TBody>> Matches(MatchingContext context) {
 			uint iterationCount = 0;
-			var iterationContext = context.Clone();
 			var iterationProducts = new LinkedList<TBody>();
 			while(true) {
+				var iterationContext = context.Clone();
 				var iterationResult = _body.Matches(iterationContext);
 
 				if(iterationResult.Succeeded) {
 					iterationProducts.AddLast(iterationResult.Product);
+					context.Assimilate(iterationContext);
 					iterationCount++;
 
 					if(_maxOccurs == iterationCount)
@@ -56,7 +57,6 @@ namespace pegleg.cs.Parsing.Expressions {
 				}
 			}
 
-			context.Assimilate(iterationContext);
 			return SuccessfulMatchingResult.Create(iterationProducts);
 		}
 	}
@@ -77,12 +77,13 @@ namespace pegleg.cs.Parsing.Expressions {
 			
 			uint iterationCount = 0;
 			var iterationProducts = new LinkedList<TBody>();
-			var iterationContext = context.Clone();
 			while(true) {
+				var iterationContext = context.Clone();
 				var iterationResult = _body.Matches(iterationContext);
 
 				if(iterationResult.Succeeded) {
 					iterationProducts.AddLast(iterationResult.Product);
+					context.Assimilate(iterationContext);
 					iterationCount++;
 
 					if(_maxOccurs == iterationCount)
@@ -94,7 +95,6 @@ namespace pegleg.cs.Parsing.Expressions {
 				}
 			}
 
-			context.Assimilate(iterationContext);
 			var product = _matchAction(matchBuilder.CompleteMatch(iterationProducts));
 			return SuccessfulMatchingResult.Create(product);
 		}

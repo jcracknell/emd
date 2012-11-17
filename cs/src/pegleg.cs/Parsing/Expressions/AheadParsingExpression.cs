@@ -44,7 +44,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		}
 
 		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
-			var bodyMatchingResult = _body.Matches(context.Clone());
+			var bodyMatchingContext = context.Clone();
+			var bodyMatchingResult = _body.Matches(bodyMatchingContext);
 
 			if(bodyMatchingResult.Succeeded) {
 				var product = _matchAction(context.GetMatchBuilderFor(this).CompleteMatch(bodyMatchingResult.Product));

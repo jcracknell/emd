@@ -29,16 +29,14 @@ namespace pegleg.cs.Parsing.Expressions {
 		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 
-			var sequenceContext = context.Clone();
 			for(int i = 0; i < _sequence.Length; i++) {
 				var currentExpression = _sequence[i];
-				var currentExpressionApplicationResult = currentExpression.Matches(sequenceContext);
+				var currentExpressionApplicationResult = currentExpression.Matches(context);
 
 				if(!currentExpressionApplicationResult.Succeeded)
 					return UnsuccessfulMatchingResult.Create(this);
 			}
 
-			context.Assimilate(sequenceContext);
 			return SuccessfulMatchingResult.NilProduct;
 		}
 	}
@@ -57,12 +55,11 @@ namespace pegleg.cs.Parsing.Expressions {
 		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 
-			var sequenceContext = context.Clone();
 			var expressionProducts = new object[_sequence.Length];
 			for(int i = 0; i < _sequence.Length; i++) {
 				var currentExpression = _sequence[i];
 
-				var currentExpressionApplicationResult = currentExpression.Matches(sequenceContext);
+				var currentExpressionApplicationResult = currentExpression.Matches(context);
 				
 				if(!currentExpressionApplicationResult.Succeeded)
 					return UnsuccessfulMatchingResult.Create(this);
@@ -70,7 +67,6 @@ namespace pegleg.cs.Parsing.Expressions {
 				expressionProducts[i] = currentExpressionApplicationResult.Product;
 			}
 
-			context.Assimilate(sequenceContext);
 			var product = _matchAction(matchBuilder.CompleteMatch(new SequenceProducts(expressionProducts)));
 			return SuccessfulMatchingResult.Create(product);
 		}
