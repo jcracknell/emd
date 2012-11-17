@@ -35,12 +35,9 @@ namespace pegleg.cs.Parsing.Expressions {
 			for(var i = 0; i != _choiceCount; i++) {
 				// Ordering of choices is determined by the choice order array
 				var currentChoice = _choices[_choiceOrder[i]];
-
-				var choiceMatchingContext = context.Clone();
-				var choiceMatchingResult = currentChoice.Matches(choiceMatchingContext);
+				var choiceMatchingResult = currentChoice.Matches(context);
 
 				if(choiceMatchingResult.Succeeded) {
-					context.Assimilate(choiceMatchingContext);
 					UpdateChoiceOrder(i);
 					return choiceMatchingResult;
 				}
