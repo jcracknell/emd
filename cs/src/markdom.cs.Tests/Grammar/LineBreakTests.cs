@@ -48,6 +48,20 @@ namespace markdom.cs.Grammar {
 			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,4,1,0)));
 		}
 
+		[Fact] public void LineBreak_should_match_on_separate_line() {
+			// This is an odd case, however this behavior makes sense as it is consistent with our block
+			// definition, and it would be very difficult to prevent (as it would be a combination of
+			// linebreaks and spaces)
+
+			var match = Grammar.LineBreak.ShouldMatch(
+				/* block text */"\n",
+				"\\\n",
+				"block text"
+			);
+
+			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,3,1,0)));
+		}
+
 		[Fact] public void LineBreak_should_not_match_with_block_text_on_same_line() {
 			Grammar.LineBreak.ShouldNotMatch("\\  block text");
 		}
