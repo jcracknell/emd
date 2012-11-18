@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class UnorderedChoiceParsingExpression<TChoice, TProduct> : BaseParsingExpression<TProduct> {
+	public abstract class UnorderedChoiceParsingExpression<TChoice, TProduct> : CacheingParsingExpression<TProduct> {
 		private readonly IParsingExpression<TChoice>[] _choices;
 		private readonly int _choiceCount;
 		private readonly int[] _choiceOrder;
@@ -88,7 +88,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingUnorderedChoiceParsingExpression : UnorderedChoiceParsingExpression<object, Nil> {
 		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression<object>[] choices) : base(choices) { }
 
-		public override IMatchingResult<Nil> Matches(MatchingContext context) {
+		protected override IMatchingResult<Nil> MatchesUncached(MatchingContext context) {
 			var choiceResult = MatchChoices(context);
 			if(null == choiceResult)
 				return UnsuccessfulMatchingResult.Create(this);
@@ -100,7 +100,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NonCapturingUnorderedChoiceParsingExpression<TChoice> : UnorderedChoiceParsingExpression<TChoice, TChoice> {
 		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices) : base(choices) { }
 
-		public override IMatchingResult<TChoice> Matches(MatchingContext context) {
+		protected override IMatchingResult<TChoice> MatchesUncached(MatchingContext context) {
 			return MatchChoices(context) ?? UnsuccessfulMatchingResult.Create(this);
 		}
 	}
@@ -116,7 +116,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;
 		}
 
-		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesUncached(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 
 			var choiceResult = MatchChoices(context);

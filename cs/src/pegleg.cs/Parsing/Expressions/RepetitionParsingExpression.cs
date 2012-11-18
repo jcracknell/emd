@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class RepetitionParsingExpression<TBody, TProduct> : BaseParsingExpression<TProduct> {
+	public abstract class RepetitionParsingExpression<TBody, TProduct> : CacheingParsingExpression<TProduct> {
 		public const uint UNBOUNDED = 0;
 
 		protected readonly uint _minOccurs;
@@ -36,7 +36,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			: base(minOccurs, maxOccurs, body)
 		{ }
 
-		public override IMatchingResult<IEnumerable<TBody>> Matches(MatchingContext context) {
+		protected override IMatchingResult<IEnumerable<TBody>> MatchesUncached(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 
 			uint iterationCount = 0;
@@ -74,7 +74,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			_matchAction = matchAction;	
 		}
 
-		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
+		protected override IMatchingResult<TProduct> MatchesUncached(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 			
 			uint iterationCount = 0;

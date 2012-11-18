@@ -8,7 +8,6 @@ namespace pegleg.cs.Parsing {
 	public class MatchingContext {
 		private readonly string _consumable;
 		private readonly SourceRange[] _parts;
-		private readonly bool _isRootContext;
 		private readonly MatchingResultCache _cache;
 		private int _index;
 		private int _sourceIndex;
@@ -25,10 +24,9 @@ namespace pegleg.cs.Parsing {
 			CodeContract.ArgumentIsNotNull(() => source, source);
 			CodeContract.ArgumentIsNotNull(() => parts, parts);
 
-			_isRootContext = true;
 			_consumable = source;
 			_parts = parts;
-			_cache = new MatchingResultCache(source.Length);
+			_cache = new MatchingResultCache(source.Length + 1);
 			_index = 0;
 			_part = 0;
 			_partEnd = _parts[_part].Length;
@@ -38,7 +36,6 @@ namespace pegleg.cs.Parsing {
 		}
 
 		private MatchingContext(MatchingContext prototype) {
-			_isRootContext = false;
 			_consumable = prototype._consumable;
 			_parts = prototype._parts;
 			_cache = prototype._cache;
@@ -88,9 +85,6 @@ namespace pegleg.cs.Parsing {
 					}
 				}
 			}
-
-			if(_isRootContext)
-				_cache.ClearPriorTo(_index);
 		}
 
 		public string Substring(int index, int length) {
@@ -195,7 +189,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public void CacheResultFor<TProduct>(IParsingExpression<TProduct> expression, IMatchingResult<TProduct> result) {
-			_cache.Store(_index, expression, result);
+			_cache.Store(_index - result.Length, expression, result);
 		}
 	}
 }

@@ -6,13 +6,15 @@ using System.Text;
 namespace pegleg.cs.Parsing {
 	public class MatchingResultCache {
 		private readonly Dictionary<Guid,IMatchingResult>[] _cache;
-		private int _minIndex = int.MaxValue;
+		private static int _queries = 0;
+		private static int _hits = 0;
 
 		public MatchingResultCache(int size) {
 			_cache = new Dictionary<Guid,IMatchingResult>[size];
 		}
 
 		public bool HasResult<TProduct>(int index, IParsingExpression<TProduct> expression, out IMatchingResult<TProduct> cachedResult) {
+			_queries++;
 			var indexCache = _cache[index];
 			if(null == indexCache) {
 				cachedResult = null;
@@ -21,6 +23,7 @@ namespace pegleg.cs.Parsing {
 
 			IMatchingResult stored;
 			if(indexCache.TryGetValue(expression.Id, out stored)) {
+				_hits++;
 				cachedResult = (IMatchingResult<TProduct>)stored;
 				return true;
 			}
@@ -35,14 +38,6 @@ namespace pegleg.cs.Parsing {
 				_cache[index] = indexCache = new Dictionary<Guid,IMatchingResult>();
 
 			indexCache[expression.Id] = result;
-			
-			if(index < _minIndex)
-				_minIndex = index;
-		}
-
-		public void ClearPriorTo(int index) {
-			while(_minIndex < index)
-				_cache[_minIndex++] = null;
 		}
 	}
 }
