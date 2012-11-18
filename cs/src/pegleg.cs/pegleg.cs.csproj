@@ -62,6 +62,7 @@
     <Compile Include="Parsing\IMatch.cs" />
     <Compile Include="Parsing\Match.cs" />
     <Compile Include="Parsing\Expressions\OrderedChoiceParsingExpression.cs" />
+    <Compile Include="Parsing\MatchingResultCache.cs" />
     <Compile Include="Parsing\ParsingExpressionKind.cs" />
     <Compile Include="IParsingExpression.cs" />
     <Compile Include="Parsing\IParsingExpressionHandler.cs" />

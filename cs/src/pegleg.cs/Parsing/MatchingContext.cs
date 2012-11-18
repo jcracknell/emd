@@ -9,6 +9,7 @@ namespace pegleg.cs.Parsing {
 		private readonly string _consumable;
 		private readonly SourceRange[] _parts;
 		private readonly bool _isRootContext;
+		private readonly MatchingResultCache _cache;
 		private int _index;
 		private int _sourceIndex;
 		private int _sourceLine;
@@ -27,6 +28,7 @@ namespace pegleg.cs.Parsing {
 			_isRootContext = true;
 			_consumable = source;
 			_parts = parts;
+			_cache = new MatchingResultCache(source.Length);
 			_index = 0;
 			_part = 0;
 			_partEnd = _parts[_part].Length;
@@ -39,6 +41,7 @@ namespace pegleg.cs.Parsing {
 			_isRootContext = false;
 			_consumable = prototype._consumable;
 			_parts = prototype._parts;
+			_cache = prototype._cache;
 			_index = prototype._index;
 			_part = prototype._part;
 			_partEnd = prototype._partEnd;
@@ -85,6 +88,9 @@ namespace pegleg.cs.Parsing {
 					}
 				}
 			}
+
+			if(_isRootContext)
+				_cache.ClearPriorTo(_index);
 		}
 
 		public string Substring(int index, int length) {
@@ -178,6 +184,18 @@ namespace pegleg.cs.Parsing {
 
 		public MatchBuilder<TProduct> GetMatchBuilderFor<TProduct>(IParsingExpression<TProduct> expression) {
 			return new MatchBuilder<TProduct>(this, expression);
+		}
+
+		public bool ConsumesCachedResultFor<TProduct>(IParsingExpression<TProduct> expression, out IMatchingResult<TProduct> cachedResult) {
+			if(!_cache.HasResult(_index, expression, out cachedResult))
+				return false;
+
+			Consume(cachedResult.Length);
+			return true;
+		}
+
+		public void CacheResultFor<TProduct>(IParsingExpression<TProduct> expression, IMatchingResult<TProduct> result) {
+			_cache.Store(_index, expression, result);
 		}
 	}
 }
