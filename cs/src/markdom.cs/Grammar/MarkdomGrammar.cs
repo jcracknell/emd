@@ -96,8 +96,8 @@ namespace markdom.cs.Grammar {
 		/// </summary>
 		public readonly IParsingExpression<Nil> Whitespace;
 		public readonly IParsingExpression<IEnumerable<Nil>> Whitespaces;
-		public readonly IParsingExpression<IEnumerable<Nil>> WhitespaceNoBlankLines;
-		public readonly IParsingExpression<Nil> WhitespaceNoBlankLine;
+		public readonly IParsingExpression<Nil> BlockWhitespace;
+		public readonly IParsingExpression<Nil> OptionalBlockWhitespace;
 		/// <summary>
 		/// A newline character.
 		/// </summary>
@@ -821,16 +821,16 @@ namespace markdom.cs.Grammar {
 						.Select(ticks =>
 							Sequence(
 								ticks,
-								Reference(() => WhitespaceNoBlankLines),
+								Reference(() => OptionalBlockWhitespace),
 								AtLeast(0,
 									Sequence(
-										Reference(() => WhitespaceNoBlankLines),
+										Reference(() => OptionalBlockWhitespace),
 										AtLeast(1,
 											Sequence(
 												NotAhead(ChoiceUnordered(ticks, Reference(() => Whitespace))),
 												Reference(() => UnicodeCharacter)))),
 									match => match.String),
-								Reference(() => WhitespaceNoBlankLines),
+								Reference(() => OptionalBlockWhitespace),
 								ticks,
 								match => new CodeNode(match.Product.Of3, match.SourceRange)))),
 					match => match.Product.Of2));
@@ -880,7 +880,7 @@ namespace markdom.cs.Grammar {
 					match => new TextNode(match.String, match.SourceRange)));
 
 			Define(() => Space,
-				AtLeast(1, Reference(() => WhitespaceNoBlankLine), match => new SpaceNode(match.SourceRange)));
+				Reference(() => BlockWhitespace, match => new SpaceNode(match.SourceRange)));
 
 			Define(() => NormalChar,
 				this.UnicodeCharacterNotIn(whitespaceCharValues, specialCharValues));
@@ -1438,15 +1438,16 @@ namespace markdom.cs.Grammar {
 
 			#region Text, Character Classes, etc
 
-			Define(() => WhitespaceNoBlankLines,
-				AtLeast(0, Reference(() => WhitespaceNoBlankLine)));
+			Define(() => OptionalBlockWhitespace,
+				Optional(Reference(() => BlockWhitespace)));
 
-			Define(() => WhitespaceNoBlankLine,
-				ChoiceOrdered(
-					Reference(() => SpaceChar),
-					Sequence(
-						Reference(() => NewLine),
-						NotAhead(Reference(() => BlankLine)))));
+			Define(() => BlockWhitespace,
+				Sequence(
+					Ahead(Reference(() => Whitespace)),
+					Reference(() => SpaceChars),
+					Optional(Reference(() => NewLine)),
+					Reference(() => SpaceChars),
+					NotAhead(Reference(() => BlankLine))));
 
 			Define(() => Line,
 				Sequence(
