@@ -23,7 +23,7 @@ namespace markdom.cs.Grammar {
 			var expected = new ObjectLiteralExpression(
 				new PropertyAssignment[] {
 					new PropertyAssignment(
-						new StringLiteralExpression("a", new SourceRange(2, 3, 1, 2)),
+						"a",
 						new StringLiteralExpression("foo", new SourceRange(8, 5, 1, 8)),
 						new SourceRange(2, 11, 1, 2)) },
 				new SourceRange(0, 15, 1, 0));  
@@ -36,12 +36,12 @@ namespace markdom.cs.Grammar {
 			var expected = new ObjectLiteralExpression(
 				new PropertyAssignment[] {
 					new PropertyAssignment(
-						new NumericLiteralExpression(0d, new SourceRange(1,1,1,1)),
+						"0",
 						new StringLiteralExpression("a", new SourceRange(3,3,1,3)),
 						new SourceRange(1,5,1,1)
 					),
 					new PropertyAssignment(
-						new NumericLiteralExpression(1d, new SourceRange(7,1,1,7)),
+						"1",
 						new StringLiteralExpression("b", new SourceRange(9,3,1,9)),
 						new SourceRange(7,5,1,7)
 					)
@@ -60,12 +60,12 @@ namespace markdom.cs.Grammar {
 			var expected = new ObjectLiteralExpression(
 				new PropertyAssignment[] {
 					new PropertyAssignment(
-						new IdentifierExpression("foo", new SourceRange(2,3,1,2)),
+						"foo",
 						new NumericLiteralExpression(1d, new SourceRange(7,1,1,7)),
 						new SourceRange(2,6,1,2)
 					),
 					new PropertyAssignment(
-						new IdentifierExpression("bar", new SourceRange(10,3,1,10)),
+						"bar",
 						new NumericLiteralExpression(2d, new SourceRange(15,1,1,15)),
 						new SourceRange(10,6,1,10)
 					),

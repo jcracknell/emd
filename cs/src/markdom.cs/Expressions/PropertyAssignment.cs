@@ -6,12 +6,13 @@ using System.Text;
 
 namespace markdom.cs.Expressions {
 	public class PropertyAssignment {
-		private readonly IExpression _propertyName;
+		private readonly string _propertyName;
 		private readonly IExpression _propertyValue;
 		private readonly SourceRange _sourceRange;
 
-		public PropertyAssignment(IExpression propertyName, IExpression propertyValue, SourceRange sourceRange) {
+		public PropertyAssignment(string propertyName, IExpression propertyValue, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => propertyName, propertyName);
+			CodeContract.ArgumentIsValid(() => propertyName, 0 != propertyName.Length, "cannot be empty");
 			CodeContract.ArgumentIsNotNull(() => propertyValue, propertyValue);
 
 			_propertyName = propertyName;
@@ -19,7 +20,7 @@ namespace markdom.cs.Expressions {
 			_sourceRange = sourceRange;
 		}
 
-		public IExpression PropertyName { get { return _propertyName; } }
+		public string PropertyName { get { return _propertyName; } }
 
 		public IExpression PropertyValue { get { return _propertyValue; } }
 

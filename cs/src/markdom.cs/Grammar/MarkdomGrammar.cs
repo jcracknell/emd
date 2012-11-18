@@ -1130,10 +1130,10 @@ namespace markdom.cs.Grammar {
 
 			var objectPropertyAssignment =
 				Sequence(
-					ChoiceUnordered<IExpression>(
-						Reference(() => IdentifierExpression),
-						Reference(() => StringLiteralExpression),
-						Reference(() => NumericLiteralExpression)),
+					ChoiceUnordered(
+						Reference(() => Identifier),
+						Reference(() => StringLiteral),
+						Reference(() => NumericLiteral, match => match.Product.ToString())),
 					Reference(() => ExpressionWhitespace),
 					Literal(":"),
 					Reference(() => ExpressionWhitespace),
