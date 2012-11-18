@@ -5,12 +5,12 @@ using System.Text;
 
 namespace pegleg.cs.Parsing {
 	public class MatchingResultCache {
-		private readonly Dictionary<Guid,IMatchingResult>[] _cache;
+		private readonly Dictionary<int,IMatchingResult>[] _cache;
 		private static int _queries = 0;
 		private static int _hits = 0;
 
 		public MatchingResultCache(int size) {
-			_cache = new Dictionary<Guid,IMatchingResult>[size];
+			_cache = new Dictionary<int,IMatchingResult>[size];
 		}
 
 		public bool HasResult<TProduct>(int index, IParsingExpression<TProduct> expression, out IMatchingResult<TProduct> cachedResult) {
@@ -35,7 +35,7 @@ namespace pegleg.cs.Parsing {
 		public void Store(int index, IParsingExpression expression, IMatchingResult result) {
 			var indexCache = _cache[index];
 			if(null == indexCache)
-				_cache[index] = indexCache = new Dictionary<Guid,IMatchingResult>();
+				_cache[index] = indexCache = new Dictionary<int,IMatchingResult>();
 
 			indexCache[expression.Id] = result;
 		}

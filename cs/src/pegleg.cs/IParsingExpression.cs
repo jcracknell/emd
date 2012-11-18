@@ -7,7 +7,7 @@ using System.Text;
 
 namespace pegleg.cs {
 	public interface IParsingExpression {
-		Guid Id { get; }
+		int Id { get; }
 		ParsingExpressionKind Kind { get; }
 		T HandleWith<T>(IParsingExpressionHandler<T> handler);
 		IMatchingResult Matches(MatchingContext context);
