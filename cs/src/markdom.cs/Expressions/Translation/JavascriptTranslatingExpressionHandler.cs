@@ -110,5 +110,60 @@ namespace markdom.cs.Expressions.Translation {
 		public void Handle(UriLiteralExpression expression) {
 			_writer.Write(JavascriptUtils.Encode(expression.Value));
 		}
+
+		public void Handle(DeleteExpression expression) {
+			_writer.Write("delete ");
+			expression.Body.HandleWith(this);
+		}
+
+		public void Handle(BitwiseNotExpression expression) {
+			_writer.Write("~");
+			expression.Body.HandleWith(this);
+		}
+
+		public void Handle(LogicalNotExpression expression) {
+			_writer.Write("!");
+			expression.Body.HandleWith(this);
+		}
+
+		public void Handle(NegativeExpression expression) {
+			_writer.Write("-");
+			expression.Body.HandleWith(this);
+		}
+
+		public void Handle(PositiveExpression expression) {
+			_writer.Write("+");
+			expression.Body.HandleWith(this);
+		}
+
+		public void Handle(PrefixDecrementExpression expression) {
+			_writer.Write("--");
+			expression.Body.HandleWith(this);
+		}
+
+		public void Handle(PrefixIncrementExpression expression) {
+			_writer.Write("++");
+			expression.Body.HandleWith(this);
+		}
+
+		public void Handle(TypeofExpression expression) {
+			_writer.Write("typeof ");
+			expression.Body.HandleWith(this);
+		}
+
+		public void Handle(VoidExpression expression) {
+			_writer.Write("void ");
+			expression.Body.HandleWith(this);
+		}
+
+		public void Handle(PostfixDecrementExpression expression) {
+			expression.Body.HandleWith(this);
+			_writer.Write("--");
+		}
+
+		public void Handle(PostfixIncrementExpression expression) {
+			expression.Body.HandleWith(this);
+			_writer.Write("++");
+		}
 	}
 }
