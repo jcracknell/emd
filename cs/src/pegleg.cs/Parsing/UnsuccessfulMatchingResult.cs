@@ -14,6 +14,8 @@ namespace pegleg.cs.Parsing {
 	public class UnsuccessfulMatchingResult<TProduct> : IMatchingResult<TProduct> {
 		public bool Succeeded { get { return false; } }
 
+		public int Length { get { return 0; } }
+
 		public TProduct Product { get { throw new InvalidOperationException(); } }
 
 		object IMatchingResult.Product { get { throw new InvalidOperationException(); } }

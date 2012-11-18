@@ -34,7 +34,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 				if(choiceMatchingResult.Succeeded) {
 					context.Assimilate(choiceMatchingContext);
-					return SuccessfulMatchingResult.NilProduct;
+					return SuccessfulMatchingResult.Create(Nil.Value, choiceMatchingResult.Length);
 				}
 			}
 

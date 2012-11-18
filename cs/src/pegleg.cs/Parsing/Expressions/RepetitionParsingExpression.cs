@@ -37,10 +37,12 @@ namespace pegleg.cs.Parsing.Expressions {
 		{ }
 
 		public override IMatchingResult<IEnumerable<TBody>> Matches(MatchingContext context) {
+			var matchBuilder = context.GetMatchBuilderFor(this);
+
 			uint iterationCount = 0;
 			var iterationProducts = new LinkedList<TBody>();
+			var iterationContext = context.Clone();
 			while(true) {
-				var iterationContext = context.Clone();
 				var iterationResult = _body.Matches(iterationContext);
 
 				if(iterationResult.Succeeded) {
@@ -57,7 +59,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				}
 			}
 
-			return SuccessfulMatchingResult.Create(iterationProducts);
+			return matchBuilder.Success(iterationProducts);
 		}
 	}
 

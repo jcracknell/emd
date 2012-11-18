@@ -34,7 +34,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			if(context.ConsumesMatching(_literal, _comparison))
-				return SuccessfulMatchingResult.NilProduct;
+				return SuccessfulMatchingResult.Create(Nil.Value, _literal.Length);
 			else
 				return UnsuccessfulMatchingResult.Create(this);
 		}

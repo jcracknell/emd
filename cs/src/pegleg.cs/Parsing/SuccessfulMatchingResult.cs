@@ -5,27 +5,23 @@ using System.Text;
 
 namespace pegleg.cs.Parsing {
 	public static class SuccessfulMatchingResult {
-		private static readonly SuccessfulMatchingResult<Nil> _nilProduct;
-
-		static SuccessfulMatchingResult() {
-			_nilProduct = new SuccessfulMatchingResult<Nil>(Nil.Value);
-		}
-
-		public static SuccessfulMatchingResult<Nil> NilProduct { get { return _nilProduct; } }
-
-		public static SuccessfulMatchingResult<TProduct> Create<TProduct>(TProduct product) {
-			return new SuccessfulMatchingResult<TProduct>(product);
+		public static SuccessfulMatchingResult<TProduct> Create<TProduct>(TProduct product, int length) {
+			return new SuccessfulMatchingResult<TProduct>(product, length);
 		}
 	}
 
 	public class SuccessfulMatchingResult<TProduct> : IMatchingResult<TProduct> {
 		private readonly TProduct _product;
+		private readonly int _length;
 
-		public SuccessfulMatchingResult(TProduct product) {
+		public SuccessfulMatchingResult(TProduct product, int length) {
 			_product = product;
+			_length = length;
 		}
 
 		public bool Succeeded { get { return true; } }
+
+		public int Length { get { return _length; } }
 
 		public TProduct Product { get { return _product; } }
 

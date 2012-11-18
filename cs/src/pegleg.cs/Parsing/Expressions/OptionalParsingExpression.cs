@@ -34,7 +34,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				return bodyMatchResult;
 			}
 
-			return SuccessfulMatchingResult.Create(default(TBody));
+			return SuccessfulMatchingResult.Create(default(TBody), 0);
 		}
 	}
 

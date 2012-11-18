@@ -89,10 +89,11 @@ namespace pegleg.cs.Parsing.Expressions {
 		public NonCapturingUnorderedChoiceParsingExpression(IParsingExpression<object>[] choices) : base(choices) { }
 
 		public override IMatchingResult<Nil> Matches(MatchingContext context) {
-			if(null == MatchChoices(context))
+			var choiceResult = MatchChoices(context);
+			if(null == choiceResult)
 				return UnsuccessfulMatchingResult.Create(this);
 
-			return SuccessfulMatchingResult.NilProduct;
+			return SuccessfulMatchingResult.Create(Nil.Value, choiceResult.Length);
 		}
 	}
 

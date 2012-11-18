@@ -21,7 +21,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			var bodyMatch = _body.Matches(context.Clone());
 			if(bodyMatch.Succeeded)
 				return UnsuccessfulMatchingResult.Create(this);
-			return SuccessfulMatchingResult.NilProduct;
+			return SuccessfulMatchingResult.Create(Nil.Value, 0);
 		}
 
 		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {

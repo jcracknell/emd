@@ -37,7 +37,7 @@ namespace pegleg.cs.Parsing.Expressions {
 					return UnsuccessfulMatchingResult.Create(this);
 			}
 
-			return SuccessfulMatchingResult.NilProduct;
+			return matchBuilder.Success(Nil.Value);
 		}
 	}
 

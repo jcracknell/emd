@@ -6,6 +6,7 @@ using System.Text;
 namespace pegleg.cs.Parsing {
 	public interface IMatchingResult {
 		bool Succeeded { get; }
+		int Length { get; }
 		object Product { get; }
 	}
 

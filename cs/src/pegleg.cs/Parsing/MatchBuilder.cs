@@ -22,7 +22,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public IMatchingResult<TProduct> Success(TProduct product) {
-			return new SuccessfulMatchingResult<TProduct>(product);
+			return new SuccessfulMatchingResult<TProduct>(product, _matchingContext.Index - _index);
 		}
 
 		public IMatchingResult<TProduct> Success<TRaw>(TRaw raw, Func<IMatch<TRaw>, TProduct> matchAction) {
@@ -31,7 +31,7 @@ namespace pegleg.cs.Parsing {
 			var match = new Match<TRaw>(_matchingContext, raw, _index, matchLength, _sourceIndex, sourceLength, _sourceLine, _sourceLineIndex);
 			
 			var product = matchAction(match);
-			return new SuccessfulMatchingResult<TProduct>(product);
+			return new SuccessfulMatchingResult<TProduct>(product, matchLength);
 		}
 	}
 }

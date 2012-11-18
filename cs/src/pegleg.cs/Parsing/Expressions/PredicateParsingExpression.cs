@@ -21,7 +21,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			if(_predicate()) {
-				return SuccessfulMatchingResult.NilProduct;
+				return SuccessfulMatchingResult.Create(Nil.Value, 0);
 			} else {
 				return UnsuccessfulMatchingResult.Create(this);
 			}
