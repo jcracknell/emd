@@ -18,6 +18,8 @@ namespace markdom.cs.Grammar {
 
 		public readonly IParsingExpression<IEnumerable<IBlockNode>> Blocks;
 		public readonly IParsingExpression<IBlockNode> Block;
+		public readonly IParsingExpression<Nil> InterBlock;
+		public readonly IParsingExpression<Nil> CommentBlock;
 		public readonly IParsingExpression<ExpressionBlockNode> ExpressionBlock;
 		public readonly IParsingExpression<BlockquoteNode> Blockquote;
 		public readonly IParsingExpression<TableNode> Table;
@@ -52,6 +54,7 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<LineBreakNode> LineBreak;
 		public readonly IParsingExpression<TextNode> Text;
 		public readonly IParsingExpression<SpaceNode> Space;
+		public readonly IParsingExpression<Nil> InlineSpace;
 		public readonly IParsingExpression<EntityNode> Entity;
 		public readonly IParsingExpression<ReferenceId> ReferenceLabel;
 		public readonly IParsingExpression<SymbolNode> Symbol;
@@ -82,9 +85,9 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<Nil> ExpressionKeyword;
 		public readonly IParsingExpression<Nil> ExpressionWhitespace;
 		public readonly IParsingExpression<Nil> ExpressionUnicodeEscapeSequence;
-		public readonly IParsingExpression<LineInfo> Comment;
-		public readonly IParsingExpression<LineInfo> MultiLineComment;
-		public readonly IParsingExpression<LineInfo> SingleLineComment;
+		public readonly IParsingExpression<Nil> Comment;
+		public readonly IParsingExpression<Nil> MultiLineComment;
+		public readonly IParsingExpression<Nil> SingleLineComment;
 
 		/// <summary>
 		/// A tab or a space.
@@ -159,7 +162,7 @@ namespace markdom.cs.Grammar {
 			//   * Paragraph must come last, because it will sweep up just about anything
 			Define(() => Block,
 				Sequence(
-					Reference(() => BlankLines),
+					Reference(() => InterBlock),
 					ChoiceOrdered<IBlockNode>(
 						ChoiceUnordered<IBlockNode>(
 							Reference(() => Heading),
@@ -170,8 +173,20 @@ namespace markdom.cs.Grammar {
 							Reference(() => OrderedList),
 							Reference(() => ExpressionBlock)),
 						Reference(() => Paragraph)), 
-					Reference(() => BlankLines),
+					Reference(() => InterBlock),
 					match => match.Product.Of2));
+
+			Define(() => InterBlock,
+				Sequence(
+					Reference(() => BlankLines),
+					AtLeast(0,
+						Sequence(
+							AtLeast(1,
+								Sequence(
+									Reference(() => SpaceChars),
+									Reference(() => Comment))),
+							Reference(() => BlankLine), // following space-comment combo
+							Reference(() => BlankLines)))));
 
 			#region ExpressionBlock
 
@@ -592,10 +607,11 @@ namespace markdom.cs.Grammar {
 				ChoiceOrdered(
 					Sequence(NotAhead(CharacterIn(specialCharValues)), Reference(() => UnicodeCharacter)),
 					ChoiceUnordered(
-						Reference(() => SingleLineComment),
-						Reference(() => MultiLineComment),
-						Reference(() => Code),
-						Reference(() => InlineExpression)),
+						Reference(() => InlineExpression),
+						Reference(() => Comment),
+						Reference(() => Link),
+						Reference(() => AutoLink),
+						Reference(() => Code)),
 					Reference(() => UnicodeCharacter)));
 
 			#region Tables
@@ -807,10 +823,10 @@ namespace markdom.cs.Grammar {
 
 			Define(() => LineBreak,
 				Sequence(
-					Reference(() => OptionalBlockWhitespace),
+					Optional(Reference(() => InlineSpace)),
 					Literal("\\"),
 					Ahead(Reference(() => BlankLine)),
-					Reference(() => OptionalBlockWhitespace),
+					Optional(Reference(() => InlineSpace)),
 					match => new LineBreakNode(match.SourceRange)));
 
 			#endregion
@@ -885,7 +901,20 @@ namespace markdom.cs.Grammar {
 					match => new TextNode(match.String, match.SourceRange)));
 
 			Define(() => Space,
-				Reference(() => BlockWhitespace, match => new SpaceNode(match.SourceRange)));
+				Reference(() => InlineSpace, match => new SpaceNode(match.SourceRange)));
+
+			Define(() => InlineSpace,
+				ChoiceOrdered(
+					// At least one comment interleaved with whitespace in any combination
+					Sequence(
+						Reference(() => OptionalBlockWhitespace),
+						AtLeast(1,
+							Sequence(
+								Reference(() => Comment),
+								Reference(() => OptionalBlockWhitespace))),
+						NotAhead(Reference(() => BlankLine))),
+					// Or just one chunk of whitespace
+					Reference(() => BlockWhitespace)));
 
 			Define(() => NormalChar,
 				this.UnicodeCharacterNotIn(whitespaceCharValues, specialCharValues));
@@ -1416,28 +1445,25 @@ namespace markdom.cs.Grammar {
 					Literal("u"),
 					Exactly(4, Reference(() => HexDigit))));
 
+			#endregion
+
 			#region Comments
 
 			Define(() => Comment,
-				ChoiceUnordered<LineInfo>(
+				ChoiceUnordered(
 					Reference(() => SingleLineComment),
 					Reference(() => MultiLineComment)));
 
 			Define(() => SingleLineComment,
 				Sequence(
 					Literal("//"),
-					Reference(() => Line),
-					match => LineInfo.FromMatch(match)));
+					AtLeast(0, Sequence(NotAhead(Reference(() => NewLine)), Reference(() => UnicodeCharacter)))));
 
 			Define(() => MultiLineComment,
 				Sequence(
 					Literal("/*"),
 					AtLeast(0, Sequence(NotAhead(Literal("*/")), Reference(() => UnicodeCharacter))),
-					Literal("*/"),
-					match => LineInfo.FromMatch(match)));
-
-			#endregion
-
+					Literal("*/")));
 
 			#endregion
 

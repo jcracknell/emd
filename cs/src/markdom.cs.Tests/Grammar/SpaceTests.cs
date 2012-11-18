@@ -64,5 +64,36 @@ namespace markdom.cs.Grammar {
 		[Fact] public void Space_should_not_match_space_and_newline_at_end_of_input() {
 			Grammar.Space.ShouldNotMatch(" \n");
 		}
+
+		[Fact] public void Space_should_match_single_line_comment() {
+			var match = Grammar.Space.ShouldMatch(
+				"// comment\n",
+				"block continues"
+			);
+
+			match.Product.ShouldBeEquivalentTo(new SpaceNode(new SourceRange(0,11,1,0)));
+		}
+
+		[Fact] public void Space_should_not_match_single_line_comment_at_end_of_block() {
+			Grammar.Space.ShouldNotMatch(
+				"// comment\n",
+				"\n",
+				"new block"
+			);
+		}
+
+		[Fact] public void Space_should_match_multi_line_comment() {
+			var match = Grammar.Space.ShouldMatch("/* comment */text");
+
+			match.Product.ShouldBeEquivalentTo(new SpaceNode(new SourceRange(0,13,1,0)));
+		}
+
+		[Fact] public void Space_should_not_match_multi_line_comment_at_end_of_block() {
+			Grammar.Space.ShouldNotMatch(
+				"/* comment */\n",
+				"\n",
+				"new block"
+			);
+		}
 	}
 }

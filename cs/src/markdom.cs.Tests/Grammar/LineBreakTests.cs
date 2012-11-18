@@ -62,6 +62,31 @@ namespace markdom.cs.Grammar {
 			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,3,1,0)));
 		}
 
+		[Fact] public void LineBreak_should_match_following_single_line_comment() {
+			var match = Grammar.LineBreak.ShouldMatch(
+				"// comment\n",
+				"\\\n"
+			);
+
+			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,12,1,0)));
+		}
+
+		[Fact] public void LineBreak_should_match_following_multiple_single_line_comments() {
+			var match = Grammar.LineBreak.ShouldMatch(
+				"// 1\n",
+				"// 2\n",
+				"\\\n"
+			);
+
+			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,11,1,0)));
+		}
+
+		[Fact] public void LineBreak_should_match_following_multi_line_comment() {
+			var match = Grammar.LineBreak.ShouldMatch("/* comment */\\\n");
+
+			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,14,1,0)));
+		}
+
 		[Fact] public void LineBreak_should_not_match_with_block_text_on_same_line() {
 			Grammar.LineBreak.ShouldNotMatch("\\  block text");
 		}
