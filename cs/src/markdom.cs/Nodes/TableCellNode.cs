@@ -31,8 +31,6 @@ namespace markdom.cs.Nodes{
 
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
-		public abstract NodeKind Kind { get; }
-
 		public abstract void HandleWith(INodeHandler handler);
 
 		public abstract T HandleWith<T>(INodeHandler<T> handler);

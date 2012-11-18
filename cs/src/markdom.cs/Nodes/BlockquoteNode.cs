@@ -19,8 +19,6 @@ namespace markdom.cs.Nodes {
 
 		public IEnumerable<IBlockNode> Children { get { return _children; } }
 
-		public NodeKind Kind { get { return NodeKind.Blockquote; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {

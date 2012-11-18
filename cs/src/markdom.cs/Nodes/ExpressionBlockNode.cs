@@ -18,8 +18,6 @@ namespace markdom.cs.Nodes {
 			_sourceRange = sourceRange;
 		}
 
-		public NodeKind Kind { get { return NodeKind.ExpressionBlock; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {

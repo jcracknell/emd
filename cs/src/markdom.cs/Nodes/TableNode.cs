@@ -19,8 +19,6 @@ namespace markdom.cs.Nodes{
 
 		public IEnumerable<TableRowNode> Rows { get { return _rows; } }
 
-		public NodeKind Kind { get { return NodeKind.Table; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {

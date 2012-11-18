@@ -22,8 +22,6 @@ namespace markdom.cs.Nodes{
 			_arguments = arguments;
 		}
 
-		public NodeKind Kind { get { return NodeKind.Link; } }
-
 		public IEnumerable<IInlineNode> Children { get { return _children; } }
 
 		public IEnumerable<IExpression> Arguments { get { return _arguments; } }

@@ -18,8 +18,6 @@ namespace markdom.cs.Nodes{
 
 		public int Value { get { return _value; } }
 
-		public NodeKind Kind { get { return NodeKind.Entity; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {

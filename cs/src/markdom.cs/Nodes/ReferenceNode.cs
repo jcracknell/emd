@@ -23,8 +23,6 @@ namespace markdom.cs.Nodes {
 
 		public IEnumerable<IExpression> Arguments { get { return _arguments; } }
 
-		public NodeKind Kind { get { return NodeKind.Reference; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {

@@ -18,8 +18,6 @@ namespace markdom.cs.Nodes{
 
 		public IEnumerable<UnorderedListItemNode> Items { get { return _items; } }
 
-		public NodeKind Kind { get { return NodeKind.UnorderedListItem; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {

@@ -31,8 +31,6 @@ namespace markdom.cs.Nodes{
 
 		public IEnumerable<OrderedListItemNode> Items { get { return _items; } }
 
-		public NodeKind Kind { get { return NodeKind.OrderedList; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {

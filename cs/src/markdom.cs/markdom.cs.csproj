@@ -106,7 +106,6 @@
     <Compile Include="Nodes\InlineExpressionNode.cs" />
     <Compile Include="Nodes\LineBreakNode.cs" />
     <Compile Include="Nodes\LinkNode.cs" />
-    <Compile Include="Nodes\NodeKind.cs" />
     <Compile Include="Nodes\OrderedListItemNode.cs" />
     <Compile Include="Nodes\OrderedListNode.cs" />
     <Compile Include="Nodes\OrderedListCounterStyle.cs" />

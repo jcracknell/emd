@@ -24,8 +24,6 @@ namespace markdom.cs.Nodes{
 
 		public int Level { get { return _level; } }
 
-		public NodeKind Kind { get { return NodeKind.Heading; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {

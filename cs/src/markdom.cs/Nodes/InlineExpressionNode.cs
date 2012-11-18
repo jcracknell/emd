@@ -19,8 +19,6 @@ namespace markdom.cs.Nodes {
 
 		public IExpression Expression { get { return _expression; } }
 
-		public NodeKind Kind { get { return NodeKind.InlineExpression; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {

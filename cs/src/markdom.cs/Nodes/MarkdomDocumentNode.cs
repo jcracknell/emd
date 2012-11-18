@@ -19,8 +19,6 @@ namespace markdom.cs.Nodes {
 
 		public IEnumerable<IBlockNode> Content { get { return _content; } }
 
-		public NodeKind Kind { get { return NodeKind.Document; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(INodeHandler handler) {
