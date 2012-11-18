@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pegleg.cs.Unicode", "pegleg
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pegleg.cs.Unicode.Tests", "pegleg.cs.Unicode.Tests\pegleg.cs.Unicode.Tests.csproj", "{DC1784E0-C12F-4AA4-8CDE-9BF3A3627E90}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "markdom.cs.Profile", "markdom.cs.Profile\markdom.cs.Profile.csproj", "{1EC33798-96C9-483C-AFF6-25A26CB015DA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +45,10 @@ Global
 		{DC1784E0-C12F-4AA4-8CDE-9BF3A3627E90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DC1784E0-C12F-4AA4-8CDE-9BF3A3627E90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DC1784E0-C12F-4AA4-8CDE-9BF3A3627E90}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1EC33798-96C9-483C-AFF6-25A26CB015DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EC33798-96C9-483C-AFF6-25A26CB015DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EC33798-96C9-483C-AFF6-25A26CB015DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EC33798-96C9-483C-AFF6-25A26CB015DA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
