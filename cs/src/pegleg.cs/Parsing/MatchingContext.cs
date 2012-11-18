@@ -35,19 +35,16 @@ namespace pegleg.cs.Parsing {
 			_sourceLineIndex = _parts[_part].LineIndex;
 		}
 
-		private MatchingContext(
-			string source, SourceRange[] parts, int consumed, int part, int partEnd,
-			int sourceIndex, int sourceLine, int sourceLineIndex)
-		{
+		private MatchingContext(MatchingContext prototype) {
 			_isRootContext = false;
-			_consumable = source;
-			_parts = parts;
-			_index = consumed;
-			_part = part;
-			_partEnd = partEnd;
-			_sourceIndex = sourceIndex;
-			_sourceLine = sourceLine;
-			_sourceLineIndex = sourceLineIndex;
+			_consumable = prototype._consumable;
+			_parts = prototype._parts;
+			_index = prototype._index;
+			_part = prototype._part;
+			_partEnd = prototype._partEnd;
+			_sourceIndex = prototype._sourceIndex;
+			_sourceLine = prototype._sourceLine;
+			_sourceLineIndex = prototype._sourceLineIndex;
 		}
 
 		/// <remarks>
@@ -167,8 +164,7 @@ namespace pegleg.cs.Parsing {
 		public bool AtEndOfInput { get { return _consumable.Length == _index; } }
 
 		public MatchingContext Clone() {
-			return new MatchingContext(
-				_consumable, _parts, _index, _part, _partEnd, _sourceIndex, _sourceLine, _sourceLineIndex);
+			return new MatchingContext(this);
 		}
 
 		public void Assimilate(MatchingContext clone) {
