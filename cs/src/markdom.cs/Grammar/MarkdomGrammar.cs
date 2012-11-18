@@ -594,6 +594,7 @@ namespace markdom.cs.Grammar {
 					ChoiceUnordered(
 						Reference(() => SingleLineComment),
 						Reference(() => MultiLineComment),
+						Reference(() => Code),
 						Reference(() => InlineExpression)),
 					Reference(() => UnicodeCharacter)));
 
