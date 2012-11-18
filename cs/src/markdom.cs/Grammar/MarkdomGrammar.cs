@@ -13,6 +13,9 @@ using System.Text.RegularExpressions;
 
 namespace markdom.cs.Grammar {
 	public class MarkdomGrammar : Grammar<MarkdomDocumentNode> {
+		private static readonly MarkdomGrammar _instance = new MarkdomGrammar();
+
+		public static MarkdomGrammar Instance { get { return _instance; } }
 
 		public readonly IParsingExpression<MarkdomDocumentNode> Document;
 
@@ -127,7 +130,7 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<Nil> EnglishAlpha;
 		public readonly IParsingExpression<Nil> UnicodeCharacter;
 
-		public MarkdomGrammar() {
+		private MarkdomGrammar() {
 			#region char sets
 			var spaceCharValues = new char[] { ' ', '\t' };
 			var whitespaceCharValues = spaceCharValues.Concat(new char[] { '\n', '\r' });

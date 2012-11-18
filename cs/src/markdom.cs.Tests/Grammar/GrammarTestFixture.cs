@@ -9,6 +9,6 @@ using System.Threading.Tasks;
 
 namespace markdom.cs.Grammar {
 	public abstract class GrammarTestFixture {
-		protected readonly MarkdomGrammar Grammar = new MarkdomGrammar();
+		protected readonly MarkdomGrammar Grammar = MarkdomGrammar.Instance;
 	}
 }
