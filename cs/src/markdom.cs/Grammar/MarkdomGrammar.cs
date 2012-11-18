@@ -697,7 +697,9 @@ namespace markdom.cs.Grammar {
 				ChoiceOrdered<IInlineNode>(
 					ChoiceUnordered<IInlineNode>(
 						Reference(() => Text),
-						Reference(() => Space),
+						ChoiceOrdered<IInlineNode>(
+							Reference(() => LineBreak),
+							Reference(() => Space)),
 						ChoiceOrdered<IInlineNode>(
 							Reference(() => Strong),
 							Reference(() => Emphasis)),
@@ -706,8 +708,7 @@ namespace markdom.cs.Grammar {
 						Reference(() => AutoLink),
 						Reference(() => Entity),
 						Reference(() => Code),
-						Reference(() => InlineExpression),
-						Reference(() => LineBreak)),
+						Reference(() => InlineExpression)),
 					Reference(() => Symbol)));
 
 			#region AutoLink
@@ -805,7 +806,10 @@ namespace markdom.cs.Grammar {
 
 			Define(() => LineBreak,
 				Sequence(
-					new IParsingExpression[] { Literal(@"\\"), Reference(() => SpaceChars), Reference(() => NewLine) },
+					Reference(() => OptionalBlockWhitespace),
+					Literal("\\"),
+					Ahead(Reference(() => BlankLine)),
+					Reference(() => OptionalBlockWhitespace),
 					match => new LineBreakNode(match.SourceRange)));
 
 			#endregion

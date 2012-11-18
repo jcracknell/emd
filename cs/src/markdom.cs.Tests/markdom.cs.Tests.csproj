@@ -64,6 +64,7 @@
     <Compile Include="Grammar\EntityTests.cs" />
     <Compile Include="Grammar\ExpressionBlockTests.cs" />
     <Compile Include="Grammar\IdentifierExpressionTests.cs" />
+    <Compile Include="Grammar\LineBreakTests.cs" />
     <Compile Include="Grammar\LinkTests.cs" />
     <Compile Include="Grammar\LiteralExpressionTests.cs" />
     <Compile Include="Grammar\LeftHandSideExpressionTests.cs" />
