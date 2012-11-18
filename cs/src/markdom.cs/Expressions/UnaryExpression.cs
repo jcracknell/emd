@@ -8,8 +8,8 @@ namespace markdom.cs.Expressions {
 	public abstract class UnaryExpression : Expression {
 		private readonly IExpression _body;
 
-		public UnaryExpression(ExpressionKind kind, IExpression body, SourceRange sourceRange)
-			: base(kind, sourceRange)
+		public UnaryExpression(IExpression body, SourceRange sourceRange)
+			: base(sourceRange)
 		{
 			CodeContract.ArgumentIsNotNull(() => body, body);
 

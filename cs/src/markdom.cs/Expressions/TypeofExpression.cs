@@ -7,7 +7,7 @@ using System.Text;
 namespace markdom.cs.Expressions {
 	public class TypeofExpression : UnaryExpression {
 		public TypeofExpression(IExpression body, SourceRange sourceRange)
-			: base(ExpressionKind.Typeof, body, sourceRange) { }
+			: base(body, sourceRange) { }
 
 		public override void HandleWith(IExpressionHandler handler) {
 			handler.Handle(this);

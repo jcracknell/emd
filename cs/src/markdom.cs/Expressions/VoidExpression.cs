@@ -7,7 +7,7 @@ using System.Text;
 namespace markdom.cs.Expressions {
 	public class VoidExpression : UnaryExpression {
 		public VoidExpression(IExpression body, SourceRange sourceRange)
-			: base(ExpressionKind.Void, body, sourceRange) { }
+			: base(body, sourceRange) { }
 
 		public override void HandleWith(IExpressionHandler handler) {
 			handler.Handle(this);

@@ -7,7 +7,7 @@ using System.Text;
 namespace markdom.cs.Expressions {
 	public class PrefixDecrementExpression : UnaryExpression {
 		public PrefixDecrementExpression(IExpression body, SourceRange sourceRange)
-			: base(ExpressionKind.PrefixDecrement, body, sourceRange)
+			: base(body, sourceRange)
 		{ }
 
 		public override void HandleWith(IExpressionHandler handler) {

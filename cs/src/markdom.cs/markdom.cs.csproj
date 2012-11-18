@@ -95,7 +95,6 @@
     <Compile Include="Nodes\EmphasisNode.cs" />
     <Compile Include="Nodes\EntityNode.cs" />
     <Compile Include="Expressions\IExpression.cs" />
-    <Compile Include="Expressions\ExpressionKind.cs" />
     <Compile Include="Expressions\ObjectLiteralExpression.cs" />
     <Compile Include="Expressions\PropertyAssignment.cs" />
     <Compile Include="Expressions\StringLiteralExpression.cs" />

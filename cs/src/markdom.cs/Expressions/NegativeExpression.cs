@@ -7,7 +7,7 @@ using System.Text;
 namespace markdom.cs.Expressions {
 	public class NegativeExpression : UnaryExpression {
 		public NegativeExpression(IExpression body, SourceRange sourceRange)
-			: base(ExpressionKind.Negative, body, sourceRange) { }
+			: base(body, sourceRange) { }
 
 		public override void HandleWith(IExpressionHandler handler) {
 			handler.Handle(this);

@@ -10,7 +10,7 @@ namespace markdom.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public DeleteExpression(IExpression body, SourceRange sourceRange)
-			: base(ExpressionKind.Delete, body, sourceRange) { }
+			: base(body, sourceRange) { }
 
 		public override void HandleWith(IExpressionHandler handler) {
 			handler.Handle(this);

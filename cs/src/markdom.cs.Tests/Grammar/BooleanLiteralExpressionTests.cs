@@ -13,7 +13,6 @@ namespace markdom.cs.Grammar {
 			var match = Grammar.BooleanLiteralExpression.ShouldMatch("true");
 
 			match.Succeeded.Should().BeTrue();
-			match.Product.Kind.Should().Be(ExpressionKind.BooleanLiteral);
 			match.Product.Value.Should().BeTrue();
 		}
 
@@ -21,7 +20,6 @@ namespace markdom.cs.Grammar {
 			var match = Grammar.BooleanLiteralExpression.ShouldMatch("false");
 
 			match.Succeeded.Should().BeTrue();
-			match.Product.Kind.Should().Be(ExpressionKind.BooleanLiteral);
 			match.Product.Value.Should().BeFalse();
 		}
 

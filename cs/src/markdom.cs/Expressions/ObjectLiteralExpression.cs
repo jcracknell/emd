@@ -18,8 +18,6 @@ namespace markdom.cs.Expressions {
 
 		public IEnumerable<PropertyAssignment> PropertyAssignments { get { return _propertyAssignments; } }
 
-		public ExpressionKind Kind { get { return ExpressionKind.ObjectLiteral; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(IExpressionHandler handler) {

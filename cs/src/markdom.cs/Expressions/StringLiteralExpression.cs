@@ -16,8 +16,6 @@ namespace markdom.cs.Expressions {
 
 		public string Value { get { return _value; } }
 
-		public ExpressionKind Kind { get { return ExpressionKind.StringLiteral; } }
-
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
 		public void HandleWith(IExpressionHandler handler) {

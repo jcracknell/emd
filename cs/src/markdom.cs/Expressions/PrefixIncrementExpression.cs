@@ -7,7 +7,7 @@ using System.Text;
 namespace markdom.cs.Expressions {
 	public class PrefixIncrementExpression : UnaryExpression {
 		public PrefixIncrementExpression(IExpression body, SourceRange sourceRange)
-			: base(ExpressionKind.PrefixIncrement, body, sourceRange)
+			: base(body, sourceRange)
 		{ }
 
 		public override void HandleWith(IExpressionHandler handler) {

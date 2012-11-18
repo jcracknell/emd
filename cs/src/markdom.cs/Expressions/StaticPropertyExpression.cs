@@ -27,8 +27,6 @@ namespace markdom.cs.Expressions {
 
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
-		public ExpressionKind Kind { get { return ExpressionKind.StaticProperty; } }
-
 		public void HandleWith(IExpressionHandler handler) {
 			handler.Handle(this);
 		}

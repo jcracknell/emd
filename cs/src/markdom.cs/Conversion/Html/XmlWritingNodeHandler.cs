@@ -123,17 +123,6 @@ namespace markdom.cs.Conversion.Html {
 		public void Handle(LinkNode node) {
 			// TODO: Expression evaluation
 			string href = null;
-			if(0 != node.Arguments.Count())
-			switch(node.Arguments.ElementAt(0).Kind) {
-				case ExpressionKind.UriLiteral:
-					href = (node.Arguments.ElementAt(0) as UriLiteralExpression).Value;
-					break;
-				case ExpressionKind.StringLiteral:
-					href = (node.Arguments.ElementAt(0) as StringLiteralExpression).Value;
-					break;
-				default: break;
-			}
-
 			Write("a", new { href = href }, () => {
 				node.Children.Each(c => c.HandleWith(this));
 			});

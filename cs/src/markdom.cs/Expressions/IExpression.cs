@@ -7,7 +7,6 @@ using System.Text;
 namespace markdom.cs.Expressions {
 	public interface IExpression {
 		SourceRange SourceRange { get; }
-		ExpressionKind Kind { get; }
 		void HandleWith(IExpressionHandler handler);
 		T HandleWith<T>(IExpressionHandler<T> handler);
 	}

@@ -7,7 +7,7 @@ using System.Text;
 namespace markdom.cs.Expressions {
 	public class PostfixDecrementExpression : UnaryExpression {
 		public PostfixDecrementExpression(IExpression body, SourceRange sourceRange)
-			: base(ExpressionKind.PostfixDecrement, body, sourceRange) { }
+			: base(body, sourceRange) { }
 
 		public override void HandleWith(IExpressionHandler handler) {
 			handler.Handle(this);
