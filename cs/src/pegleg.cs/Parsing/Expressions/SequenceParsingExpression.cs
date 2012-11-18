@@ -67,8 +67,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				expressionProducts[i] = currentExpressionApplicationResult.Product;
 			}
 
-			var product = _matchAction(matchBuilder.CompleteMatch(new SequenceProducts(expressionProducts)));
-			return SuccessfulMatchingResult.Create(product);
+			return matchBuilder.Success(new SequenceProducts(expressionProducts), _matchAction);
 		}
 	}
 }

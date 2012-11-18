@@ -47,10 +47,8 @@ namespace pegleg.cs.Parsing.Expressions {
 			var bodyMatchingContext = context.Clone();
 			var bodyMatchingResult = _body.Matches(bodyMatchingContext);
 
-			if(bodyMatchingResult.Succeeded) {
-				var product = _matchAction(context.GetMatchBuilderFor(this).CompleteMatch(bodyMatchingResult.Product));
-				return SuccessfulMatchingResult.Create(product);
-			}
+			if(bodyMatchingResult.Succeeded)
+				return context.GetMatchBuilderFor(this).Success(bodyMatchingResult.Product, _matchAction);
 
 			return UnsuccessfulMatchingResult.Create(this);
 		}

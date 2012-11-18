@@ -21,12 +21,18 @@ namespace pegleg.cs.Parsing {
 			_sourceLineIndex = context.SourceLineIndex;
 		}
 
-		public IMatch<TRaw> CompleteMatch<TRaw>(TRaw product) {
+		public IMatchingResult<TProduct> Success(TProduct product) {
+			return new SuccessfulMatchingResult<TProduct>(product);
+		}
+
+		public IMatchingResult<TProduct> Success<TRaw>(TRaw raw, Func<IMatch<TRaw>, TProduct> matchAction) {
 			var matchLength = _matchingContext.Index - _index;
 			var matchSourceRange = new SourceRange(_sourceIndex, _matchingContext.SourceIndex - _sourceIndex, _sourceLine, _sourceLineIndex);
 			var sourceLength = _matchingContext.SourceIndex - _sourceIndex;
-
-			return new Match<TRaw>(_matchingContext, product, _index, matchLength, _sourceIndex, sourceLength, _sourceLine, _sourceLineIndex);
+			var match = new Match<TRaw>(_matchingContext, raw, _index, matchLength, _sourceIndex, sourceLength, _sourceLine, _sourceLineIndex);
+			
+			var product = matchAction(match);
+			return new SuccessfulMatchingResult<TProduct>(product);
 		}
 	}
 }

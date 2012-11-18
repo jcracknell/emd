@@ -82,8 +82,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 				if(choiceMatchingResult.Succeeded) {
 					context.Assimilate(choiceMatchingContext);
-					var product = _matchAction(matchBuilder.CompleteMatch((TChoice)choiceMatchingResult.Product));
-					return SuccessfulMatchingResult.Create(product);
+					return matchBuilder.Success(choiceMatchingResult.Product, _matchAction);
 				}
 			}
 

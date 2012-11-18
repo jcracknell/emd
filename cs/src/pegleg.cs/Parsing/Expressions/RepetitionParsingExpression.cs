@@ -95,8 +95,7 @@ namespace pegleg.cs.Parsing.Expressions {
 				}
 			}
 
-			var product = _matchAction(matchBuilder.CompleteMatch(iterationProducts));
-			return SuccessfulMatchingResult.Create(product);
+			return matchBuilder.Success(iterationProducts, _matchAction);
 		}
 	}
 }

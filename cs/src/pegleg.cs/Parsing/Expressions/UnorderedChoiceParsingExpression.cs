@@ -122,8 +122,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			if(null == choiceResult)
 				return UnsuccessfulMatchingResult.Create(this);
 
-			var product = _matchAction(matchBuilder.CompleteMatch(choiceResult.Product));
-			return SuccessfulMatchingResult.Create(product);
+			return matchBuilder.Success(choiceResult.Product, _matchAction);
 		}
 	}
 }

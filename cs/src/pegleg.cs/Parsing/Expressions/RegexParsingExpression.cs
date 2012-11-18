@@ -51,8 +51,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			if(!context.ConsumesMatching(_regex, out regexMatch))
 				return UnsuccessfulMatchingResult.Create(this);
 
-			var product = _matchAction(matchBuilder.CompleteMatch(regexMatch));
-			return SuccessfulMatchingResult.Create(product);
+			return matchBuilder.Success(regexMatch, _matchAction);
 		}
 	}
 }

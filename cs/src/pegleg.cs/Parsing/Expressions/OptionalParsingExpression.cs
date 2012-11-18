@@ -61,10 +61,9 @@ namespace pegleg.cs.Parsing.Expressions {
 			if(bodyMatchResult.Succeeded) {
 				context.Assimilate(bodyMatchingContext);
 
-				var product = _matchAction(matchBuilder.CompleteMatch(bodyMatchResult.Product));	
-				return SuccessfulMatchingResult.Create(product);
+				return matchBuilder.Success(bodyMatchResult.Product, _matchAction);
 			} else {
-				return SuccessfulMatchingResult.Create(_noMatchAction(matchBuilder.CompleteMatch(Nil.Value)));
+				return matchBuilder.Success(Nil.Value, _noMatchAction);
 			}
 		}
 	}

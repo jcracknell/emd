@@ -54,10 +54,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
 			var matchBuilder = context.GetMatchBuilderFor(this);
 
-			if(context.ConsumesMatching(_literal, _comparison)) {
-				var product = _matchAction(matchBuilder.CompleteMatch(_literal));
-				return SuccessfulMatchingResult.Create(product);
-			}
+			if(context.ConsumesMatching(_literal, _comparison))
+				return matchBuilder.Success(_literal, _matchAction);	
 
 			return UnsuccessfulMatchingResult.Create(this);
 		}
