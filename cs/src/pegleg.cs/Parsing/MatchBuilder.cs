@@ -27,7 +27,6 @@ namespace pegleg.cs.Parsing {
 
 		public IMatchingResult<TProduct> Success<TRaw>(TRaw raw, Func<IMatch<TRaw>, TProduct> matchAction) {
 			var matchLength = _matchingContext.Index - _index;
-			var matchSourceRange = new SourceRange(_sourceIndex, _matchingContext.SourceIndex - _sourceIndex, _sourceLine, _sourceLineIndex);
 			var sourceLength = _matchingContext.SourceIndex - _sourceIndex;
 			var match = new Match<TRaw>(_matchingContext, raw, _index, matchLength, _sourceIndex, sourceLength, _sourceLine, _sourceLineIndex);
 			
