@@ -54,6 +54,8 @@
     <Compile Include="Expressions\Evaluation\ObjectValue.cs" />
     <Compile Include="Expressions\Evaluation\StringValue.cs" />
     <Compile Include="Expressions\Evaluation\UndefinedValue.cs" />
+    <Compile Include="Expressions\Translation\JavascriptTranslatingExpressionHandler.cs" />
+    <Compile Include="Expressions\Translation\JavascriptUtils.cs" />
     <Compile Include="Grammar\BlockLineInfo.cs" />
     <Compile Include="Grammar\EnumeratorCounterStyleDefinition.cs" />
     <Compile Include="Grammar\EnumeratorCounterStyleInfo.cs" />
