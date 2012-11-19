@@ -23,6 +23,15 @@ namespace pegleg.cs.Parsing {
 			Length = length;
 		}
 
+		/// <summary>
+		/// Calculate a new <see cref="SourceRange"/> starting at this value and extending through the provided <see cref="end"/> range.
+		/// </summary>
+		/// <param name="end">The ending <see cref="SourceRange"/> used to calculate the extent of the resulting <see cref="SourceRange"/>.</param>
+		/// <returns>A new <see cref="SourceRange"/> at the current value's position extending throught the provided <paramref name="end"/>.</returns>
+		public SourceRange ExtendThrough(SourceRange end) {
+			return new SourceRange(Index, end.Index - Index + end.Length, Line, LineIndex);
+		}
+
 		public override int GetHashCode() {
 			return ((Index << 16) | (Index >> 16))
 				^ Length

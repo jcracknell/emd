@@ -1035,18 +1035,12 @@ namespace markdom.cs.Grammar {
 							ChoiceUnordered(
 								Literal("--", match => {
 									Func<IExpression,IExpression> asm = body => 
-										new PostfixDecrementExpression(
-											body,
-											new SourceRange(body.SourceRange.Index, match.SourceRange.Index - body.SourceRange.Index + match.SourceRange.Length, body.SourceRange.Line, body.SourceRange.LineIndex)
-										);
+										new PostfixDecrementExpression(body, body.SourceRange.ExtendThrough(match.SourceRange));
 									return asm;
 								}),
 								Literal("++", match => {
 									Func<IExpression,IExpression> asm = body => 
-										new PostfixIncrementExpression(
-											body,
-											new SourceRange(body.SourceRange.Index, match.SourceRange.Index - body.SourceRange.Index + match.SourceRange.Length, body.SourceRange.Line, body.SourceRange.LineIndex)
-										);
+										new PostfixIncrementExpression(body, body.SourceRange.ExtendThrough(match.SourceRange));
 									return asm;
 								})),
 							match => match.Product.Of2),
@@ -1065,10 +1059,7 @@ namespace markdom.cs.Grammar {
 					Reference(() => ExpressionWhitespace), Literal("]"),
 					match => {
 						Func<IExpression, IExpression> asm = body =>
-							new DynamicPropertyExpression(
-								body, match.Product.Of3,
-								new SourceRange(body.SourceRange.Index, match.SourceRange.Index - body.SourceRange.Index + match.SourceRange.Length, body.SourceRange.Line, body.SourceRange.LineIndex)
-							);
+							new DynamicPropertyExpression(body, match.Product.Of3, body.SourceRange.ExtendThrough(match.SourceRange));
 						return asm;
 					});
 
@@ -1078,10 +1069,7 @@ namespace markdom.cs.Grammar {
 					Reference(() => Identifier),
 					match => {
 						Func<IExpression, IExpression> asm = body =>
-							new StaticPropertyExpression(
-								body, match.Product.Of3,
-								new SourceRange(body.SourceRange.Index, match.SourceRange.Index - body.SourceRange.Index + match.SourceRange.Length, body.SourceRange.Line, body.SourceRange.LineIndex)
-							);
+							new StaticPropertyExpression(body, match.Product.Of3, body.SourceRange.ExtendThrough(match.SourceRange));
 						return asm;
 					});
 
@@ -1090,10 +1078,7 @@ namespace markdom.cs.Grammar {
 					() => ArgumentList,
 					match => {
 						Func<IExpression, IExpression> asm = body =>
-							new CallExpression(
-								body, match.Product.ToArray(),
-								new SourceRange(body.SourceRange.Index, match.SourceRange.Index - body.SourceRange.Index + match.SourceRange.Length, body.SourceRange.Line, body.SourceRange.LineIndex)
-							);
+							new CallExpression(body, match.Product.ToArray(), body.SourceRange.ExtendThrough(match.SourceRange));
 						return asm;
 					});
 
