@@ -165,5 +165,23 @@ namespace markdom.cs.Expressions.Translation {
 			expression.Body.HandleWith(this);
 			_writer.Write("++");
 		}
+
+		public void Handle(DivisionExpression expression) {
+			expression.Left.HandleWith(this);
+			_writer.Write("/");
+			expression.Right.HandleWith(this);
+		}
+
+		public void Handle(ModuloExpression expression) {
+			expression.Left.HandleWith(this);
+			_writer.Write("%");
+			expression.Right.HandleWith(this);
+		}
+
+		public void Handle(MultiplicationExpression expression) {
+			expression.Left.HandleWith(this);
+			_writer.Write("*");
+			expression.Right.HandleWith(this);
+		}
 	}
 }

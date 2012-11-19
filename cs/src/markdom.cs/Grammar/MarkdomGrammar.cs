@@ -63,6 +63,7 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<SymbolNode> Symbol;
 
 		public readonly IParsingExpression<IExpression> Expression;
+		public readonly IParsingExpression<IExpression> MultiplicativeExpression;
 		public readonly IParsingExpression<IExpression> UnaryExpression;
 		public readonly IParsingExpression<IExpression> PostfixExpression;
 		public readonly IParsingExpression<IExpression> LeftHandSideExpression;
@@ -936,7 +937,57 @@ namespace markdom.cs.Grammar {
 			#region Expressions
 
 			Define(() => Expression,
-				Reference(() => UnaryExpression));
+				Reference(() => MultiplicativeExpression));
+
+			#region MultiplicativeExpression
+
+			var multiplicationExpressionPart =
+				Sequence(
+					Literal("*"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => {
+						Func<IExpression, IExpression> asm = left =>
+							new MultiplicationExpression(left, match.Product.Of3, left.SourceRange.ExtendThrough(match.SourceRange));
+						return asm;
+					});
+
+			var divisionExpressionPart =
+				Sequence(
+					Literal("/"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => {
+						Func<IExpression, IExpression> asm = left =>
+							new DivisionExpression(left, match.Product.Of3, left.SourceRange.ExtendThrough(match.SourceRange));
+						return asm;
+					});
+
+			var moduloExpressionPart =
+				Sequence(
+					Literal("%"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => {
+						Func<IExpression, IExpression> asm = left =>
+							new ModuloExpression(left, match.Product.Of3, left.SourceRange.ExtendThrough(match.SourceRange));
+						return asm;
+					});
+
+			Define(() => MultiplicativeExpression,
+				Sequence(
+					Reference(() => UnaryExpression),
+					AtLeast(0,
+						Sequence(
+							Reference(() => ExpressionWhitespace),
+							ChoiceUnordered(
+								multiplicationExpressionPart,
+								divisionExpressionPart,
+								moduloExpressionPart),
+							match => match.Product.Of2)),
+					match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left))));
+
+			#endregion
 
 			#region UnaryExpression
 

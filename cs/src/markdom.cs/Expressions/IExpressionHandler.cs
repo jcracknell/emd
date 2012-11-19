@@ -11,11 +11,13 @@ namespace markdom.cs.Expressions {
 		void Handle(BooleanLiteralExpression expression);
 		void Handle(CallExpression expression);
 		void Handle(DeleteExpression expression);
+		void Handle(DivisionExpression expression);
 		void Handle(DocumentLiteralExpression expression);
+		void Handle(DynamicPropertyExpression expression);
 		void Handle(IdentifierExpression expression);
 		void Handle(LogicalNotExpression expression);
-		void Handle(DynamicPropertyExpression expression);
-		void Handle(StaticPropertyExpression expression);
+		void Handle(ModuloExpression expression);
+		void Handle(MultiplicationExpression expression);
 		void Handle(NegativeExpression expression);
 		void Handle(NullLiteralExpression expression);
 		void Handle(NumericLiteralExpression expression);
@@ -25,6 +27,7 @@ namespace markdom.cs.Expressions {
 		void Handle(PostfixIncrementExpression expression);
 		void Handle(PrefixDecrementExpression expression);
 		void Handle(PrefixIncrementExpression expression);
+		void Handle(StaticPropertyExpression expression);
 		void Handle(StringLiteralExpression expression);
 		void Handle(TypeofExpression expression);
 		void Handle(UriLiteralExpression expression);
@@ -37,11 +40,13 @@ namespace markdom.cs.Expressions {
 		T Handle(BooleanLiteralExpression expression);
 		T Handle(CallExpression expression);
 		T Handle(DeleteExpression expression);
+		T Handle(DivisionExpression expression);
 		T Handle(DocumentLiteralExpression expression);
+		T Handle(DynamicPropertyExpression expression);
 		T Handle(IdentifierExpression expression);
 		T Handle(LogicalNotExpression expression);
-		T Handle(DynamicPropertyExpression expression);
-		T Handle(StaticPropertyExpression expression);
+		T Handle(ModuloExpression expression);
+		T Handle(MultiplicationExpression expression);
 		T Handle(NegativeExpression expression);
 		T Handle(NullLiteralExpression expression);
 		T Handle(NumericLiteralExpression expression);
@@ -51,6 +56,7 @@ namespace markdom.cs.Expressions {
 		T Handle(PostfixIncrementExpression expression);
 		T Handle(PrefixDecrementExpression expression);
 		T Handle(PrefixIncrementExpression expression);
+		T Handle(StaticPropertyExpression expression);
 		T Handle(StringLiteralExpression expression);
 		T Handle(TypeofExpression expression);
 		T Handle(UriLiteralExpression expression);

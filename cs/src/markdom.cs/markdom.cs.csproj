@@ -46,8 +46,10 @@
     <Compile Include="Conversion\ReferenceExtractingNodeHandler.cs" />
     <Compile Include="Conversion\Html\XmlWritingNodeHandler.cs" />
     <Compile Include="Expressions\ArrayLiteralExpression.cs" />
+    <Compile Include="Expressions\BinaryExpression.cs" />
     <Compile Include="Expressions\BitwiseNotExpression.cs" />
     <Compile Include="Expressions\DeleteExpression.cs" />
+    <Compile Include="Expressions\DivisionExpression.cs" />
     <Compile Include="Expressions\Evaluation\BooleanValue.cs" />
     <Compile Include="Expressions\Evaluation\IValue.cs" />
     <Compile Include="Expressions\Evaluation\IValueHandler.cs" />
@@ -58,6 +60,8 @@
     <Compile Include="Expressions\Evaluation\UndefinedValue.cs" />
     <Compile Include="Expressions\Expression.cs" />
     <Compile Include="Expressions\LogicalNotExpression.cs" />
+    <Compile Include="Expressions\ModuloExpression.cs" />
+    <Compile Include="Expressions\MultiplicationExpression.cs" />
     <Compile Include="Expressions\NegativeExpression.cs" />
     <Compile Include="Expressions\PositiveExpression.cs" />
     <Compile Include="Expressions\PostfixDecrementExpression.cs" />
