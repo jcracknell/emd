@@ -63,6 +63,8 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<SymbolNode> Symbol;
 
 		public readonly IParsingExpression<IExpression> Expression;
+		public readonly IParsingExpression<IExpression> UnaryExpression;
+		public readonly IParsingExpression<IExpression> PostfixExpression;
 		public readonly IParsingExpression<IExpression> LeftHandSideExpression;
 		public readonly IParsingExpression<IExpression> AtExpression;
 		public readonly IParsingExpression<IExpression> AtExpressionRequired;
@@ -87,6 +89,7 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<DocumentLiteralExpression> DocumentLiteralExpression;
 		public readonly IParsingExpression<Nil> ExpressionKeyword;
 		public readonly IParsingExpression<Nil> ExpressionWhitespace;
+		public readonly IParsingExpression<IEnumerable<Nil>> ExpressionWhitespaceNoNewline;
 		public readonly IParsingExpression<Nil> ExpressionUnicodeEscapeSequence;
 		public readonly IParsingExpression<Nil> Comment;
 		public readonly IParsingExpression<Nil> MultiLineComment;
@@ -933,10 +936,42 @@ namespace markdom.cs.Grammar {
 			#region Expressions
 
 			Define(() => Expression,
-				Reference(() => LeftHandSideExpression));
+				Reference(() => PostfixExpression));
+
+			#region PostfixExpression
+
+			Define(() => PostfixExpression,
+				Sequence(
+					Reference(() => LeftHandSideExpression),
+					Optional(
+						Sequence(
+							Reference(() => ExpressionWhitespaceNoNewline),
+							ChoiceUnordered(
+								Literal("--", match => {
+									Func<IExpression,IExpression> asm = body => 
+										new PostfixDecrementExpression(
+											body,
+											new SourceRange(body.SourceRange.Index, match.SourceRange.Index - body.SourceRange.Index + match.SourceRange.Length, body.SourceRange.Line, body.SourceRange.LineIndex)
+										);
+									return asm;
+								}),
+								Literal("++", match => {
+									Func<IExpression,IExpression> asm = body => 
+										new PostfixIncrementExpression(
+											body,
+											new SourceRange(body.SourceRange.Index, match.SourceRange.Index - body.SourceRange.Index + match.SourceRange.Length, body.SourceRange.Line, body.SourceRange.LineIndex)
+										);
+									return asm;
+								})),
+							match => match.Product.Of2),
+						match => match.Product,
+						noMatch => e => e),
+					match => match.Product.Of2(match.Product.Of1)));
+
+			#endregion
 
 			#region LeftHandSideExpression
-			
+
 			var dynamicPropertyExpressionPart =
 				Sequence(
 					Literal("["), Reference(() => ExpressionWhitespace),
@@ -1435,6 +1470,12 @@ namespace markdom.cs.Grammar {
 					NotAhead(identifierExpressionPart)));
 
 			#endregion
+
+			Define(() => ExpressionWhitespaceNoNewline,
+				AtLeast(0,
+					ChoiceUnordered(
+						Reference(() => SpaceChars),
+						Reference(() => Comment))));
 
 			Define(() => ExpressionWhitespace,
 				AtLeast(0,
