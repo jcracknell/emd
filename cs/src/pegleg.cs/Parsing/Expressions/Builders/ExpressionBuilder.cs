@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace pegleg.cs.Parsing.Expressions.Builders {
-	public class ExpressionBuilder : IExpressionBuilder {
+	public class ExpressionBuilder {
 		public void SetExpressionNamingConvention() {
 			DefaultRegexOptions = RegexOptions.Compiled | RegexOptions.Singleline;
 		}

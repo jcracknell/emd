@@ -73,7 +73,6 @@
     <Compile Include="Parsing\Expressions\RegexParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\SequenceParsingExpression.cs" />
     <Compile Include="HashCodeBuilder.cs" />
-    <Compile Include="Parsing\Expressions\Builders\IExpressionBuilder.cs" />
     <Compile Include="Parsing\ProductShadowingMatch.cs" />
     <Compile Include="Parsing\SourceRange.cs" />
     <Compile Include="Nil.cs" />
