@@ -6,7 +6,7 @@ using System.Text;
 
 namespace pegleg.cs.Unicode {
 	public static class UnicodeParsingExpressions {
-		public static IParsingExpression<Nil> UnicodeCharacterIn(this IExpressionBuilder e, params IEnumerable<UnicodeCodePoint>[] categories) {
+		public static IParsingExpression<Nil> UnicodeCharacterIn(IExpressionBuilder e, params IEnumerable<UnicodeCodePoint>[] categories) {
 			var normalCodePointDefinitions = categories.Flatten().Where(cp => !cp.IsSurrogatePair);
 			var surrogatePairCodePointDefinitions = categories.Flatten().Where(cp => cp.IsSurrogatePair);
 
@@ -44,21 +44,21 @@ namespace pegleg.cs.Unicode {
 					surrogatePair));
 		}
 
-		public static IParsingExpression<Nil> UnicodeCharacterNotIn(this IExpressionBuilder e, params IEnumerable<char>[] chars) {
+		public static IParsingExpression<Nil> UnicodeCharacterNotIn(IExpressionBuilder e, params IEnumerable<char>[] chars) {
 			bool[] forbiddenChars = new bool[char.MaxValue + 1];
 			foreach(var forbiddenChar in chars.Flatten())
 				forbiddenChars[forbiddenChar] = true;
 
-			return e.UnicodeCharacterIn(UnicodeCategories.All.Where(cp => cp.IsSurrogatePair || !forbiddenChars[cp.FirstCodeUnit]));
+			return UnicodeCharacterIn(e, UnicodeCategories.All.Where(cp => cp.IsSurrogatePair || !forbiddenChars[cp.FirstCodeUnit]));
 		}
 
-		public static IParsingExpression<Nil> UnicodeCharacterNotIn(this IExpressionBuilder e, params char[] chars) {
-			return e.UnicodeCharacterNotIn(chars.AsEnumerable());
+		public static IParsingExpression<Nil> UnicodeCharacterNotIn(IExpressionBuilder e, params char[] chars) {
+			return UnicodeCharacterNotIn(e, chars.AsEnumerable());
 		}
 
-		public static IParsingExpression<Nil> UnicodeCharacterNotIn(this IExpressionBuilder e, params IEnumerable<UnicodeCodePoint>[] categories) {
+		public static IParsingExpression<Nil> UnicodeCharacterNotIn(IExpressionBuilder e, params IEnumerable<UnicodeCodePoint>[] categories) {
 			var forbiddenCodepoints = new HashSet<UnicodeCodePoint>(categories.Flatten());
-			return e.UnicodeCharacterIn(UnicodeCategories.All.Where(cp => !forbiddenCodepoints.Contains(cp)));
+			return UnicodeCharacterIn(e, UnicodeCategories.All.Where(cp => !forbiddenCodepoints.Contains(cp)));
 		}
 
 		private static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> enumerable) {

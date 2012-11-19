@@ -925,7 +925,7 @@ namespace markdom.cs.Grammar {
 					Reference(() => BlockWhitespace)));
 
 			Define(() => NormalChar,
-				this.UnicodeCharacterNotIn(whitespaceCharValues, specialCharValues));
+				UnicodeParsingExpressions.UnicodeCharacterNotIn(this, whitespaceCharValues, specialCharValues));
 
 			Define(() => Symbol,
 				Reference(() => SpecialChar, match => new SymbolNode(match.String, match.SourceRange)));
@@ -1232,7 +1232,7 @@ namespace markdom.cs.Grammar {
 
 			var identifierExpressionStart =
 				ChoiceOrdered(
-					this.UnicodeCharacterIn(
+					UnicodeParsingExpressions.UnicodeCharacterIn(this,
 						UnicodeCategories.Lu,
 						UnicodeCategories.Ll,
 						UnicodeCategories.Lt,
@@ -1245,7 +1245,7 @@ namespace markdom.cs.Grammar {
 			Define(() => IdentifierPart,
 				ChoiceOrdered(
 					identifierExpressionStart,
-					this.UnicodeCharacterIn(
+					UnicodeParsingExpressions.UnicodeCharacterIn(this,
 						UnicodeCategories.Mn,
 						UnicodeCategories.Mc,
 						UnicodeCategories.Nd,
@@ -1763,7 +1763,7 @@ namespace markdom.cs.Grammar {
 				CharacterIn(englishAlphaCharValues));
 
 			Define(() => UnicodeCharacter,
-				this.UnicodeCharacterIn(UnicodeCategories.All));
+				UnicodeParsingExpressions.UnicodeCharacterIn(this, UnicodeCategories.All));
 
 			#endregion
 
