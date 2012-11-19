@@ -183,5 +183,17 @@ namespace markdom.cs.Expressions.Translation {
 			_writer.Write("*");
 			expression.Right.HandleWith(this);
 		}
+
+		public void Handle(AdditionExpression expression) {
+			expression.Left.HandleWith(this);
+			_writer.Write("+");
+			expression.Right.HandleWith(this);
+		}
+
+		public void Handle(SubtractionExpression expression) {
+			expression.Left.HandleWith(this);
+			_writer.Write("-");
+			expression.Right.HandleWith(this);
+		}
 	}
 }

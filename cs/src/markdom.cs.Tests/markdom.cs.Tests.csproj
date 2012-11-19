@@ -56,6 +56,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Conversion\Html\HtmlConversionTests.cs" />
+    <Compile Include="Grammar\AdditiveExpressionTests.cs" />
     <Compile Include="Grammar\ArrayLiteralTests.cs" />
     <Compile Include="Grammar\AutoLinkTests.cs" />
     <Compile Include="Grammar\BooleanLiteralExpressionTests.cs" />

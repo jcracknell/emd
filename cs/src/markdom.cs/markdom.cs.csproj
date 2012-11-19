@@ -45,6 +45,7 @@
     <Compile Include="Conversion\ReferenceCollection.cs" />
     <Compile Include="Conversion\ReferenceExtractingNodeHandler.cs" />
     <Compile Include="Conversion\Html\XmlWritingNodeHandler.cs" />
+    <Compile Include="Expressions\AdditionExpression.cs" />
     <Compile Include="Expressions\ArrayLiteralExpression.cs" />
     <Compile Include="Expressions\BinaryExpression.cs" />
     <Compile Include="Expressions\BitwiseNotExpression.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Expressions\PostfixIncrementExpression.cs" />
     <Compile Include="Expressions\PrefixDecrementExpression.cs" />
     <Compile Include="Expressions\PrefixIncrementExpression.cs" />
+    <Compile Include="Expressions\SubtractionExpression.cs" />
     <Compile Include="Expressions\Translation\JavascriptTranslatingExpressionHandler.cs" />
     <Compile Include="Expressions\Translation\JavascriptUtils.cs" />
     <Compile Include="Expressions\TypeofExpression.cs" />

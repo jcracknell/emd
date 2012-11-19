@@ -63,6 +63,7 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<SymbolNode> Symbol;
 
 		public readonly IParsingExpression<IExpression> Expression;
+		public readonly IParsingExpression<IExpression> AdditiveExpression;
 		public readonly IParsingExpression<IExpression> MultiplicativeExpression;
 		public readonly IParsingExpression<IExpression> UnaryExpression;
 		public readonly IParsingExpression<IExpression> PostfixExpression;
@@ -937,7 +938,45 @@ namespace markdom.cs.Grammar {
 			#region Expressions
 
 			Define(() => Expression,
-				Reference(() => MultiplicativeExpression));
+				Reference(() => AdditiveExpression));
+
+			#region AdditiveExpression
+
+			var additionExpressionPart =
+				Sequence(
+					Literal("+"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => MultiplicativeExpression),
+					match => {
+						Func<IExpression, IExpression> asm = left =>
+							new AdditionExpression(left, match.Product.Of3, left.SourceRange.ExtendThrough(match.SourceRange));
+						return asm;
+					});
+
+			var subtractionExpressionPart =
+				Sequence(
+					Literal("-"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => MultiplicativeExpression),
+					match => {
+						Func<IExpression, IExpression> asm = left =>
+							new SubtractionExpression(left, match.Product.Of3, left.SourceRange.ExtendThrough(match.SourceRange));
+						return asm;
+					});
+
+			Define(() => AdditiveExpression,
+				Sequence(
+					Reference(() => MultiplicativeExpression),
+					AtLeast(0,
+						Sequence(
+							Reference(() => ExpressionWhitespace),
+							ChoiceUnordered(
+								additionExpressionPart,
+								subtractionExpressionPart),
+							match => match.Product.Of2)),
+					match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left))));
+
+			#endregion
 
 			#region MultiplicativeExpression
 
