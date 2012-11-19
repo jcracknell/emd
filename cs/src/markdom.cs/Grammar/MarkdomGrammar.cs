@@ -949,7 +949,7 @@ namespace markdom.cs.Grammar {
 					Reference(() => MultiplicativeExpression),
 					match => {
 						Func<IExpression, IExpression> asm = left =>
-							new AdditionExpression(left, match.Product.Of3, left.SourceRange.ExtendThrough(match.SourceRange));
+							new AdditionExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
 						return asm;
 					});
 
@@ -960,7 +960,7 @@ namespace markdom.cs.Grammar {
 					Reference(() => MultiplicativeExpression),
 					match => {
 						Func<IExpression, IExpression> asm = left =>
-							new SubtractionExpression(left, match.Product.Of3, left.SourceRange.ExtendThrough(match.SourceRange));
+							new SubtractionExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
 						return asm;
 					});
 
@@ -987,7 +987,7 @@ namespace markdom.cs.Grammar {
 					Reference(() => UnaryExpression),
 					match => {
 						Func<IExpression, IExpression> asm = left =>
-							new MultiplicationExpression(left, match.Product.Of3, left.SourceRange.ExtendThrough(match.SourceRange));
+							new MultiplicationExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
 						return asm;
 					});
 
@@ -998,7 +998,7 @@ namespace markdom.cs.Grammar {
 					Reference(() => UnaryExpression),
 					match => {
 						Func<IExpression, IExpression> asm = left =>
-							new DivisionExpression(left, match.Product.Of3, left.SourceRange.ExtendThrough(match.SourceRange));
+							new DivisionExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
 						return asm;
 					});
 
@@ -1009,7 +1009,7 @@ namespace markdom.cs.Grammar {
 					Reference(() => UnaryExpression),
 					match => {
 						Func<IExpression, IExpression> asm = left =>
-							new ModuloExpression(left, match.Product.Of3, left.SourceRange.ExtendThrough(match.SourceRange));
+							new ModuloExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
 						return asm;
 					});
 
@@ -1125,12 +1125,12 @@ namespace markdom.cs.Grammar {
 							ChoiceUnordered(
 								Literal("--", match => {
 									Func<IExpression,IExpression> asm = body => 
-										new PostfixDecrementExpression(body, body.SourceRange.ExtendThrough(match.SourceRange));
+										new PostfixDecrementExpression(body, body.SourceRange.Through(match.SourceRange));
 									return asm;
 								}),
 								Literal("++", match => {
 									Func<IExpression,IExpression> asm = body => 
-										new PostfixIncrementExpression(body, body.SourceRange.ExtendThrough(match.SourceRange));
+										new PostfixIncrementExpression(body, body.SourceRange.Through(match.SourceRange));
 									return asm;
 								})),
 							match => match.Product.Of2),
@@ -1149,7 +1149,7 @@ namespace markdom.cs.Grammar {
 					Reference(() => ExpressionWhitespace), Literal("]"),
 					match => {
 						Func<IExpression, IExpression> asm = body =>
-							new DynamicPropertyExpression(body, match.Product.Of3, body.SourceRange.ExtendThrough(match.SourceRange));
+							new DynamicPropertyExpression(body, match.Product.Of3, body.SourceRange.Through(match.SourceRange));
 						return asm;
 					});
 
@@ -1159,7 +1159,7 @@ namespace markdom.cs.Grammar {
 					Reference(() => Identifier),
 					match => {
 						Func<IExpression, IExpression> asm = body =>
-							new StaticPropertyExpression(body, match.Product.Of3, body.SourceRange.ExtendThrough(match.SourceRange));
+							new StaticPropertyExpression(body, match.Product.Of3, body.SourceRange.Through(match.SourceRange));
 						return asm;
 					});
 
@@ -1168,7 +1168,7 @@ namespace markdom.cs.Grammar {
 					() => ArgumentList,
 					match => {
 						Func<IExpression, IExpression> asm = body =>
-							new CallExpression(body, match.Product.ToArray(), body.SourceRange.ExtendThrough(match.SourceRange));
+							new CallExpression(body, match.Product.ToArray(), body.SourceRange.Through(match.SourceRange));
 						return asm;
 					});
 
