@@ -1,5 +1,4 @@
-﻿using pegleg.cs.Parsing.Expressions.Builders;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +10,7 @@ namespace pegleg.cs.Unicode {
 			var surrogatePairCodePointDefinitions = categories.Flatten().Where(cp => cp.IsSurrogatePair);
 
 			var normalCodePoint =
-				ExpressionBuilder.CharacterIn(normalCodePointDefinitions.Select(cp => cp.FirstCodeUnit));
+				ParsingExpression.CharacterIn(normalCodePointDefinitions.Select(cp => cp.FirstCodeUnit));
 
 			if(!surrogatePairCodePointDefinitions.Any())
 				return normalCodePoint;
@@ -19,28 +18,28 @@ namespace pegleg.cs.Unicode {
 			// Define a rule which can be used to quickly match a valid first code unit for
 			// a surrogate pair amongst the provided code points
 			var surrogatePairLeadUnit =
-				ExpressionBuilder.CharacterIn(
+				ParsingExpression.CharacterIn(
 					categories.Flatten()
 					.Where(cp => cp.IsSurrogatePair)
 					.Select(cp => cp.FirstCodeUnit));
 
 			var surrogatePair =
-				ExpressionBuilder.ChoiceUnordered(
+				ParsingExpression.ChoiceUnordered(
 					categories.Flatten()
 					.Where(cp => cp.IsSurrogatePair)
 					.GroupBy(cp => cp.FirstCodeUnit)
 					.Select(g =>
-						ExpressionBuilder.Sequence(
-							ExpressionBuilder.CharacterIn(g.Key),
-							ExpressionBuilder.CharacterIn(g.Select(cp => cp.SecondCodeUnit))
+						ParsingExpression.Sequence(
+							ParsingExpression.CharacterIn(g.Key),
+							ParsingExpression.CharacterIn(g.Select(cp => cp.SecondCodeUnit))
 						)
 					)
 				);
 
-			return ExpressionBuilder.ChoiceOrdered(
+			return ParsingExpression.ChoiceOrdered(
 				normalCodePoint,
-				ExpressionBuilder.Sequence(
-					ExpressionBuilder.Ahead(surrogatePairLeadUnit),
+				ParsingExpression.Sequence(
+					ParsingExpression.Ahead(surrogatePairLeadUnit),
 					surrogatePair));
 		}
 
@@ -56,7 +55,7 @@ namespace pegleg.cs.Unicode {
 			return UnicodeCharacterNotIn(chars.AsEnumerable());
 		}
 
-		public static IParsingExpression<Nil> UnicodeCharacterNotIn(ExpressionBuilder e, params IEnumerable<UnicodeCodePoint>[] categories) {
+		public static IParsingExpression<Nil> UnicodeCharacterNotIn(ParsingExpression e, params IEnumerable<UnicodeCodePoint>[] categories) {
 			var forbiddenCodepoints = new HashSet<UnicodeCodePoint>(categories.Flatten());
 			return UnicodeCharacterIn(UnicodeCategories.All.Where(cp => !forbiddenCodepoints.Contains(cp)));
 		}

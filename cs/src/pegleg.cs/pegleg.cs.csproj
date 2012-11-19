@@ -46,7 +46,7 @@
     <Compile Include="Parsing\Expressions\CharacterSetParsingExpression.cs" />
     <Compile Include="Parsing\MatchBuilder.cs" />
     <Compile Include="Grammar.cs" />
-    <Compile Include="Parsing\Expressions\Builders\ExpressionBuilder.cs" />
+    <Compile Include="ParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\AheadParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\UnorderedChoiceParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\SequenceProducts.cs" />

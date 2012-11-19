@@ -1,6 +1,5 @@
 ﻿using pegleg.cs.Parsing;
 using pegleg.cs.Parsing.Expressions;
-using pegleg.cs.Parsing.Expressions.Builders;
 using pegleg.cs.Utils;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ using System.Reflection;
 using System.Text;
 
 namespace pegleg.cs {
-	public abstract class Grammar<TProduct> : ExpressionBuilder {
+	public abstract class Grammar<TProduct> : ParsingExpression {
 		private IParsingExpression<TProduct> _start = null;
 
 		protected IParsingExpression<TProduct> Start {

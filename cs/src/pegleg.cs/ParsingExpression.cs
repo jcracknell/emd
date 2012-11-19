@@ -1,4 +1,6 @@
-﻿using pegleg.cs.Utils;
+﻿using pegleg.cs.Parsing;
+using pegleg.cs.Parsing.Expressions;
+using pegleg.cs.Utils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,8 +9,8 @@ using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace pegleg.cs.Parsing.Expressions.Builders {
-	public class ExpressionBuilder {
+namespace pegleg.cs {
+	public class ParsingExpression {
 		public const RegexOptions DefaultRegexOptions = RegexOptions.Compiled | RegexOptions.Singleline;
 
 		private static IMatch<TProduct> ShadowMatchProduct<TProduct>(IMatch match, TProduct product) {
