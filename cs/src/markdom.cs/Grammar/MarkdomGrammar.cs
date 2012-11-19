@@ -70,6 +70,7 @@ namespace markdom.cs.Grammar {
 		public readonly IParsingExpression<IExpression> AtExpressionRequired;
 		public readonly IParsingExpression<IdentifierExpression> IdentifierExpression;
 		public readonly IParsingExpression<string> Identifier;
+		public readonly IParsingExpression<Nil> IdentifierPart;
 		public readonly IParsingExpression<IExpression> PrimaryExpression;
 		public readonly IParsingExpression<IEnumerable<IExpression>> ArgumentList;
 		public readonly IParsingExpression<ArrayLiteralExpression> ArrayLiteralExpression;
@@ -228,7 +229,6 @@ namespace markdom.cs.Grammar {
 					Optional(Reference(() => Indent)),
 					Reference(() => NonEmptyBlockLine),
 					match => match.Product.Of2);
-
 
 			#region Ordered List
 
@@ -936,7 +936,93 @@ namespace markdom.cs.Grammar {
 			#region Expressions
 
 			Define(() => Expression,
-				Reference(() => PostfixExpression));
+				Reference(() => UnaryExpression));
+
+			#region UnaryExpression
+
+			var deleteExpression = 
+				Sequence(
+					Literal("delete"),
+					NotAhead(Reference(() => IdentifierPart)),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => new DeleteExpression(match.Product.Of4, match.SourceRange));
+
+			var voidExpression =
+				Sequence(
+					Literal("void"),
+					NotAhead(Reference(() => IdentifierPart)),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => new VoidExpression(match.Product.Of4, match.SourceRange));
+
+			var typeofExpression =
+				Sequence(
+					Literal("typeof"),
+					NotAhead(Reference(() => IdentifierPart)),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => new TypeofExpression(match.Product.Of4, match.SourceRange));
+
+			var prefixDecrementExpression =
+				Sequence(
+					Literal("--"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => new PrefixDecrementExpression(match.Product.Of3, match.SourceRange));
+
+			var prefixIncrementExpression =
+				Sequence(
+					Literal("++"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => new PrefixIncrementExpression(match.Product.Of3, match.SourceRange));
+
+			var negativeExpression =
+				Sequence(
+					Literal("-"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => new NegativeExpression(match.Product.Of3, match.SourceRange));
+
+			var positiveExpression =
+				Sequence(
+					Literal("+"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => new PositiveExpression(match.Product.Of3, match.SourceRange));
+
+			var bitwiseNotExpression =
+				Sequence(
+					Literal("~"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => new BitwiseNotExpression(match.Product.Of3, match.SourceRange));
+
+			var logicalNotExpression =
+				Sequence(
+					Literal("!"),
+					Reference(() => ExpressionWhitespace),
+					Reference(() => UnaryExpression),
+					match => new LogicalNotExpression(match.Product.Of3, match.SourceRange));
+
+			Define(() => UnaryExpression,
+				ChoiceOrdered<IExpression>(
+					ChoiceUnordered<IExpression>(
+						logicalNotExpression,
+						ChoiceOrdered<IExpression>(
+							prefixDecrementExpression,
+							negativeExpression),
+						ChoiceOrdered<IExpression>(
+							prefixIncrementExpression,
+							positiveExpression),
+						typeofExpression,
+						deleteExpression,
+						voidExpression,
+						bitwiseNotExpression),
+					Reference(() => PostfixExpression)));
+
+			#endregion
 
 			#region PostfixExpression
 
@@ -1081,7 +1167,7 @@ namespace markdom.cs.Grammar {
 					Literal("_"),
 					Sequence(Literal("\\"), Reference(() => ExpressionUnicodeEscapeSequence)));
 
-			var identifierExpressionPart =
+			Define(() => IdentifierPart,
 				ChoiceOrdered(
 					identifierExpressionStart,
 					this.UnicodeCharacterIn(
@@ -1089,7 +1175,7 @@ namespace markdom.cs.Grammar {
 						UnicodeCategories.Mc,
 						UnicodeCategories.Nd,
 						UnicodeCategories.Pc),
-					CharacterIn(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D'));
+					CharacterIn(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D')));
 
 			Define(() => IdentifierExpression,
 				Reference(() => Identifier,
@@ -1099,7 +1185,7 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					NotAhead(Reference(() => ExpressionKeyword)),
 					identifierExpressionStart,
-					AtLeast(0, identifierExpressionPart),
+					AtLeast(0, Reference(() => IdentifierPart)),
 					match => match.String));
 
 			#endregion
@@ -1467,14 +1553,14 @@ namespace markdom.cs.Grammar {
 						"while",
 						"with"
 					}.Select(Literal)),
-					NotAhead(identifierExpressionPart)));
+					NotAhead(Reference(() => IdentifierPart))));
 
 			#endregion
 
 			Define(() => ExpressionWhitespaceNoNewline,
 				AtLeast(0,
 					ChoiceUnordered(
-						Reference(() => SpaceChars),
+						Reference(() => SpaceChar),
 						Reference(() => Comment))));
 
 			Define(() => ExpressionWhitespace,

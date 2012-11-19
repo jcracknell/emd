@@ -78,6 +78,7 @@
     <Compile Include="Grammar\StringLiteralExpressionTests.cs" />
     <Compile Include="Grammar\StrongTests.cs" />
     <Compile Include="Grammar\SymbolTests.cs" />
+    <Compile Include="Grammar\UnaryExpressionTests.cs" />
     <Compile Include="Grammar\UriExpressionTests.cs" />
     <Compile Include="Utils\NumeralUtilTests.cs" />
     <Compile Include="Grammar\OrderedListTests.cs" />
