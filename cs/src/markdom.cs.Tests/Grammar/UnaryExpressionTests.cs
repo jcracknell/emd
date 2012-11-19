@@ -10,7 +10,7 @@ using Xunit;
 namespace markdom.cs.Grammar {
 	public class UnaryExpressionTests : GrammarTestFixture {
 		[Fact] public void UnaryExpression_should_match_delete_identifier() {
-			var match = Grammar.UnaryExpression.ShouldMatch("delete @foo");
+			var match = MarkdomGrammar.UnaryExpression.ShouldMatch("delete @foo");
 
 			match.Product.ShouldBeEquivalentTo(
 				new DeleteExpression(
@@ -21,7 +21,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_void_call() {
-			var match = Grammar.UnaryExpression.ShouldMatch("void @foo()");
+			var match = MarkdomGrammar.UnaryExpression.ShouldMatch("void @foo()");
 
 			match.Product.ShouldBeEquivalentTo(
 				new DeleteExpression(
@@ -36,7 +36,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_typeof_string_literal() {
-			var match = Grammar.UnaryExpression.ShouldMatch("typeof 'foo'");
+			var match = MarkdomGrammar.UnaryExpression.ShouldMatch("typeof 'foo'");
 
 			match.Product.ShouldBeEquivalentTo(
 				new TypeofExpression(
@@ -47,7 +47,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_prefix_increment_identifier() {
-			var match = Grammar.UnaryExpression.ShouldMatch("++@foo");
+			var match = MarkdomGrammar.UnaryExpression.ShouldMatch("++@foo");
 
 			match.Product.ShouldBeEquivalentTo(
 				new PrefixIncrementExpression(
@@ -58,7 +58,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_prefix_decrement_dynamic_member() {
-			var match = Grammar.UnaryExpression.ShouldMatch("--@foo['bar']");
+			var match = MarkdomGrammar.UnaryExpression.ShouldMatch("--@foo['bar']");
 
 			match.Product.ShouldBeEquivalentTo(
 				new PrefixDecrementExpression(
@@ -73,7 +73,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_positive_numeric_literal() {
-			var match = Grammar.UnaryExpression.ShouldMatch("+42");
+			var match = MarkdomGrammar.UnaryExpression.ShouldMatch("+42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new PositiveExpression(
@@ -84,7 +84,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_negative_numeric_literal() {
-			var match = Grammar.UnaryExpression.ShouldMatch("-42");
+			var match = MarkdomGrammar.UnaryExpression.ShouldMatch("-42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new NegativeExpression(
@@ -95,7 +95,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_bitwise_not_numeric_literal() {
-			var match = Grammar.UnaryExpression.ShouldMatch("~42");
+			var match = MarkdomGrammar.UnaryExpression.ShouldMatch("~42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new BitwiseNotExpression(
@@ -106,7 +106,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_logical_not_of_numeric_literal() {
-			var match = Grammar.UnaryExpression.ShouldMatch("!42");
+			var match = MarkdomGrammar.UnaryExpression.ShouldMatch("!42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new LogicalNotExpression(

@@ -13,7 +13,7 @@ namespace markdom.cs.Grammar {
 		[Fact] public void Symbol_matches_asterix() {
 			var expected = new SymbolNode("*", new SourceRange(0, 1, 1, 0));
 
-			var match = Grammar.Symbol.ShouldMatch("*");
+			var match = MarkdomGrammar.Symbol.ShouldMatch("*");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}

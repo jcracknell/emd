@@ -11,14 +11,14 @@ using Xunit;
 namespace markdom.cs.Grammar {
 	public class StringLiteralExpressionTests : GrammarTestFixture {
 		[Fact] public void StringLiteralExpression_matches_single_quoted_string() {
-			var matchResult = Grammar.StringLiteralExpression.ShouldMatch("'string'");
+			var matchResult = MarkdomGrammar.StringLiteralExpression.ShouldMatch("'string'");
 
 			matchResult.Product.Value.Should().Be("string");
 		}
 
 		[Fact] public void StringLiteralExpression_matches_double_quoted_string() {
 			var expected = new StringLiteralExpression("string", new SourceRange(0, 8, 1, 0));
-			var matchResult = Grammar.StringLiteralExpression.ShouldMatch(@"""string""");
+			var matchResult = MarkdomGrammar.StringLiteralExpression.ShouldMatch(@"""string""");
 
 			matchResult.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -26,7 +26,7 @@ namespace markdom.cs.Grammar {
 		[Fact] public void StringLiteralExpression_should_match_verbatim_string_1() {
 			var expected = new StringLiteralExpression("string", new SourceRange(0,8,1,0));
 
-			var match = Grammar.StringLiteralExpression.ShouldMatch(@"`string`");
+			var match = MarkdomGrammar.StringLiteralExpression.ShouldMatch(@"`string`");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -34,7 +34,7 @@ namespace markdom.cs.Grammar {
 		[Fact] public void StringLiteralExpression_should_match_verbatim_string_16() {
 			var expected = new StringLiteralExpression("string", new SourceRange(0,38,1,0));
 
-			var match = Grammar.StringLiteralExpression.ShouldMatch(@"````````````````string````````````````");
+			var match = MarkdomGrammar.StringLiteralExpression.ShouldMatch(@"````````````````string````````````````");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}

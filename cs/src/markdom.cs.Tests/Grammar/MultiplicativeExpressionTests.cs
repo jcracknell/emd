@@ -10,7 +10,7 @@ using Xunit;
 namespace markdom.cs.Grammar {
 	public class MultiplicativeExpressionTests : GrammarTestFixture {
 		[Fact] public void MultiplicativeExpression_should_match_numeric_literal_multiplication() {
-			var match = Grammar.MultiplicativeExpression.ShouldMatch("42*42");
+			var match = MarkdomGrammar.MultiplicativeExpression.ShouldMatch("42*42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new MultiplicationExpression(
@@ -22,7 +22,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void MultiplicativeExpression_should_match_numeric_literal_multiplication_with_spaces() {
-			var match = Grammar.MultiplicativeExpression.ShouldMatch("42 * 42");
+			var match = MarkdomGrammar.MultiplicativeExpression.ShouldMatch("42 * 42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new MultiplicationExpression(
@@ -34,7 +34,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void MultiplicativeExpression_should_match_numeric_literal_division() {
-			var match = Grammar.MultiplicativeExpression.ShouldMatch("42/42");
+			var match = MarkdomGrammar.MultiplicativeExpression.ShouldMatch("42/42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new DivisionExpression(
@@ -46,7 +46,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void MultiplicativeExpression_should_match_numeric_literal_division_with_spaces() {
-			var match = Grammar.MultiplicativeExpression.ShouldMatch("42 / 42");
+			var match = MarkdomGrammar.MultiplicativeExpression.ShouldMatch("42 / 42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new DivisionExpression(
@@ -58,7 +58,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void MultiplicativeExpression_should_match_numeric_literal_modulo() {
-			var match = Grammar.MultiplicativeExpression.ShouldMatch("42%42");
+			var match = MarkdomGrammar.MultiplicativeExpression.ShouldMatch("42%42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new ModuloExpression(
@@ -70,7 +70,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void MultiplicativeExpression_should_match_numeric_literal_modulo_with_spaces() {
-			var match = Grammar.MultiplicativeExpression.ShouldMatch("42 % 42");
+			var match = MarkdomGrammar.MultiplicativeExpression.ShouldMatch("42 % 42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new ModuloExpression(

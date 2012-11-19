@@ -12,7 +12,7 @@ namespace markdom.cs.Conversion.Html {
 			var stopwatch = new System.Diagnostics.Stopwatch();
 			stopwatch.Start();
 
-			var match = Grammar.Document.ShouldMatch(
+			var match = MarkdomGrammar.Document.ShouldMatch(
 				"# Heading 1\n",
 				"\n",
 				"@toc({style:float-right})\n",

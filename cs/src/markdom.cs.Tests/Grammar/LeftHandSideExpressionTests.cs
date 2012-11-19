@@ -16,7 +16,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(1,7,1,1)
 			);
 
-			var match = Grammar.LeftHandSideExpression.ShouldMatch("@foo.bar");
+			var match = MarkdomGrammar.LeftHandSideExpression.ShouldMatch("@foo.bar");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -28,7 +28,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(1,9,1,1)
 			);
 
-			var match = Grammar.LeftHandSideExpression.ShouldMatch("@foo . bar");
+			var match = MarkdomGrammar.LeftHandSideExpression.ShouldMatch("@foo . bar");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -44,7 +44,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(1, 11, 1, 1)
 			);
 
-			var match = Grammar.LeftHandSideExpression.ShouldMatch(
+			var match = MarkdomGrammar.LeftHandSideExpression.ShouldMatch(
 				//0....:....0....:....0....:....0....:....0....:....0....:....0
 				@"@foo.bar.baz");
 
@@ -58,7 +58,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(1,10,1,1)
 			);
 
-			var match = Grammar.LeftHandSideExpression.ShouldMatch("@foo['bar']");
+			var match = MarkdomGrammar.LeftHandSideExpression.ShouldMatch("@foo['bar']");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -70,7 +70,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(1,13,1,1)
 			);
 
-			var match = Grammar.LeftHandSideExpression.ShouldMatch("@foo [ 'bar' ]");
+			var match = MarkdomGrammar.LeftHandSideExpression.ShouldMatch("@foo [ 'bar' ]");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -86,7 +86,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(1,17,1,1)
 			);
 
-			var match = Grammar.LeftHandSideExpression.ShouldMatch(
+			var match = MarkdomGrammar.LeftHandSideExpression.ShouldMatch(
 				//0....:....0....:....0....:....0....:....0....:....0....:....0
 				@"@foo['bar']['baz']");
 
@@ -100,7 +100,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(1,5,1,1)
 			);
 
-			var match = Grammar.LeftHandSideExpression.ShouldMatch("@foo()");
+			var match = MarkdomGrammar.LeftHandSideExpression.ShouldMatch("@foo()");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -115,7 +115,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(1,10,1,1)
 			);
 
-			var match = Grammar.LeftHandSideExpression.ShouldMatch("@foo(1,'2')");
+			var match = MarkdomGrammar.LeftHandSideExpression.ShouldMatch("@foo(1,'2')");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}

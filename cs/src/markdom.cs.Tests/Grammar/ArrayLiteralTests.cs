@@ -12,14 +12,14 @@ namespace markdom.cs.Grammar {
 		[Fact] public void ArrayLiteralExpression_should_match_empty_array_literal() {
 			var expected = new ArrayLiteralExpression(new IExpression[0], new SourceRange(0,2,1,0));
 
-			var match = Grammar.ArrayLiteralExpression.ShouldMatch("[]");
+			var match = MarkdomGrammar.ArrayLiteralExpression.ShouldMatch("[]");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
 
 		[Fact] public void ArrayLiteralExpression_should_match_array_literal_containing_only_elided_entries() {
 			var expected = new ArrayLiteralExpression(new IExpression[0], new SourceRange(0,5,1,0));
-			var match = Grammar.ArrayLiteralExpression.ShouldMatch("[,,,]");
+			var match = MarkdomGrammar.ArrayLiteralExpression.ShouldMatch("[,,,]");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -30,7 +30,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(0,4,1,0)
 			);
 
-			var match = Grammar.ArrayLiteralExpression.ShouldMatch("[42]");
+			var match = MarkdomGrammar.ArrayLiteralExpression.ShouldMatch("[42]");
 
 			match.Product.ShouldBeEquivalentTo(expected);	
 		}
@@ -46,7 +46,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(0,7,1,0)
 			);
 
-			var match = Grammar.ArrayLiteralExpression.ShouldMatch("[,,,42]");
+			var match = MarkdomGrammar.ArrayLiteralExpression.ShouldMatch("[,,,42]");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -57,7 +57,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(0,7,1,0)
 			);
 
-			var match = Grammar.ArrayLiteralExpression.ShouldMatch("[42,,,]");
+			var match = MarkdomGrammar.ArrayLiteralExpression.ShouldMatch("[42,,,]");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -77,7 +77,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(0,31,1,0)
 			);
 
-			var match = Grammar.ArrayLiteralExpression.ShouldMatch(
+			var match = MarkdomGrammar.ArrayLiteralExpression.ShouldMatch(
 				//0....:....0....:....0....:....0....:....0....:....0....:....0
 				@"[ ,, , 'foo',, @bar, ,true   ,]"
 			);

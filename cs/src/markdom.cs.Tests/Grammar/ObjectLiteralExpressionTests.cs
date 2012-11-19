@@ -15,7 +15,7 @@ namespace markdom.cs.Grammar {
 				new PropertyAssignment[0],
 				new SourceRange(0, 2, 1, 0));
 
-			var match = Grammar.ObjectLiteralExpression.ShouldMatch("{}");
+			var match = MarkdomGrammar.ObjectLiteralExpression.ShouldMatch("{}");
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
 
@@ -28,7 +28,7 @@ namespace markdom.cs.Grammar {
 						new SourceRange(2, 11, 1, 2)) },
 				new SourceRange(0, 15, 1, 0));  
 
-			var match = Grammar.ObjectLiteralExpression.ShouldMatch("{ 'a' : 'foo' }");
+			var match = MarkdomGrammar.ObjectLiteralExpression.ShouldMatch("{ 'a' : 'foo' }");
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
 
@@ -49,7 +49,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(0,13,1,0)
 			);
 
-			var match = Grammar.ObjectLiteralExpression.ShouldMatch(
+			var match = MarkdomGrammar.ObjectLiteralExpression.ShouldMatch(
 				//0....:....0....:....0....:....0....:....0....:....0....:....0
 				@"{0:'a',1:'b'}");
 
@@ -73,7 +73,7 @@ namespace markdom.cs.Grammar {
 				new SourceRange(0,18,1,0)
 			);
 
-			var match = Grammar.ObjectLiteralExpression.ShouldMatch(
+			var match = MarkdomGrammar.ObjectLiteralExpression.ShouldMatch(
 				//0....:....0....:....0....:....0....:....0....:....0....:....0
 				@"{ foo: 1, bar: 2 }");
 

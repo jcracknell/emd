@@ -10,13 +10,13 @@ using Xunit;
 namespace markdom.cs.Grammar {
 	public class SpaceTests : GrammarTestFixture {
 		[Fact] public void Space_should_match_space() {
-			var match = Grammar.Space.ShouldMatch(" block text");
+			var match = MarkdomGrammar.Space.ShouldMatch(" block text");
 
 			match.Product.ShouldBeEquivalentTo(new SpaceNode(new SourceRange(0,1,1,0)));
 		}
 
 		[Fact] public void Space_should_match_newline() {
-			var match = Grammar.Space.ShouldMatch(
+			var match = MarkdomGrammar.Space.ShouldMatch(
 				/* block text */"\n",
 				"block continuing on next line"
 			);
@@ -25,7 +25,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void Space_should_match_spaces_and_newlines() {
-			var match = Grammar.Space.ShouldMatch(
+			var match = MarkdomGrammar.Space.ShouldMatch(
 				/* block text */"  \n",
 				"   block continues with leading spaces"
 			);
@@ -34,11 +34,11 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void Space_should_not_match_nothing() {
-			Grammar.Space.ShouldNotMatch("block text");
+			MarkdomGrammar.Space.ShouldNotMatch("block text");
 		}
 
 		[Fact] public void Space_should_not_match_newline_at_end_of_block() {
-			Grammar.Space.ShouldNotMatch(
+			MarkdomGrammar.Space.ShouldNotMatch(
 				/* block text */"\n",
 				"\n",
 				"new block"
@@ -46,7 +46,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void Space_should_not_match_space_at_end_of_block() {
-			Grammar.Space.ShouldNotMatch(
+			MarkdomGrammar.Space.ShouldNotMatch(
 				/* block text */"    \n",
 				"\n",
 				"new block"
@@ -54,19 +54,19 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void Space_should_not_match_newline_at_end_of_input() {
-			Grammar.Space.ShouldNotMatch("\n");
+			MarkdomGrammar.Space.ShouldNotMatch("\n");
 		}
 
 		[Fact] public void Space_should_not_match_space_at_end_of_input() {
-			Grammar.Space.ShouldNotMatch(" ");
+			MarkdomGrammar.Space.ShouldNotMatch(" ");
 		}
 
 		[Fact] public void Space_should_not_match_space_and_newline_at_end_of_input() {
-			Grammar.Space.ShouldNotMatch(" \n");
+			MarkdomGrammar.Space.ShouldNotMatch(" \n");
 		}
 
 		[Fact] public void Space_should_match_single_line_comment() {
-			var match = Grammar.Space.ShouldMatch(
+			var match = MarkdomGrammar.Space.ShouldMatch(
 				"// comment\n",
 				"block continues"
 			);
@@ -75,7 +75,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void Space_should_not_match_single_line_comment_at_end_of_block() {
-			Grammar.Space.ShouldNotMatch(
+			MarkdomGrammar.Space.ShouldNotMatch(
 				"// comment\n",
 				"\n",
 				"new block"
@@ -83,13 +83,13 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void Space_should_match_multi_line_comment() {
-			var match = Grammar.Space.ShouldMatch("/* comment */text");
+			var match = MarkdomGrammar.Space.ShouldMatch("/* comment */text");
 
 			match.Product.ShouldBeEquivalentTo(new SpaceNode(new SourceRange(0,13,1,0)));
 		}
 
 		[Fact] public void Space_should_not_match_multi_line_comment_at_end_of_block() {
-			Grammar.Space.ShouldNotMatch(
+			MarkdomGrammar.Space.ShouldNotMatch(
 				"/* comment */\n",
 				"\n",
 				"new block"

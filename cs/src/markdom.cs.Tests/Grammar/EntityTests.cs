@@ -14,7 +14,7 @@ namespace markdom.cs.Grammar
 		[Fact] public void Entity_matches_decimal_html_entity() {
 			var expected = new EntityNode(233, new SourceRange(0, 6, 1, 0));
 
-			var match = Grammar.Entity.ShouldMatch("&#233;");
+			var match = MarkdomGrammar.Entity.ShouldMatch("&#233;");
 
 			match.Succeeded.Should().BeTrue();
 			match.Product.ShouldBeEquivalentTo(expected);
@@ -23,7 +23,7 @@ namespace markdom.cs.Grammar
 		[Fact] public void Entity_matches_hexadecimal_html_entity() {
 			var expected = new EntityNode(233, new SourceRange(0, 6, 1, 0));
 
-			var match = Grammar.Entity.ShouldMatch("&#xE9;");
+			var match = MarkdomGrammar.Entity.ShouldMatch("&#xE9;");
 
 			match.Succeeded.Should().BeTrue();
 			match.Product.ShouldBeEquivalentTo(expected);
@@ -32,7 +32,7 @@ namespace markdom.cs.Grammar
 		[Fact] public void Entity_matches_named_html_entity() {
 			var expected = new EntityNode(233, new SourceRange(0, 8, 1, 0));
 
-			var match = Grammar.Entity.ShouldMatch("&eacute;");
+			var match = MarkdomGrammar.Entity.ShouldMatch("&eacute;");
 
 			match.Succeeded.Should().BeTrue();
 			match.Product.ShouldBeEquivalentTo(expected);

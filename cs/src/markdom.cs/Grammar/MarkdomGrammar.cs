@@ -12,164 +12,67 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace markdom.cs.Grammar {
-	public class MarkdomGrammar : Grammar<MarkdomDocumentNode> {
+	public class MarkdomGrammar : ParsingExpression {
 		private static readonly MarkdomGrammar _instance = new MarkdomGrammar();
 
 		public static MarkdomGrammar Instance { get { return _instance; } }
 
-		public readonly IParsingExpression<MarkdomDocumentNode> Document;
+		private static int _parseLinesCount = 0;
+		protected static T ParseLinesAs<T>(IParsingExpression<T> expression, IEnumerable<LineInfo> lines) {
+			lines = lines.ToList();
+			_parseLinesCount++;
+			var expressionMatchingContext =
+				new MatchingContext(
+					lines.Select(line => line.LineString).JoinStrings(),
+					lines.Select(line => line.SourceRange).ToArray());
+			
+			var expressionMatchingResult = expression.Matches(expressionMatchingContext);
 
-		public readonly IParsingExpression<IEnumerable<IBlockNode>> Blocks;
-		public readonly IParsingExpression<IBlockNode> Block;
-		public readonly IParsingExpression<Nil> InterBlock;
-		public readonly IParsingExpression<Nil> CommentBlock;
-		public readonly IParsingExpression<ExpressionBlockNode> ExpressionBlock;
-		public readonly IParsingExpression<BlockquoteNode> Blockquote;
-		public readonly IParsingExpression<TableNode> Table;
-		public readonly IParsingExpression<TableRowNode> TableRow;
-		public readonly IParsingExpression<HeadingNode> Heading;
-		public readonly IParsingExpression<int> HeadingAnnouncement;
-		public readonly IParsingExpression<OrderedListNode> OrderedList;
-		public readonly IParsingExpression<Nil> Enumerator;
-		public readonly IParsingExpression<Nil> EnumeratorishAhead;
-		public readonly IParsingExpression<int?> EnumeratorValue;
-		public readonly IParsingExpression<UnorderedListNode> UnorderedList;
-		public readonly IParsingExpression<UnorderedListNode> UnorderedListTight;
-		public readonly IParsingExpression<UnorderedListNode> UnorderedListLoose;
-		public readonly IParsingExpression<Nil> Bullet;
-		public readonly IParsingExpression<ParagraphNode> Paragraph;
-		public readonly IParsingExpression<ReferenceNode> ReferenceBlock;
-		public readonly IParsingExpression<LineInfo> NonEmptyBlockLine;
-		public readonly IParsingExpression<LineInfo> BlockLine;
-		public readonly IParsingExpression<Nil> BlockLineAtomic;
-		public readonly IParsingExpression<Nil> Atomic;
+			if(!expressionMatchingResult.Succeeded)
+				return default(T);
 
-		public readonly IParsingExpression<IEnumerable<IInlineNode>> Inlines;
-		public readonly IParsingExpression<IInlineNode> Inline;
-		public readonly IParsingExpression<AutoLinkNode> AutoLink;
-		public readonly IParsingExpression<LinkNode> Link;
-		public readonly IParsingExpression<IEnumerable<IInlineNode>> Label;
-		public readonly IParsingExpression<StrongNode> Strong;
-		public readonly IParsingExpression<EmphasisNode> Emphasis;
-		public readonly IParsingExpression<InlineExpressionNode> InlineExpression;
-		public readonly IParsingExpression<QuotedNode> Quoted;
-		public readonly IParsingExpression<CodeNode> Code;
-		public readonly IParsingExpression<LineBreakNode> LineBreak;
-		public readonly IParsingExpression<TextNode> Text;
-		public readonly IParsingExpression<SpaceNode> Space;
-		public readonly IParsingExpression<Nil> InlineSpace;
-		public readonly IParsingExpression<EntityNode> Entity;
-		public readonly IParsingExpression<ReferenceId> ReferenceLabel;
-		public readonly IParsingExpression<SymbolNode> Symbol;
+			return expressionMatchingResult.Product;
+		}
 
-		public readonly IParsingExpression<IExpression> Expression;
-		public readonly IParsingExpression<IExpression> AdditiveExpression;
-		public readonly IParsingExpression<IExpression> MultiplicativeExpression;
-		public readonly IParsingExpression<IExpression> UnaryExpression;
-		public readonly IParsingExpression<IExpression> PostfixExpression;
-		public readonly IParsingExpression<IExpression> LeftHandSideExpression;
-		public readonly IParsingExpression<IExpression> AtExpression;
-		public readonly IParsingExpression<IExpression> AtExpressionRequired;
-		public readonly IParsingExpression<IdentifierExpression> IdentifierExpression;
-		public readonly IParsingExpression<string> Identifier;
-		public readonly IParsingExpression<Nil> IdentifierPart;
-		public readonly IParsingExpression<IExpression> PrimaryExpression;
-		public readonly IParsingExpression<IEnumerable<IExpression>> ArgumentList;
-		public readonly IParsingExpression<ArrayLiteralExpression> ArrayLiteralExpression;
-		public readonly IParsingExpression<ObjectLiteralExpression> ObjectLiteralExpression;
-		public readonly IParsingExpression<ObjectLiteralExpression> ObjectBodyExpression;
-		public readonly IParsingExpression<IExpression> LiteralExpression;
-		public readonly IParsingExpression<NullLiteralExpression> NullLiteralExpression;
-		public readonly IParsingExpression<Nil> NullLiteral;
-		public readonly IParsingExpression<BooleanLiteralExpression> BooleanLiteralExpression;
-		public readonly IParsingExpression<bool> BooleanLiteral;
-		public readonly IParsingExpression<NumericLiteralExpression> NumericLiteralExpression;
-		public readonly IParsingExpression<double> NumericLiteral;
-		public readonly IParsingExpression<StringLiteralExpression> StringLiteralExpression;
-		public readonly IParsingExpression<string> StringLiteral;
-		public readonly IParsingExpression<UriLiteralExpression> UriLiteralExpression;
-		public readonly IParsingExpression<string> UriLiteral;
-		public readonly IParsingExpression<DocumentLiteralExpression> DocumentLiteralExpression;
-		public readonly IParsingExpression<Nil> ExpressionKeyword;
-		public readonly IParsingExpression<Nil> ExpressionWhitespace;
-		public readonly IParsingExpression<IEnumerable<Nil>> ExpressionWhitespaceNoNewline;
-		public readonly IParsingExpression<Nil> ExpressionUnicodeEscapeSequence;
-		public readonly IParsingExpression<Nil> Comment;
-		public readonly IParsingExpression<Nil> MultiLineComment;
-		public readonly IParsingExpression<Nil> SingleLineComment;
+		#region char sets
+		private static readonly IEnumerable<char> spaceCharValues = new char[] { ' ', '\t' };
+		private static readonly IEnumerable<char> whitespaceCharValues = spaceCharValues.Concat(new char[] { '\n', '\r' });
+		private static readonly IEnumerable<char> englishLowerAlphaCharValues = CharUtils.Range('a','z');
+		private static readonly IEnumerable<char> englishUpperAlphaCharValues = CharUtils.Range('A','Z');
+		private static readonly IEnumerable<char> englishAlphaCharValues = englishLowerAlphaCharValues.Concat(englishUpperAlphaCharValues);
+		private static readonly IEnumerable<char> digitCharValues = CharUtils.Range('0','9');
+		private static readonly IEnumerable<char> hexadecimalCharValues = digitCharValues.Concat(CharUtils.Range('A','F')).Concat(CharUtils.Range('a','f'));
+		private static readonly IEnumerable<char> specialCharValues = new char[] {
+			'*', // strong, emphasis
+			'&', // entities
+			'\'', '"', // quotes
+			'`', // ticks
+			'/', // single-line comment
+			'\\', // escape sequence
+			'[', ']', // labels
+			'<', '>', // autolinks
+			'|', // table cell delimiter
+			'@' // expressions
+		};
+		#endregion
 
-		/// <summary>
-		/// A tab or a space.
-		/// </summary>
-		public readonly IParsingExpression<Nil> SpaceChar;
-		public readonly IParsingExpression<string> SpaceChars;
-		/// <summary>
-		/// A whitespace character; space, tab or newline.
-		/// </summary>
-		public readonly IParsingExpression<Nil> Whitespace;
-		public readonly IParsingExpression<IEnumerable<Nil>> Whitespaces;
-		public readonly IParsingExpression<Nil> BlockWhitespace;
-		public readonly IParsingExpression<Nil> OptionalBlockWhitespace;
-		/// <summary>
-		/// A newline character.
-		/// </summary>
-		public readonly IParsingExpression<Nil> NewLine;
-		public readonly IParsingExpression<Nil> SpecialChar;
-		public readonly IParsingExpression<Nil> NormalChar;
-		public readonly IParsingExpression<Nil> Indent;
-		public readonly IParsingExpression<string> NonIndentSpace;
-		/// <summary>
-		/// A raw line of input, including the newline character.
-		/// </summary>
-		public readonly IParsingExpression<LineInfo> Line;
-		/// <summary>
-		/// A blank line; composed of any number of spaces followed by a line end.
-		/// </summary>
-		public readonly IParsingExpression<IEnumerable<LineInfo>> BlankLines;
-		public readonly IParsingExpression<LineInfo> BlankLine;
-		public readonly IParsingExpression<LineInfo> NonTerminalBlankLine;
-		public readonly IParsingExpression<Nil> Digit;
-		public readonly IParsingExpression<Nil> NonZeroDigit;
-		public readonly IParsingExpression<Nil> HexDigit;
-		public readonly IParsingExpression<Nil> EnglishLowerAlpha;
-		public readonly IParsingExpression<Nil> EnglishUpperAlpha;
-		public readonly IParsingExpression<Nil> EnglishAlpha;
-		public readonly IParsingExpression<Nil> UnicodeCharacter;
-
-		private MarkdomGrammar() {
-			#region char sets
-			var spaceCharValues = new char[] { ' ', '\t' };
-			var whitespaceCharValues = spaceCharValues.Concat(new char[] { '\n', '\r' });
-			var englishLowerAlphaCharValues = CharUtils.Range('a','z');
-			var englishUpperAlphaCharValues = CharUtils.Range('A','Z');
-			var englishAlphaCharValues = englishLowerAlphaCharValues.Concat(englishUpperAlphaCharValues);
-			var digitCharValues = CharUtils.Range('0','9');
-			var hexadecimalCharValues = digitCharValues.Concat(CharUtils.Range('A','F')).Concat(CharUtils.Range('a','f'));
-			var specialCharValues = new char[] {
-				'*', // strong, emphasis
-				'&', // entities
-				'\'', '"', // quotes
-				'`', // ticks
-				'/', // single-line comment
-				'\\', // escape sequence
-				'[', ']', // labels
-				'<', '>', // autolinks
-				'|', // table cell delimiter
-				'@' // expressions
-			};
-			#endregion
-
-			Define(() => Document,
+		public static readonly IParsingExpression<MarkdomDocumentNode>
+		Document =
+			Named(() => Document,
 				Reference(() => Blocks, match => new MarkdomDocumentNode(match.Product.ToArray(), match.SourceRange)));
 
-			#region Block Rules
+		#region Block Rules
 
-			Define(() => Blocks,
+		public static readonly IParsingExpression<IEnumerable<IBlockNode>>
+		Blocks =
+			Named(() => Blocks,
 				AtLeast(0, Reference(() => Block)));
 
 			// Ordering notes:
 			//   * Paragraph must come last, because it will sweep up just about anything
-			Define(() => Block,
+		public static readonly IParsingExpression<IBlockNode>
+		Block =
+			Named(() => Block,
 				Sequence(
 					Reference(() => InterBlock),
 					ChoiceOrdered<IBlockNode>(
@@ -185,7 +88,9 @@ namespace markdom.cs.Grammar {
 					Reference(() => InterBlock),
 					match => match.Product.Of2));
 
-			Define(() => InterBlock,
+		public static readonly IParsingExpression<Nil>
+		InterBlock =
+			Named(() => InterBlock,
 				Sequence(
 					Reference(() => BlankLines),
 					AtLeast(0,
@@ -197,9 +102,11 @@ namespace markdom.cs.Grammar {
 							Reference(() => BlankLine), // following space-comment combo
 							Reference(() => BlankLines)))));
 
-			#region ExpressionBlock
+		#region ExpressionBlock
 
-			Define(() => ExpressionBlock,
+		public static readonly IParsingExpression<ExpressionBlockNode>
+		ExpressionBlock =
+			Named(() => ExpressionBlock,
 				Sequence(
 					Reference(() => SpaceChars),
 					Ahead(Literal("@")),
@@ -210,38 +117,50 @@ namespace markdom.cs.Grammar {
 					Ahead(Reference(() => BlankLine)), // expression followed by content on next line is block continuation
 					match => new ExpressionBlockNode(match.Product.Of3, match.SourceRange)));
 
-			#endregion
+		#endregion
 
-			#region Lists
-			// We define two types of lists, a *tight* list wherein no items are separated by blank
-			// lines which causes each item to be parsed as a single block of inlines, and a
-			// *loose* list, where items may contain multiple blocks separated by blank lines.
+		#region Lists
+		// We define two types of lists, a *tight* list wherein no items are separated by blank
+		// lines which causes each item to be parsed as a single block of inlines, and a
+		// *loose* list, where items may contain multiple blocks separated by blank lines.
 
-			// A list item continues if it is followed by any number of blank lines and an indented line.
-			// The indented line is not empty because BlankLines would have consumed it if it was.
-			var listItemContinues =
-				Sequence(
-					Reference(() => BlankLines),
-					Ahead(Reference(() => Indent)),
-					match => match.Product.Of1);
+		// A list item continues if it is followed by any number of blank lines and an indented line.
+		// The indented line is not empty because BlankLines would have consumed it if it was.
+		private static readonly IParsingExpression<IEnumerable<LineInfo>>
+		listItemContinues =
+			Sequence(
+				Reference(() => BlankLines),
+				Ahead(Reference(() => Indent)),
+				match => match.Product.Of1);
 
-			// We define a custom BlockLine for lists which discards any indent at the beginning of a line
-			var listBlockLine =
-				Sequence(
-					Optional(Reference(() => Indent)),
-					Reference(() => NonEmptyBlockLine),
-					match => match.Product.Of2);
+		// We define a custom BlockLine for lists which discards any indent at the beginning of a line
+		private static readonly IParsingExpression<LineInfo>
+		listBlockLine =
+			Sequence(
+				Optional(Reference(() => Indent)),
+				Reference(() => NonEmptyBlockLine),
+				match => match.Product.Of2);
 
-			#region Ordered List
+		#region Ordered List
 
-			var enumeratorCounterStyleLowerRomanCharValues = new char[] { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
-			var enumeratorCounterStyleUpperRomanCharValues = enumeratorCounterStyleLowerRomanCharValues.Select(char.ToUpper);
+		private static readonly IEnumerable<char>
+		enumeratorCounterStyleLowerRomanCharValues = new char[] { 'i', 'v', 'x', 'l', 'c', 'd', 'm' };
 
-			var enumeratorCounterStyleLowerRomanChar = CharacterIn(enumeratorCounterStyleLowerRomanCharValues);
-			var enumeratorCounterStyleUpperRomanChar = CharacterIn(enumeratorCounterStyleUpperRomanCharValues);
-			var enumeratorCounterStyleRomanChar = CharacterIn(enumeratorCounterStyleLowerRomanCharValues.Concat(enumeratorCounterStyleUpperRomanCharValues));
+		private static readonly IEnumerable<char>
+		enumeratorCounterStyleUpperRomanCharValues = enumeratorCounterStyleLowerRomanCharValues.Select(char.ToUpper);
 
-			Define(() => EnumeratorValue,
+		private static readonly IParsingExpression<Nil>
+		enumeratorCounterStyleLowerRomanChar = CharacterIn(enumeratorCounterStyleLowerRomanCharValues);
+
+		private static readonly IParsingExpression<Nil>
+		enumeratorCounterStyleUpperRomanChar = CharacterIn(enumeratorCounterStyleUpperRomanCharValues);
+
+		private static readonly IParsingExpression<Nil>
+		enumeratorCounterStyleRomanChar = CharacterIn(enumeratorCounterStyleLowerRomanCharValues.Concat(enumeratorCounterStyleUpperRomanCharValues));
+
+		public static readonly IParsingExpression<int?>
+		EnumeratorValue =
+			Named(() => EnumeratorValue,
 				Optional(
 					Sequence(
 						Literal("@"),
@@ -250,83 +169,88 @@ namespace markdom.cs.Grammar {
 					match => new int?(match.Product),
 					noMatch => new int?()));
 
-			var enumeratorCounterStyleDefinitions = new EnumeratorCounterStyleDefinition[] {
-				new EnumeratorCounterStyleDefinition(
-					OrderedListCounterStyle.Decimal,
-					AtLeast(1,
-						Reference(() => Digit),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.Decimal, match.String.ParseDefault(1)))),
-				new EnumeratorCounterStyleDefinition(
-					OrderedListCounterStyle.LowerRoman,
-					Sequence(
-						enumeratorCounterStyleLowerRomanChar,
-						AtLeast(0, enumeratorCounterStyleRomanChar),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerRoman, NumeralUtils.ParseRomanNumeral(match.String)))),
-				new EnumeratorCounterStyleDefinition(
-					OrderedListCounterStyle.UpperRoman,
-					Sequence(
-						enumeratorCounterStyleUpperRomanChar,
-						AtLeast(0, enumeratorCounterStyleRomanChar),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperRoman, NumeralUtils.ParseRomanNumeral(match.String)))),
-				new EnumeratorCounterStyleDefinition(
-					OrderedListCounterStyle.LowerAlpha,
-					Sequence(
-						Reference(() => EnglishLowerAlpha),
-						AtLeast(0, Reference(() => EnglishAlpha)),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerAlpha, NumeralUtils.ParseAlphaNumeral(match.String)))),
-				new EnumeratorCounterStyleDefinition(
-					OrderedListCounterStyle.UpperAlpha,
-					Sequence(
-						Reference(() => EnglishUpperAlpha),
-						AtLeast(0, Reference(() => EnglishAlpha)),
-						match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperAlpha, NumeralUtils.ParseAlphaNumeral(match.String))))
-			};
+		private static readonly IEnumerable<EnumeratorCounterStyleDefinition>
+		enumeratorCounterStyleDefinitions = new EnumeratorCounterStyleDefinition[] {
+			new EnumeratorCounterStyleDefinition(
+				OrderedListCounterStyle.Decimal,
+				AtLeast(1,
+					Reference(() => Digit),
+					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.Decimal, match.String.ParseDefault(1)))),
+			new EnumeratorCounterStyleDefinition(
+				OrderedListCounterStyle.LowerRoman,
+				Sequence(
+					enumeratorCounterStyleLowerRomanChar,
+					AtLeast(0, enumeratorCounterStyleRomanChar),
+					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerRoman, NumeralUtils.ParseRomanNumeral(match.String)))),
+			new EnumeratorCounterStyleDefinition(
+				OrderedListCounterStyle.UpperRoman,
+				Sequence(
+					enumeratorCounterStyleUpperRomanChar,
+					AtLeast(0, enumeratorCounterStyleRomanChar),
+					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperRoman, NumeralUtils.ParseRomanNumeral(match.String)))),
+			new EnumeratorCounterStyleDefinition(
+				OrderedListCounterStyle.LowerAlpha,
+				Sequence(
+					Reference(() => EnglishLowerAlpha),
+					AtLeast(0, Reference(() => EnglishAlpha)),
+					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerAlpha, NumeralUtils.ParseAlphaNumeral(match.String)))),
+			new EnumeratorCounterStyleDefinition(
+				OrderedListCounterStyle.UpperAlpha,
+				Sequence(
+					Reference(() => EnglishUpperAlpha),
+					AtLeast(0, Reference(() => EnglishAlpha)),
+					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperAlpha, NumeralUtils.ParseAlphaNumeral(match.String))))
+		};
 
-			var enumeratorSeparatorStyleDefinitions = new EnumeratorSeparatorStyleDefinition[] {
-				new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Dot, Literal(""), Literal(".")),
-				new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Dash, Literal(""), Sequence(Reference(() => SpaceChars), Literal("-"))),
-				new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Parenthesis, Literal(""), Literal(")")),
-				new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Bracketed, Literal("["), Literal("]")),
-				new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Parenthesized, Literal("("), Literal(")")),
-			};
+		private static readonly IEnumerable<EnumeratorSeparatorStyleDefinition>
+		enumeratorSeparatorStyleDefinitions = new EnumeratorSeparatorStyleDefinition[] {
+			new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Dot, Literal(""), Literal(".")),
+			new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Dash, Literal(""), Sequence(Reference(() => SpaceChars), Literal("-"))),
+			new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Parenthesis, Literal(""), Literal(")")),
+			new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Bracketed, Literal("["), Literal("]")),
+			new EnumeratorSeparatorStyleDefinition(OrderedListSeparatorStyle.Parenthesized, Literal("("), Literal(")")),
+		};
 
 			// Here we expand the separator style definitions with the counter style definitions into an
 			// intermediate data structure containing the enumerator rules for each separator & counter
 			// style combination. We will use this to build the ordered list rules without having to construct
 			// duplicate rules.
-			var enumeratorStyleDefinitions =
-				enumeratorSeparatorStyleDefinitions.Select(sd => {
-					var enumeratorPreamble = Sequence(Reference(() => NonIndentSpace), sd.Preceding);
-					var enumeratorPostamble = Sequence(sd.Following, Reference(() => SpaceChars));
-					return new {
-						SeparatorStyle = sd.SeparatorStyle,
-						Preceding = sd.Preceding,
-						Following = sd.Following,
-						EnumeratorPreamble = enumeratorPreamble,
-						EnumeratorPostamble = enumeratorPostamble,
-						Counters = // Enumerator rules for the current separator & counter style
-							enumeratorCounterStyleDefinitions.Select(cd => new {
-								CounterStyle = cd.CounterStyle,	
-								Expression = cd.Expression,
-								InitialEnumerator =
-									Named("InitialEnumerator" + cd.CounterStyle.ToString() + sd.SeparatorStyle.ToString(),
-										Sequence(
-											enumeratorPreamble, cd.Expression, Reference(() => EnumeratorValue), enumeratorPostamble,
-											match => new EnumeratorInfo(
-												cd.CounterStyle, sd.SeparatorStyle,
-												match.Product.Of3.ValueOr(match.Product.Of2.InterpretedValue.ValueOr(1))))),
-								ContinuationEnumerator =
-									Named("ContinuationEnumerator" + cd.CounterStyle.ToString() + sd.SeparatorStyle.ToString(),
-										Sequence(
-											enumeratorPreamble, cd.Expression, enumeratorPostamble))
-							})
-							.ToList()
-					};
-				})
-				.ToList();
+		private static readonly IEnumerable<EnumeratorStyleDefinition>
+		enumeratorStyleDefinitions =
+			enumeratorSeparatorStyleDefinitions.Select(sd => {
+				var enumeratorPreamble = Sequence(Reference(() => NonIndentSpace), sd.Preceding);
+				var enumeratorPostamble = Sequence(sd.Following, Reference(() => SpaceChars));
+				return new EnumeratorStyleDefinition {
+					SeparatorStyle = sd.SeparatorStyle,
+					Preceding = sd.Preceding,
+					Following = sd.Following,
+					EnumeratorPreamble = enumeratorPreamble,
+					EnumeratorPostamble = enumeratorPostamble,
+					Counters = // Enumerator rules for the current separator & counter style
+						enumeratorCounterStyleDefinitions.Select(cd => new EnumeratorStyleDefinitionCounter {
+							CounterStyle = cd.CounterStyle,	
+							Expression = cd.Expression,
+							InitialEnumerator =
+								Named("InitialEnumerator" + cd.CounterStyle.ToString() + sd.SeparatorStyle.ToString(),
+									Sequence(
+										enumeratorPreamble, cd.Expression, Reference(() => EnumeratorValue), enumeratorPostamble,
+										match => new EnumeratorInfo(
+											cd.CounterStyle, sd.SeparatorStyle,
+											match.Product.Of3.ValueOr(match.Product.Of2.InterpretedValue.ValueOr(1))))),
+							ContinuationEnumerator =
+								Named("ContinuationEnumerator" + cd.CounterStyle.ToString() + sd.SeparatorStyle.ToString(),
+									Sequence(
+										enumeratorPreamble, cd.Expression, enumeratorPostamble))
+						})
+						.ToList()
+				};
+			})
+			.ToList();
 
 			// This works because the continuation enumerator is a special case of the initial
-			Define(() => Enumerator,
+		public static readonly IParsingExpression<Nil>
+		Enumerator =
+			Named(() => Enumerator,
 				Sequence(
 					Reference(() => EnumeratorishAhead),
 					ChoiceUnordered(
@@ -336,24 +260,35 @@ namespace markdom.cs.Grammar {
 								ChoiceOrdered(sd.Counters.Select(cd => cd.InitialEnumerator)))
 						))));
 
-			Define(() => EnumeratorishAhead,
+		/// <summary>
+		/// This rule performs a quick lookahead to ensure that the text ahead resembles an enumerator
+		/// before trying to parse it as an enumerator.
+		/// </summary>
+		public static readonly IParsingExpression<Nil>
+		EnumeratorishAhead =
+			Named(() => EnumeratorishAhead,
 				Ahead(
 					Regex(@"\ {0,3}(\(|\[)?([0-9]+|[a-zA-Z]+)(@[0-9]+)?(\.|(\ *-)|\)|\])")));
 
-			var orderedListBlockLine =
-				Sequence(
-					NotAhead(Reference(() => Enumerator)), listBlockLine,
-					m => m.Product.Of2);
+		public static readonly IParsingExpression<LineInfo>
+		orderedListBlockLine =
+			Sequence(
+				NotAhead(Reference(() => Enumerator)), listBlockLine,
+				m => m.Product.Of2);
 
-			var orderedListBlockLines = AtLeast(0, orderedListBlockLine);
+		public static readonly IParsingExpression<IEnumerable<LineInfo>>
+		orderedListBlockLines = AtLeast(0, orderedListBlockLine);
 
-			var orderedListItemSubsequentBlock =
-				Sequence(
-					listItemContinues,
-					orderedListBlockLines,
-					match => match.Product.Of1.Concat(match.Product.Of2));
+		public static readonly IParsingExpression<IEnumerable<LineInfo>>
+		orderedListItemSubsequentBlock =
+			Sequence(
+				listItemContinues,
+				orderedListBlockLines,
+				match => match.Product.Of1.Concat(match.Product.Of2));
 
-			Define(() => OrderedList,
+		public static readonly IParsingExpression<OrderedListNode>
+		OrderedList =
+			Named(() => OrderedList,
 				Sequence(
 					Reference(() => EnumeratorishAhead),
 					// Separator style is unambiguous, so we can use unordered choice
@@ -449,52 +384,64 @@ namespace markdom.cs.Grammar {
 			);
 			#endregion
 
-			#region Unordered List
+		#region Unordered List
 
 			// We first attempt to parse a tight list, because a loose list is defined as 'one that
 			// is not tight'.
-			Define(() => UnorderedList,
+		public static readonly IParsingExpression<UnorderedListNode>
+		UnorderedList =
+			Named(() => UnorderedList,
 				ChoiceOrdered(
 					Reference(() => UnorderedListTight),
 					Reference(() => UnorderedListLoose)));
 
-			Define(() => Bullet,
+		public static readonly IParsingExpression<Nil>
+		Bullet =
+			Named(() => Bullet,
 				Sequence(
 					Reference(() => NonIndentSpace),
 					CharacterIn(new char[] { '*', '-', '+' }),
 					AtLeast(1, Reference(() => SpaceChar))));
 
-			var unorderedListBlockLine =
-				Sequence(
-					NotAhead(Reference(() => Bullet)), listBlockLine,
-					match => match.Product.Of2);
+		public static readonly IParsingExpression<LineInfo>
+		unorderedListBlockLine =
+			Sequence(
+				NotAhead(Reference(() => Bullet)), listBlockLine,
+				match => match.Product.Of2);
 
-			var unorderedListBlockLines = AtLeast(0, unorderedListBlockLine);
+		public static readonly IParsingExpression<IEnumerable<LineInfo>>
+		unorderedListBlockLines = AtLeast(0, unorderedListBlockLine);
 
-			var unorderedListItemTight =
-				Sequence(
-					Reference(() => Bullet), Reference(() => BlockLine),
-					unorderedListBlockLines,
-					match => new BlockLineInfo(match.Product.Of2.InEnumerable().Concat(match.Product.Of3), match.SourceRange));
+		public static readonly IParsingExpression<BlockLineInfo>
+		unorderedListItemTight =
+			Sequence(
+				Reference(() => Bullet), Reference(() => BlockLine),
+				unorderedListBlockLines,
+				match => new BlockLineInfo(match.Product.Of2.InEnumerable().Concat(match.Product.Of3), match.SourceRange));
 
-			var unorderedListItemSubsequentBlock =
-				Sequence(
-					listItemContinues,
-					unorderedListBlockLines,
-					match => match.Product.Of1.Concat(match.Product.Of2));
+		public static readonly IParsingExpression<IEnumerable<LineInfo>>
+		unorderedListItemSubsequentBlock =
+			Sequence(
+				listItemContinues,
+				unorderedListBlockLines,
+				match => match.Product.Of1.Concat(match.Product.Of2));
 
-			var unorderedListItemLoose =
-				Sequence(
-					unorderedListItemTight,
-					AtLeast(0, unorderedListItemSubsequentBlock),
-					match => new BlockLineInfo(match.Product.Of1.Lines.Concat(match.Product.Of2.Flatten()), match.SourceRange));
+		public static readonly IParsingExpression<BlockLineInfo>
+		unorderedListItemLoose =
+			Sequence(
+				unorderedListItemTight,
+				AtLeast(0, unorderedListItemSubsequentBlock),
+				match => new BlockLineInfo(match.Product.Of1.Lines.Concat(match.Product.Of2.Flatten()), match.SourceRange));
 
-			var unorderedListContinuesLoose =
-				ChoiceUnordered(
-					Sequence(Reference(() => BlankLines), Reference(() => Bullet)),
-					listItemContinues);
+		public static readonly IParsingExpression<Nil>
+		unorderedListContinuesLoose =
+			ChoiceUnordered(
+				Sequence(Reference(() => BlankLines), Reference(() => Bullet)),
+				listItemContinues);
 
-			Define(() => UnorderedListTight,
+		public static readonly IParsingExpression<UnorderedListNode>
+		UnorderedListTight =
+			Named(() => UnorderedListTight,
 				Sequence(
 					AtLeast(1, unorderedListItemTight),
 					NotAhead(unorderedListContinuesLoose),
@@ -505,7 +452,9 @@ namespace markdom.cs.Grammar {
 						return new UnorderedListNode(items, match.SourceRange);
 					}));
 
-			Define(() => UnorderedListLoose,
+		public static readonly IParsingExpression<UnorderedListNode>
+		UnorderedListLoose =
+			Named(() => UnorderedListLoose,
 				Sequence(
 					unorderedListItemLoose,
 					AtLeast(0,
@@ -519,45 +468,58 @@ namespace markdom.cs.Grammar {
 							.ToArray();
 						return new UnorderedListNode(items, match.SourceRange);
 					}));
-			#endregion
 
-			#endregion
+		#endregion
 
-			#region Headings
-			Define(() => Heading,
+		#endregion
+
+		#region Headings
+
+		public static readonly IParsingExpression<HeadingNode>
+		Heading =
+			Named(() => Heading,
 				Sequence(
 					Reference(() => HeadingAnnouncement),
 					Reference(() => SpaceChars),
 					Reference(() => BlockLine),
 					match => new HeadingNode(match.Product.Of3.LineString, match.Product.Of1, match.SourceRange)));
 
-			Define(() => HeadingAnnouncement,
+		public static readonly IParsingExpression<int>
+		HeadingAnnouncement =
+			Named(() => HeadingAnnouncement,
 				Sequence(
 					Reference(() => SpaceChars),
 					AtLeast(1, Literal("#"), match => match.String.Length),
 					match => match.Product.Of2));
-			#endregion
 
-			#region Blockquote
+		#endregion
 
-			var blockquoteAnnouncement =
-				Sequence(Literal(">"), Optional(Literal(" ")));
+		#region Blockquote
 
-			var blockquoteAnnouncedLine =
-				Sequence(
-					blockquoteAnnouncement, Reference(() => BlockLine),
-					match => match.Product.Of2);
+		private static readonly IParsingExpression<Nil>
+		blockquoteAnnouncement =
+			Sequence(Literal(">"), Optional(Literal(" ")));
 
-			var blockquotePart =
-				Sequence(
-					blockquoteAnnouncedLine,
-					AtLeast(0,
-						ChoiceOrdered(
-							blockquoteAnnouncedLine,
-							Reference(() => NonEmptyBlockLine))),
-					match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2));
 
-			Define(() => Blockquote,
+		private static readonly IParsingExpression<LineInfo>
+		blockquoteAnnouncedLine =
+			Sequence(
+				blockquoteAnnouncement, Reference(() => BlockLine),
+				match => match.Product.Of2);
+
+		private static readonly IParsingExpression<IEnumerable<LineInfo>>
+		blockquotePart =
+			Sequence(
+				blockquoteAnnouncedLine,
+				AtLeast(0,
+					ChoiceOrdered(
+						blockquoteAnnouncedLine,
+						Reference(() => NonEmptyBlockLine))),
+				match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2));
+
+		public static readonly IParsingExpression<BlockquoteNode>
+		Blockquote =
+			Named(() => Blockquote,
 				Sequence(
 					blockquotePart,
 					AtLeast(0,
@@ -569,9 +531,11 @@ namespace markdom.cs.Grammar {
 						ParseLinesAs(Blocks, match.Product.Of1.Concat(match.Product.Of2.Flatten())).ToArray(),
 						match.SourceRange)));
 
-			#endregion
+		#endregion
 
-			Define(() => ReferenceBlock,
+		public static readonly IParsingExpression<ReferenceNode>
+		ReferenceBlock =
+			Named(() => ReferenceBlock,
 				Sequence(
 					Reference(() => SpaceChars),
 					Reference(() => ReferenceLabel),
@@ -583,35 +547,46 @@ namespace markdom.cs.Grammar {
 						Reference(() => ArgumentList)),
 					match => new ReferenceNode(match.Product.Of2, match.Product.Of6.ToArray(), match.SourceRange)));
 
-			#region Paragraph
+		#region Paragraph
 
-			Define(() => Paragraph,
+		public static readonly IParsingExpression<ParagraphNode>
+		Paragraph =
+			Named(() => Paragraph,
 				Sequence(
 					Reference(() => SpaceChars),
 					AtLeast(1, Reference(() => Inline)),
 					Reference(() => BlankLine),
 					match => new ParagraphNode(match.Product.Of2.ToArray(), match.SourceRange)));
 
-			#endregion
+		#endregion
 
-			Define(() => NonEmptyBlockLine,
+		public static readonly IParsingExpression<LineInfo>
+		NonEmptyBlockLine =
+			Named(() => NonEmptyBlockLine,
 				Sequence(
 					NotAhead(Reference(() => BlankLine)),
 					Reference(() => BlockLine),
 					match => match.Product.Of2));
 
-			Define(() => BlockLine,
+		public static readonly IParsingExpression<LineInfo>
+		BlockLine =
+			Named(() => BlockLine,
 				Sequence(
 					AtLeast(0, Reference(() => BlockLineAtomic)),
 					Optional(Reference(() => NewLine)),
 					match => LineInfo.FromMatch(match)));
 
-			Define(() => BlockLineAtomic,
+		public static readonly IParsingExpression<Nil>
+		BlockLineAtomic =
+			Named(() => BlockLineAtomic,
 				Sequence(
 					NotAhead(Reference(() => NewLine)),
 					Reference(() => Atomic)));
 
-			Define(() => Atomic,
+
+		public static readonly IParsingExpression<Nil>
+		Atomic =
+			Named(() => Atomic,
 				ChoiceOrdered(
 					Sequence(NotAhead(CharacterIn(specialCharValues)), Reference(() => UnicodeCharacter)),
 					ChoiceUnordered(
@@ -622,103 +597,121 @@ namespace markdom.cs.Grammar {
 						Reference(() => Code)),
 					Reference(() => UnicodeCharacter)));
 
-			#region Tables
+		#region Tables
 
-			Define(() => Table,
+		public static readonly IParsingExpression<TableNode>
+		Table =
+			Named(() => Table,
 				AtLeast(1,
 					Reference(() => TableRow),
 					match => new TableNode(match.Product.ToArray(), match.SourceRange)));
 
-			var tableCellContents =
-				AtLeast(0,
-					Sequence(
-						NotAhead(Literal("|")),
-						Reference(() => BlockLineAtomic)),
-					match => LineInfo.FromMatch(match));
-
-			var tableCellRowSpan =
+		private static readonly IParsingExpression<LineInfo>
+		tableCellContents =
+			AtLeast(0,
 				Sequence(
-					AtLeast(1, Reference(() => Digit), match => match.String),
-					ChoiceUnordered(Literal("r"), Literal("R")),
-					match => match.Product.Of1);
+					NotAhead(Literal("|")),
+					Reference(() => BlockLineAtomic)),
+				match => LineInfo.FromMatch(match));
 
-			var tableCellColumnSpan =
-				Sequence(
-					AtLeast(1, Reference(() => Digit), match => match.String),
-					ChoiceUnordered(Literal("c"), Literal("C")),
-					match => match.Product.Of1);
+		private static readonly IParsingExpression<string>
+		tableCellRowSpan =
+			Sequence(
+				AtLeast(1, Reference(() => Digit), match => match.String),
+				ChoiceUnordered(Literal("r"), Literal("R")),
+				match => match.Product.Of1);
 
-			var tableCellAnnouncement =
-				Sequence(
-					Literal("|"),
-					Optional(tableCellColumnSpan),
-					Optional(tableCellRowSpan),
-					match => new TableCellSpanningInfo(match.Product.Of2.ParseDefault(1), match.Product.Of3.ParseDefault(1)));
+		private static readonly IParsingExpression<string>
+		tableCellColumnSpan =
+			Sequence(
+				AtLeast(1, Reference(() => Digit), match => match.String),
+				ChoiceUnordered(Literal("c"), Literal("C")),
+				match => match.Product.Of1);
 
-			var tableHeaderCellAnnouncement =
-				Sequence(
-					tableCellAnnouncement,
-					Literal("="),
-					Reference(() => SpaceChars),
-					match => match.Product.Of1);
+		private static readonly IParsingExpression<TableCellSpanningInfo>
+		tableCellAnnouncement =
+			Sequence(
+				Literal("|"),
+				Optional(tableCellColumnSpan),
+				Optional(tableCellRowSpan),
+				match => new TableCellSpanningInfo(match.Product.Of2.ParseDefault(1), match.Product.Of3.ParseDefault(1)));
 
-			var tableDataCellAnnouncement =
-				Sequence(
-					tableCellAnnouncement,
-					Reference(() => SpaceChars),
-					match => match.Product.Of1);
+		private static readonly IParsingExpression<TableCellSpanningInfo>
+		tableHeaderCellAnnouncement =
+			Sequence(
+				tableCellAnnouncement,
+				Literal("="),
+				Reference(() => SpaceChars),
+				match => match.Product.Of1);
 
-			var tableHeaderCell =
-				Sequence(
-					tableHeaderCellAnnouncement,
-					tableCellContents,
-					match =>
-						new TableHeaderCellNode(
-							match.Product.Of1.ColumnSpan,
-							match.Product.Of1.RowSpan,
-							ParseLinesAs(Inlines, match.Product.Of2.InEnumerable()).ToArray(),
-							match.SourceRange));
+		private static readonly IParsingExpression<TableCellSpanningInfo>
+		tableDataCellAnnouncement =
+			Sequence(
+				tableCellAnnouncement,
+				Reference(() => SpaceChars),
+				match => match.Product.Of1);
 
-			var tableDataCell =
-				Sequence(
-					tableDataCellAnnouncement,
-					tableCellContents,
-					match => new TableDataCellNode(
+		private static readonly IParsingExpression<TableHeaderCellNode>
+		tableHeaderCell =
+			Sequence(
+				tableHeaderCellAnnouncement,
+				tableCellContents,
+				match =>
+					new TableHeaderCellNode(
 						match.Product.Of1.ColumnSpan,
 						match.Product.Of1.RowSpan,
 						ParseLinesAs(Inlines, match.Product.Of2.InEnumerable()).ToArray(),
 						match.SourceRange));
 
-			var tableRowEnd =
-				Sequence(
-					Optional(Literal("|")),
-					Reference(() => BlankLine));
+		private static readonly IParsingExpression<TableDataCellNode>
+		tableDataCell =
+			Sequence(
+				tableDataCellAnnouncement,
+				tableCellContents,
+				match => new TableDataCellNode(
+					match.Product.Of1.ColumnSpan,
+					match.Product.Of1.RowSpan,
+					ParseLinesAs(Inlines, match.Product.Of2.InEnumerable()).ToArray(),
+					match.SourceRange));
 
-			var tableCell =
-				Sequence(
-					NotAhead(tableRowEnd),
-					ChoiceOrdered<TableCellNode>(
-						tableHeaderCell,
-						tableDataCell),
-					match => match.Product.Of2);
+		private static readonly IParsingExpression<Nil>
+		tableRowEnd =
+			Sequence(
+				Optional(Literal("|")),
+				Reference(() => BlankLine));
 
-			Define(() => TableRow,
+		private static readonly IParsingExpression<TableCellNode>
+		tableCell =
+			Sequence(
+				NotAhead(tableRowEnd),
+				ChoiceOrdered<TableCellNode>(
+					tableHeaderCell,
+					tableDataCell),
+				match => match.Product.Of2);
+
+		public static readonly IParsingExpression<TableRowNode>
+		TableRow =
+			Named(() => TableRow,
 				Sequence(
 					Reference(() => SpaceChars),
 					AtLeast(1, Reference(() => tableCell)),
 					tableRowEnd,
 					match => new TableRowNode(match.Product.Of2.ToArray(), match.SourceRange)));
 
-			#endregion
+		#endregion
 
-			#endregion
+		#endregion
 
-			#region Inline Rules
+		#region Inline Rules
 
-			Define(() => Inlines,
+		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
+		Inlines =
+			Named(() => Inlines,
 				AtLeast(0, Reference(() => Inline)));
 
-			Define(() => Inline,
+		public static readonly IParsingExpression<IInlineNode>
+		Inline =
+			Named(() => Inline,
 				ChoiceOrdered<IInlineNode>(
 					ChoiceUnordered<IInlineNode>(
 						Reference(() => Text),
@@ -736,9 +729,11 @@ namespace markdom.cs.Grammar {
 						Reference(() => InlineExpression)),
 					Reference(() => Symbol)));
 
-			#region AutoLink
+		#region AutoLink
 
-			Define(() => AutoLink,
+		public static readonly IParsingExpression<AutoLinkNode>
+		AutoLink =
+			Named(() => AutoLink,
 				Sequence(
 					Literal("<"),
 					Reference(() => SpaceChars),
@@ -750,11 +745,14 @@ namespace markdom.cs.Grammar {
 						match => match.Product,
 						noMatch => new IExpression[0]),
 					match => new AutoLinkNode(match.Product.Of3, match.Product.Of6.ToArray(), match.SourceRange)));
-			#endregion
 
-			#region Link
+		#endregion
 
-			Define(() => Link,
+		#region Link
+
+		public static readonly IParsingExpression<LinkNode>
+		Link =
+			Named(() => Link,
 				Sequence(
 					Reference(() => Label),
 					Reference(() => SpaceChars),
@@ -769,7 +767,9 @@ namespace markdom.cs.Grammar {
 							match => Tuple.Create(match.Product, Enumerable.Empty<IExpression>()))),
 					match => new LinkNode(match.Product.Of1.ToArray(), match.Product.Of3.Item1, match.Product.Of3.Item2.ToArray(), match.SourceRange)));
 
-			Define(() => ReferenceLabel,
+		public static readonly IParsingExpression<ReferenceId>
+		ReferenceLabel =
+			Named(() => ReferenceLabel,
 				Sequence(
 					Literal("["),
 					AtLeast(0, 
@@ -780,56 +780,72 @@ namespace markdom.cs.Grammar {
 					Literal("]"),
 					match => ReferenceId.FromText(match.Product.Of2)));
 
-			Define(() => Label,
+		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
+		Label =
+			Named(() => Label,
 				Sequence(
 					Literal("["),
 					AtLeast(0, Sequence(NotAhead(Literal("]")), Reference(() => Inline), match => match.Product.Of2)),
 					Literal("]"),
 					match => match.Product.Of2));
 
-			#endregion
+		#endregion
 
-			Define(() => InlineExpression,
+		public static readonly IParsingExpression<InlineExpressionNode>
+		InlineExpression =
+			Named(() => InlineExpression,
 				Sequence(
 					Ahead(Literal("@")),
 					Reference(() => Expression),
 					Optional(Literal(";")),
 					match => new InlineExpressionNode(match.Product.Of2, match.SourceRange)));
 
-			Define(() => Strong,
+		public static readonly IParsingExpression<StrongNode>
+		Strong =
+			Named(() => Strong,
 				Sequence(
 					Literal("**"),
 					AtLeast(0, Sequence(NotAhead(Literal("**")), Reference(() => Inline), match => match.Product.Of2)),
 					Optional(Literal("**")),
 					match => new StrongNode(match.Product.Of2.ToArray(), match.SourceRange)));
 
-			Define(() => Emphasis,
+		public static readonly IParsingExpression<EmphasisNode>
+		Emphasis =
+			Named(() => Emphasis,
 				Sequence(
 					Literal("*"),
 					AtLeast(0, Sequence(NotAhead(Literal("*")), Reference(() => Inline), match => match.Product.Of2)),
 					Optional(Literal("*")),
 					match => new EmphasisNode(match.Product.Of2.ToArray(), match.SourceRange)));
 
-			#region Quoted
+		#region Quoted
 
-			var singleQuoted =
-				Sequence(
-					Literal("'"),
-					AtLeast(0, Sequence(NotAhead(Literal("'")), Reference(() => Inline), match => match.Product.Of2)),
-					Literal("'"),
-					match => new QuotedNode(QuoteType.Single, match.Product.Of2.ToArray(), match.SourceRange));
+		private static readonly IParsingExpression<QuotedNode>
+		singleQuoted =
+			Sequence(
+				Literal("'"),
+				AtLeast(0, Sequence(NotAhead(Literal("'")), Reference(() => Inline), match => match.Product.Of2)),
+				Literal("'"),
+				match => new QuotedNode(QuoteType.Single, match.Product.Of2.ToArray(), match.SourceRange));
 
-			var doubleQuoted =
-				Sequence(
-					Literal("\""),
-					AtLeast(0, Sequence(NotAhead(Literal("\"")), Reference(() => Inline), match => match.Product.Of2)),
-					Literal("\""),
-					match => new QuotedNode(QuoteType.Double, match.Product.Of2.ToArray(), match.SourceRange));
+		private static readonly IParsingExpression<QuotedNode>
+		doubleQuoted =
+			Sequence(
+				Literal("\""),
+				AtLeast(0, Sequence(NotAhead(Literal("\"")), Reference(() => Inline), match => match.Product.Of2)),
+				Literal("\""),
+				match => new QuotedNode(QuoteType.Double, match.Product.Of2.ToArray(), match.SourceRange));
 
-			Define(() => Quoted,
+		public static readonly IParsingExpression<QuotedNode>
+		Quoted =
+			Named(() => Quoted,
 				ChoiceOrdered(doubleQuoted, singleQuoted));
 
-			Define(() => LineBreak,
+		#endregion
+
+		public static readonly IParsingExpression<LineBreakNode>
+		LineBreak =
+			Named(() => LineBreak,
 				Sequence(
 					Optional(Reference(() => InlineSpace)),
 					Literal("\\"),
@@ -837,11 +853,12 @@ namespace markdom.cs.Grammar {
 					Optional(Reference(() => InlineSpace)),
 					match => new LineBreakNode(match.SourceRange)));
 
-			#endregion
 
-			#region Code
+		#region Code
 
-			Define(() => Code,
+		public static readonly IParsingExpression<CodeNode>
+		Code =
+			Named(() => Code,
 				Sequence(
 					Ahead(Literal("`")),
 					ChoiceOrdered(
@@ -866,52 +883,63 @@ namespace markdom.cs.Grammar {
 
 			#endregion
 
-			#region Entities
+		#region Entities
 
-			var decimalHtmlEntity =
-				Sequence(
-					Literal("&#"),
-					Between(1, 6, Reference(() => Digit), match => match.String),
-					Literal(";"),
-					match => new EntityNode(int.Parse(match.Product.Of2), match.SourceRange));
+		private static readonly IParsingExpression<EntityNode>
+		decimalHtmlEntity =
+			Sequence(
+				Literal("&#"),
+				Between(1, 6, Reference(() => Digit), match => match.String),
+				Literal(";"),
+				match => new EntityNode(int.Parse(match.Product.Of2), match.SourceRange));
 
-			var hexHtmlEntity =
-				Sequence(
-					Literal("&#x"),
-					Between(1, 6, Reference(() => HexDigit), match => match.String),
-					Literal(";"),
-					match => new EntityNode(Convert.ToInt32(match.Product.Of2, 16), match.SourceRange));
+		private static readonly IParsingExpression<EntityNode>
+		hexHtmlEntity =
+			Sequence(
+				Literal("&#x"),
+				Between(1, 6, Reference(() => HexDigit), match => match.String),
+				Literal(";"),
+				match => new EntityNode(Convert.ToInt32(match.Product.Of2, 16), match.SourceRange));
 
 			// Because of the large number of named entities it is much faster to use a dynamic
 			// expression with an assertion to match valid entity names
-			var namedHtmlEntity =
-				Dynamic(() => {
-					string entityName = null;
-					return Sequence(
-						Literal("&"),
-						Between(1, 32, Reference(() => EnglishAlpha), match => { return entityName = match.String; }),
-						Assert(() => EntityNode.IsEntityName(entityName)),
-						Literal(";"),
-						match => new EntityNode(EntityNode.GetNamedEntityValue(entityName), match.SourceRange));
-				});
+		private static readonly IParsingExpression<EntityNode>
+		namedHtmlEntity =
+			Dynamic(() => {
+				string entityName = null;
+				return Sequence(
+					Literal("&"),
+					Between(1, 32, Reference(() => EnglishAlpha), match => { return entityName = match.String; }),
+					Assert(() => EntityNode.IsEntityName(entityName)),
+					Literal(";"),
+					match => new EntityNode(EntityNode.GetNamedEntityValue(entityName), match.SourceRange));
+			});
 
-			Define(() => Entity,
+		public static readonly IParsingExpression<EntityNode>
+		Entity =
+			Named(() => Entity,
 				ChoiceOrdered(
 					decimalHtmlEntity,
 					hexHtmlEntity,
 					namedHtmlEntity));
 
-			#endregion 
+		#endregion 
 
-			Define(() => Text,
+		public static readonly IParsingExpression<TextNode>
+		Text =
+			Named(() => Text,
 				AtLeast(1,
 					Reference(() => NormalChar),
 					match => new TextNode(match.String, match.SourceRange)));
 
-			Define(() => Space,
+		public static readonly IParsingExpression<SpaceNode>
+		Space =
+			Named(() => Space,
 				Reference(() => InlineSpace, match => new SpaceNode(match.SourceRange)));
 
-			Define(() => InlineSpace,
+		public static readonly IParsingExpression<Nil>
+		InlineSpace =
+			Named(() => InlineSpace,
 				ChoiceOrdered(
 					// At least one comment interleaved with whitespace in any combination
 					Sequence(
@@ -924,47 +952,59 @@ namespace markdom.cs.Grammar {
 					// Or just one chunk of whitespace
 					Reference(() => BlockWhitespace)));
 
-			Define(() => NormalChar,
+		public static readonly IParsingExpression<Nil>
+		NormalChar =
+			Named(() => NormalChar,
 				UnicodeParsingExpressions.UnicodeCharacterNotIn(whitespaceCharValues, specialCharValues));
 
-			Define(() => Symbol,
+		public static readonly IParsingExpression<SymbolNode>
+		Symbol =
+			Named(() => Symbol,
 				Reference(() => SpecialChar, match => new SymbolNode(match.String, match.SourceRange)));
 
-			Define(() => SpecialChar,
+		public static readonly IParsingExpression<Nil>
+		SpecialChar =
+			Named(() => SpecialChar,
 				CharacterIn(specialCharValues));
 
-			#endregion
+		#endregion
 
-			#region Expressions
+		#region Expressions
 
-			Define(() => Expression,
+		public static readonly IParsingExpression<IExpression>
+		Expression =
+			Named(() => Expression,
 				Reference(() => AdditiveExpression));
 
-			#region AdditiveExpression
+		#region AdditiveExpression
 
-			var additionExpressionPart =
-				Sequence(
-					Literal("+"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => MultiplicativeExpression),
-					match => {
-						Func<IExpression, IExpression> asm = left =>
-							new AdditionExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
-						return asm;
-					});
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		additionExpressionPart =
+			Sequence(
+				Literal("+"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => MultiplicativeExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new AdditionExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
 
-			var subtractionExpressionPart =
-				Sequence(
-					Literal("-"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => MultiplicativeExpression),
-					match => {
-						Func<IExpression, IExpression> asm = left =>
-							new SubtractionExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
-						return asm;
-					});
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		subtractionExpressionPart =
+			Sequence(
+				Literal("-"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => MultiplicativeExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new SubtractionExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
 
-			Define(() => AdditiveExpression,
+		public static readonly IParsingExpression<IExpression>
+		AdditiveExpression =
+			Named(() => AdditiveExpression,
 				Sequence(
 					Reference(() => MultiplicativeExpression),
 					AtLeast(0,
@@ -976,44 +1016,49 @@ namespace markdom.cs.Grammar {
 							match => match.Product.Of2)),
 					match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left))));
 
-			#endregion
+		#endregion
 
-			#region MultiplicativeExpression
+		#region MultiplicativeExpression
 
-			var multiplicationExpressionPart =
-				Sequence(
-					Literal("*"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => {
-						Func<IExpression, IExpression> asm = left =>
-							new MultiplicationExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
-						return asm;
-					});
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		multiplicationExpressionPart =
+			Sequence(
+				Literal("*"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new MultiplicationExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
 
-			var divisionExpressionPart =
-				Sequence(
-					Literal("/"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => {
-						Func<IExpression, IExpression> asm = left =>
-							new DivisionExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
-						return asm;
-					});
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		divisionExpressionPart =
+			Sequence(
+				Literal("/"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new DivisionExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
 
-			var moduloExpressionPart =
-				Sequence(
-					Literal("%"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => {
-						Func<IExpression, IExpression> asm = left =>
-							new ModuloExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
-						return asm;
-					});
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		moduloExpressionPart =
+			Sequence(
+				Literal("%"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new ModuloExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
 
-			Define(() => MultiplicativeExpression,
+		public static readonly IParsingExpression<IExpression>
+		MultiplicativeExpression =
+			Named(() => MultiplicativeExpression,
 				Sequence(
 					Reference(() => UnaryExpression),
 					AtLeast(0,
@@ -1026,77 +1071,88 @@ namespace markdom.cs.Grammar {
 							match => match.Product.Of2)),
 					match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left))));
 
-			#endregion
+		#endregion
 
-			#region UnaryExpression
+		#region UnaryExpression
 
-			var deleteExpression = 
-				Sequence(
-					Literal("delete"),
-					NotAhead(Reference(() => IdentifierPart)),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => new DeleteExpression(match.Product.Of4, match.SourceRange));
+		private static readonly IParsingExpression<DeleteExpression>
+		deleteExpression = 
+			Sequence(
+				Literal("delete"),
+				NotAhead(Reference(() => IdentifierPart)),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => new DeleteExpression(match.Product.Of4, match.SourceRange));
 
-			var voidExpression =
-				Sequence(
-					Literal("void"),
-					NotAhead(Reference(() => IdentifierPart)),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => new VoidExpression(match.Product.Of4, match.SourceRange));
+		private static readonly IParsingExpression<VoidExpression>
+		voidExpression =
+			Sequence(
+				Literal("void"),
+				NotAhead(Reference(() => IdentifierPart)),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => new VoidExpression(match.Product.Of4, match.SourceRange));
 
-			var typeofExpression =
-				Sequence(
-					Literal("typeof"),
-					NotAhead(Reference(() => IdentifierPart)),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => new TypeofExpression(match.Product.Of4, match.SourceRange));
+		private static readonly IParsingExpression<TypeofExpression>
+		typeofExpression =
+			Sequence(
+				Literal("typeof"),
+				NotAhead(Reference(() => IdentifierPart)),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => new TypeofExpression(match.Product.Of4, match.SourceRange));
 
-			var prefixDecrementExpression =
-				Sequence(
-					Literal("--"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => new PrefixDecrementExpression(match.Product.Of3, match.SourceRange));
+		private static readonly IParsingExpression<PrefixDecrementExpression>
+		prefixDecrementExpression =
+			Sequence(
+				Literal("--"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => new PrefixDecrementExpression(match.Product.Of3, match.SourceRange));
 
-			var prefixIncrementExpression =
-				Sequence(
-					Literal("++"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => new PrefixIncrementExpression(match.Product.Of3, match.SourceRange));
+		private static readonly IParsingExpression<PrefixIncrementExpression>
+		prefixIncrementExpression =
+			Sequence(
+				Literal("++"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => new PrefixIncrementExpression(match.Product.Of3, match.SourceRange));
 
-			var negativeExpression =
-				Sequence(
-					Literal("-"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => new NegativeExpression(match.Product.Of3, match.SourceRange));
+		private static readonly IParsingExpression<NegativeExpression>
+		negativeExpression =
+			Sequence(
+				Literal("-"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => new NegativeExpression(match.Product.Of3, match.SourceRange));
 
-			var positiveExpression =
-				Sequence(
-					Literal("+"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => new PositiveExpression(match.Product.Of3, match.SourceRange));
+		private static readonly IParsingExpression<PositiveExpression>
+		positiveExpression =
+			Sequence(
+				Literal("+"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => new PositiveExpression(match.Product.Of3, match.SourceRange));
 
-			var bitwiseNotExpression =
-				Sequence(
-					Literal("~"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => new BitwiseNotExpression(match.Product.Of3, match.SourceRange));
+		private static readonly IParsingExpression<BitwiseNotExpression>
+		bitwiseNotExpression =
+			Sequence(
+				Literal("~"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => new BitwiseNotExpression(match.Product.Of3, match.SourceRange));
 
-			var logicalNotExpression =
-				Sequence(
-					Literal("!"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => UnaryExpression),
-					match => new LogicalNotExpression(match.Product.Of3, match.SourceRange));
+		private static readonly IParsingExpression<LogicalNotExpression>
+		logicalNotExpression =
+			Sequence(
+				Literal("!"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => UnaryExpression),
+				match => new LogicalNotExpression(match.Product.Of3, match.SourceRange));
 
-			Define(() => UnaryExpression,
+		public static readonly IParsingExpression<IExpression>
+		UnaryExpression =
+			Named(() => UnaryExpression,
 				ChoiceOrdered<IExpression>(
 					ChoiceUnordered<IExpression>(
 						logicalNotExpression,
@@ -1112,11 +1168,13 @@ namespace markdom.cs.Grammar {
 						bitwiseNotExpression),
 					Reference(() => PostfixExpression)));
 
-			#endregion
+		#endregion
 
-			#region PostfixExpression
+		#region PostfixExpression
 
-			Define(() => PostfixExpression,
+		public static readonly IParsingExpression<IExpression>
+		PostfixExpression =
+			Named(() => PostfixExpression,
 				Sequence(
 					Reference(() => LeftHandSideExpression),
 					Optional(
@@ -1138,41 +1196,46 @@ namespace markdom.cs.Grammar {
 						noMatch => e => e),
 					match => match.Product.Of2(match.Product.Of1)));
 
-			#endregion
+		#endregion
 
-			#region LeftHandSideExpression
+		#region LeftHandSideExpression
 
-			var dynamicPropertyExpressionPart =
-				Sequence(
-					Literal("["), Reference(() => ExpressionWhitespace),
-					Reference(() => Expression),
-					Reference(() => ExpressionWhitespace), Literal("]"),
-					match => {
-						Func<IExpression, IExpression> asm = body =>
-							new DynamicPropertyExpression(body, match.Product.Of3, body.SourceRange.Through(match.SourceRange));
-						return asm;
-					});
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		dynamicPropertyExpressionPart =
+			Sequence(
+				Literal("["), Reference(() => ExpressionWhitespace),
+				Reference(() => Expression),
+				Reference(() => ExpressionWhitespace), Literal("]"),
+				match => {
+					Func<IExpression, IExpression> asm = body =>
+						new DynamicPropertyExpression(body, match.Product.Of3, body.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
 
-			var staticPropertyExpressionPart =
-				Sequence(
-					Literal("."), Reference(() => ExpressionWhitespace),
-					Reference(() => Identifier),
-					match => {
-						Func<IExpression, IExpression> asm = body =>
-							new StaticPropertyExpression(body, match.Product.Of3, body.SourceRange.Through(match.SourceRange));
-						return asm;
-					});
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		staticPropertyExpressionPart =
+			Sequence(
+				Literal("."), Reference(() => ExpressionWhitespace),
+				Reference(() => Identifier),
+				match => {
+					Func<IExpression, IExpression> asm = body =>
+						new StaticPropertyExpression(body, match.Product.Of3, body.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
 
-			var callExpressionPart =
-				Reference(
-					() => ArgumentList,
-					match => {
-						Func<IExpression, IExpression> asm = body =>
-							new CallExpression(body, match.Product.ToArray(), body.SourceRange.Through(match.SourceRange));
-						return asm;
-					});
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		callExpressionPart =
+			Reference(
+				() => ArgumentList,
+				match => {
+					Func<IExpression, IExpression> asm = body =>
+						new CallExpression(body, match.Product.ToArray(), body.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
 
-			Define(() => LeftHandSideExpression,
+		public static readonly IParsingExpression<IExpression>
+		LeftHandSideExpression =
+			Named(() => LeftHandSideExpression,
 				Sequence(
 					Reference(() => AtExpression),
 					AtLeast(0,
@@ -1185,40 +1248,48 @@ namespace markdom.cs.Grammar {
 							match => match.Product.Of2)),
 					match => match.Product.Of2.Reduce(match.Product.Of1, (body, asm) => asm(body))));
 
-			#endregion
+		#endregion
 
-			#region ArgumentList
+		#region ArgumentList
 
-			var argumentSeparator =
+		private static readonly IParsingExpression<Nil>
+		argumentSeparator =
+			Sequence(
+				Reference(() => ExpressionWhitespace),
+				Literal(","),
+				Reference(() => ExpressionWhitespace));
+
+		private static readonly IParsingExpression<IEnumerable<IExpression>>
+		argumentListArguments =
+			Optional(
 				Sequence(
-					Reference(() => ExpressionWhitespace),
-					Literal(","),
-					Reference(() => ExpressionWhitespace));
+					Reference(() => Expression),
+					AtLeast(0, Sequence( argumentSeparator, Reference(() => Expression), match => match.Product.Of2)),
+					match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2)));
 
-			var argumentListArguments =
-				Optional(
-					Sequence(
-						Reference(() => Expression),
-						AtLeast(0, Sequence( argumentSeparator, Reference(() => Expression), match => match.Product.Of2)),
-						match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2)));
-
-			Define(() => ArgumentList,
+		public static readonly IParsingExpression<IEnumerable<IExpression>>
+		ArgumentList =
+			Named(() => ArgumentList,
 				Sequence(
 					Sequence(Literal("("), Reference(() => ExpressionWhitespace)),
 					argumentListArguments,
 					Sequence(Reference(() => ExpressionWhitespace), Literal(")")),
 					match => match.Product.Of2 ?? new IExpression[0]));
 
-			#endregion
+		#endregion
 
-			#region AtExpression
+		#region AtExpression
 
-			Define(() => AtExpression,
+		public static readonly IParsingExpression<IExpression>
+		AtExpression =
+			Named(() => AtExpression,
 				ChoiceOrdered(
 					Reference(() => AtExpressionRequired),
 					Reference(() => PrimaryExpression)));
 
-			Define(() => AtExpressionRequired,
+		public static readonly IParsingExpression<IExpression>
+		AtExpressionRequired =
+			Named(() => AtExpressionRequired,
 				Sequence(
 					Literal("@"),
 					ChoiceOrdered(
@@ -1226,23 +1297,26 @@ namespace markdom.cs.Grammar {
 						Reference(() => PrimaryExpression)),
 					match => match.Product.Of2));
 
-			#endregion
+		#endregion
 
-			#region IdentifierExpression
+		#region IdentifierExpression
 
-			var identifierExpressionStart =
-				ChoiceOrdered(
-					UnicodeParsingExpressions.UnicodeCharacterIn(
-						UnicodeCategories.Lu,
-						UnicodeCategories.Ll,
-						UnicodeCategories.Lt,
-						UnicodeCategories.Lm,
-						UnicodeCategories.Nl),
-					Literal("$"),
-					Literal("_"),
-					Sequence(Literal("\\"), Reference(() => ExpressionUnicodeEscapeSequence)));
+		private static readonly IParsingExpression<Nil>
+		identifierExpressionStart =
+			ChoiceOrdered(
+				UnicodeParsingExpressions.UnicodeCharacterIn(
+					UnicodeCategories.Lu,
+					UnicodeCategories.Ll,
+					UnicodeCategories.Lt,
+					UnicodeCategories.Lm,
+					UnicodeCategories.Nl),
+				Literal("$"),
+				Literal("_"),
+				Sequence(Literal("\\"), Reference(() => ExpressionUnicodeEscapeSequence)));
 
-			Define(() => IdentifierPart,
+		public static readonly IParsingExpression<Nil>
+		IdentifierPart =
+			Named(() => IdentifierPart,
 				ChoiceOrdered(
 					identifierExpressionStart,
 					UnicodeParsingExpressions.UnicodeCharacterIn(
@@ -1252,20 +1326,26 @@ namespace markdom.cs.Grammar {
 						UnicodeCategories.Pc),
 					CharacterIn(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D')));
 
-			Define(() => IdentifierExpression,
+		public static readonly IParsingExpression<IdentifierExpression>
+		IdentifierExpression =
+			Named(() => IdentifierExpression,
 				Reference(() => Identifier,
 					match => new IdentifierExpression(match.Product, match.SourceRange)));
 
-			Define(() => Identifier,
+		public static readonly IParsingExpression<string>
+		Identifier =
+			Named(() => Identifier,
 				Sequence(
 					NotAhead(Reference(() => ExpressionKeyword)),
 					identifierExpressionStart,
 					AtLeast(0, Reference(() => IdentifierPart)),
 					match => match.String));
 
-			#endregion
+		#endregion
 
-			Define(() => PrimaryExpression,
+		public static readonly IParsingExpression<IExpression>
+		PrimaryExpression =
+			Named(() => PrimaryExpression,
 				ChoiceUnordered(
 					Reference(() => LiteralExpression),
 					Reference(() => ArrayLiteralExpression),
@@ -1275,77 +1355,87 @@ namespace markdom.cs.Grammar {
 						Literal("("), Reference(() => ExpressionWhitespace), Reference(() => Expression), Reference(() => ExpressionWhitespace), Literal(")"),
 						match => match.Product.Of3)));
 
-			#region ArrayLiteralExpression
+		#region ArrayLiteralExpression
 
-			var arrayElementSeparator =
-				Sequence(
-					Reference(() => ExpressionWhitespace),
-					Literal(","),
-					Reference(() => ExpressionWhitespace));
+		public static readonly IParsingExpression<Nil>
+		arrayElementSeparator =
+			Sequence(
+				Reference(() => ExpressionWhitespace),
+				Literal(","),
+				Reference(() => ExpressionWhitespace));
 
-			var elidedElements =
-				AtLeast(0,
-					arrayElementSeparator,
-					match => match.Product.Select(elided => (IExpression)null));
+		public static readonly IParsingExpression<IEnumerable<IExpression>>
+		elidedElements =
+			AtLeast(0,
+				arrayElementSeparator,
+				match => match.Product.Select(elided => (IExpression)null));
 
 			// A non-elided array element preceded by any number of elided elements
-			var subsequentArrayElement =
-				Sequence(
-					arrayElementSeparator,
-					elidedElements,
-					Reference(() => Expression),
-					match => match.Product.Of2.Concat(match.Product.Of3.InEnumerable()));
+		public static readonly IParsingExpression<IEnumerable<IExpression>>
+		subsequentArrayElement =
+			Sequence(
+				arrayElementSeparator,
+				elidedElements,
+				Reference(() => Expression),
+				match => match.Product.Of2.Concat(match.Product.Of3.InEnumerable()));
 
-			var arrayElements =
-				Sequence(
-					ChoiceOrdered(
-						// initial element non-elided
-						Sequence(
-							Reference(() => Expression),
-							AtLeast(0, subsequentArrayElement),
-							match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2.Flatten())),
-						// initial element elided
-						AtLeast(1,
-							subsequentArrayElement,
-							match => ((IExpression)null).InEnumerable().Concat(match.Product.Flatten())),
-						// all elements elided
-						Reference(() => elidedElements, match => Enumerable.Empty<IExpression>())),
-					elidedElements, // trailing elided elements discarded
-					match => match.Product.Of1);
+		public static readonly IParsingExpression<IEnumerable<IExpression>>
+		arrayElements =
+			Sequence(
+				ChoiceOrdered(
+					// initial element non-elided
+					Sequence(
+						Reference(() => Expression),
+						AtLeast(0, subsequentArrayElement),
+						match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2.Flatten())),
+					// initial element elided
+					AtLeast(1,
+						subsequentArrayElement,
+						match => ((IExpression)null).InEnumerable().Concat(match.Product.Flatten())),
+					// all elements elided
+					Reference(() => elidedElements, match => Enumerable.Empty<IExpression>())),
+				elidedElements, // trailing elided elements discarded
+				match => match.Product.Of1);
 
-			Define(() => ArrayLiteralExpression,
+		public static readonly IParsingExpression<ArrayLiteralExpression>
+		ArrayLiteralExpression =
+			Named(() => ArrayLiteralExpression,
 				Sequence(
 					Literal("["), Reference(() => ExpressionWhitespace),
 					arrayElements,
 					Reference(() => ExpressionWhitespace), Literal("]"),
 					match => new ArrayLiteralExpression(match.Product.Of3.ToArray(), match.SourceRange)));
 
-			#endregion
+		#endregion
 
-			#region ObjectExpression
+		#region ObjectExpression
 
-			var objectPropertyAssignment =
+		private static readonly IParsingExpression<PropertyAssignment>
+		objectPropertyAssignment =
+			Sequence(
+				ChoiceUnordered(
+					Reference(() => Identifier),
+					Reference(() => StringLiteral),
+					Reference(() => NumericLiteral, match => match.Product.ToString())),
+				Reference(() => ExpressionWhitespace),
+				Literal(":"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => Expression),
+				match => new PropertyAssignment(match.Product.Of1, match.Product.Of5, match.SourceRange));
+
+		private static readonly IParsingExpression<IEnumerable<PropertyAssignment>>
+		objectPropertyAssignments =
+			Optional(
 				Sequence(
-					ChoiceUnordered(
-						Reference(() => Identifier),
-						Reference(() => StringLiteral),
-						Reference(() => NumericLiteral, match => match.Product.ToString())),
-					Reference(() => ExpressionWhitespace),
-					Literal(":"),
-					Reference(() => ExpressionWhitespace),
-					Reference(() => Expression),
-					match => new PropertyAssignment(match.Product.Of1, match.Product.Of5, match.SourceRange));
+					objectPropertyAssignment,
+					AtLeast(0, Sequence(argumentSeparator, objectPropertyAssignment, match => match.Product.Of2)),
+					match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2)),
+				match => match.Product,
+				noMatch => Enumerable.Empty<PropertyAssignment>());
 
-			var objectPropertyAssignments =
-				Optional(
-					Sequence(
-						objectPropertyAssignment,
-						AtLeast(0, Sequence(argumentSeparator, objectPropertyAssignment, match => match.Product.Of2)),
-						match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2)),
-					match => match.Product,
-					noMatch => Enumerable.Empty<PropertyAssignment>());
-
-			Define(() => ObjectLiteralExpression,
+		public static readonly IParsingExpression<ObjectLiteralExpression>
+		ObjectLiteralExpression =
+			Named(() => ObjectLiteralExpression,
 				Sequence(
 					Literal("{"),
 					Reference(() => ExpressionWhitespace),
@@ -1354,14 +1444,18 @@ namespace markdom.cs.Grammar {
 					Literal("}"),
 					match => new ObjectLiteralExpression(match.Product.Of3.ToArray(), match.SourceRange)));
 
-			Define(() => ObjectBodyExpression,
+		public static readonly IParsingExpression<ObjectLiteralExpression>
+		ObjectBodyExpression =
+			Named(() => ObjectBodyExpression,
 				Reference(() => objectPropertyAssignments, match => new ObjectLiteralExpression(match.Product.ToArray(), match.SourceRange)));
 
-			#endregion
+		#endregion
 
-			#region DocumentLiteralExpression
+		#region DocumentLiteralExpression
 
-			Define(() => DocumentLiteralExpression,
+		public static readonly IParsingExpression<DocumentLiteralExpression>
+		DocumentLiteralExpression =
+			Named(() => DocumentLiteralExpression,
 				Dynamic(() => {
 					IParsingExpression<Nil> endBraces = null;
 					return Sequence(
@@ -1375,9 +1469,11 @@ namespace markdom.cs.Grammar {
 							match.SourceRange));
 				}));
 
-			#endregion
+		#endregion
 
-			Define(() => LiteralExpression,
+		public static readonly IParsingExpression<IExpression>
+		LiteralExpression =
+			Named(() => LiteralExpression,
 				ChoiceOrdered<IExpression>(
 					Reference(() => NullLiteralExpression),
 					Reference(() => BooleanLiteralExpression),
@@ -1385,210 +1481,240 @@ namespace markdom.cs.Grammar {
 					Reference(() => StringLiteralExpression),
 					Reference(() => UriLiteralExpression)));
 
-			#region NullLiteralExpression
+		#region NullLiteralExpression
 
-			Define(() => NullLiteralExpression,
+		public static readonly IParsingExpression<NullLiteralExpression>
+		NullLiteralExpression =
+			Named(() => NullLiteralExpression,
 				Reference(() => NullLiteral, match => new NullLiteralExpression(match.SourceRange)));
 
-			Define(() => NullLiteral, Literal("null"));
+		public static readonly IParsingExpression<Nil>
+		NullLiteral =
+			Named(() => NullLiteral, Literal("null"));
 
-			#endregion
+		#endregion
 
-			#region BooleanLiteralExpression
+		#region BooleanLiteralExpression
 
-			Define(() => BooleanLiteralExpression,
+		public static readonly IParsingExpression<BooleanLiteralExpression>
+		BooleanLiteralExpression =
+			Named(() => BooleanLiteralExpression,
 				Reference(() => BooleanLiteral, match => new BooleanLiteralExpression(match.Product, match.SourceRange)));
 
-			Define(() => BooleanLiteral,
+		public static readonly IParsingExpression<bool>
+		BooleanLiteral =
+			Named(() => BooleanLiteral,
 				ChoiceUnordered(
 					Literal("true", match => true),
 					Literal("false", match => false)));
 
-			#endregion
+		#endregion
 
-			#region NumericLiteralExpression
+		#region NumericLiteralExpression
 
-			var decimalIntegerLiteral =
-				ChoiceUnordered(
-					Literal("0"),
-					Sequence(
-						Reference(() => NonZeroDigit),
-						AtLeast(0, Reference(() => Digit))),
-					match => double.Parse(match.String));
-
-			var signedInteger =
+		private static readonly IParsingExpression<double>
+		decimalIntegerLiteral =
+			ChoiceUnordered(
+				Literal("0"),
 				Sequence(
-					Optional(
-						ChoiceUnordered(
-							Literal("+", match => 1d),
-							Literal("-", match => -1d)),
-						match => match.Product,
-						noMatch => 1d),
-					AtLeast(1, Reference(() => Digit), match => double.Parse(match.String)),
-					match => match.Product.Of1 * match.Product.Of2);
+					Reference(() => NonZeroDigit),
+					AtLeast(0, Reference(() => Digit))),
+				match => double.Parse(match.String));
 
-			var hexIntegerLiteral =
+		private static readonly IParsingExpression<double>
+		signedInteger =
+			Sequence(
+				Optional(
+					ChoiceUnordered(
+						Literal("+", match => 1d),
+						Literal("-", match => -1d)),
+					match => match.Product,
+					noMatch => 1d),
+				AtLeast(1, Reference(() => Digit), match => double.Parse(match.String)),
+				match => match.Product.Of1 * match.Product.Of2);
+
+		private static readonly IParsingExpression<double>
+		hexIntegerLiteral =
+			Sequence(
+				Literal("0x"),
+				AtLeast(1, Reference(() => HexDigit), match => match.String),
+				match => (double)Convert.ToInt64(match.String, 16));
+
+		private static readonly IParsingExpression<double>
+		optionalExponentPart =
+			Optional(
 				Sequence(
-					Literal("0x"),
-					AtLeast(1, Reference(() => HexDigit), match => match.String),
-					match => (double)Convert.ToInt64(match.String, 16));
+					ChoiceUnordered(Literal("e"), Literal("E")),
+					signedInteger,
+					match => match.Product.Of2),
+				match => Math.Pow(10d, match.Product),
+				noMatch => 1d);
 
-			var optionalExponentPart =
-				Optional(
-					Sequence(
-						ChoiceUnordered(Literal("e"), Literal("E")),
-						signedInteger,
-						match => match.Product.Of2),
-					match => Math.Pow(10d, match.Product),
-					noMatch => 1d);
-
-			var optionalDecimalPart =
-				Optional(
-					Sequence(
-						Literal("."),
-						AtLeast(0, Reference(() => Digit))),
-					match => double.Parse("0" + match.String),
-					noMatch => 0d);
-
-			var requiredDecimalPart =
+		private static readonly IParsingExpression<double>
+		optionalDecimalPart =
+			Optional(
 				Sequence(
 					Literal("."),
-					AtLeast(1, Reference(() => Digit)),
-				match => double.Parse("0" + match.String));
+					AtLeast(0, Reference(() => Digit))),
+				match => double.Parse("0" + match.String),
+				noMatch => 0d);
 
-			var decimalLiteral = 
-				ChoiceUnordered(
-					Sequence(
-						decimalIntegerLiteral,
-						optionalDecimalPart,
-						optionalExponentPart,
-						m => (m.Product.Of1 + m.Product.Of2) * m.Product.Of3),
-					Sequence(
-						requiredDecimalPart,
-						optionalExponentPart,
-						m => m.Product.Of1 * m.Product.Of2));
+		private static readonly IParsingExpression<double>
+		requiredDecimalPart =
+			Sequence(
+				Literal("."),
+				AtLeast(1, Reference(() => Digit)),
+			match => double.Parse("0" + match.String));
 
-			Define(() => NumericLiteralExpression,
+		private static readonly IParsingExpression<double>
+		decimalLiteral = 
+			ChoiceUnordered(
+				Sequence(
+					decimalIntegerLiteral,
+					optionalDecimalPart,
+					optionalExponentPart,
+					m => (m.Product.Of1 + m.Product.Of2) * m.Product.Of3),
+				Sequence(
+					requiredDecimalPart,
+					optionalExponentPart,
+					m => m.Product.Of1 * m.Product.Of2));
+
+		public static readonly IParsingExpression<NumericLiteralExpression>
+		NumericLiteralExpression =
+			Named(() => NumericLiteralExpression,
 				Reference(() => NumericLiteral, match => new NumericLiteralExpression(match.Product, match.SourceRange)));
 
-			Define(() => NumericLiteral,
+		public static readonly IParsingExpression<double>
+		NumericLiteral =
+			Named(() => NumericLiteral,
 				ChoiceOrdered(hexIntegerLiteral, decimalLiteral));
 
-			#endregion
+		#endregion
 
-			#region StringLiteralExpression
+		#region StringLiteralExpression
 			
-			var stringExpressionEscapes =
+		private static readonly IParsingExpression<string>
+		stringExpressionEscapes =
+			ChoiceUnordered(
+				Literal(@"\n", match => "\n"),
+				Literal(@"\r", match => "\r"),
+				Literal(@"\t", match => "\t"),
+				Literal(@"\\", match => "\\"));
+
+		private static readonly IParsingExpression<string>
+		singleQuotedStringExpressionContent =
+			AtLeast(0,
 				ChoiceUnordered(
-					Literal(@"\n", match => "\n"),
-					Literal(@"\r", match => "\r"),
-					Literal(@"\t", match => "\t"),
-					Literal(@"\\", match => "\\"));
+					Literal(@"\'", match => "'"),
+					stringExpressionEscapes,
+					Sequence(
+						NotAhead(ChoiceUnordered(Literal("'"), Reference(() => NewLine))),
+						Reference(() => UnicodeCharacter),
+						match => match.String)),
+				match => match.Product.JoinStrings());
 
-			var singleQuotedStringExpressionContent =
-				AtLeast(0,
-					ChoiceUnordered(
-						Literal(@"\'", match => "'"),
-						stringExpressionEscapes,
-						Sequence(
-							NotAhead(ChoiceUnordered(Literal("'"), Reference(() => NewLine))),
-							Reference(() => UnicodeCharacter),
-							match => match.String)),
-					match => match.Product.JoinStrings());
+		private static readonly IParsingExpression<string>
+		doubleQuotedStringExpressionContent =
+			AtLeast(0,
+				ChoiceUnordered(
+					Literal("\\\"", match => "\""),
+					stringExpressionEscapes,
+					Sequence(
+						NotAhead(ChoiceUnordered(Literal("\""), Reference(() => NewLine))),
+						Reference(() => UnicodeCharacter),
+						match => match.String)),
+				match => match.Product.JoinStrings());
 
-			var doubleQuotedStringExpressionContent =
-				AtLeast(0,
-					ChoiceUnordered(
-						Literal("\\\"", match => "\""),
-						stringExpressionEscapes,
-						Sequence(
-							NotAhead(ChoiceUnordered(Literal("\""), Reference(() => NewLine))),
-							Reference(() => UnicodeCharacter),
-							match => match.String)),
-					match => match.Product.JoinStrings());
+		private static readonly IParsingExpression<string>
+		singleQuotedStringExpression =
+			Sequence(
+				Literal("'"), singleQuotedStringExpressionContent, Literal("'"),
+				match => match.Product.Of2);
 
-			var singleQuotedStringExpression =
-				Sequence(
-					Literal("'"), singleQuotedStringExpressionContent, Literal("'"),
-					match => match.Product.Of2);
+		private static readonly IParsingExpression<string>
+		doubleQuotedStringExpression =
+			Sequence(
+				Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
+				match => match.Product.Of2);
 
-			var doubleQuotedStringExpression =
-				Sequence(
-					Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
-					match => match.Product.Of2);
+		private static readonly IParsingExpression<string>
+		verbatimStringExpression =
+			ChoiceOrdered(
+				Enumerable.Range(1,16).Reverse()
+				.Select(i => "".PadRight(i, '`'))
+				.Select(ticks =>
+					Sequence(
+						Literal(ticks),
+						AtLeast(0,
+							Sequence(NotAhead(Literal(ticks)), Reference(() => UnicodeCharacter)),
+							match => match.String),
+						Literal(ticks),
+						match => match.Product.Of2)));
 
-			var verbatimStringExpression =
-				ChoiceOrdered(
-					Enumerable.Range(1,16).Reverse()
-					.Select(i => "".PadRight(i, '`'))
-					.Select(ticks =>
-						Sequence(
-							Literal(ticks),
-							AtLeast(0,
-								Sequence(NotAhead(Literal(ticks)), Reference(() => UnicodeCharacter)),
-								match => match.String),
-							Literal(ticks),
-							match => match.Product.Of2)));
-
-			Define(() => StringLiteralExpression,
+		public static readonly IParsingExpression<StringLiteralExpression>
+		StringLiteralExpression =
+			Named(() => StringLiteralExpression,
 				Reference(() => StringLiteral, match => new StringLiteralExpression(match.Product, match.SourceRange)));
 
-			Define(() => StringLiteral,
+		public static readonly IParsingExpression<string>
+		StringLiteral =
+			Named(() => StringLiteral,
 				ChoiceOrdered(
 					singleQuotedStringExpression,
 					doubleQuotedStringExpression,
 					verbatimStringExpression));
 
-			#endregion
+		#endregion
 
-			#region UriLiteralExpression
-			//   * Cannot contain `,` (commas), which are ordinarily legal URI characters.
-			//     This is to disambiguate URI expressions in argument lists
-			//   * Parentheses inside of a URI expression must be balanced
-			//   * Cannot start with `@`, `'`, or `"'
+		#region UriLiteralExpression
 
-			IParsingExpression<object> uriExpressionPart = null;
-			IParsingExpression<IEnumerable<Nil>> uriExpressionRegularPart = null;
-			IParsingExpression<Nil> uriExpressionParenthesizedPart = null;
+		private static readonly IParsingExpression<object>
+		uriExpressionPart = 
+			Named("UriExpressionPart",
+				ChoiceOrdered(
+					Reference(() => uriExpressionRegularPart),
+					Reference(() => uriExpressionParenthesizedPart)));
 
-			uriExpressionPart = 
-				Named("UriExpressionPart",
-					ChoiceOrdered(
-						Reference(() => uriExpressionRegularPart),
-						Reference(() => uriExpressionParenthesizedPart)));
+		private static readonly IParsingExpression<IEnumerable<Nil>>
+		uriExpressionRegularPart =
+			AtLeast(1, 
+				ChoiceUnordered(
+					CharacterIn(
+						englishAlphaCharValues,
+						digitCharValues,
+						new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' }),
+					Sequence(
+						Literal("%"),
+						Exactly(2, Reference(() => HexDigit)))));
 
-			uriExpressionRegularPart =
-				AtLeast(1, 
-					ChoiceUnordered(
-						CharacterIn(
-							englishAlphaCharValues,
-							digitCharValues,
-							new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' }),
-						Sequence(
-							Literal("%"),
-							Exactly(2, Reference(() => HexDigit)))));
+		private static readonly IParsingExpression<Nil>
+		uriExpressionParenthesizedPart =
+			Sequence(
+				Literal("("),
+				AtLeast(0, Reference(() => uriExpressionPart)),
+				Literal(")"));
 
-			uriExpressionParenthesizedPart =
-				Sequence(
-					Literal("("),
-					AtLeast(0, Reference(() => uriExpressionPart)),
-					Literal(")"));
-
-			Define(() => UriLiteralExpression,
+		public static readonly IParsingExpression<UriLiteralExpression>
+		UriLiteralExpression =
+			Named(() => UriLiteralExpression,
 				Reference(() => UriLiteral, match => new UriLiteralExpression(match.Product, match.SourceRange)));
 
-			Define(() => UriLiteral,
+		public static readonly IParsingExpression<string>
+		UriLiteral =
+			Named(() => UriLiteral,
 				AtLeast(1,
 					ChoiceUnordered(
 						Reference(() => uriExpressionRegularPart),
 						Reference(() => uriExpressionParenthesizedPart)),
 					match => match.String));
 
-			#endregion
+		#endregion
 
-			#region ExpressionKeyword
+		#region ExpressionKeyword
 
-			Define(() => ExpressionKeyword,
+		public static readonly IParsingExpression<Nil>
+		ExpressionKeyword =
+			Named(() => ExpressionKeyword,
 				Sequence(
 					ChoiceUnordered(new string[] {
 						"break",
@@ -1632,52 +1758,68 @@ namespace markdom.cs.Grammar {
 
 			#endregion
 
-			Define(() => ExpressionWhitespaceNoNewline,
+		public static readonly IParsingExpression<IEnumerable<Nil>>
+		ExpressionWhitespaceNoNewline =
+			Named(() => ExpressionWhitespaceNoNewline,
 				AtLeast(0,
 					ChoiceUnordered(
 						Reference(() => SpaceChar),
 						Reference(() => Comment))));
 
-			Define(() => ExpressionWhitespace,
+		public static readonly IParsingExpression<Nil>
+		ExpressionWhitespace =
+			Named(() => ExpressionWhitespace,
 				AtLeast(0,
 					ChoiceUnordered(
 						Reference(() => Whitespace),
 						Reference(() => Comment)),
 					match => Nil.Value));
 
-			Define(() => ExpressionUnicodeEscapeSequence,
+		public static readonly IParsingExpression<Nil>
+		ExpressionUnicodeEscapeSequence =
+			Named(() => ExpressionUnicodeEscapeSequence,
 				Sequence(
 					Literal("u"),
 					Exactly(4, Reference(() => HexDigit))));
 
-			#endregion
+		#endregion
 
-			#region Comments
+		#region Comments
 
-			Define(() => Comment,
+		public static readonly IParsingExpression<Nil>
+		Comment =
+			Named(() => Comment,
 				ChoiceUnordered(
 					Reference(() => SingleLineComment),
 					Reference(() => MultiLineComment)));
 
-			Define(() => SingleLineComment,
+		public static readonly IParsingExpression<Nil>
+		SingleLineComment =
+			Named(() => SingleLineComment,
 				Sequence(
 					Literal("//"),
 					AtLeast(0, Sequence(NotAhead(Reference(() => NewLine)), Reference(() => UnicodeCharacter)))));
 
-			Define(() => MultiLineComment,
+		public static readonly IParsingExpression<Nil>
+		MultiLineComment =
+			Named(() => MultiLineComment,
 				Sequence(
 					Literal("/*"),
 					AtLeast(0, Sequence(NotAhead(Literal("*/")), Reference(() => UnicodeCharacter))),
 					Literal("*/")));
 
-			#endregion
+		#endregion
 
-			#region Text, Character Classes, etc
+		#region Text, Character Classes, etc
 
-			Define(() => OptionalBlockWhitespace,
+		public static readonly IParsingExpression<Nil>
+		OptionalBlockWhitespace =
+			Named(() => OptionalBlockWhitespace,
 				Optional(Reference(() => BlockWhitespace)));
 
-			Define(() => BlockWhitespace,
+		public static readonly IParsingExpression<Nil>
+		BlockWhitespace =
+			Named(() => BlockWhitespace,
 				Sequence(
 					Ahead(Reference(() => Whitespace)),
 					Reference(() => SpaceChars),
@@ -1685,7 +1827,12 @@ namespace markdom.cs.Grammar {
 					Reference(() => SpaceChars),
 					NotAhead(Reference(() => BlankLine))));
 
-			Define(() => Line,
+		/// <summary>
+		/// A raw line of input, including the newline character.
+		/// </summary>
+		public static readonly IParsingExpression<LineInfo>
+		Line =
+			Named(() => Line,
 				Sequence(
 					AtLeast(0,
 						Sequence(
@@ -1694,7 +1841,9 @@ namespace markdom.cs.Grammar {
 					Optional(Reference(() => NewLine)),
 					match => LineInfo.FromMatch(match)));
 
-			Define(() => BlankLines,
+		public static readonly IParsingExpression<IEnumerable<LineInfo>>
+		BlankLines =
+			Named(() => BlankLines,
 				Sequence(
 					AtLeast(0,
 						Sequence(
@@ -1709,8 +1858,12 @@ namespace markdom.cs.Grammar {
 						noMatch => Enumerable.Empty<LineInfo>()),
 					match => match.Product.Of1.Concat(match.Product.Of2)));
 
-			// NEVER EVER EVER USE THIS IN A REPETITION CONTEXT
-			Define(() => BlankLine,
+		/// <summary>
+		/// A blank line; composed of any number of spaces followed by a line end or the end of the input.
+		/// </summary>
+		public static readonly IParsingExpression<LineInfo>
+		BlankLine =
+			Named(() => BlankLine,
 				Sequence(
 					Reference(() => SpaceChars),
 					ChoiceUnordered(
@@ -1718,74 +1871,93 @@ namespace markdom.cs.Grammar {
 						EndOfInput()),
 					match => LineInfo.FromMatch(match)));
 
-			Define(() => Indent,
+		public static readonly IParsingExpression<Nil>
+		Indent =
+			Named(() => Indent,
 				ChoiceUnordered(Literal("\t"), Literal("    ")));
 
-			Define(() => NonIndentSpace,
+		public static readonly IParsingExpression<string>
+		NonIndentSpace =
+			Named(() => NonIndentSpace,
 				AtMost(3, Literal(" "), match => match.String));
 
-			Define(() => SpaceChar,
+		/// <summary>
+		/// A tab or a space.
+		/// </summary>
+		public static readonly IParsingExpression<Nil>
+		SpaceChar =
+			Named(() => SpaceChar,
 				CharacterIn(spaceCharValues));
 
-			Define(() => SpaceChars,
+		/// <summary>
+		/// Any number of tabs or spaces.
+		/// </summary>
+		public static readonly IParsingExpression<string>
+		SpaceChars =
+			Named(() => SpaceChars,
 				AtLeast(0, Reference(() => SpaceChar), match => match.String));
 
-			Define(() => NewLine,
+		/// <summary>
+		/// A newline character.
+		/// </summary>
+		public static readonly IParsingExpression<Nil>
+		NewLine =
+			Named(() => NewLine,
 				ChoiceUnordered(
 					Literal("\n"),
 					Literal("\r\n")));
 
-			Define(() => Whitespace,
+		/// <summary>
+		/// A whitespace character; space, tab or newline.
+		/// </summary>
+		public static readonly IParsingExpression<Nil>
+		Whitespace =
+			Named(() => Whitespace,
 				ChoiceUnordered(
 					Reference(() => SpaceChar),
 					Reference(() => NewLine)));
 
-			Define(() => Whitespaces,
+		public static readonly IParsingExpression<IEnumerable<Nil>>
+		Whitespaces =
+			Named(() => Whitespaces,
 				AtLeast(0,
 					CharacterIn(whitespaceCharValues)));
 
-			Define(() => Digit,
+		public static readonly IParsingExpression<Nil>
+		Digit =
+			Named(() => Digit,
 				CharacterInRange('0', '9'));
 
-			Define(() => NonZeroDigit,
+		public static readonly IParsingExpression<Nil>
+		NonZeroDigit =
+			Named(() => NonZeroDigit,
 				CharacterInRange('1', '9'));
 
-			Define(() => HexDigit,
+		public static readonly IParsingExpression<Nil>
+		HexDigit =
+			Named(() => HexDigit,
 				CharacterIn(hexadecimalCharValues));
 
-			Define(() => EnglishLowerAlpha,
+		public static readonly IParsingExpression<Nil>
+		EnglishLowerAlpha =
+			Named(() => EnglishLowerAlpha,
 				CharacterInRange('a', 'z'));
 
-			Define(() => EnglishUpperAlpha,
+		public static readonly IParsingExpression<Nil>
+		EnglishUpperAlpha =
+			Named(() => EnglishUpperAlpha,
 				CharacterInRange('A', 'Z'));
 
-			Define(() => EnglishAlpha,
+		public static readonly IParsingExpression<Nil>
+		EnglishAlpha =
+			Named(() => EnglishAlpha,
 				CharacterIn(englishAlphaCharValues));
 
-			Define(() => UnicodeCharacter,
+		public static readonly IParsingExpression<Nil>
+		UnicodeCharacter =
+			Named(() => UnicodeCharacter,
 				UnicodeParsingExpressions.UnicodeCharacterIn(UnicodeCategories.All));
 
-			#endregion
-
-		}
-		
-		
-
-		private int _parseLinesCount = 0;
-		protected T ParseLinesAs<T>(IParsingExpression<T> expression, IEnumerable<LineInfo> lines) {
-			lines = lines.ToList();
-			_parseLinesCount++;
-			var expressionMatchingContext =
-				new MatchingContext(
-					lines.Select(line => line.LineString).JoinStrings(),
-					lines.Select(line => line.SourceRange).ToArray());
-			
-			var expressionMatchingResult = expression.Matches(expressionMatchingContext);
-
-			if(!expressionMatchingResult.Succeeded)
-				return default(T);
-
-			return (T)expressionMatchingResult.Product;
-		}
+		#endregion
 	}
 }

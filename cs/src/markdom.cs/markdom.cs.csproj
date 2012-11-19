@@ -79,6 +79,8 @@
     <Compile Include="Grammar\EnumeratorCounterStyleDefinition.cs" />
     <Compile Include="Grammar\EnumeratorCounterStyleInfo.cs" />
     <Compile Include="Grammar\EnumeratorInfo.cs" />
+    <Compile Include="Grammar\EnumeratorStyleDefinition.cs" />
+    <Compile Include="Grammar\EnumeratorStyleDefinitionCounter.cs" />
     <Compile Include="Grammar\OrderedListItemLineInfo.cs" />
     <Compile Include="Grammar\EnumeratorSeparatorStyleDefinition.cs" />
     <Compile Include="Grammar\LineInfo.cs" />

@@ -17,7 +17,7 @@ namespace markdom.cs.Grammar
 				new SourceRange(0, 6, 1, 0)
 			);
 
-			var match = Grammar.Emphasis.ShouldMatch("*text*");
+			var match = MarkdomGrammar.Emphasis.ShouldMatch("*text*");
 			
 			match.Succeeded.Should().BeTrue();
 			match.Product.ShouldBeEquivalentTo(expected);
@@ -29,7 +29,7 @@ namespace markdom.cs.Grammar
 				new SourceRange(0, 4, 1, 0)
 			);			
 
-			var match = Grammar.Emphasis.ShouldMatch("*foo");
+			var match = MarkdomGrammar.Emphasis.ShouldMatch("*foo");
 
 			match.Succeeded.Should().BeTrue();
 			match.Product.ShouldBeEquivalentTo(expected);

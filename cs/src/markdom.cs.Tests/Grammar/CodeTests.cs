@@ -12,7 +12,7 @@ namespace markdom.cs.Grammar {
 		[Fact] public void Code_should_match_ticks_1() {
 			var expected = new CodeNode("fizzbuzz()", new SourceRange(0,12,1,0));
 
-			var match = Grammar.Code.ShouldMatch("`fizzbuzz()`");
+			var match = MarkdomGrammar.Code.ShouldMatch("`fizzbuzz()`");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -20,7 +20,7 @@ namespace markdom.cs.Grammar {
 		[Fact] public void Code_should_match_ticks_8() {
 			var expected = new CodeNode("fizzbuzz()", new SourceRange(0,26,1,0));
 
-			var match = Grammar.Code.ShouldMatch("````````fizzbuzz()````````");
+			var match = MarkdomGrammar.Code.ShouldMatch("````````fizzbuzz()````````");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
@@ -28,7 +28,7 @@ namespace markdom.cs.Grammar {
 		[Fact] public void Code_should_span_multiple_lines() {
 			var expected = new CodeNode("line 1\nline 2", new SourceRange(0,15,1,0));
 
-			var match = Grammar.Code.ShouldMatch(
+			var match = MarkdomGrammar.Code.ShouldMatch(
 				"`line 1\n",
 				"line 2`"
 			);
@@ -37,7 +37,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		[Fact] public void Code_should_not_span_blank_line() {
-			Grammar.Code.ShouldNotMatch(
+			MarkdomGrammar.Code.ShouldNotMatch(
 				"`line 1\n",
 				"\n",
 				"line 3`"

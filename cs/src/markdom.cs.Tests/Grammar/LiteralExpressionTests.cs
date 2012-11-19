@@ -10,35 +10,35 @@ using Xunit;
 namespace markdom.cs.Grammar {
 	public class LiteralExpressionTests : GrammarTestFixture {
 		[Fact] public void LiteralExpression_matches_null() {
-			var match = Grammar.LiteralExpression.ShouldMatch("null");
+			var match = MarkdomGrammar.LiteralExpression.ShouldMatch("null");
 		}
 
 		[Fact] public void LiteralExpression_matches_true() {
-			var match = Grammar.LiteralExpression.ShouldMatch("true");
+			var match = MarkdomGrammar.LiteralExpression.ShouldMatch("true");
 		}
 
 		[Fact] public void LiteralExpression_matches_false() {
-			var match = Grammar.LiteralExpression.ShouldMatch("false");
+			var match = MarkdomGrammar.LiteralExpression.ShouldMatch("false");
 		}
 
 		[Fact] public void LiteralExpression_matches_integer_literal() {
-			var match = Grammar.LiteralExpression.ShouldMatch("42");
+			var match = MarkdomGrammar.LiteralExpression.ShouldMatch("42");
 		}
 
 		[Fact] public void LiteralExpression_matches_floating_point_literal() {
-			var match = Grammar.LiteralExpression.ShouldMatch("42.123");
+			var match = MarkdomGrammar.LiteralExpression.ShouldMatch("42.123");
 		}
 
 		[Fact] public void LiteralExpression_matches_single_quoted_string_literal() {
-			var match = Grammar.LiteralExpression.ShouldMatch("'foobar'");
+			var match = MarkdomGrammar.LiteralExpression.ShouldMatch("'foobar'");
 		}
 
 		[Fact] public void LiteralExpression_matches_double_quoted_string_literal() {
-			var match = Grammar.LiteralExpression.ShouldMatch("\"fizzbuzz\"");
+			var match = MarkdomGrammar.LiteralExpression.ShouldMatch("\"fizzbuzz\"");
 		}
 
 		[Fact] public void LiteralExpression_matches_uri_literal() {
-			var match = Grammar.LiteralExpression.ShouldMatch("http://reddit.com");
+			var match = MarkdomGrammar.LiteralExpression.ShouldMatch("http://reddit.com");
 		}
 	}
 }

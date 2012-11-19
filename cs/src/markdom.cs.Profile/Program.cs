@@ -61,13 +61,13 @@ namespace markdom.cs.Profile {
 				"    With a second paragraph.\n"
 			);
 
-			markdom.cs.Grammar.MarkdomGrammar.Instance.Document.Matches(new pegleg.cs.Parsing.MatchingContext(input));
+			markdom.cs.Grammar.MarkdomGrammar.Document.Matches(new pegleg.cs.Parsing.MatchingContext(input));
 
 			var stopwatch = new System.Diagnostics.Stopwatch();
 			stopwatch.Start();
 
 			for(var i = 0; i < 100; i++) {
-				markdom.cs.Grammar.MarkdomGrammar.Instance.Document.Matches(new pegleg.cs.Parsing.MatchingContext(input));
+				markdom.cs.Grammar.MarkdomGrammar.Document.Matches(new pegleg.cs.Parsing.MatchingContext(input));
 				Console.Write(".");
 			}
 
