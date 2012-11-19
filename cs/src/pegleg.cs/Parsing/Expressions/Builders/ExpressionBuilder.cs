@@ -9,12 +9,7 @@ using System.Text.RegularExpressions;
 
 namespace pegleg.cs.Parsing.Expressions.Builders {
 	public class ExpressionBuilder : IExpressionBuilder {
-		private IExpressionNamingConvention _namingConvention = new DefaultExpressionNamingConvention();
-
-		public void SetExpressionNamingConvention(IExpressionNamingConvention namingConvention) {
-			CodeContract.ArgumentIsNotNull(() => namingConvention, namingConvention);
-
-			_namingConvention = namingConvention;
+		public void SetExpressionNamingConvention() {
 			DefaultRegexOptions = RegexOptions.Compiled | RegexOptions.Singleline;
 		}
 
@@ -33,8 +28,7 @@ namespace pegleg.cs.Parsing.Expressions.Builders {
 		#endregion
 
 		public IParsingExpression<T> Named<T>(string name, IParsingExpression<T> expression) {
-			var conventionalName = _namingConvention.Apply(name, expression);
-			return new NamedParsingExpression<T>(conventionalName, expression);
+			return new NamedParsingExpression<T>(name, expression);
 		}
 
 		public IParsingExpression<Nil> Literal(string literal) {
