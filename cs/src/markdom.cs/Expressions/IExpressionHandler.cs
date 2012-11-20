@@ -16,6 +16,7 @@ namespace markdom.cs.Expressions {
 		void Handle(DocumentLiteralExpression expression);
 		void Handle(DynamicPropertyExpression expression);
 		void Handle(IdentifierExpression expression);
+		void Handle(LeftShiftExpression expression);
 		void Handle(LogicalNotExpression expression);
 		void Handle(ModuloExpression expression);
 		void Handle(MultiplicationExpression expression);
@@ -28,10 +29,12 @@ namespace markdom.cs.Expressions {
 		void Handle(PostfixIncrementExpression expression);
 		void Handle(PrefixDecrementExpression expression);
 		void Handle(PrefixIncrementExpression expression);
+		void Handle(RightShiftExpression expression);
 		void Handle(StaticPropertyExpression expression);
 		void Handle(StringLiteralExpression expression);
 		void Handle(SubtractionExpression expression);
 		void Handle(TypeofExpression expression);
+		void Handle(UnsignedRightShiftExpression expression);
 		void Handle(UriLiteralExpression expression);
 		void Handle(VoidExpression expression);
 	}
@@ -47,6 +50,7 @@ namespace markdom.cs.Expressions {
 		T Handle(DocumentLiteralExpression expression);
 		T Handle(DynamicPropertyExpression expression);
 		T Handle(IdentifierExpression expression);
+		T Handle(LeftShiftExpression expression);
 		T Handle(LogicalNotExpression expression);
 		T Handle(ModuloExpression expression);
 		T Handle(MultiplicationExpression expression);
@@ -59,10 +63,12 @@ namespace markdom.cs.Expressions {
 		T Handle(PostfixIncrementExpression expression);
 		T Handle(PrefixDecrementExpression expression);
 		T Handle(PrefixIncrementExpression expression);
+		T Handle(RightShiftExpression expression);
 		T Handle(StaticPropertyExpression expression);
 		T Handle(StringLiteralExpression expression);
 		T Handle(SubtractionExpression expression);
 		T Handle(TypeofExpression expression);
+		T Handle(UnsignedRightShiftExpression expression);
 		T Handle(UriLiteralExpression expression);
 		T Handle(VoidExpression expression);
 	}

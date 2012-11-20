@@ -75,6 +75,7 @@
     <Compile Include="Grammar\ObjectLiteralExpressionTests.cs" />
     <Compile Include="Grammar\PostfixExpressionTests.cs" />
     <Compile Include="Grammar\QuotedTests.cs" />
+    <Compile Include="Grammar\ShiftExpressionTests.cs" />
     <Compile Include="Grammar\SingleLineCommentTests.cs" />
     <Compile Include="Grammar\SpaceTests.cs" />
     <Compile Include="Grammar\StringLiteralExpressionTests.cs" />

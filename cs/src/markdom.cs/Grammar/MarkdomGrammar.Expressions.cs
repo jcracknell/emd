@@ -8,12 +8,66 @@ using System.Text;
 
 namespace markdom.cs.Grammar {
 	public partial class MarkdomGrammar {
-			#region Expressions
+		#region Expressions
 
 		public static readonly IParsingExpression<IExpression>
 		Expression =
 			Named(() => Expression,
 				Reference(() => AdditiveExpression));
+
+		#region ShiftExpression
+
+		public static readonly IParsingExpression<IExpression>
+		ShiftExpression =
+			Sequence(
+				Reference(() => AdditiveExpression),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						ChoiceOrdered(
+							Reference(() => leftShiftExpressionPart),
+							Reference(() => unsignedRightShiftExpressionPart),
+							Reference(() => rightShiftExpressionPart)),
+						match => match.Product.Of2)),
+				match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left)));
+
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		leftShiftExpressionPart =
+			Sequence(
+				Literal("<<"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => AdditiveExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new LeftShiftExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
+
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		rightShiftExpressionPart =
+			Sequence(
+				Literal(">>"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => AdditiveExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new RightShiftExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
+
+		private static readonly IParsingExpression<Func<IExpression, IExpression>>
+		unsignedRightShiftExpressionPart =
+			Sequence(
+				Literal(">>>"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => AdditiveExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new UnsignedRightShiftExpression(left, match.Product.Of3, left.SourceRange.Through(match.SourceRange));
+					return asm;
+				});
+
+		#endregion
 
 		#region AdditiveExpression
 

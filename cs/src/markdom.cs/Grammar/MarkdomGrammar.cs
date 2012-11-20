@@ -35,6 +35,7 @@ namespace markdom.cs.Grammar {
 		}
 
 		#region char sets
+
 		private static IEnumerable<char>
 		spaceCharValues { get { return new char[] { ' ', '\t' }; } }
 
