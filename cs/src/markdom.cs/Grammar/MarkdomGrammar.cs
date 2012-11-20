@@ -35,25 +35,43 @@ namespace markdom.cs.Grammar {
 		}
 
 		#region char sets
-		private static readonly IEnumerable<char> spaceCharValues = new char[] { ' ', '\t' };
-		private static readonly IEnumerable<char> whitespaceCharValues = spaceCharValues.Concat(new char[] { '\n', '\r' });
-		private static readonly IEnumerable<char> englishLowerAlphaCharValues = CharUtils.Range('a','z');
-		private static readonly IEnumerable<char> englishUpperAlphaCharValues = CharUtils.Range('A','Z');
-		private static readonly IEnumerable<char> englishAlphaCharValues = englishLowerAlphaCharValues.Concat(englishUpperAlphaCharValues);
-		private static readonly IEnumerable<char> digitCharValues = CharUtils.Range('0','9');
-		private static readonly IEnumerable<char> hexadecimalCharValues = digitCharValues.Concat(CharUtils.Range('A','F')).Concat(CharUtils.Range('a','f'));
-		private static readonly IEnumerable<char> specialCharValues = new char[] {
-			'*', // strong, emphasis
-			'&', // entities
-			'\'', '"', // quotes
-			'`', // ticks
-			'/', // single-line comment
-			'\\', // escape sequence
-			'[', ']', // labels
-			'<', '>', // autolinks
-			'|', // table cell delimiter
-			'@' // expressions
-		};
+		private static IEnumerable<char>
+		spaceCharValues { get { return new char[] { ' ', '\t' }; } }
+
+		private static IEnumerable<char>
+		whitespaceCharValues { get { return spaceCharValues.Concat(new char[] { '\n', '\r' }); } }
+
+		private static IEnumerable<char>
+		englishLowerAlphaCharValues { get { return CharUtils.Range('a','z'); } }
+
+		private static IEnumerable<char>
+		englishUpperAlphaCharValues { get { return CharUtils.Range('A','Z'); } }
+
+		private static IEnumerable<char>
+		englishAlphaCharValues { get { return englishLowerAlphaCharValues.Concat(englishUpperAlphaCharValues); } }
+
+		private static IEnumerable<char>
+		digitCharValues { get { return CharUtils.Range('0','9'); } }
+
+		private static IEnumerable<char>
+		hexadecimalCharValues { get { return digitCharValues.Concat(CharUtils.Range('A','F')).Concat(CharUtils.Range('a','f')); } }
+
+		private static IEnumerable<char>
+		specialCharValues { get {
+			return new char[] {
+				'*', // strong, emphasis
+				'&', // entities
+				'\'', '"', // quotes
+				'`', // ticks
+				'/', // single-line comment
+				'\\', // escape sequence
+				'[', ']', // labels
+				'<', '>', // autolinks
+				'|', // table cell delimiter
+				'@' // expressions
+			};
+		} }
+
 		#endregion
 
 		public static readonly IParsingExpression<MarkdomDocumentNode>
