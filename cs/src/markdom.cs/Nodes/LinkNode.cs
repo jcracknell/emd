@@ -14,7 +14,6 @@ namespace markdom.cs.Nodes{
 
 		public LinkNode(IInlineNode[] children, ReferenceId referenceId, IExpression[] arguments, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => children, children);
-			CodeContract.ArgumentIsNotNull(() => arguments, arguments);
 
 			_children = children;
 			_referenceId = referenceId;
@@ -23,6 +22,8 @@ namespace markdom.cs.Nodes{
 		}
 
 		public IEnumerable<IInlineNode> Children { get { return _children; } }
+
+		public ReferenceId ReferenceId { get { return _referenceId; } }
 
 		public IEnumerable<IExpression> Arguments { get { return _arguments; } }
 

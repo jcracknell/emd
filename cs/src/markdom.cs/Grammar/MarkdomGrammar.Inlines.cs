@@ -61,17 +61,9 @@ namespace markdom.cs.Grammar {
 			Named(() => Link,
 				Sequence(
 					Reference(() => Label),
-					Reference(() => SpaceChars),
-					ChoiceOrdered(
-						Sequence(
-							Optional(Reference(() => ReferenceLabel)),
-							Reference(() => SpaceChars),
-							Reference(() => ArgumentList),
-							match => Tuple.Create(match.Product.Of1, match.Product.Of3)),
-						Reference(
-							() => ReferenceLabel,
-							match => Tuple.Create(match.Product, Enumerable.Empty<IExpression>()))),
-					match => new LinkNode(match.Product.Of1.ToArray(), match.Product.Of3.Item1, match.Product.Of3.Item2.ToArray(), match.SourceRange)));
+					Optional(Reference(() => ReferenceLabel)),
+					Optional(Reference(() => ArgumentList, match => match.Product.ToArray())),
+					match => new LinkNode(match.Product.Of1.ToArray(), match.Product.Of2, match.Product.Of3, match.SourceRange)));
 
 		public static readonly IParsingExpression<ReferenceId>
 		ReferenceLabel =
