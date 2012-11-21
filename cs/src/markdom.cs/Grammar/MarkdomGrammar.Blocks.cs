@@ -57,7 +57,7 @@ namespace markdom.cs.Grammar {
 				Sequence(
 					Reference(() => SpaceChars),
 					Ahead(Literal("@")),
-					Reference(() => Expression),
+					Reference(() => LeftHandSideExpression),
 					Optional(
 						Sequence(Reference(() => ExpressionWhitespace), Literal(";"))),
 					Reference(() => BlankLine), // no trailing content on same line as expression end

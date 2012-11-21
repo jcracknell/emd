@@ -102,7 +102,7 @@ namespace markdom.cs.Grammar {
 			Named(() => InlineExpression,
 				Sequence(
 					Ahead(Literal("@")),
-					Reference(() => Expression),
+					Reference(() => LeftHandSideExpression),
 					Optional(Literal(";")),
 					match => new InlineExpressionNode(match.Product.Of2, match.SourceRange)));
 
