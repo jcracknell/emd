@@ -234,7 +234,6 @@ namespace markdom.cs.Expressions.Translation {
 			_writer.Write(">=");
 			expression.Right.HandleWith(this);
 			_writer.Write(")");
-			throw new NotImplementedException();
 		}
 
 		public void Handle(InExpression expression) {
@@ -243,7 +242,6 @@ namespace markdom.cs.Expressions.Translation {
 			_writer.Write(" in ");
 			expression.Right.HandleWith(this);
 			_writer.Write(")");
-			throw new NotImplementedException();
 		}
 
 		public void Handle(InstanceOfExpression expression) {
@@ -252,7 +250,6 @@ namespace markdom.cs.Expressions.Translation {
 			_writer.Write(" instanceof ");
 			expression.Right.HandleWith(this);
 			_writer.Write(")");
-			throw new NotImplementedException();
 		}
 
 		public void Handle(LessThanExpression expression) {
@@ -261,7 +258,6 @@ namespace markdom.cs.Expressions.Translation {
 			_writer.Write("<");
 			expression.Right.HandleWith(this);
 			_writer.Write(")");
-			throw new NotImplementedException();
 		}
 
 		public void Handle(LessThanOrEqualToExpression expression) {
