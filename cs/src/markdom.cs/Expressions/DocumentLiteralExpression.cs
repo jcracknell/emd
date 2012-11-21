@@ -12,8 +12,10 @@ namespace markdom.cs.Expressions {
 
 		public DocumentLiteralExpression(INode[] content, SourceRange sourceRange) {
 			CodeContract.ArgumentIsNotNull(() => content, content);
+			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
 
 			_content = content;
+			_sourceRange = sourceRange;
 		}
 
 		public IEnumerable<INode> Content { get { return _content; } }
