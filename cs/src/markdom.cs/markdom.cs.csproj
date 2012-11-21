@@ -60,7 +60,13 @@
     <Compile Include="Expressions\Evaluation\StringValue.cs" />
     <Compile Include="Expressions\Evaluation\UndefinedValue.cs" />
     <Compile Include="Expressions\Expression.cs" />
+    <Compile Include="Expressions\GreaterThanExpression.cs" />
+    <Compile Include="Expressions\GreaterThanOrEqualToExpression.cs" />
+    <Compile Include="Expressions\InExpression.cs" />
+    <Compile Include="Expressions\InstanceOfExpression.cs" />
     <Compile Include="Expressions\LeftShiftExpression.cs" />
+    <Compile Include="Expressions\LessThanExpression.cs" />
+    <Compile Include="Expressions\LessThanOrEqualToExpression.cs" />
     <Compile Include="Expressions\LogicalNotExpression.cs" />
     <Compile Include="Expressions\ModuloExpression.cs" />
     <Compile Include="Expressions\MultiplicationExpression.cs" />

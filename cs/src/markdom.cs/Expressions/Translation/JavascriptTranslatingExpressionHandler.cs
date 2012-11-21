@@ -219,5 +219,57 @@ namespace markdom.cs.Expressions.Translation {
 			expression.Right.HandleWith(this);
 			_writer.Write(")");
 		}
+
+		public void Handle(GreaterThanExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write(">");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+		}
+
+		public void Handle(GreaterThanOrEqualToExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write(">=");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+			throw new NotImplementedException();
+		}
+
+		public void Handle(InExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write(" in ");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+			throw new NotImplementedException();
+		}
+
+		public void Handle(InstanceOfExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write(" instanceof ");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+			throw new NotImplementedException();
+		}
+
+		public void Handle(LessThanExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write("<");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+			throw new NotImplementedException();
+		}
+
+		public void Handle(LessThanOrEqualToExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write("<=");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+		}
 	}
 }

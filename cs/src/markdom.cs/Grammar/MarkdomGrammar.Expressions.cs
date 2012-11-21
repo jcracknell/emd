@@ -13,7 +13,116 @@ namespace markdom.cs.Grammar {
 		public static readonly IParsingExpression<IExpression>
 		Expression =
 			Named(() => Expression,
-				Reference(() => AdditiveExpression));
+				Reference(() => RelationalExpression));
+
+		#region RelationalExpression
+
+		public static readonly IParsingExpression<IExpression>
+		RelationalExpression = Named(() => RelationalExpression,
+			Sequence(
+				Reference(() => ShiftExpression),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						ChoiceOrdered(
+							Reference(() => greaterThanOrEqualToExpressionPart),
+							Reference(() => lessThanOrEqualToExpressionPart),
+							Reference(() => greaterThanExpressionPart),
+							Reference(() => lessThanExpressionPart),
+							Reference(() => instanceOfExpressionPart),
+							Reference(() => inExpressionPart)),
+							match => match.Product.Of2)),
+					match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left))));
+
+		public static readonly IParsingExpression<IExpression>
+		RelationalExpressionNoIn = Named(() => RelationalExpressionNoIn,
+			Sequence(
+				Reference(() => ShiftExpression),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						ChoiceOrdered(
+							Reference(() => greaterThanOrEqualToExpressionPart),
+							Reference(() => lessThanOrEqualToExpressionPart),
+							Reference(() => greaterThanExpressionPart),
+							Reference(() => lessThanExpressionPart),
+							Reference(() => instanceOfExpressionPart)),
+							match => match.Product.Of2)),
+					match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left))));
+
+		protected static readonly IParsingExpression<Func<IExpression, IExpression>>
+		greaterThanOrEqualToExpressionPart =
+			Sequence(
+				Literal(">="),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => ShiftExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new GreaterThanOrEqualToExpression(left, match.Product.Of3, left.SourceRange.Through(match.Product.Of3.SourceRange));
+					return asm;
+				});
+
+		protected static readonly IParsingExpression<Func<IExpression, IExpression>>
+		lessThanOrEqualToExpressionPart =
+			Sequence(
+				Literal("<="),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => ShiftExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new LessThanOrEqualToExpression(left, match.Product.Of3, left.SourceRange.Through(match.Product.Of3.SourceRange));
+					return asm;
+				});
+
+		protected static readonly IParsingExpression<Func<IExpression, IExpression>>
+		greaterThanExpressionPart =
+			Sequence(
+				Literal(">"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => ShiftExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new GreaterThanExpression(left, match.Product.Of3, left.SourceRange.Through(match.Product.Of3.SourceRange));
+					return asm;
+				});
+
+		protected static readonly IParsingExpression<Func<IExpression, IExpression>>
+		lessThanExpressionPart =
+			Sequence(
+				Literal("<"),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => ShiftExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new LessThanExpression(left, match.Product.Of3, left.SourceRange.Through(match.Product.Of3.SourceRange));
+					return asm;
+				});
+
+		protected static readonly IParsingExpression<Func<IExpression, IExpression>>
+		instanceOfExpressionPart =
+			Sequence(
+				Reference(() => InstanceOfKeyword),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => ShiftExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new InstanceOfExpression(left, match.Product.Of3, left.SourceRange.Through(match.Product.Of3.SourceRange));
+					return asm;
+				});
+
+		protected static readonly IParsingExpression<Func<IExpression, IExpression>>
+		inExpressionPart =
+			Sequence(
+				Reference(() => InKeyword),
+				Reference(() => ExpressionWhitespace),
+				Reference(() => ShiftExpression),
+				match => {
+					Func<IExpression, IExpression> asm = left =>
+						new InExpression(left, match.Product.Of3, left.SourceRange.Through(match.Product.Of3.SourceRange));
+					return asm;
+				});
+
+		#endregion
 
 		#region ShiftExpression
 
@@ -171,7 +280,7 @@ namespace markdom.cs.Grammar {
 		private static readonly IParsingExpression<DeleteExpression>
 		deleteExpression = 
 			Sequence(
-				Literal("delete"),
+				Reference(() => DeleteKeyword),
 				NotAhead(Reference(() => IdentifierPart)),
 				Reference(() => ExpressionWhitespace),
 				Reference(() => UnaryExpression),
@@ -180,7 +289,7 @@ namespace markdom.cs.Grammar {
 		private static readonly IParsingExpression<VoidExpression>
 		voidExpression =
 			Sequence(
-				Literal("void"),
+				Reference(() => VoidKeyword),
 				NotAhead(Reference(() => IdentifierPart)),
 				Reference(() => ExpressionWhitespace),
 				Reference(() => UnaryExpression),
@@ -189,7 +298,7 @@ namespace markdom.cs.Grammar {
 		private static readonly IParsingExpression<TypeofExpression>
 		typeofExpression =
 			Sequence(
-				Literal("typeof"),
+				Reference(() => TypeOfKeyword),
 				NotAhead(Reference(() => IdentifierPart)),
 				Reference(() => ExpressionWhitespace),
 				Reference(() => UnaryExpression),
@@ -761,9 +870,8 @@ namespace markdom.cs.Grammar {
 
 		#region UriLiteralExpression
 
-		private static readonly IParsingExpression<object>
-		uriExpressionPart = 
-			Named("UriExpressionPart",
+		public static readonly IParsingExpression<object>
+		UriExpressionPart = Named(() => UriExpressionPart,
 				ChoiceOrdered(
 					Reference(() => uriExpressionRegularPart),
 					Reference(() => uriExpressionParenthesizedPart)));
@@ -784,7 +892,7 @@ namespace markdom.cs.Grammar {
 		uriExpressionParenthesizedPart =
 			Sequence(
 				Literal("("),
-				AtLeast(0, Reference(() => uriExpressionPart)),
+				AtLeast(0, Reference(() => UriExpressionPart)),
 				Literal(")"));
 
 		public static readonly IParsingExpression<UriLiteralExpression>
@@ -804,6 +912,26 @@ namespace markdom.cs.Grammar {
 		#endregion
 
 		#region ExpressionKeyword
+
+		public static readonly IParsingExpression<Nil>
+		DeleteKeyword =
+			Sequence(Literal("delete"), NotAhead(Reference(() => IdentifierPart)));
+
+		public static readonly IParsingExpression<Nil>
+		InKeyword =
+			Sequence(Literal("in"), NotAhead(Reference(() => IdentifierPart)));
+
+		public static readonly IParsingExpression<Nil>
+		InstanceOfKeyword =
+			Sequence(Literal("instanceof"), NotAhead(Reference(() => IdentifierPart)));
+
+		public static readonly IParsingExpression<Nil>
+		TypeOfKeyword =
+			Sequence(Literal("typeof"), NotAhead(Reference(() => IdentifierPart)));
+
+		public static readonly IParsingExpression<Nil>
+		VoidKeyword =
+			Sequence(Literal("void"), NotAhead(Reference(() => IdentifierPart)));
 
 		public static readonly IParsingExpression<Nil>
 		ExpressionKeyword =
