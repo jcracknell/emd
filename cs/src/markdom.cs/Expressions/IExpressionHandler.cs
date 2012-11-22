@@ -15,6 +15,7 @@ namespace markdom.cs.Expressions {
 		void Handle(DivisionExpression expression);
 		void Handle(DocumentLiteralExpression expression);
 		void Handle(DynamicPropertyExpression expression);
+		void Handle(EqualsExpression expression);
 		void Handle(GreaterThanExpression expression);
 		void Handle(GreaterThanOrEqualToExpression expression);
 		void Handle(IdentifierExpression expression);
@@ -27,6 +28,7 @@ namespace markdom.cs.Expressions {
 		void Handle(ModuloExpression expression);
 		void Handle(MultiplicationExpression expression);
 		void Handle(NegativeExpression expression);
+		void Handle(NotEqualsExpression expression);
 		void Handle(NullLiteralExpression expression);
 		void Handle(NumericLiteralExpression expression);
 		void Handle(ObjectLiteralExpression expression);
@@ -37,6 +39,8 @@ namespace markdom.cs.Expressions {
 		void Handle(PrefixIncrementExpression expression);
 		void Handle(RightShiftExpression expression);
 		void Handle(StaticPropertyExpression expression);
+		void Handle(StrictEqualsExpression expression);
+		void Handle(StrictNotEqualsExpression expression);
 		void Handle(StringLiteralExpression expression);
 		void Handle(SubtractionExpression expression);
 		void Handle(TypeofExpression expression);
@@ -55,6 +59,7 @@ namespace markdom.cs.Expressions {
 		T Handle(DivisionExpression expression);
 		T Handle(DocumentLiteralExpression expression);
 		T Handle(DynamicPropertyExpression expression);
+		T Handle(EqualsExpression expression);
 		T Handle(GreaterThanExpression expression);
 		T Handle(GreaterThanOrEqualToExpression expression);
 		T Handle(IdentifierExpression expression);
@@ -67,6 +72,7 @@ namespace markdom.cs.Expressions {
 		T Handle(ModuloExpression expression);
 		T Handle(MultiplicationExpression expression);
 		T Handle(NegativeExpression expression);
+		T Handle(NotEqualsExpression expression);
 		T Handle(NullLiteralExpression expression);
 		T Handle(NumericLiteralExpression expression);
 		T Handle(ObjectLiteralExpression expression);
@@ -77,6 +83,8 @@ namespace markdom.cs.Expressions {
 		T Handle(PrefixIncrementExpression expression);
 		T Handle(RightShiftExpression expression);
 		T Handle(StaticPropertyExpression expression);
+		T Handle(StrictEqualsExpression expression);
+		T Handle(StrictNotEqualsExpression expression);
 		T Handle(StringLiteralExpression expression);
 		T Handle(SubtractionExpression expression);
 		T Handle(TypeofExpression expression);

@@ -51,6 +51,8 @@
     <Compile Include="Expressions\BitwiseNotExpression.cs" />
     <Compile Include="Expressions\DeleteExpression.cs" />
     <Compile Include="Expressions\DivisionExpression.cs" />
+    <Compile Include="Expressions\NotEqualsExpression.cs" />
+    <Compile Include="Expressions\EqualsExpression.cs" />
     <Compile Include="Expressions\Evaluation\BooleanValue.cs" />
     <Compile Include="Expressions\Evaluation\IValue.cs" />
     <Compile Include="Expressions\Evaluation\IValueHandler.cs" />
@@ -77,6 +79,8 @@
     <Compile Include="Expressions\PrefixDecrementExpression.cs" />
     <Compile Include="Expressions\PrefixIncrementExpression.cs" />
     <Compile Include="Expressions\RightShiftExpression.cs" />
+    <Compile Include="Expressions\StrictEqualsExpression.cs" />
+    <Compile Include="Expressions\StrictNotEqualsExpression.cs" />
     <Compile Include="Expressions\SubtractionExpression.cs" />
     <Compile Include="Expressions\Translation\JavascriptTranslatingExpressionHandler.cs" />
     <Compile Include="Expressions\Translation\JavascriptUtils.cs" />
@@ -84,6 +88,7 @@
     <Compile Include="Expressions\UnaryExpression.cs" />
     <Compile Include="Expressions\UnsignedRightShiftExpression.cs" />
     <Compile Include="Expressions\VoidExpression.cs" />
+    <Compile Include="Grammar\BinaryOperatorDefinition.cs" />
     <Compile Include="Grammar\BlockLineInfo.cs" />
     <Compile Include="Grammar\EnumeratorCounterStyleDefinition.cs" />
     <Compile Include="Grammar\EnumeratorCounterStyleInfo.cs" />

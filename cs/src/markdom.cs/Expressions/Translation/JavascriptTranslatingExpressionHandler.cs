@@ -267,5 +267,37 @@ namespace markdom.cs.Expressions.Translation {
 			expression.Right.HandleWith(this);
 			_writer.Write(")");
 		}
+
+		public void Handle(EqualsExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write("==");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+		}
+
+		public void Handle(NotEqualsExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write("!=");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+		}
+
+		public void Handle(StrictEqualsExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write("===");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+		}
+
+		public void Handle(StrictNotEqualsExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write("!==");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+		}
 	}
 }

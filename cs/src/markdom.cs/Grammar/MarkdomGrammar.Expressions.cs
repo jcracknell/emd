@@ -8,12 +8,73 @@ using System.Text;
 
 namespace markdom.cs.Grammar {
 	public partial class MarkdomGrammar {
+
+		#region Helpers
+
+		protected static IParsingExpression<IExpression> BinaryOperatorExpression(IParsingExpression<IExpression> operand, IEnumerable<BinaryOperatorDefinition> ops) {
+			return Sequence(
+				operand,
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						ChoiceOrdered(ops.Select(op =>
+							Sequence(
+								op.Operator,
+								Reference(() => ExpressionWhitespace),
+								operand,
+								match => {
+									Func<IExpression, IExpression> asm = left =>
+										op.Constructor(left, match.Product.Of3, left.SourceRange.Through(match.Product.Of3.SourceRange));
+									return asm;
+								}))),
+						match => match.Product.Of2)),
+				match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left)));
+		}
+
+		protected static IParsingExpression<IExpression> BinaryOperatorExpression(IParsingExpression<IExpression> operand, params BinaryOperatorDefinition[] ops) {
+			return BinaryOperatorExpression(operand, ops.AsEnumerable());
+		}
+
+		#endregion
+
 		#region Expressions
 
 		public static readonly IParsingExpression<IExpression>
 		Expression =
 			Named(() => Expression,
-				Reference(() => RelationalExpression));
+				Reference(() => EqualityExpression));
+
+		#region EqualityExpression
+
+		private static readonly IEnumerable<BinaryOperatorDefinition>
+		equalityOperators = new BinaryOperatorDefinition[] {
+			new BinaryOperatorDefinition(
+				Literal("==="),
+				(left, right, range) => new StrictEqualsExpression(left, right, range)),
+			new BinaryOperatorDefinition(
+				Literal("=="),
+				(left, right, range) => new EqualsExpression(left, right, range)),
+			new BinaryOperatorDefinition(
+				Literal("!=="),
+				(left, right, range) => new StrictNotEqualsExpression(left, right, range)),
+			new BinaryOperatorDefinition(
+				Literal("!="),
+				(left, right, range) => new NotEqualsExpression(left, right, range))
+		};
+
+		public static readonly IParsingExpression<IExpression>
+		EqualityExpression = Named(() => EqualityExpression,
+			BinaryOperatorExpression(
+				Reference(() => RelationalExpression),
+				equalityOperators));
+
+		public static readonly IParsingExpression<IExpression>
+		EqualityExpressionNoIn = Named(() => EqualityExpressionNoIn,
+			BinaryOperatorExpression(
+				Reference(() => RelationalExpressionNoIn),
+				equalityOperators));
+
+		#endregion
 
 		#region RelationalExpression
 
