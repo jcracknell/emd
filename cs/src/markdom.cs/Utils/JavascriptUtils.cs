@@ -61,38 +61,31 @@ namespace markdom.cs.Utils {
 		/// <summary>
 		/// Decode a string from its javascript source representation.
 		/// </summary>
-		public static string DecodeString(string content) {
-			var len = content.Length;
+		public static string DecodeString(string encoded) {
+			var len = encoded.Length;
 			var buffer = new char[len];
 			var rp = 0;
 			var wp = 0;
 			char c, dc;
 
 			while(rp != len) {
-				c = content[rp++];
+				c = encoded[rp++];
 
 				if('\\' == c) {
-					c = content[rp++];
-
-					if('x' == c) { // Hexadecimal escape sequence
-						if(DecodeHex(content, rp, out dc)) {
-							rp += 2;
-							buffer[wp++] = dc;
-						} else {
-							buffer[wp++] = 'x';
-						}
-					} else if('u' == c) { // Unicode escape sequence
-						if(DecodeUnicode(content, rp, out dc)) {
-							rp += 4;
-							buffer[wp++] = dc;
-						} else {
-							buffer[wp++] = 'u';
-						}
-					} else if(MAX_DECODE_ESCAPE >= c && UNDEFINED_ESCAPE != DECODE_ESCAPE[c]) {
-						// Escape sequence
-						buffer[wp++] = DECODE_ESCAPE[c];
+					if(TryDecodeHexadecimalEscape(encoded, rp, out dc)) {
+						rp += 3;
+						buffer[wp++] = dc;
+					} else if(TryDecodeUnicodeEscape(encoded, rp, out dc)) {
+						rp += 5;
+						buffer[wp++] = dc;
 					} else {
-						buffer[wp++] = c;
+						c = encoded[rp++];
+
+						if(MAX_DECODE_ESCAPE >= c && UNDEFINED_ESCAPE != DECODE_ESCAPE[c]) {
+							buffer[wp++] = DECODE_ESCAPE[c];
+						} else {
+							buffer[wp++] = c;
+						}
 					}
 				} else {
 					buffer[wp++] = c;
@@ -102,13 +95,20 @@ namespace markdom.cs.Utils {
 			return new string(buffer, 0, wp);
 		}
 
-		private static bool DecodeHex(string s, int i, out char c) {
+		/// <summary>
+		/// Attempt to decode a three-character hexadecimal escape sequence of the form <code>xHH</code> at the specified <paramref name="index"/> in the provided <paramref name="string"/>
+		/// </summary>
+		/// <param name="string">The string from which a hexadecimal escape sequence should be decoded.</param>
+		/// <param name="index">The index at which a hexidecimal escape sequence should be decoded.</param>
+		/// <param name="decoded">The decoded hexadecimal escape sequence.</param>
+		/// <returns><code>true</code> if a hexadecimal escape sequence was successfully decoded, <code>false</code> otherwise.</returns>
+		public static bool TryDecodeHexadecimalEscape(string @string, int index, out char decoded) {
 			do {
-				if(2 > s.Length - i)
+				if(3 > @string.Length - index || 'x' != @string[index++])
 					break;
 
-				var hc1 = s[i++];
-				var hc2 = s[i];
+				var hc1 = @string[index++];
+				var hc2 = @string[index];
 
 				if(hc1 >= MAX_DECODE_HEX || hc2 >= MAX_DECODE_HEX)
 					break;
@@ -118,23 +118,30 @@ namespace markdom.cs.Utils {
 				if(-1 == hv1 || -1 == hv2)
 					break;
 
-				c = (char)(hv1 * 0x10 + hv2);
+				decoded = (char)(hv1 * 0x10 + hv2);
 				return true;
 			} while(false);
 
-			c = '\x00';
+			decoded = '\x00';
 			return false;
 		}
 
-		private static bool DecodeUnicode(string s, int i, out char c) {
+		/// <summary>
+		/// Attempt to decode a five-character unicode escape sequence of the form <code>uHHHH</code> at the specified <paramref name="index"/> in the provided <paramref name="string"/>.
+		/// </summary>
+		/// <param name="string">The string from which a unicode escape sequence should be decoded.</param>
+		/// <param name="index">The index at which a unicode escape sequence should be decoded.</param>
+		/// <param name="decoded">The decoded unicode escape sequence.</param>
+		/// <returns><code>true</code> if a unicode escape sequence was successfully decoded, <code>false</code> otherwise.</returns>
+		public static bool TryDecodeUnicodeEscape(string @string, int index, out char decoded) {
 			do {
-				if(4 > s.Length - i)
+				if(5 > @string.Length - index || 'u' != @string[index++])
 					break;
 
-				var uc1 = s[i++];
-				var uc2 = s[i++];
-				var uc3 = s[i++];
-				var uc4 = s[i];
+				var uc1 = @string[index++];
+				var uc2 = @string[index++];
+				var uc3 = @string[index++];
+				var uc4 = @string[index];
 
 				if(uc1 > MAX_DECODE_HEX || uc2 > MAX_DECODE_HEX || uc3 > MAX_DECODE_HEX || uc4 > MAX_DECODE_HEX)
 					break;
@@ -147,25 +154,25 @@ namespace markdom.cs.Utils {
 				if(-1 == uv1 || -1 == uv2 || -1 == uv3 || -1 == uv4)
 					break;
 
-				c = (char)(uv1 * 0x1000 + uv2 * 0x100 + uv3 * 0x10 + uv4);
+				decoded = (char)(uv1 * 0x1000 + uv2 * 0x100 + uv3 * 0x10 + uv4);
 				return true;
 			} while(false);
 
-			c = '\x00';
+			decoded = '\x00';
 			return false;
 		}
 
 		/// <summary>
 		/// Encode a string into its unquoted javascript source representation.
 		/// </summary>
-		public static string EncodeString(string s) {
-			var sb = new StringBuilder(s.Length * 2);
-			var len = s.Length;
+		public static string EncodeString(string unencoded) {
+			var sb = new StringBuilder(unencoded.Length * 2);
+			var len = unencoded.Length;
 			var rp = 0;
 			char c;
 
 			while(rp != len) {
-				c = s[rp++];
+				c = unencoded[rp++];
 				
 				if(MAX_ENCODE_ESCAPE >= c && UNDEFINED_ESCAPE != ENCODE_ESCAPE[c]) {
 					sb.Append('\\');
