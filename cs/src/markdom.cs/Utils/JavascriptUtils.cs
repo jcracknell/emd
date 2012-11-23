@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Utils;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,9 @@ using System.Text;
 namespace markdom.cs.Utils {
 	public static class JavascriptUtils {
 		private const char UNDEFINED_ESCAPE = '*';
-		private const char MAX_DECODE_HEX_CHAR = 'f';
+		private const char MAX_ENCODE_ESCAPE = '\\';
+		private const char MAX_DECODE_ESCAPE = 'v';
+		private const char MAX_DECODE_HEX = 'f';
 		private static readonly int[] DECODE_HEX;
 		private static readonly char[] ENCODE_HEX;
 		private static readonly char[] DECODE_ESCAPE;
@@ -15,10 +18,10 @@ namespace markdom.cs.Utils {
 		static JavascriptUtils() {
 			// Per ECMA-262 7.8.4 p23
 
-			ENCODE_ESCAPE = new char['\\'+1];
+			ENCODE_ESCAPE = new char[MAX_ENCODE_ESCAPE+1];
 			for(var i = 0; i < ENCODE_ESCAPE.Length; i++) ENCODE_ESCAPE[i] = UNDEFINED_ESCAPE;
 
-			DECODE_ESCAPE = new char['v'+1];
+			DECODE_ESCAPE = new char[MAX_DECODE_ESCAPE+1];
 			for(var i = 0; i < DECODE_ESCAPE.Length; i++) DECODE_ESCAPE[i] = UNDEFINED_ESCAPE;
 
 			ENCODE_ESCAPE['\''] = '\'';		DECODE_ESCAPE['\''] = '\'';
@@ -34,7 +37,7 @@ namespace markdom.cs.Utils {
 
 			ENCODE_HEX = new char[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-			DECODE_HEX = new int[MAX_DECODE_HEX_CHAR+1];
+			DECODE_HEX = new int[MAX_DECODE_HEX+1];
 			for(var i = 0; i < DECODE_HEX.Length; i++) DECODE_HEX[i] = -1;
 
 			DECODE_HEX['0'] = 0;
@@ -53,7 +56,6 @@ namespace markdom.cs.Utils {
 			DECODE_HEX['d'] = DECODE_HEX['D'] = 13;
 			DECODE_HEX['e'] = DECODE_HEX['E'] = 14;
 			DECODE_HEX['f'] = DECODE_HEX['F'] = 15;
-			
 		}
 
 		/// <summary>
@@ -86,7 +88,7 @@ namespace markdom.cs.Utils {
 						} else {
 							buffer[wp++] = 'u';
 						}
-					} else if(UNDEFINED_ESCAPE != DECODE_ESCAPE[c]) {
+					} else if(MAX_DECODE_ESCAPE >= c && UNDEFINED_ESCAPE != DECODE_ESCAPE[c]) {
 						// Escape sequence
 						buffer[wp++] = DECODE_ESCAPE[c];
 					} else {
@@ -108,7 +110,7 @@ namespace markdom.cs.Utils {
 				var hc1 = s[i++];
 				var hc2 = s[i];
 
-				if(hc1 >= MAX_DECODE_HEX_CHAR || hc2 >= MAX_DECODE_HEX_CHAR)
+				if(hc1 >= MAX_DECODE_HEX || hc2 >= MAX_DECODE_HEX)
 					break;
 
 				var hv1 = DECODE_HEX[hc1];
@@ -134,7 +136,7 @@ namespace markdom.cs.Utils {
 				var uc3 = s[i++];
 				var uc4 = s[i];
 
-				if(uc1 > MAX_DECODE_HEX_CHAR || uc2 > MAX_DECODE_HEX_CHAR || uc3 > MAX_DECODE_HEX_CHAR || uc4 > MAX_DECODE_HEX_CHAR)
+				if(uc1 > MAX_DECODE_HEX || uc2 > MAX_DECODE_HEX || uc3 > MAX_DECODE_HEX || uc4 > MAX_DECODE_HEX)
 					break;
 
 				var uv1 = DECODE_HEX[uc1];
@@ -151,6 +153,35 @@ namespace markdom.cs.Utils {
 
 			c = '\x00';
 			return false;
+		}
+
+		/// <summary>
+		/// Encode a string into its unquoted javascript source representation.
+		/// </summary>
+		public static string EncodeString(string s) {
+			var sb = new StringBuilder(s.Length * 2);
+			var len = s.Length;
+			var rp = 0;
+			char c;
+
+			while(rp != len) {
+				c = s[rp++];
+				
+				if(MAX_ENCODE_ESCAPE >= c && UNDEFINED_ESCAPE != ENCODE_ESCAPE[c]) {
+					sb.Append('\\');
+					sb.Append(ENCODE_ESCAPE[c]);
+				} else if(!(' ' <= c && c <= '~')) {
+					sb.Append(@"\u");
+					sb.Append(ENCODE_HEX[(c >> 12) & 0x0F]);
+					sb.Append(ENCODE_HEX[(c >>  8) & 0x0F]);
+					sb.Append(ENCODE_HEX[(c >>  4) & 0x0F]);
+					sb.Append(ENCODE_HEX[c & 0x0F]);
+				} else {
+					sb.Append(c);
+				}
+			}
+
+			return sb.ToString();
 		}
 	}
 }
