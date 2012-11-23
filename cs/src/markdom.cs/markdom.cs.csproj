@@ -83,7 +83,6 @@
     <Compile Include="Expressions\StrictNotEqualsExpression.cs" />
     <Compile Include="Expressions\SubtractionExpression.cs" />
     <Compile Include="Expressions\Translation\JavascriptTranslatingExpressionHandler.cs" />
-    <Compile Include="Expressions\Translation\JavascriptUtils.cs" />
     <Compile Include="Expressions\TypeofExpression.cs" />
     <Compile Include="Expressions\UnaryExpression.cs" />
     <Compile Include="Expressions\UnsignedRightShiftExpression.cs" />

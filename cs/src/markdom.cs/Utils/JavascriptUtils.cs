@@ -183,5 +183,10 @@ namespace markdom.cs.Utils {
 
 			return sb.ToString();
 		}
+
+		public static string EncodeNumber(double number) {
+			// TODO: this is probably insufficient.
+			return number.ToString();
+		}
 	}
 }

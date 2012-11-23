@@ -1,4 +1,5 @@
-﻿using System;
+﻿using markdom.cs.Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -81,7 +82,7 @@ namespace markdom.cs.Expressions.Translation {
 		}
 
 		public void Handle(NumericLiteralExpression expression) {
-			_writer.Write(JavascriptUtils.Encode(expression.Value));
+			_writer.Write(JavascriptUtils.EncodeNumber(expression.Value));
 		}
 
 		public void Handle(ObjectLiteralExpression expression) {
@@ -89,7 +90,9 @@ namespace markdom.cs.Expressions.Translation {
 
 			var propertyAssignmentEnumerator = expression.PropertyAssignments.GetEnumerator();
 			if(propertyAssignmentEnumerator.MoveNext()) do {
-				_writer.Write(JavascriptUtils.Encode(propertyAssignmentEnumerator.Current.PropertyName));
+				_writer.Write("'");
+				_writer.Write(JavascriptUtils.EncodeString(propertyAssignmentEnumerator.Current.PropertyName));
+				_writer.Write("'");
 				_writer.Write(":");
 
 				propertyAssignmentEnumerator.Current.PropertyValue.HandleWith(this);
@@ -104,11 +107,15 @@ namespace markdom.cs.Expressions.Translation {
 		}
 
 		public void Handle(StringLiteralExpression expression) {
-			_writer.Write(JavascriptUtils.Encode(expression.Value));
+			_writer.Write("'");
+			_writer.Write(JavascriptUtils.EncodeString(expression.Value));
+			_writer.Write("'");
 		}
 
 		public void Handle(UriLiteralExpression expression) {
-			_writer.Write(JavascriptUtils.Encode(expression.Value));
+			_writer.Write("'");
+			_writer.Write(JavascriptUtils.EncodeString(expression.Value));
+			_writer.Write("'");
 		}
 
 		public void Handle(DeleteExpression expression) {
