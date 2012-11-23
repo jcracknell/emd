@@ -1,4 +1,5 @@
 ﻿using markdom.cs.Expressions;
+using markdom.cs.Utils;
 using pegleg.cs;
 using pegleg.cs.Unicode;
 using System;
@@ -892,13 +893,13 @@ namespace markdom.cs.Grammar {
 		singleQuotedStringExpression =
 			Sequence(
 				Literal("'"), singleQuotedStringExpressionContent, Literal("'"),
-				match => match.Product.Of2);
+				match => JavascriptUtils.DecodeString(match.Product.Of2));
 
 		private static readonly IParsingExpression<string>
 		doubleQuotedStringExpression =
 			Sequence(
 				Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
-				match => match.Product.Of2);
+				match => JavascriptUtils.DecodeString(match.Product.Of2));
 
 		private static readonly IParsingExpression<string>
 		verbatimStringExpression =
