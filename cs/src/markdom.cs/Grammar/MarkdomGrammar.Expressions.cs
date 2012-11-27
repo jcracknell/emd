@@ -856,53 +856,22 @@ namespace markdom.cs.Grammar {
 		#endregion
 
 		#region StringLiteralExpression
-			
-		private static readonly IParsingExpression<string>
-		stringExpressionEscapes =
+
+		public static readonly IParsingExpression<StringLiteralExpression>
+		StringLiteralExpression = Named(() => StringLiteralExpression,
+			Reference(() => StringLiteral, match => new StringLiteralExpression(match.Product, match.SourceRange))
+		);
+
+		public static readonly IParsingExpression<string>
+		StringLiteral = Named(() => StringLiteral,
 			ChoiceUnordered(
-				Literal(@"\n", match => "\n"),
-				Literal(@"\r", match => "\r"),
-				Literal(@"\t", match => "\t"),
-				Literal(@"\\", match => "\\"));
+				Reference(() => SingleQuotedStringLiteral),
+				Reference(() => DoubleQuotedStringLiteral),
+				Reference(() => VerbatimStringLiteral))
+		);
 
-		private static readonly IParsingExpression<string>
-		singleQuotedStringExpressionContent =
-			AtLeast(0,
-				ChoiceUnordered(
-					Literal(@"\'", match => "'"),
-					stringExpressionEscapes,
-					Sequence(
-						NotAhead(ChoiceUnordered(Literal("'"), Reference(() => NewLine))),
-						Reference(() => UnicodeCharacter),
-						match => match.String)),
-				match => match.Product.JoinStrings());
-
-		private static readonly IParsingExpression<string>
-		doubleQuotedStringExpressionContent =
-			AtLeast(0,
-				ChoiceUnordered(
-					Literal("\\\"", match => "\""),
-					stringExpressionEscapes,
-					Sequence(
-						NotAhead(ChoiceUnordered(Literal("\""), Reference(() => NewLine))),
-						Reference(() => UnicodeCharacter),
-						match => match.String)),
-				match => match.Product.JoinStrings());
-
-		private static readonly IParsingExpression<string>
-		singleQuotedStringExpression =
-			Sequence(
-				Literal("'"), singleQuotedStringExpressionContent, Literal("'"),
-				match => JavascriptUtils.DecodeString(match.Product.Of2));
-
-		private static readonly IParsingExpression<string>
-		doubleQuotedStringExpression =
-			Sequence(
-				Literal("\""), doubleQuotedStringExpressionContent, Literal("\""),
-				match => JavascriptUtils.DecodeString(match.Product.Of2));
-
-		private static readonly IParsingExpression<string>
-		verbatimStringExpression =
+		public static readonly IParsingExpression<string>
+		VerbatimStringLiteral = Named(() => VerbatimStringLiteral,
 			ChoiceOrdered(
 				Enumerable.Range(1,16).Reverse()
 				.Select(i => "".PadRight(i, '`'))
@@ -913,20 +882,42 @@ namespace markdom.cs.Grammar {
 							Sequence(NotAhead(Literal(ticks)), Reference(() => UnicodeCharacter)),
 							match => match.String),
 						Literal(ticks),
-						match => match.Product.Of2)));
-
-		public static readonly IParsingExpression<StringLiteralExpression>
-		StringLiteralExpression =
-			Named(() => StringLiteralExpression,
-				Reference(() => StringLiteral, match => new StringLiteralExpression(match.Product, match.SourceRange)));
+						match => match.Product.Of2)))
+		);
 
 		public static readonly IParsingExpression<string>
-		StringLiteral =
-			Named(() => StringLiteral,
-				ChoiceOrdered(
-					singleQuotedStringExpression,
-					doubleQuotedStringExpression,
-					verbatimStringExpression));
+		DoubleQuotedStringLiteral = Named(() => DoubleQuotedStringLiteral,
+			Sequence(
+				Literal("\""),
+				AtLeast(0,
+					Sequence(NotAhead(Literal("\"")), Reference(() => StringLiteralCharacter)),
+					match => JavascriptUtils.DecodeString(match.String)),
+				Literal("\""),
+				match => match.Product.Of2)
+		);
+
+		public static readonly IParsingExpression<string>
+		SingleQuotedStringLiteral = Named(() => SingleQuotedStringLiteral,
+			Sequence(
+				Literal("'"),
+				AtLeast(0,
+					Sequence(NotAhead(Literal("'")), Reference(() => StringLiteralCharacter)),
+					match => JavascriptUtils.DecodeString(match.String)),
+				Literal("'"),
+				match => match.Product.Of2)
+		);
+
+		public static readonly IParsingExpression<Nil>
+		StringLiteralCharacter =
+			ChoiceOrdered(
+				Sequence(
+					Literal("\\"),
+					ChoiceOrdered(
+						Reference(() => ExpressionHexadecimalEscapeSequence),
+						Reference(() => ExpressionUnicodeEscapeSequence),
+						Reference(() => NewLine),
+						Reference(() => UnicodeCharacter))),
+					UnicodeParsingExpressions.UnicodeCharacterNotIn(lineTerminatorCharValues));
 
 		#endregion
 
@@ -1057,6 +1048,13 @@ namespace markdom.cs.Grammar {
 						Reference(() => Whitespace),
 						Reference(() => Comment)),
 					match => Nil.Value));
+
+		public static readonly IParsingExpression<Nil>
+		ExpressionHexadecimalEscapeSequence =
+			Named(() => ExpressionHexadecimalEscapeSequence,
+				Sequence(
+					Literal("x"),
+					Exactly(2, Reference(() => HexDigit))));
 
 		public static readonly IParsingExpression<Nil>
 		ExpressionUnicodeEscapeSequence =

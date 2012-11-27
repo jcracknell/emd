@@ -40,7 +40,10 @@ namespace markdom.cs.Grammar {
 		spaceCharValues { get { return new char[] { ' ', '\t' }; } }
 
 		private static IEnumerable<char>
-		whitespaceCharValues { get { return spaceCharValues.Concat(new char[] { '\n', '\r', '\u2028', '\u2029' }); } }
+		lineTerminatorCharValues { get { return new char[] { '\n', '\r', '\u2028', '\u2029' }; } }
+
+		private static IEnumerable<char>
+		whitespaceCharValues { get { return spaceCharValues.Concat(lineTerminatorCharValues); } }
 
 		private static IEnumerable<char>
 		englishLowerAlphaCharValues { get { return CharUtils.Range('a','z'); } }
