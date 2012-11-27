@@ -40,7 +40,7 @@ namespace markdom.cs.Grammar {
 		spaceCharValues { get { return new char[] { ' ', '\t' }; } }
 
 		private static IEnumerable<char>
-		whitespaceCharValues { get { return spaceCharValues.Concat(new char[] { '\n', '\r' }); } }
+		whitespaceCharValues { get { return spaceCharValues.Concat(new char[] { '\n', '\r', '\u2028', '\u2029' }); } }
 
 		private static IEnumerable<char>
 		englishLowerAlphaCharValues { get { return CharUtils.Range('a','z'); } }
@@ -200,8 +200,8 @@ namespace markdom.cs.Grammar {
 		NewLine =
 			Named(() => NewLine,
 				ChoiceUnordered(
-					Literal("\n"),
-					Literal("\r\n")));
+					CharacterIn('\n', '\u2028', '\u2029'),
+					Sequence(CharacterIn('\r'), Optional(CharacterIn('\n')))));
 
 		/// <summary>
 		/// A whitespace character; space, tab or newline.
