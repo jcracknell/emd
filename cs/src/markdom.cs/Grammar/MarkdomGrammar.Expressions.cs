@@ -45,6 +45,52 @@ namespace markdom.cs.Grammar {
 			Named(() => Expression,
 				Reference(() => EqualityExpression));
 
+		#region BitwiseAndExpression
+
+		public static readonly IParsingExpression<IExpression>
+		BitwiseAndExpression = Named(() => BitwiseAndExpression,
+			Sequence(
+				Reference(() => EqualityExpression),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Reference(() => BitwiseAndOperator),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => EqualityExpression),
+						match => {
+							Func<IExpression, IExpression> asm = left =>
+								new BitwiseAndExpression(left, match.Product.Of4, left.SourceRange.Through(match.SourceRange));
+							return asm;
+						})),
+				match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left)))
+		);
+
+		public static readonly IParsingExpression<IExpression>
+		BitwiseAndExpressionNoIn = Named(() => BitwiseAndExpressionNoIn,
+			Sequence(
+				Reference(() => EqualityExpressionNoIn),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Reference(() => BitwiseAndOperator),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => EqualityExpressionNoIn),
+						match => {
+							Func<IExpression, IExpression> asm = left =>
+								new BitwiseAndExpression(left, match.Product.Of4, left.SourceRange.Through(match.SourceRange));
+							return asm;
+						})),
+				match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left)))
+		);
+		
+		public static readonly IParsingExpression<Nil>
+		BitwiseAndOperator =
+			Sequence(
+				Literal("&"),
+				NotAhead(CharacterIn('&', '=')));
+
+		#endregion
+
 		#region EqualityExpression
 
 		private static readonly IEnumerable<BinaryOperatorDefinition>
