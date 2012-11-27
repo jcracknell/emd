@@ -306,5 +306,29 @@ namespace markdom.cs.Expressions.Translation {
 			expression.Right.HandleWith(this);
 			_writer.Write(")");
 		}
+
+		public void Handle(BitwiseAndExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write("&");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+		}
+
+		public void Handle(BitwiseOrExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write("|");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+		}
+
+		public void Handle(BitwiseXOrExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write("^");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+		}
 	}
 }

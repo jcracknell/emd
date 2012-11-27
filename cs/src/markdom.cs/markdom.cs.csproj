@@ -48,7 +48,10 @@
     <Compile Include="Expressions\AdditionExpression.cs" />
     <Compile Include="Expressions\ArrayLiteralExpression.cs" />
     <Compile Include="Expressions\BinaryExpression.cs" />
+    <Compile Include="Expressions\BitwiseAndExpression.cs" />
     <Compile Include="Expressions\BitwiseNotExpression.cs" />
+    <Compile Include="Expressions\BitwiseOrExpression.cs" />
+    <Compile Include="Expressions\BitwiseXOrExpression.cs" />
     <Compile Include="Expressions\DeleteExpression.cs" />
     <Compile Include="Expressions\DivisionExpression.cs" />
     <Compile Include="Expressions\NotEqualsExpression.cs" />

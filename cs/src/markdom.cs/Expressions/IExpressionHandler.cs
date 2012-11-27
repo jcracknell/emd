@@ -8,7 +8,10 @@ namespace markdom.cs.Expressions {
 	public interface IExpressionHandler {
 		void Handle(AdditionExpression expression);
 		void Handle(ArrayLiteralExpression expression);
+		void Handle(BitwiseAndExpression expression);
 		void Handle(BitwiseNotExpression expression);
+		void Handle(BitwiseOrExpression expression);
+		void Handle(BitwiseXOrExpression expression);
 		void Handle(BooleanLiteralExpression expression);
 		void Handle(CallExpression expression);
 		void Handle(DeleteExpression expression);
@@ -52,7 +55,10 @@ namespace markdom.cs.Expressions {
 	public interface IExpressionHandler<T> {
 		T Handle(AdditionExpression expression);
 		T Handle(ArrayLiteralExpression expression);
+		T Handle(BitwiseAndExpression expression);
 		T Handle(BitwiseNotExpression expression);
+		T Handle(BitwiseOrExpression expression);
+		T Handle(BitwiseXOrExpression expression);
 		T Handle(BooleanLiteralExpression expression);
 		T Handle(CallExpression expression);
 		T Handle(DeleteExpression expression);
