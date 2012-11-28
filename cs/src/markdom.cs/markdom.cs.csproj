@@ -52,6 +52,7 @@
     <Compile Include="Expressions\BitwiseNotExpression.cs" />
     <Compile Include="Expressions\BitwiseOrExpression.cs" />
     <Compile Include="Expressions\BitwiseXOrExpression.cs" />
+    <Compile Include="Expressions\ConditionalExpression.cs" />
     <Compile Include="Expressions\DeleteExpression.cs" />
     <Compile Include="Expressions\DivisionExpression.cs" />
     <Compile Include="Expressions\LogicalAndExpression.cs" />

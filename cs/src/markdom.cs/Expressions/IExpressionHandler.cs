@@ -14,6 +14,7 @@ namespace markdom.cs.Expressions {
 		void Handle(BitwiseXOrExpression expression);
 		void Handle(BooleanLiteralExpression expression);
 		void Handle(CallExpression expression);
+		void Handle(ConditionalExpression expression);
 		void Handle(DeleteExpression expression);
 		void Handle(DivisionExpression expression);
 		void Handle(DocumentLiteralExpression expression);
@@ -63,6 +64,7 @@ namespace markdom.cs.Expressions {
 		T Handle(BitwiseXOrExpression expression);
 		T Handle(BooleanLiteralExpression expression);
 		T Handle(CallExpression expression);
+		T Handle(ConditionalExpression expression);
 		T Handle(DeleteExpression expression);
 		T Handle(DivisionExpression expression);
 		T Handle(DocumentLiteralExpression expression);

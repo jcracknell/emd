@@ -43,7 +43,53 @@ namespace markdom.cs.Grammar {
 		public static readonly IParsingExpression<IExpression>
 		Expression =
 			Named(() => Expression,
-				Reference(() => LogicalOrExpression));
+				Reference(() => ConditionalExpression));
+
+		#region ConditionalExpression
+
+		public static readonly IParsingExpression<IExpression>
+		ConditionalExpression = Named(() => ConditionalExpression,
+			Sequence(
+				Reference(() => LogicalOrExpression),
+				Optional(
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Literal("?"),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => ConditionalExpression),
+						Reference(() => ExpressionWhitespace),
+						Literal(":"),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => ConditionalExpression),
+						match => Tuple.Create(match.Product.Of4, match.Product.Of8))),
+				match => null != match.Product.Of2
+					? new ConditionalExpression(match.Product.Of1, match.Product.Of2.Item1, match.Product.Of2.Item2, match.SourceRange)
+					: match.Product.Of1
+			)
+		);
+
+		public static readonly IParsingExpression<IExpression>
+		ConditionalExpressionNoIn = Named(() => ConditionalExpressionNoIn,
+			Sequence(
+				Reference(() => LogicalOrExpressionNoIn),
+				Optional(
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Literal("?"),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => ConditionalExpressionNoIn),
+						Reference(() => ExpressionWhitespace),
+						Literal(":"),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => ConditionalExpressionNoIn),
+						match => Tuple.Create(match.Product.Of4, match.Product.Of8))),
+				match => null != match.Product.Of2
+					? new ConditionalExpression(match.Product.Of1, match.Product.Of2.Item1, match.Product.Of2.Item2, match.SourceRange)
+					: match.Product.Of1
+			)
+		);
+
+		#endregion
 
 		#region LogicalOrExpression
 

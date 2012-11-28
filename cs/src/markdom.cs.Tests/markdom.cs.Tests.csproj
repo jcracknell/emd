@@ -64,6 +64,7 @@
     <Compile Include="Grammar\BitwiseXOrExpressionTests.cs" />
     <Compile Include="Grammar\BooleanLiteralExpressionTests.cs" />
     <Compile Include="Grammar\CodeTests.cs" />
+    <Compile Include="Grammar\ConditionalExpressionTests.cs" />
     <Compile Include="Grammar\EmphasisTests.cs" />
     <Compile Include="Grammar\EntityTests.cs" />
     <Compile Include="Grammar\EqualityExpressionTests.cs" />

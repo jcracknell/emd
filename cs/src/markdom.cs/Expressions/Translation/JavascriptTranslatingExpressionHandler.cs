@@ -348,5 +348,15 @@ namespace markdom.cs.Expressions.Translation {
 			expression.Right.HandleWith(this);
 			_writer.Write(")");
 		}
+
+		public void Handle(ConditionalExpression expression) {
+			_writer.Write("(");
+			expression.Condition.HandleWith(this);
+			_writer.Write("?");
+			expression.TrueExpression.HandleWith(this);
+			_writer.Write(":");
+			expression.FalseExpression.HandleWith(this);
+			_writer.Write(")");
+		}
 	}
 }
