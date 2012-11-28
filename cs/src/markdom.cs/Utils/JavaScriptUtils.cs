@@ -59,7 +59,31 @@ namespace markdom.cs.Utils {
 		}
 
 		/// <summary>
-		/// Decode a string from its javascript source representation.
+		/// Decode an identifier name from its JavaScript source representation.
+		/// </summary>
+		public static string IdentifierDecode(string encoded) {
+			var len = encoded.Length;
+			var buffer = new char[len];
+			var rp = 0;
+			var wp = 0;
+			char c, dc;
+
+			while(rp != len) {
+				c = encoded[rp++];
+
+				if('\\' == c && TryDecodeUnicodeEscape(encoded, rp, out dc)) {
+					rp += 5;
+					buffer[wp++] = dc;
+				} else {
+					buffer[wp++] = c;
+				}
+			}
+
+			return new string(buffer, 0, wp);
+		}
+
+		/// <summary>
+		/// Decode a string from its JavaScript source representation.
 		/// </summary>
 		public static string StringDecode(string encoded) {
 			var len = encoded.Length;
