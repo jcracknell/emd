@@ -61,7 +61,7 @@ namespace markdom.cs.Expressions.Translation {
 		}
 
 		public void Handle(IdentifierExpression expression) {
-			throw new NotImplementedException();
+			_writer.Write(JavaScriptUtils.IdentifierEncode(expression.Name));
 		}
 
 		public void Handle(DynamicPropertyExpression expression) {
