@@ -879,7 +879,7 @@ namespace markdom.cs.Grammar {
 					NotAhead(Reference(() => ExpressionKeyword)),
 					identifierExpressionStart,
 					AtLeast(0, Reference(() => IdentifierPart)),
-					match => match.String));
+					match => JavaScriptUtils.IdentifierDecode(match.String)));
 
 		#endregion
 

@@ -35,6 +35,12 @@ namespace markdom.cs.Grammar {
 			match.Product.Name.Should().Be("_");
 		}
 
+		[Fact] public void IdentifierExpression_should_match_unicode_escape_sequence() {
+			var match = MarkdomGrammar.IdentifierExpression.ShouldMatch(@"\u0061");
+
+			match.Product.Name.Should().Be("a");
+		}
+
 		[Fact] public void IdentifierExpression_should_not_match_true_keyword() {
 			MarkdomGrammar.IdentifierExpression.ShouldNotMatch("true");
 		}
