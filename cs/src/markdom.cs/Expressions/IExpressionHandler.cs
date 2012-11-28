@@ -27,6 +27,7 @@ namespace markdom.cs.Expressions {
 		void Handle(LeftShiftExpression expression);
 		void Handle(LessThanExpression expression);
 		void Handle(LessThanOrEqualToExpression expression);
+		void Handle(LogicalAndExpression expression);
 		void Handle(LogicalNotExpression expression);
 		void Handle(ModuloExpression expression);
 		void Handle(MultiplicationExpression expression);
@@ -74,6 +75,7 @@ namespace markdom.cs.Expressions {
 		T Handle(LeftShiftExpression expression);
 		T Handle(LessThanExpression expression);
 		T Handle(LessThanOrEqualToExpression expression);
+		T Handle(LogicalAndExpression expression);
 		T Handle(LogicalNotExpression expression);
 		T Handle(ModuloExpression expression);
 		T Handle(MultiplicationExpression expression);

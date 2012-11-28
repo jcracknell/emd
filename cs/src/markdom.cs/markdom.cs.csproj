@@ -54,6 +54,7 @@
     <Compile Include="Expressions\BitwiseXOrExpression.cs" />
     <Compile Include="Expressions\DeleteExpression.cs" />
     <Compile Include="Expressions\DivisionExpression.cs" />
+    <Compile Include="Expressions\LogicalAndExpression.cs" />
     <Compile Include="Expressions\NotEqualsExpression.cs" />
     <Compile Include="Expressions\EqualsExpression.cs" />
     <Compile Include="Expressions\Evaluation\BooleanValue.cs" />
