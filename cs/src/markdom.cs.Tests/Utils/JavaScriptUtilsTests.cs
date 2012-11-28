@@ -23,6 +23,14 @@ namespace markdom.cs.Utils {
 			JavaScriptUtils.IdentifierDecode(@"\x61").Should().Be(@"\x61");
 		}
 
+		[Fact] public void JavaScriptUtils_IdentifierEncode_should_leave_plain_identifier_name_unchanged() {
+			JavaScriptUtils.IdentifierEncode("foo").Should().Be("foo");
+		}
+
+		[Fact] public void JavaScriptUtils_IdentifierEncode_should_encode_non_printable_ascii_character_as_unicode_escape() {
+			JavaScriptUtils.IdentifierEncode("\x0233glise").Should().Be(@"\u0233glise");
+		}
+
 		[Fact] public void JavascriptUtils_StringDecode_should_leave_plain_string_unchanged() {
 			JavaScriptUtils.StringDecode("foo").Should().Be("foo");
 		}

@@ -83,6 +83,29 @@ namespace markdom.cs.Utils {
 		}
 
 		/// <summary>
+		/// Encode an identifier name into its JavaScript source representation.
+		/// This method targets ASCII for maximum compatibility.
+		/// </summary>
+		public static string IdentifierEncode(string unencoded) {
+			var len = unencoded.Length;
+			var sb = new StringBuilder(unencoded.Length * 2);
+			var rp = 0;
+			char c;
+
+			while(rp != len) {
+				c = unencoded[rp++];
+
+				if(CharUtils.IsAsciiPrintableCharacter(c)) {
+					sb.Append(c);
+				} else {
+					AppendUnicodeEscape(sb, c);
+				}
+			}
+
+			return sb.ToString();
+		}
+
+		/// <summary>
 		/// Decode a string from its JavaScript source representation.
 		/// </summary>
 		public static string StringDecode(string encoded) {
@@ -121,6 +144,7 @@ namespace markdom.cs.Utils {
 
 		/// <summary>
 		/// Encode a string into its unquoted javascript source representation.
+		/// This method targets ASCII for maximum compatibility.
 		/// </summary>
 		public static string StringEncode(string unencoded) {
 			var sb = new StringBuilder(unencoded.Length * 2);
@@ -134,14 +158,10 @@ namespace markdom.cs.Utils {
 				if(MAX_ESCAPE_ENCODE >= c && UNDEFINED_ESCAPE != ESCAPE_ENCODE[c]) {
 					sb.Append('\\');
 					sb.Append(ESCAPE_ENCODE[c]);
-				} else if(!CharUtils.IsAsciiPrintableCharacter(c)) {
-					sb.Append(@"\u");
-					sb.Append(HEX_ENCODE[(c >> 12) & 0x0F]);
-					sb.Append(HEX_ENCODE[(c >>  8) & 0x0F]);
-					sb.Append(HEX_ENCODE[(c >>  4) & 0x0F]);
-					sb.Append(HEX_ENCODE[c & 0x0F]);
-				} else {
+				} else if(CharUtils.IsAsciiPrintableCharacter(c)) {
 					sb.Append(c);
+				} else {
+					AppendUnicodeEscape(sb, c);
 				}
 			}
 
@@ -215,7 +235,14 @@ namespace markdom.cs.Utils {
 			return false;
 		}
 
-		
+		private static void AppendUnicodeEscape(StringBuilder sb, char c) {
+			sb
+				.Append(@"\u")
+				.Append(HEX_ENCODE[(c >> 12) & 0x0F])
+				.Append(HEX_ENCODE[(c >>  8) & 0x0F])
+				.Append(HEX_ENCODE[(c >>  4) & 0x0F])
+				.Append(HEX_ENCODE[c & 0x0F]);
+		}
 
 		public static string NumberEncode(double number) {
 			// TODO: this is probably insufficient.
