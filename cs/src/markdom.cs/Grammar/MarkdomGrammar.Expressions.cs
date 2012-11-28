@@ -45,6 +45,52 @@ namespace markdom.cs.Grammar {
 			Named(() => Expression,
 				Reference(() => EqualityExpression));
 
+		#region BitwiseXOrExpression
+
+		public static readonly IParsingExpression<IExpression>
+		BitwiseXOrExpression = Named(() => BitwiseXOrExpression,
+			Sequence(
+				Reference(() => BitwiseAndExpression),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Reference(() => BitwiseXOrOperator),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => BitwiseAndExpression),
+						match => {
+							Func<IExpression, IExpression> asm = left =>
+								new BitwiseXOrExpression(left, match.Product.Of4, left.SourceRange.Through(match.SourceRange));
+							return asm;
+						})),
+				match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left)))
+		);
+
+		public static readonly IParsingExpression<IExpression>
+		BitwiseXOrExpressionNoIn = Named(() => BitwiseXOrExpressionNoIn,
+			Sequence(
+				Reference(() => BitwiseAndExpression),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Reference(() => BitwiseXOrOperator),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => BitwiseAndExpression),
+						match => {
+							Func<IExpression, IExpression> asm = left =>
+								new BitwiseXOrExpression(left, match.Product.Of4, left.SourceRange.Through(match.SourceRange));
+							return asm;
+						})),
+				match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left)))
+		);
+
+		public static readonly IParsingExpression<Nil>
+		BitwiseXOrOperator =
+			Sequence(
+				Literal("^"),
+				NotAhead(Literal("=")));
+
+		#endregion
+
 		#region BitwiseAndExpression
 
 		public static readonly IParsingExpression<IExpression>

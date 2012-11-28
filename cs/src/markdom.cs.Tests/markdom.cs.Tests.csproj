@@ -60,6 +60,7 @@
     <Compile Include="Grammar\ArrayLiteralTests.cs" />
     <Compile Include="Grammar\AutoLinkTests.cs" />
     <Compile Include="Grammar\BitwiseAndExpressionTests.cs" />
+    <Compile Include="Grammar\BitwiseXOrExpressionTests.cs" />
     <Compile Include="Grammar\BooleanLiteralExpressionTests.cs" />
     <Compile Include="Grammar\CodeTests.cs" />
     <Compile Include="Grammar\EmphasisTests.cs" />
