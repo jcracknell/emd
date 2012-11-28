@@ -45,6 +45,52 @@ namespace markdom.cs.Grammar {
 			Named(() => Expression,
 				Reference(() => EqualityExpression));
 
+		#region BitwiseOrExpression
+
+		public static readonly IParsingExpression<IExpression>
+		BitwiseOrExpression = Named(() => BitwiseOrExpression,
+			Sequence(
+				Reference(() => BitwiseXOrExpression),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Reference(() => BitwiseOrOperator),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => BitwiseXOrExpression),
+						match => {
+							Func<IExpression, IExpression> asm = left =>
+								new BitwiseOrExpression(left, match.Product.Of4, left.SourceRange.Through(match.SourceRange));
+							return asm;
+						})),
+				match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left)))
+		);
+
+		public static readonly IParsingExpression<IExpression>
+		BitwiseOrExpressionNoIn = Named(() => BitwiseOrExpressionNoIn,
+			Sequence(
+				Reference(() => BitwiseXOrExpressionNoIn),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Reference(() => BitwiseOrOperator),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => BitwiseXOrExpressionNoIn),
+						match => {
+							Func<IExpression, IExpression> asm = left =>
+								new BitwiseOrExpression(left, match.Product.Of4, left.SourceRange.Through(match.SourceRange));
+							return asm;
+						})),
+				match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left)))
+		);
+
+		public static readonly IParsingExpression<Nil>
+		BitwiseOrOperator =
+			Sequence(
+				Literal("|"),
+				NotAhead(CharacterIn('|', '=')));
+
+		#endregion
+
 		#region BitwiseXOrExpression
 
 		public static readonly IParsingExpression<IExpression>
@@ -68,13 +114,13 @@ namespace markdom.cs.Grammar {
 		public static readonly IParsingExpression<IExpression>
 		BitwiseXOrExpressionNoIn = Named(() => BitwiseXOrExpressionNoIn,
 			Sequence(
-				Reference(() => BitwiseAndExpression),
+				Reference(() => BitwiseAndExpressionNoIn),
 				AtLeast(0,
 					Sequence(
 						Reference(() => ExpressionWhitespace),
 						Reference(() => BitwiseXOrOperator),
 						Reference(() => ExpressionWhitespace),
-						Reference(() => BitwiseAndExpression),
+						Reference(() => BitwiseAndExpressionNoIn),
 						match => {
 							Func<IExpression, IExpression> asm = left =>
 								new BitwiseXOrExpression(left, match.Product.Of4, left.SourceRange.Through(match.SourceRange));
