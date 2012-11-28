@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Expressions.Translation {
-	public class JavascriptTranslatingExpressionHandler : IExpressionHandler {
+	public class JavaScriptTranslatingExpressionHandler : IExpressionHandler {
 		private readonly TextWriter _writer;
 
-		public JavascriptTranslatingExpressionHandler(TextWriter writer) {
+		public JavaScriptTranslatingExpressionHandler(TextWriter writer) {
 			_writer = writer;
 		}
 
@@ -82,7 +82,7 @@ namespace markdom.cs.Expressions.Translation {
 		}
 
 		public void Handle(NumericLiteralExpression expression) {
-			_writer.Write(JavascriptUtils.NumberEncode(expression.Value));
+			_writer.Write(JavaScriptUtils.NumberEncode(expression.Value));
 		}
 
 		public void Handle(ObjectLiteralExpression expression) {
@@ -91,7 +91,7 @@ namespace markdom.cs.Expressions.Translation {
 			var propertyAssignmentEnumerator = expression.PropertyAssignments.GetEnumerator();
 			if(propertyAssignmentEnumerator.MoveNext()) do {
 				_writer.Write("'");
-				_writer.Write(JavascriptUtils.StringEncode(propertyAssignmentEnumerator.Current.PropertyName));
+				_writer.Write(JavaScriptUtils.StringEncode(propertyAssignmentEnumerator.Current.PropertyName));
 				_writer.Write("'");
 				_writer.Write(":");
 
@@ -108,13 +108,13 @@ namespace markdom.cs.Expressions.Translation {
 
 		public void Handle(StringLiteralExpression expression) {
 			_writer.Write("'");
-			_writer.Write(JavascriptUtils.StringEncode(expression.Value));
+			_writer.Write(JavaScriptUtils.StringEncode(expression.Value));
 			_writer.Write("'");
 		}
 
 		public void Handle(UriLiteralExpression expression) {
 			_writer.Write("'");
-			_writer.Write(JavascriptUtils.StringEncode(expression.Value));
+			_writer.Write(JavaScriptUtils.StringEncode(expression.Value));
 			_writer.Write("'");
 		}
 

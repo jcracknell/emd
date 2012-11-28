@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace markdom.cs.Utils {
-	public static class JavascriptUtils {
+	public static class JavaScriptUtils {
 		private const char UNDEFINED_ESCAPE = '*';
 		private const char MAX_ESCAPE_ENCODE = '\\';
 		private const char MAX_ESCAPE_DECODE = 'v';
@@ -15,7 +15,7 @@ namespace markdom.cs.Utils {
 		private static readonly char[] ESCAPE_DECODE;
 		private static readonly char[] ESCAPE_ENCODE;
 
-		static JavascriptUtils() {
+		static JavaScriptUtils() {
 			// Per ECMA-262 7.8.4 p23
 
 			ESCAPE_ENCODE = new char[MAX_ESCAPE_ENCODE+1];

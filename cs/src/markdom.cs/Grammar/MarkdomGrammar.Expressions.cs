@@ -1167,7 +1167,7 @@ namespace markdom.cs.Grammar {
 				Literal("\""),
 				AtLeast(0,
 					Sequence(NotAhead(Literal("\"")), Reference(() => StringLiteralCharacter)),
-					match => JavascriptUtils.StringDecode(match.String)),
+					match => JavaScriptUtils.StringDecode(match.String)),
 				Literal("\""),
 				match => match.Product.Of2)
 		);
@@ -1178,7 +1178,7 @@ namespace markdom.cs.Grammar {
 				Literal("'"),
 				AtLeast(0,
 					Sequence(NotAhead(Literal("'")), Reference(() => StringLiteralCharacter)),
-					match => JavascriptUtils.StringDecode(match.String)),
+					match => JavaScriptUtils.StringDecode(match.String)),
 				Literal("'"),
 				match => match.Product.Of2)
 		);

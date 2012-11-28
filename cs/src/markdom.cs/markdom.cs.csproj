@@ -88,7 +88,7 @@
     <Compile Include="Expressions\StrictEqualsExpression.cs" />
     <Compile Include="Expressions\StrictNotEqualsExpression.cs" />
     <Compile Include="Expressions\SubtractionExpression.cs" />
-    <Compile Include="Expressions\Translation\JavascriptTranslatingExpressionHandler.cs" />
+    <Compile Include="Expressions\Translation\JavaScriptTranslatingExpressionHandler.cs" />
     <Compile Include="Expressions\TypeofExpression.cs" />
     <Compile Include="Expressions\UnaryExpression.cs" />
     <Compile Include="Expressions\UnsignedRightShiftExpression.cs" />
@@ -159,7 +159,7 @@
     <Compile Include="HashCodeBuilder.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Utils\JavascriptUtils.cs" />
+    <Compile Include="Utils\JavaScriptUtils.cs" />
     <Compile Include="Utils\NumeralUtils.cs" />
     <Compile Include="Utils\TextUtils.cs" />
   </ItemGroup>
