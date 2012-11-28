@@ -339,5 +339,14 @@ namespace markdom.cs.Expressions.Translation {
 			expression.Right.HandleWith(this);
 			_writer.Write(")");
 		}
+
+
+		public void Handle(LogicalOrExpression expression) {
+			_writer.Write("(");
+			expression.Left.HandleWith(this);
+			_writer.Write("||");
+			expression.Right.HandleWith(this);
+			_writer.Write(")");
+		}
 	}
 }

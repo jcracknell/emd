@@ -43,7 +43,53 @@ namespace markdom.cs.Grammar {
 		public static readonly IParsingExpression<IExpression>
 		Expression =
 			Named(() => Expression,
-				Reference(() => LogicalAndExpression));
+				Reference(() => LogicalOrExpression));
+
+		#region LogicalOrExpression
+
+		public static readonly IParsingExpression<IExpression>
+		LogicalOrExpression = Named(() => LogicalOrExpression,
+			Sequence(
+				Reference(() => LogicalAndExpression),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Reference(() => LogicalOrOperator),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => LogicalAndExpression),
+						match => {
+							Func<IExpression, IExpression> asm = left =>
+								new LogicalOrExpression(left, match.Product.Of4, left.SourceRange.Through(match.SourceRange));
+							return asm;
+						})),
+				match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left)))
+		);
+
+		public static readonly IParsingExpression<IExpression>
+		LogicalOrExpressionNoIn = Named(() => LogicalOrExpressionNoIn,
+			Sequence(
+				Reference(() => LogicalAndExpressionNoIn),
+				AtLeast(0,
+					Sequence(
+						Reference(() => ExpressionWhitespace),
+						Reference(() => LogicalOrOperator),
+						Reference(() => ExpressionWhitespace),
+						Reference(() => LogicalAndExpressionNoIn),
+						match => {
+							Func<IExpression, IExpression> asm = left =>
+								new LogicalOrExpression(left, match.Product.Of4, left.SourceRange.Through(match.SourceRange));
+							return asm;
+						})),
+				match => match.Product.Of2.Reduce(match.Product.Of1, (left, asm) => asm(left)))
+		);
+
+		public static readonly IParsingExpression<Nil>
+		LogicalOrOperator =
+			Sequence(
+				Literal("||"),
+				NotAhead(Literal("=")));
+
+		#endregion
 
 		#region LogicalAndExpression
 

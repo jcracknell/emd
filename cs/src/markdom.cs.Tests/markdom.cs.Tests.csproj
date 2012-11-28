@@ -74,6 +74,7 @@
     <Compile Include="Grammar\LiteralExpressionTests.cs" />
     <Compile Include="Grammar\LeftHandSideExpressionTests.cs" />
     <Compile Include="Grammar\LogicalAndExpressionTests.cs" />
+    <Compile Include="Grammar\LogicalOrExpressionTests.cs" />
     <Compile Include="Grammar\MultiplicativeExpressionTests.cs" />
     <Compile Include="Grammar\NullLiteralExpressionTests.cs" />
     <Compile Include="Grammar\NumericLiteralExpressionTests.cs" />
