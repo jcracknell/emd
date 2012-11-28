@@ -79,9 +79,25 @@ namespace pegleg.cs.Utils {
 		}
 
 		public static string LiteralEncode(char c) {
-			if(' ' <= c && c <= '~')
+			if(IsAsciiPrintableCharacter(c))
 				return string.Concat("'", c, "'");
 			return string.Concat("'\\x", AsHex(c), "'");
+		}
+
+		/// <summary>
+		/// Returns true if the provided character is an ASCII printable character - a character in the range
+		/// 0x20 (' ') to 0x7E ('~').
+		/// </summary>
+		public static bool IsAsciiPrintableCharacter(char c) {
+			return ' ' <= c && c <= '~';
+		}
+
+		/// <summary>
+		/// Returns true if the provided character is a 'normal' ASCII character - a printable character,
+		/// newline ('\n'), tab ('\t'), or carriage return ('\r').
+		/// </summary>
+		public static bool IsAsciiNormalCharacter(char c) {
+			return IsAsciiPrintableCharacter(c) || '\n' == c || '\t' == c || '\r' == c;
 		}
 
 		public static string AsHex(char c) {

@@ -134,7 +134,7 @@ namespace markdom.cs.Utils {
 				if(MAX_ESCAPE_ENCODE >= c && UNDEFINED_ESCAPE != ESCAPE_ENCODE[c]) {
 					sb.Append('\\');
 					sb.Append(ESCAPE_ENCODE[c]);
-				} else if(!(' ' <= c && c <= '~')) {
+				} else if(!CharUtils.IsAsciiPrintableCharacter(c)) {
 					sb.Append(@"\u");
 					sb.Append(HEX_ENCODE[(c >> 12) & 0x0F]);
 					sb.Append(HEX_ENCODE[(c >>  8) & 0x0F]);
