@@ -841,6 +841,12 @@ namespace markdom.cs.Grammar {
 
 		#region IdentifierExpression
 
+		// v8 commit re: handling of unicode escapes in identifier names
+		// https://code.google.com/p/v8/source/detail?r=8969
+		// Invalid unicode escape is handled as literal u,
+		// Invalid char added by unicode escape is checked by method call, parsing then returns
+		// Token::Illegal
+
 		private static readonly IParsingExpression<Nil>
 		identifierExpressionStart =
 			ChoiceOrdered(
