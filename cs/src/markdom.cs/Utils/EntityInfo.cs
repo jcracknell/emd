@@ -47,6 +47,8 @@ namespace markdom.cs.Utils {
 			} while(true);
 		}
 
+		public static IEnumerable<string> EntityNames { get { return _codepointsByEntityName.Keys; } }
+
 		/// <summary>
 		/// Returns true if the provided <paramref name="name"/> is a valid entity name.
 		/// </summary>
@@ -54,8 +56,22 @@ namespace markdom.cs.Utils {
 			return _codepointsByEntityName.ContainsKey(name);
 		}
 
-		public static bool TryGetEntityNameByCodepoint(int codepoint, out string entityName) {
+		public static bool TryGetEntityName(int codepoint, out string entityName) {
 			return _entityNameByCodepoint.TryGetValue(codepoint, out entityName);
+		}
+
+		public static bool TryGetEntityValue(string entityName, out string value) {
+			int[] codepoints;
+			if(!_codepointsByEntityName.TryGetValue(entityName, out codepoints)) {
+				value = null;
+				return false;
+			}
+
+			value = 1 == codepoints.Length
+				? char.ConvertFromUtf32(codepoints[0])
+				: codepoints.Select(char.ConvertFromUtf32).JoinStrings();
+
+			return true;
 		}
 	}
 }
