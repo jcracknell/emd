@@ -53,5 +53,9 @@ namespace markdom.cs.Utils {
 		public static bool IsEntityName(string name) {
 			return _codepointsByEntityName.ContainsKey(name);
 		}
+
+		public static bool TryGetEntityNameByCodepoint(int codepoint, out string entityName) {
+			return _entityNameByCodepoint.TryGetValue(codepoint, out entityName);
+		}
 	}
 }
