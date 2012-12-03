@@ -64,7 +64,6 @@ namespace markdom.cs.Grammar {
 		specialCharValues { get {
 			return new char[] {
 				'*', // strong, emphasis
-				'&', // entities
 				'\'', '"', // quotes
 				'`', // ticks
 				'/', // single-line comment

@@ -1,5 +1,6 @@
 ﻿using markdom.cs.Expressions;
 using markdom.cs.Nodes;
+using markdom.cs.Utils;
 using pegleg.cs;
 using System;
 using System.Collections.Generic;
@@ -183,43 +184,41 @@ namespace markdom.cs.Grammar {
 
 		#region Entities
 
-		private static readonly IParsingExpression<EntityNode>
-		decimalHtmlEntity =
-			Sequence(
-				Literal("&#"),
-				Between(1, 6, Reference(() => Digit), match => match.String),
-				Literal(";"),
-				match => new EntityNode(int.Parse(match.Product.Of2), match.SourceRange));
-
-		private static readonly IParsingExpression<EntityNode>
-		hexHtmlEntity =
-			Sequence(
-				Literal("&#x"),
-				Between(1, 6, Reference(() => HexDigit), match => match.String),
-				Literal(";"),
-				match => new EntityNode(Convert.ToInt32(match.Product.Of2, 16), match.SourceRange));
-
-			// Because of the large number of named entities it is much faster to use a dynamic
-			// expression with an assertion to match valid entity names
-		private static readonly IParsingExpression<EntityNode>
-		namedHtmlEntity =
-			Dynamic(() => {
-				string entityName = null;
-				return Sequence(
-					Literal("&"),
-					Between(1, 32, Reference(() => EnglishAlpha), match => { return entityName = match.String; }),
-					Assert(() => EntityNode.IsEntityName(entityName)),
-					Literal(";"),
-					match => new EntityNode(EntityNode.GetNamedEntityValue(entityName), match.SourceRange));
-			});
-
 		public static readonly IParsingExpression<EntityNode>
-		Entity =
-			Named(() => Entity,
+		Entity = Named(() => Entity,
+			Sequence(
+				Literal("\\"),
 				ChoiceOrdered(
-					decimalHtmlEntity,
-					hexHtmlEntity,
-					namedHtmlEntity));
+					Reference(() => NamedEntity),
+					Reference(() => DecimalEntity),
+					Reference(() => HexadecimalEntity)),
+				Optional(Literal(";")),
+				match => new EntityNode(match.Product.Of2, match.SourceRange))
+		);
+
+		public static readonly IParsingExpression<string>
+		NamedEntity = Named(() => NamedEntity,
+			ChoiceOrdered(
+				EntityInfo.EntityNames.OrderByDescending(name => name.Length).Select(Literal),
+				match => EntityInfo.GetEntityValue(match.String))
+		);
+
+		public static readonly IParsingExpression<string>
+		DecimalEntity = Named(() => DecimalEntity,
+			Sequence(
+				Literal("#"),
+				Between(1, 6, Reference(() => Digit), match => match.String),
+				match => char.ConvertFromUtf32(int.Parse(match.Product.Of2)))
+		);
+
+		public static readonly IParsingExpression<string>
+		HexadecimalEntity = Named(() => HexadecimalEntity,
+			Sequence(
+				Optional(Literal("#")),
+				CharacterIn('u','x'),
+				Between(1, 6, Reference(() => HexDigit), match => match.String),
+				match => char.ConvertFromUtf32(Convert.ToInt32(match.Product.Of3, 16)))
+		);
 
 		#endregion 
 

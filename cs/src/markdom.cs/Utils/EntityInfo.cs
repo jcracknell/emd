@@ -73,5 +73,13 @@ namespace markdom.cs.Utils {
 
 			return true;
 		}
+
+		public static string GetEntityValue(string entityName) {
+			var codepoints = _codepointsByEntityName[entityName];
+
+			return 1 == codepoints.Length
+				? char.ConvertFromUtf32(codepoints[0])
+				: codepoints.Select(char.ConvertFromUtf32).JoinStrings();
+		}
 	}
 }

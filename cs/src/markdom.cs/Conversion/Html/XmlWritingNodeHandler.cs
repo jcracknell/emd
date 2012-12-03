@@ -86,8 +86,7 @@ namespace markdom.cs.Conversion.Html {
 		}
 
 		public void Handle(EntityNode node) {
-			// TODO: handle surrogate pairs
-			_writer.WriteCharEntity((char)node.Value);
+			_writer.WriteString(node.Value);
 		}
 
 		public void Handle(ExpressionBlockNode node) {
