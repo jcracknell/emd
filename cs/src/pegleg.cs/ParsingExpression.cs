@@ -29,15 +29,11 @@ namespace pegleg.cs {
 		#region Literal
 
 		public static IParsingExpression<Nil> Literal(string literal) {
-			return Literal(literal, StringComparison.Ordinal);
-		}
-
-		public static IParsingExpression<Nil> Literal(string literal, StringComparison comparison) {
-			return new NonCapturingLiteralParsingExpression(literal, comparison);
+			return new NonCapturingLiteralParsingExpression(literal);
 		}
 
 		public static IParsingExpression<TProduct> Literal<TProduct>(string literal, Func<IMatch<string>, TProduct> matchAction) {
-			return Literal(literal, StringComparison.Ordinal, matchAction);
+			return new CapturingLiteralParsingExpression<TProduct>(literal, matchAction);
 		}
 
 		public static IParsingExpression<Nil> Literal(char literal) {
@@ -46,10 +42,6 @@ namespace pegleg.cs {
 
 		public static IParsingExpression<TProduct> Literal<TProduct>(char literal, Func<IMatch<string>, TProduct> matchAction) {
 			return Literal(literal.ToString(), matchAction);
-		}
-
-		public static IParsingExpression<TProduct> Literal<TProduct>(string literal, StringComparison comparison, Func<IMatch<string>, TProduct> matchAction) {
-			return new CapturingLiteralParsingExpression<TProduct>(literal, comparison, matchAction);
 		}
 
 		#endregion
