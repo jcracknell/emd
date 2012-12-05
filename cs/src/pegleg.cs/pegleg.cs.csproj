@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeContract.cs" />
+    <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Parsing\BaseParsingExpression.cs" />
     <Compile Include="Parsing\CacheingParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\CharacterSetParsingExpression.cs" />
