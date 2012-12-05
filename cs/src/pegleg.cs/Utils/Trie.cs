@@ -69,7 +69,6 @@ namespace pegleg.cs.Utils {
 
 		private bool TryGetValue(IEnumerator<TKey> path, out TValue value) {
 			if(!path.MoveNext()) {
-				// We are at the end of the path, so this node must store the value
 				if(_hasValue) {
 					value = _value;
 					return true;
@@ -80,27 +79,11 @@ namespace pegleg.cs.Utils {
 			}
 
 			Trie<TKey, TValue> child;
-			var key = path.Current;
-			if(0 == _numChildren) {
-				// No children. Fail!
+			if(!TryGetSubtrie(path.Current, out child)) {
 				value = default(TValue);
 				return false;
-			} else if(1 == _numChildren) {
-				// We are storing a single child using the special _childTrie/Key fields
-				if(_childKey.Equals(key)) {
-					child = _childTrie;
-				} else {
-					value = default(TValue);
-					return false;
-				}
-			} else {
-				if(!_children.TryGetValue(key, out child)) {
-					value = default(TValue);
-					return false;
-				}
 			}
-
-			// Continue processing the path with the selected child node
+			
 			return child.TryGetValue(path, out value);
 		}
 
@@ -108,7 +91,9 @@ namespace pegleg.cs.Utils {
 			if(0 == _numChildren) {
 				subtrie = null;
 				return false;
-			} else if(1 == _numChildren) {
+			}
+			
+			if(1 == _numChildren) {
 				if(_childKey.Equals(key)) {
 					subtrie = _childTrie;
 					return true;
