@@ -32,6 +32,8 @@ namespace pegleg.cs.Utils {
 		/// <param name="s">The string to be converted to a C# string literal.</param>
 		/// <returns><paramref name="s"/> represented as a C# string literal.</returns>
 		public static string LiteralEncode(string s) {
+			if(null == s) return "null";
+
 			CodeContract.ArgumentIsValid(() => s, int.MaxValue / 6 > s.Length, "string is too long");
 
 			var buffer = new char[s.Length * 6];
