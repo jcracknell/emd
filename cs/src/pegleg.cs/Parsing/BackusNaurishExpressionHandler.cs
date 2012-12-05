@@ -13,6 +13,7 @@ namespace pegleg.cs.Parsing {
 			public int Handle<TProduct>(DynamicParsingExpression<TProduct> expression) { return 100; }
 			public int Handle(EndOfInputParsingExpression expression) { return 4; }
 			public int Handle<TProduct>(LiteralParsingExpression<TProduct> expression) { return 4; }
+			public int Handle<TProduct>(LiteralSetParsingExpression<TProduct> expression) { return 4; }
 			public int Handle<TProduct>(NamedParsingExpression<TProduct> expression) { return 4; }
 			public int Handle(NotAheadParsingExpression expression) { return 3; }
 			public int Handle<TBody,TProduct>(OptionalParsingExpression<TBody,TProduct> expression) { return 2; }
@@ -38,16 +39,22 @@ namespace pegleg.cs.Parsing {
 
 		public string Handle<TChoice,TProduct>(OrderedChoiceParsingExpression<TChoice,TProduct> expression) {
 			var precedence = expression.HandleWith(_precedenceHandler);
-			var choiceStrings = expression.Choices.Select(childExpression => {
+
+			return expression.Choices.Select(childExpression => {
 				var childPrecedence = childExpression.HandleWith(_precedenceHandler);
 				var childString = childExpression.HandleWith(this);
 
 				return precedence >= childPrecedence
 					? Parenthesized(childString)
 					: childString;
-			});
+			})
+			.JoinStrings(" / ");
+		}
 
-			return string.Join(" / ", choiceStrings.ToArray());
+		public string Handle<TProduct>(LiteralSetParsingExpression<TProduct> expression) {
+			return expression.Literals
+				.Select(literal => StringUtils.LiteralEncode(literal))
+				.JoinStrings(" / ");
 		}
 
 		public string Handle<TChoice,TProduct>(UnorderedChoiceParsingExpression<TChoice,TProduct> expression) {

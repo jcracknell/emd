@@ -10,6 +10,7 @@ namespace pegleg.cs.Parsing {
 		T Handle(CharacterSetParsingExpression expression);
 		T Handle<TProduct>(DynamicParsingExpression<TProduct> expression);
 		T Handle<TProduct>(LiteralParsingExpression<TProduct> expression);
+		T Handle<TProduct>(LiteralSetParsingExpression<TProduct> expression);
 		T Handle(EndOfInputParsingExpression expression);
 		T Handle<TProduct>(NamedParsingExpression<TProduct> expression);
 		T Handle(NotAheadParsingExpression expression);

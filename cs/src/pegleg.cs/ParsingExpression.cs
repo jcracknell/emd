@@ -46,6 +46,22 @@ namespace pegleg.cs {
 
 		#endregion
 		
+		#region LiteralIn
+
+		public static IParsingExpression<Nil> LiteralIn(params IEnumerable<string>[] literals) {
+			return new NonCapturingLiteralSetParsingExpression(literals.Flatten());
+		}
+
+		public static IParsingExpression<Nil> LiteralIn(params string[] literals) {
+			return new NonCapturingLiteralSetParsingExpression(literals);
+		}
+
+		public static IParsingExpression<TProduct> LiteralIn<TProduct>(IEnumerable<string> literals, Func<IMatch<string>, TProduct> matchAction) {
+			return new CapturingLiteralSetParsingExpression<TProduct>(literals, matchAction);
+		}
+
+		#endregion
+
 		public static IParsingExpression<Nil> CharacterInRange(char rangeStart, char rangeEnd) {
 			return new CharacterSetParsingExpression(CharUtils.Range(rangeStart, rangeEnd));
 		}
