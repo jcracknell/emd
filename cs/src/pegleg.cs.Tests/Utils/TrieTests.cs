@@ -75,5 +75,30 @@ namespace pegleg.cs.Utils {
 			subtrie.HasValue.Should().BeTrue();
 			subtrie.Value.Should().Be(42);
 		}
+
+		[Fact] public void Trie_Values_should_be_empty_for_empty_trie() {
+			var trie = new Trie<char, int>();
+
+			trie.Values.Should().NotBeNull();
+			trie.Values.Should().BeEmpty();
+		}
+
+		[Fact] public void Trie_Values_should_contain_the_only_value() {
+			var trie = new Trie<char, int>();
+			trie.SetValue("foo", 42);
+
+			trie.Values.Should().NotBeEmpty();
+			trie.Values.Should().BeEquivalentTo(new int[] { 42 });
+		}
+
+		[Fact] public void Trie_Values_should_contain_all_values() {
+			var trie = new Trie<char, int>();
+			trie.SetValue("foo", 42);
+			trie.SetValue("foobar", 13);
+			trie.SetValue("fizban", 53);
+			trie.SetValue("fizbang", 12);
+
+			trie.Values.Should().Contain(new int[] { 42, 13, 53, 12 });
+		}
 	}
 }

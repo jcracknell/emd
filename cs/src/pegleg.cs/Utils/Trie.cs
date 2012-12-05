@@ -19,6 +19,26 @@ namespace pegleg.cs.Utils {
 		
 		public TValue Value { get { return _value; } }
 
+		private IEnumerable<Trie<TKey, TValue>> Subtries {
+			get {
+				if(0 == _numChildren)
+					return Enumerable.Empty<Trie<TKey, TValue>>();
+				if(1 == _numChildren)
+					return _childTrie.InEnumerable();
+				return _children.Values;
+			}
+		}
+
+		public IEnumerable<TValue> Values {
+			get {
+				if(_hasValue) {
+					return _value.InEnumerable().Concat(Subtries.SelectMany(subtrie => subtrie.Values));
+				} else {
+					return Subtries.SelectMany(subtrie => subtrie.Values);
+				}
+			}
+		}
+
 		public void SetValue(IEnumerable<TKey> path, TValue value) {
 			SetValue(path.GetEnumerator(), value);
 		}
