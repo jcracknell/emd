@@ -198,9 +198,7 @@ namespace markdom.cs.Grammar {
 
 		public static readonly IParsingExpression<string>
 		NamedEntity = Named(() => NamedEntity,
-			ChoiceOrdered(
-				EntityInfo.EntityNames.OrderByDescending(name => name.Length).Select(Literal),
-				match => EntityInfo.GetEntityValue(match.String))
+			LiteralIn(EntityInfo.EntityNames, match => EntityInfo.GetEntityValue(match.Product))
 		);
 
 		public static readonly IParsingExpression<string>

@@ -1272,7 +1272,7 @@ namespace markdom.cs.Grammar {
 		ExpressionKeyword =
 			Named(() => ExpressionKeyword,
 				Sequence(
-					ChoiceUnordered(new string[] {
+					LiteralIn(
 						"break",
 						"case",
 						"catch",
@@ -1308,8 +1308,7 @@ namespace markdom.cs.Grammar {
 						"var",
 						"void",
 						"while",
-						"with"
-					}.Select(Literal)),
+						"with"),
 					NotAhead(Reference(() => IdentifierPart))));
 
 			#endregion
