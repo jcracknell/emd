@@ -5,8 +5,6 @@ using System.Text;
 
 namespace pegleg.cs.Parsing {
 	public abstract class CacheingParsingExpression<TProduct> : BaseParsingExpression<TProduct> {
-		public CacheingParsingExpression(ParsingExpressionKind kind) : base(kind) { }
-
 		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
 			IMatchingResult<TProduct> cachedResult;
 			if(context.ConsumesCachedResultFor(this, out cachedResult))

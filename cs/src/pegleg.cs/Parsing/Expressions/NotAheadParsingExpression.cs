@@ -7,9 +7,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class NotAheadParsingExpression : BaseParsingExpression<Nil> {
 		protected readonly IParsingExpression _body;
 
-		public NotAheadParsingExpression(IParsingExpression body)
-			: base(ParsingExpressionKind.NegativeLookahead)
-		{
+		public NotAheadParsingExpression(IParsingExpression body) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 			
 			_body = body;

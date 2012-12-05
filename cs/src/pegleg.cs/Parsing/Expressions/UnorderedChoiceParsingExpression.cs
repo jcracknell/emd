@@ -10,9 +10,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		private readonly int[] _choiceOrder;
 		private readonly uint[] _choiceHits;
 
-		public UnorderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices)
-			: base(ParsingExpressionKind.UnorderedChoice)
-		{
+		public UnorderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices) {
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
 			CodeContract.ArgumentIsValid(() => choices, choices.Length >= 2, "must have length of at least two");
 	

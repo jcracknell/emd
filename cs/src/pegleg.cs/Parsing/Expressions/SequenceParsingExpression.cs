@@ -7,9 +7,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public abstract class SequenceParsingExpression<TProduct> : BaseParsingExpression<TProduct> {
 		protected readonly IParsingExpression[] _sequence;
 
-		public SequenceParsingExpression(IParsingExpression[] sequence)
-			: base(ParsingExpressionKind.OrderedChoice)
-		{
+		public SequenceParsingExpression(IParsingExpression[] sequence) {
 			CodeContract.ArgumentIsNotNull(() => sequence, sequence);
 			CodeContract.ArgumentIsValid(() => sequence, sequence.Length >= 2, "must have length of at least two");
 

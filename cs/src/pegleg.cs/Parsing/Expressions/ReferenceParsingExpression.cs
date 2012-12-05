@@ -8,9 +8,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		private readonly Func<IParsingExpression<TReferenced>> _reference;
 		private IParsingExpression<TReferenced> _referencedExpression;
 
-		public ReferenceParsingExpression(Func<IParsingExpression<TReferenced>> reference)
-			: base(ParsingExpressionKind.Reference)
-		{
+		public ReferenceParsingExpression(Func<IParsingExpression<TReferenced>> reference) {
 			_reference = reference;
 			_referencedExpression = null;
 		}

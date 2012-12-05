@@ -11,9 +11,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly uint _maxOccurs;
 		protected readonly IParsingExpression<TBody> _body;
 
-		public RepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression<TBody> body)
-			: base(ParsingExpressionKind.Repetition)
-		{
+		public RepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression<TBody> body) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 			CodeContract.ArgumentIsValid(() => maxOccurs, UNBOUNDED == maxOccurs || maxOccurs >= minOccurs, "must be greater than or equal to minOccurs");
 

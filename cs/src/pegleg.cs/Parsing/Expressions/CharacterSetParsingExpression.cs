@@ -8,9 +8,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		private readonly bool[] _acceptanceMap;
 		private readonly int _offset;
 
-		public CharacterSetParsingExpression(IEnumerable<char> characters)
-			: base(ParsingExpressionKind.CharacterSet)
-		{
+		public CharacterSetParsingExpression(IEnumerable<char> characters) {
 			CodeContract.ArgumentIsNotNull(() => characters, characters);
 			CodeContract.ArgumentIsValid(() => characters, characters.Any(), "cannot be empty");
 

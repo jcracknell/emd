@@ -7,9 +7,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class DynamicParsingExpression<TProduct> : BaseParsingExpression<TProduct> {
 		private readonly Func<IParsingExpression<TProduct>> _expression;
 
-		public DynamicParsingExpression(Func<IParsingExpression<TProduct>> expression)
-			: base(ParsingExpressionKind.Closure)
-		{
+		public DynamicParsingExpression(Func<IParsingExpression<TProduct>> expression) {
 			CodeContract.ArgumentIsNotNull(() => expression, expression);
 
 			_expression = expression;

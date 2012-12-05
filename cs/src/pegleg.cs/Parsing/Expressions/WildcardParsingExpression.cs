@@ -13,8 +13,6 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public static WildcardParsingExpression Instance { get { return _instance; } }
 
-		private WildcardParsingExpression() : base(ParsingExpressionKind.Wildcard) { }
-
 		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			if(context.ConsumesAnyCharacter())
 				return SuccessfulMatchingResult.Create(Nil.Value, 1);

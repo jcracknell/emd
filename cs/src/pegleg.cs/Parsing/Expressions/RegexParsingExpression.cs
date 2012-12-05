@@ -8,9 +8,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public abstract class RegexParsingExpression<TProduct> : BaseParsingExpression<TProduct> {
 		protected readonly Regex _regex;
 
-		public RegexParsingExpression(Regex regex)
-			: base(ParsingExpressionKind.Regex)
-		{
+		public RegexParsingExpression(Regex regex) {
 			CodeContract.ArgumentIsNotNull(() => regex, regex);
 
 			_regex = regex;

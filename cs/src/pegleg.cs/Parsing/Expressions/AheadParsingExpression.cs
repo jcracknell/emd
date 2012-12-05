@@ -8,7 +8,6 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly IParsingExpression<TBody> _body;
 
 		public AheadParsingExpression(IParsingExpression<TBody> body)
-			: base(ParsingExpressionKind.Lookahead)
 		{
 			CodeContract.ArgumentIsNotNull(() => body, body);
 

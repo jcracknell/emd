@@ -10,9 +10,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public abstract class LiteralParsingExpression<TProduct> : BaseParsingExpression<TProduct> {
 		protected readonly string _literal;
 
-		public LiteralParsingExpression(string literal)
-			: base(ParsingExpressionKind.Literal)
-		{
+		public LiteralParsingExpression(string literal) {
 			CodeContract.ArgumentIsNotNull(() => literal, literal);
 
 			_literal = literal;

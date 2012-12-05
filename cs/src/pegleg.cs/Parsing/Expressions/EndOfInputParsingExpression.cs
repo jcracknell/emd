@@ -13,8 +13,6 @@ namespace pegleg.cs.Parsing.Expressions {
 			_instance = new EndOfInputParsingExpression();
 		}
 
-		private EndOfInputParsingExpression() : base(ParsingExpressionKind.EndOfInput) { }
-
 		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			if(context.AtEndOfInput)
 				return SuccessfulMatchingResult.Create(Nil.Value, 0);

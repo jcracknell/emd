@@ -7,9 +7,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public abstract class OrderedChoiceParsingExpression<TChoice, TProduct> : CacheingParsingExpression<TProduct> {
 		protected readonly IParsingExpression<TChoice>[] _choices;
 
-		public OrderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices)
-			: base(ParsingExpressionKind.OrderedChoice)
-		{
+		public OrderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices) {
 			CodeContract.ArgumentIsNotNull(() => choices, choices);
 			CodeContract.ArgumentIsValid(() => choices, choices.Length >= 2, "must have length of at least two");
 

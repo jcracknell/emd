@@ -8,9 +8,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly string _name;
 		protected readonly IParsingExpression<TProduct> _named;
 
-		public NamedParsingExpression(string name, IParsingExpression<TProduct> named)
-			: base(ParsingExpressionKind.Named)
-		{
+		public NamedParsingExpression(string name, IParsingExpression<TProduct> named) {
 			CodeContract.ArgumentIsNotNull(() => name, name);
 			CodeContract.ArgumentIsNotNull(() => named, named);
 			

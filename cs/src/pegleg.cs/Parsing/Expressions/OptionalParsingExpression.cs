@@ -7,9 +7,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public abstract class OptionalParsingExpression<TBody, TProduct> : BaseParsingExpression<TProduct> {
 		protected readonly IParsingExpression<TBody> _body;
 
-		public OptionalParsingExpression(IParsingExpression<TBody> body)
-			: base(ParsingExpressionKind.Optional)
-		{
+		public OptionalParsingExpression(IParsingExpression<TBody> body) {
 			CodeContract.ArgumentIsNotNull(() => body, body);
 
 			_body = body;

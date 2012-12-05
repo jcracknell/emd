@@ -7,9 +7,7 @@ namespace pegleg.cs.Parsing.Expressions {
 	public class PredicateParsingExpression : BaseParsingExpression<Nil> {
 		private Func<bool> _predicate;
 
-		public PredicateParsingExpression(Func<bool> predicate)
-			: base(ParsingExpressionKind.Predicate)
-		{
+		public PredicateParsingExpression(Func<bool> predicate) {
 			CodeContract.ArgumentIsNotNull(() => predicate, predicate);
 
 			_predicate = predicate;
