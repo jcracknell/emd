@@ -63,6 +63,7 @@
     <Compile Include="Utils\CharUtilsTests.cs" />
     <Compile Include="Utils\StringUtilsTests.cs" />
     <Compile Include="Utils\TrieTests.cs" />
+    <Compile Include="Utils\UnicodeUtilsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\pegleg.cs\pegleg.cs.csproj">

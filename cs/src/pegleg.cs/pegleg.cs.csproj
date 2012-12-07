@@ -84,6 +84,7 @@
     <Compile Include="Parsing\UnsuccessfulMatchingResult.cs" />
     <Compile Include="Utils\CharacterRange.cs" />
     <Compile Include="Utils\CharUtils.cs" />
+    <Compile Include="Utils\UnicodeUtils.cs" />
     <Compile Include="Utils\Trie.cs" />
   </ItemGroup>
   <ItemGroup />
