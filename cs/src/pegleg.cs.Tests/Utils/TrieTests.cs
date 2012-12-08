@@ -100,5 +100,39 @@ namespace pegleg.cs.Utils {
 
 			trie.Values.Should().Contain(new int[] { 42, 13, 53, 12 });
 		}
+
+		[Fact] public void Trie_Clone_should_work() {
+			var trie = new Trie<char, int>();
+			trie.SetValue("foo", 42);
+			trie.SetValue("foobar", 13);
+			trie.SetValue("fizban", 53);
+			trie.SetValue("fizbang", 12);
+
+			var cloneTrie = trie.Clone();
+			cloneTrie.SetValue("fip", 17);
+
+			int value;
+
+			trie.TryGetValue("foo", out value).Should().BeTrue();
+			value.Should().Be(42);
+			trie.TryGetValue("foobar", out value).Should().BeTrue();
+			value.Should().Be(13);
+			trie.TryGetValue("fizban", out value).Should().BeTrue();
+			value.Should().Be(53);
+			trie.TryGetValue("fizbang", out value).Should().BeTrue();
+			value.Should().Be(12);
+			trie.TryGetValue("fip", out value).Should().BeFalse();
+
+			cloneTrie.TryGetValue("foo", out value).Should().BeTrue();
+			value.Should().Be(42);
+			cloneTrie.TryGetValue("foobar", out value).Should().BeTrue();
+			value.Should().Be(13);
+			cloneTrie.TryGetValue("fizban", out value).Should().BeTrue();
+			value.Should().Be(53);
+			cloneTrie.TryGetValue("fizbang", out value).Should().BeTrue();
+			value.Should().Be(12);
+			cloneTrie.TryGetValue("fip", out value).Should().BeTrue();
+			value.Should().Be(17);
+		}
 	}
 }

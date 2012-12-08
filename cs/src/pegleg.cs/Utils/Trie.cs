@@ -15,6 +15,20 @@ namespace pegleg.cs.Utils {
 
 		public Trie() { }
 
+		private Trie(Trie<TKey, TValue> prototype) {
+			_hasValue = prototype._hasValue;
+			_value = prototype._value;
+			_numChildren = prototype._numChildren;
+			if(1 == _numChildren) {
+				_childKey = prototype._childKey;
+				_childTrie = prototype._childTrie.Clone();
+			} else if(0 != _numChildren) {
+				_children = new Dictionary<TKey, Trie<TKey, TValue>>(prototype._children.Count);
+				foreach(var prototypeChild in prototype._children)
+					_children[prototypeChild.Key] = prototypeChild.Value.Clone();
+			}
+		}
+
 		public bool HasValue { get { return _hasValue; } }
 		
 		public TValue Value { get { return _value; } }
@@ -124,6 +138,10 @@ namespace pegleg.cs.Utils {
 			}
 
 			return _children.TryGetValue(key, out subtrie);
+		}
+
+		public Trie<TKey, TValue> Clone() {
+			return new Trie<TKey,TValue>(this);
 		}
 	}
 }
