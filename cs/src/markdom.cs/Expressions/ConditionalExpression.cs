@@ -13,9 +13,9 @@ namespace markdom.cs.Expressions {
 		public ConditionalExpression(IExpression condition, IExpression trueExpression, IExpression falseExpression, SourceRange sourceRange)
 			: base(sourceRange)
 		{
-			CodeContract.ArgumentIsNotNull(() => condition, condition);
-			CodeContract.ArgumentIsNotNull(() => trueExpression, trueExpression);
-			CodeContract.ArgumentIsNotNull(() => falseExpression, falseExpression);
+			if(null == condition) throw ExceptionBecause.ArgumentNull(() => condition);
+			if(null == trueExpression) throw ExceptionBecause.ArgumentNull(() => trueExpression);
+			if(null == falseExpression) throw ExceptionBecause.ArgumentNull(() => falseExpression);
 
 			_condition = condition;
 			_trueExpression = trueExpression;

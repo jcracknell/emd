@@ -12,8 +12,8 @@ namespace markdom.cs.Conversion.Html {
 		private readonly ReferenceCollection _references;
 
 		public XmlWritingNodeHandler(XmlWriter writer, ReferenceCollection references) {
-			CodeContract.ArgumentIsNotNull(() => writer, writer);
-			CodeContract.ArgumentIsNotNull(() => references, references);
+			if(null == writer) throw ExceptionBecause.ArgumentNull(() => writer);
+			if(null == references) throw ExceptionBecause.ArgumentNull(() => references);
 
 			_writer = writer;
 			_references = references;

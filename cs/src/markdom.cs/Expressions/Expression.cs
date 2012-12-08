@@ -9,7 +9,7 @@ namespace markdom.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public Expression(SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 
 			_sourceRange = sourceRange;
 		}

@@ -11,9 +11,9 @@ namespace markdom.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public CallExpression(IExpression body, IExpression[] arguments, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => body, body);
-			CodeContract.ArgumentIsNotNull(() => arguments, arguments);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
+			if(null == arguments) throw ExceptionBecause.ArgumentNull(() => arguments);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 
 			_body = body;
 			_arguments = arguments;

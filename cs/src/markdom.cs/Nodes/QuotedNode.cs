@@ -16,7 +16,7 @@ namespace markdom.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public QuotedNode(QuoteType quoteType, IInlineNode[] children, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => children, children);
+			if(null == children) throw ExceptionBecause.ArgumentNull(() => children);
 
 			_quoteType = quoteType;
 			_children = children;

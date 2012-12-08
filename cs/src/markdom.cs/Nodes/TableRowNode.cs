@@ -10,7 +10,7 @@ namespace markdom.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public TableRowNode(TableCellNode[] cells, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => cells, cells);
+			if(null == cells) throw ExceptionBecause.ArgumentNull(() => cells);
 
 			_cells = cells;
 			_sourceRange = sourceRange;

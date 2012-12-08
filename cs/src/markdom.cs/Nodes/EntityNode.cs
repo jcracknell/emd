@@ -10,8 +10,8 @@ namespace markdom.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public EntityNode(string value, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => value, value);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			if(null == value) throw ExceptionBecause.ArgumentNull(() => value);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 
 			_value = value;
 			_sourceRange = sourceRange;

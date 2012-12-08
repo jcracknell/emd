@@ -34,7 +34,7 @@ namespace pegleg.cs.Utils {
 		public static string LiteralEncode(string s) {
 			if(null == s) return "null";
 
-			CodeContract.ArgumentIsValid(() => s, int.MaxValue / 6 > s.Length, "string is too long");
+			if(!(int.MaxValue / 6 > s.Length)) throw ExceptionBecause.Argument(() => s, "string is too long");
 
 			var buffer = new char[s.Length * 6];
 			buffer[0] = '"';

@@ -10,7 +10,7 @@ namespace markdom.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public ObjectLiteralExpression(PropertyAssignment[] propertyAssignments, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => propertyAssignments, propertyAssignments);
+			if(null == propertyAssignments) throw ExceptionBecause.ArgumentNull(() => propertyAssignments);
 
 			_propertyAssignments = propertyAssignments;
 			_sourceRange = sourceRange;

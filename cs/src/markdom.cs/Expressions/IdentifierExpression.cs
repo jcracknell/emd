@@ -10,8 +10,8 @@ namespace markdom.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public IdentifierExpression(string name, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => name, name);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			if(null == name) throw ExceptionBecause.ArgumentNull(() => name);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 
 			_name = name;
 			_sourceRange = sourceRange;

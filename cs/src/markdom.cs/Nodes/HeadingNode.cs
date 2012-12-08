@@ -12,8 +12,8 @@ namespace markdom.cs.Nodes{
 
 		public HeadingNode(string text, int level, SourceRange sourceRange)
 		{
-			CodeContract.ArgumentIsNotNull(() => text, text);
-			CodeContract.ArgumentIsValid(() => level, level >= 0, "must be a non-negative integer");
+			if(null == text) throw ExceptionBecause.ArgumentNull(() => text);
+			if(!(level >= 0)) throw ExceptionBecause.Argument(() => level, "must be a non-negative integer");
 
 			_text = text;
 			_level = level;

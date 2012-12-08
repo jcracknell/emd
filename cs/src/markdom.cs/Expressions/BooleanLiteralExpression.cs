@@ -10,7 +10,7 @@ namespace markdom.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public BooleanLiteralExpression(bool value, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 
 			_value = value;
 			_sourceRange = sourceRange;

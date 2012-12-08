@@ -11,9 +11,9 @@ namespace markdom.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public DynamicPropertyExpression(IExpression body, IExpression memberName, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => body, body);
-			CodeContract.ArgumentIsNotNull(() => memberName, memberName);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
+			if(null == memberName) throw ExceptionBecause.ArgumentNull(() => memberName);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 
 			_body = body;
 			_memberName = memberName;

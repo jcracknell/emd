@@ -11,9 +11,9 @@ namespace markdom.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public PropertyAssignment(string propertyName, IExpression propertyValue, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => propertyName, propertyName);
-			CodeContract.ArgumentIsValid(() => propertyName, 0 != propertyName.Length, "cannot be empty");
-			CodeContract.ArgumentIsNotNull(() => propertyValue, propertyValue);
+			if(null == propertyName) throw ExceptionBecause.ArgumentNull(() => propertyName);
+			if(!(0 != propertyName.Length)) throw ExceptionBecause.Argument(() => propertyName, "cannot be empty");
+			if(null == propertyValue) throw ExceptionBecause.ArgumentNull(() => propertyValue);
 
 			_propertyName = propertyName;
 			_propertyValue = propertyValue;

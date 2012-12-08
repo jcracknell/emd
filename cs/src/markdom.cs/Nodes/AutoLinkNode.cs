@@ -13,8 +13,8 @@ namespace markdom.cs.Nodes{
 
 		public AutoLinkNode(string uri, IExpression[] arguments, SourceRange sourceRange)
 		{
-			CodeContract.ArgumentIsNotNull(() => uri, uri);
-			CodeContract.ArgumentIsNotNull(() => arguments, arguments);
+			if(null == uri) throw ExceptionBecause.ArgumentNull(() => uri);
+			if(null == arguments) throw ExceptionBecause.ArgumentNull(() => arguments);
 			
 			_uri = uri;
 			_arguments = arguments;	

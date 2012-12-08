@@ -21,8 +21,8 @@ namespace pegleg.cs.Parsing {
 		{ }
 
 		public MatchingContext(string source, SourceRange[] parts) {
-			CodeContract.ArgumentIsNotNull(() => source, source);
-			CodeContract.ArgumentIsNotNull(() => parts, parts);
+			if(null == source) throw ExceptionBecause.ArgumentNull(() => source);
+			if(null == parts) throw ExceptionBecause.ArgumentNull(() => parts);
 
 			_consumable = source;
 			_parts = parts;
@@ -92,7 +92,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public bool ConsumesMatching(string literal) {
-			CodeContract.ArgumentIsNotNull(() => literal, literal);
+			if(null == literal) throw ExceptionBecause.ArgumentNull(() => literal);
 			
 			var len = literal.Length;
 			if(len > _consumable.Length - _index)
@@ -107,7 +107,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public bool ConsumesMatching(Regex regex) {
-			CodeContract.ArgumentIsNotNull(() => regex, regex);
+			if(null == regex) throw ExceptionBecause.ArgumentNull(() => regex);
 
 			var match = regex.Match(_consumable, _index);
 			if(match.Success && match.Index == _index) {
@@ -119,7 +119,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public bool ConsumesMatching(Regex regex, out Match match) {
-			CodeContract.ArgumentIsNotNull(() => regex, regex);
+			if(null == regex) throw ExceptionBecause.ArgumentNull(() => regex);
 
 			match = regex.Match(_consumable, _index);
 			if(match.Success && match.Index == _index) {

@@ -8,7 +8,7 @@ namespace markdom.cs.Expressions.Evaluation {
 		private readonly string _value;
 
 		public StringValue(string value) {
-			CodeContract.ArgumentIsNotNull(() => value, value);
+			if(null == value) throw ExceptionBecause.ArgumentNull(() => value);
 
 			_value = value;
 		}

@@ -11,8 +11,8 @@ namespace markdom.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public ExpressionBlockNode(IExpression expression, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => expression, expression);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			if(null == expression) throw ExceptionBecause.ArgumentNull(() => expression);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 
 			_expression = expression;
 			_sourceRange = sourceRange;

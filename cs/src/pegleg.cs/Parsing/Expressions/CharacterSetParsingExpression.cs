@@ -9,8 +9,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		private readonly int _offset;
 
 		public CharacterSetParsingExpression(IEnumerable<char> characters) {
-			CodeContract.ArgumentIsNotNull(() => characters, characters);
-			CodeContract.ArgumentIsValid(() => characters, characters.Any(), "cannot be empty");
+			if(null == characters) throw ExceptionBecause.ArgumentNull(() => characters);
+			if(!characters.Any()) throw ExceptionBecause.Argument(() => characters, "cannot be empty");
 
 			var max = -1;
 			var min = int.MaxValue;

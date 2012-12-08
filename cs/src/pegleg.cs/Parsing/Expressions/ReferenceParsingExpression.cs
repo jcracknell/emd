@@ -40,7 +40,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public CapturingReferenceParsingExpression(Func<IParsingExpression<TReferenced>> reference, Func<IMatch<TReferenced>, TProduct> matchAction)
 			: base(reference)
 		{
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
+			if(null == matchAction) throw ExceptionBecause.ArgumentNull(() => matchAction);
 
 			_matchAction = matchAction;
 		}

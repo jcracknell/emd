@@ -11,7 +11,7 @@ namespace markdom.cs.Expressions {
 		public UnaryExpression(IExpression body, SourceRange sourceRange)
 			: base(sourceRange)
 		{
-			CodeContract.ArgumentIsNotNull(() => body, body);
+			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
 
 			_body = body;
 		}

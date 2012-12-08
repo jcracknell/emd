@@ -8,7 +8,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		private Func<bool> _predicate;
 
 		public PredicateParsingExpression(Func<bool> predicate) {
-			CodeContract.ArgumentIsNotNull(() => predicate, predicate);
+			if(null == predicate) throw ExceptionBecause.ArgumentNull(() => predicate);
 
 			_predicate = predicate;
 		}

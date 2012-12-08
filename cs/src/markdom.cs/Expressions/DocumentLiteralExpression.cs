@@ -11,8 +11,8 @@ namespace markdom.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public DocumentLiteralExpression(INode[] content, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => content, content);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			if(null == content) throw ExceptionBecause.ArgumentNull(() => content);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 
 			_content = content;
 			_sourceRange = sourceRange;

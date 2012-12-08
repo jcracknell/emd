@@ -12,7 +12,7 @@ namespace markdom.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public ReferenceNode(ReferenceId referenceId, IExpression[] arguments, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => arguments, arguments);
+			if(null == arguments) throw ExceptionBecause.ArgumentNull(() => arguments);
 
 			_referenceId = referenceId;
 			_arguments = arguments;

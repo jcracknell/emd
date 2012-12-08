@@ -9,7 +9,7 @@ using System.Xml;
 namespace markdom.cs.Conversion.Html {
 	public static class HtmlConverter {
 		public static void Convert(MarkdomDocumentNode document, Stream ostream) {
-			CodeContract.ArgumentIsNotNull(() => document, document);
+			if(null == document) throw ExceptionBecause.ArgumentNull(() => document);
 
 			var references = new ReferenceCollection(document);
 

@@ -8,7 +8,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly IParsingExpression _body;
 
 		public NotAheadParsingExpression(IParsingExpression body) {
-			CodeContract.ArgumentIsNotNull(() => body, body);
+			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
 			
 			_body = body;
 		}

@@ -11,7 +11,7 @@ namespace markdom.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public InlineExpressionNode(IExpression expression, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => expression, expression);
+			if(null == expression) throw ExceptionBecause.ArgumentNull(() => expression);
 
 			_expression = expression;
 			_sourceRange = sourceRange;

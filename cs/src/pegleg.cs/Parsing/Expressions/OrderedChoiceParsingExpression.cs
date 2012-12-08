@@ -8,8 +8,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly IParsingExpression<TChoice>[] _choices;
 
 		public OrderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices) {
-			CodeContract.ArgumentIsNotNull(() => choices, choices);
-			CodeContract.ArgumentIsValid(() => choices, choices.Length >= 2, "must have length of at least two");
+			if(null == choices) throw ExceptionBecause.ArgumentNull(() => choices);
+			if(!(choices.Length >= 2)) throw ExceptionBecause.Argument(() => choices, "must have length of at least two");
 
 			_choices = choices;
 		}
@@ -65,7 +65,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public CapturingOrderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices, Func<IMatch<TChoice>, TProduct> matchAction)
 			: base(choices)
 		{
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
+			if(null == matchAction) throw ExceptionBecause.ArgumentNull(() => matchAction);
 
 			_matchAction = matchAction;
 		}

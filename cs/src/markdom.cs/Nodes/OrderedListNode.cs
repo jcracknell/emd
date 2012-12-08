@@ -13,8 +13,8 @@ namespace markdom.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public OrderedListNode(OrderedListCounterStyle counterStyle, OrderedListSeparatorStyle separatorStyle, int start, OrderedListItemNode[] items, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => items, items);
-			CodeContract.ArgumentIsValid(() => items, items.Length >= 1, "cannot be empty");
+			if(null == items) throw ExceptionBecause.ArgumentNull(() => items);
+			if(!(items.Length >= 1)) throw ExceptionBecause.Argument(() => items, "cannot be empty");
 
 			_counterStyle = counterStyle;
 			_separatorStyle = separatorStyle;

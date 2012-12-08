@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeContract.cs" />
+    <Compile Include="ExceptionBecause.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Parsing\BaseParsingExpression.cs" />
     <Compile Include="Parsing\CacheingParsingExpression.cs" />

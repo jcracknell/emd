@@ -11,7 +11,7 @@ namespace markdom.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public MarkdomDocumentNode(IBlockNode[] content, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => content, content);
+			if(null == content) throw ExceptionBecause.ArgumentNull(() => content);
 
 			_content = content;
 			_sourceRange = sourceRange;

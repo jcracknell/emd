@@ -10,7 +10,7 @@ namespace markdom.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public UnorderedListItemNode(INode[] children, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => children, children);
+			if(null == children) throw ExceptionBecause.ArgumentNull(() => children);
 
 			_children = children;
 			_sourceRange = sourceRange;

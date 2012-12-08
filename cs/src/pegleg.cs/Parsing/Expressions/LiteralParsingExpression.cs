@@ -11,7 +11,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly string _literal;
 
 		public LiteralParsingExpression(string literal) {
-			CodeContract.ArgumentIsNotNull(() => literal, literal);
+			if(null == literal) throw ExceptionBecause.ArgumentNull(() => literal);
 
 			_literal = literal;
 		}
@@ -40,7 +40,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public CapturingLiteralParsingExpression(string literal, Func<IMatch<string>, TProduct> matchAction)
 			: base(literal)
 		{
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
+			if(null == matchAction) throw ExceptionBecause.ArgumentNull(() => matchAction);
 
 			_matchAction = matchAction;
 		}

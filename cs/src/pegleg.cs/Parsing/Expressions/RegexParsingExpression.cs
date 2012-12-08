@@ -9,7 +9,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly Regex _regex;
 
 		public RegexParsingExpression(Regex regex) {
-			CodeContract.ArgumentIsNotNull(() => regex, regex);
+			if(null == regex) throw ExceptionBecause.ArgumentNull(() => regex);
 
 			_regex = regex;
 		}
@@ -38,7 +38,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public CapturingRegexParsingExpression(Regex regex, Func<IMatch<Match>, TProduct> matchAction)
 			: base(regex)
 		{
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
+			if(null == matchAction) throw ExceptionBecause.ArgumentNull(() => matchAction);
 
 			_matchAction = matchAction;
 		}

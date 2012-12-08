@@ -8,7 +8,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly IParsingExpression<TBody> _body;
 
 		public OptionalParsingExpression(IParsingExpression<TBody> body) {
-			CodeContract.ArgumentIsNotNull(() => body, body);
+			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
 
 			_body = body;
 		}
@@ -43,8 +43,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		public CapturingOptionalParsingExpression(IParsingExpression<TBody> body, Func<IMatch<TBody>, TProduct> matchAction, Func<IMatch<Nil>, TProduct> noMatchAction)
 			: base(body)
 		{
-			CodeContract.ArgumentIsNotNull(() => matchAction, matchAction);
-			CodeContract.ArgumentIsNotNull(() => noMatchAction, noMatchAction);
+			if(null == matchAction) throw ExceptionBecause.ArgumentNull(() => matchAction);
+			if(null == noMatchAction) throw ExceptionBecause.ArgumentNull(() => noMatchAction);
 
 			_matchAction = matchAction;
 			_noMatchAction = noMatchAction;

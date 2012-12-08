@@ -11,11 +11,11 @@ namespace pegleg.cs.Parsing {
 		public readonly int Length;
 
 		public SourceRange(int index, int length, int line, int lineIndex) {
-			CodeContract.ArgumentIsValid(() => index, index >= 0, "must be a non-negative integer");
-			CodeContract.ArgumentIsValid(() => length, length >= 0, "must be non-negative integer");
-			CodeContract.ArgumentIsValid(() => line, line >= 1, "must be a positive integer");
-			CodeContract.ArgumentIsValid(() => lineIndex, lineIndex >= 0, "must be a non-negative integer");
-			CodeContract.ArgumentIsValid(() => lineIndex, lineIndex <= index, "must be less than index");
+			if(!(index >= 0)) throw ExceptionBecause.Argument(() => index, "must be a non-negative integer");
+			if(!(length >= 0)) throw ExceptionBecause.Argument(() => length, "must be non-negative integer");
+			if(!(line >= 1)) throw ExceptionBecause.Argument(() => line, "must be a positive integer");
+			if(!(lineIndex >= 0)) throw ExceptionBecause.Argument(() => lineIndex, "must be a non-negative integer");
+			if(!(lineIndex <= index)) throw ExceptionBecause.Argument(() => lineIndex, "must be less than index");
 
 			Index = index;
 			Line = line;

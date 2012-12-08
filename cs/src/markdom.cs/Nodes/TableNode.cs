@@ -10,8 +10,8 @@ namespace markdom.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public TableNode(TableRowNode[] rows, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => rows, rows);
-			CodeContract.ArgumentIsValid(() => rows, rows.Length > 0, "cannot be empty");
+			if(null == rows) throw ExceptionBecause.ArgumentNull(() => rows);
+			if(!(rows.Length > 0)) throw ExceptionBecause.Argument(() => rows, "cannot be empty");
 
 			_rows = rows;
 			_sourceRange = sourceRange;

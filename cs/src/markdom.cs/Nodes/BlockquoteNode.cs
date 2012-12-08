@@ -10,8 +10,8 @@ namespace markdom.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public BlockquoteNode(IBlockNode[] children, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => children, children);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			if(null == children) throw ExceptionBecause.ArgumentNull(() => children);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 			
 			_children = children;
 			_sourceRange = sourceRange;

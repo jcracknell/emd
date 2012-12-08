@@ -10,8 +10,8 @@ namespace markdom.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public TextNode(string text, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => text, text);
-			CodeContract.ArgumentIsValid(() => text, !string.IsNullOrEmpty(text), "cannot be empty");
+			if(null == text) throw ExceptionBecause.ArgumentNull(() => text);
+			if(string.IsNullOrEmpty(text)) throw ExceptionBecause.Argument(() => text, "cannot be empty");
 
 			_text = text;
 			_sourceRange = sourceRange;

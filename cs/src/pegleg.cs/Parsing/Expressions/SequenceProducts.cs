@@ -8,7 +8,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly object[] _products;
 
 		public SequenceProducts(object[] products) {
-			CodeContract.ArgumentIsNotNull(() => products, products);
+			if(null == products) throw ExceptionBecause.ArgumentNull(() => products);
 
 			_products = products;	
 		}

@@ -13,9 +13,9 @@ namespace markdom.cs.Nodes{
 
 		public TableCellNode(int columnSpan, int rowSpan, IInlineNode[] children, SourceRange sourceRange)
 		{
-			CodeContract.ArgumentIsNotNull(() => children, children);
-			CodeContract.ArgumentIsValid(() => rowSpan, rowSpan > 0, "must be a positive integer");
-			CodeContract.ArgumentIsValid(() => columnSpan, columnSpan > 0, "must be a positive integer");
+			if(null == children) throw ExceptionBecause.ArgumentNull(() => children);
+			if(!(rowSpan > 0)) throw ExceptionBecause.Argument(() => rowSpan, "must be a positive integer");
+			if(!(columnSpan > 0)) throw ExceptionBecause.Argument(() => columnSpan, "must be a positive integer");
 
 			_rowSpan = rowSpan;
 			_columnSpan = columnSpan;

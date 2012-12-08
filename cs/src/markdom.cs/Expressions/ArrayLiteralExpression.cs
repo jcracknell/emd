@@ -10,8 +10,8 @@ namespace markdom.cs.Expressions {
 		private SourceRange _sourceRange;
 
 		public ArrayLiteralExpression(IExpression[] elements, SourceRange sourceRange) {
-			CodeContract.ArgumentIsNotNull(() => elements, elements);
-			CodeContract.ArgumentIsNotNull(() => sourceRange, sourceRange);
+			if(null == elements) throw ExceptionBecause.ArgumentNull(() => elements);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 
 			_elements = elements;
 			_sourceRange = sourceRange;

@@ -40,7 +40,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeContract.cs" />
+    <Compile Include="ExceptionBecause.cs" />
     <Compile Include="Conversion\Html\HtmlConverter.cs" />
     <Compile Include="Conversion\ReferenceCollection.cs" />
     <Compile Include="Conversion\ReferenceExtractingNodeHandler.cs" />

@@ -12,8 +12,8 @@ namespace markdom.cs.Expressions {
 		public BinaryExpression(IExpression left, IExpression right, SourceRange sourceRange)
 			: base(sourceRange)
 		{ 
-			CodeContract.ArgumentIsNotNull(() => left, left);
-			CodeContract.ArgumentIsNotNull(() => right, right);
+			if(null == left) throw ExceptionBecause.ArgumentNull(() => left);
+			if(null == right) throw ExceptionBecause.ArgumentNull(() => right);
 
 			_left = left;
 			_right = right;
