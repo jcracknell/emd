@@ -44,17 +44,16 @@ namespace pegleg.cs.Utils {
 		/// <param name="index">The start position in <paramref name="str"/> from which grapheme information should be retrieved.</param>
 		/// <param name="length">The length of the grapheme starting at <paramref name="index"/> in <paramref name="str"/>.</param>
 		public static UnicodeCategory GetGraphemeInfo(string str, int index, out int length) {
+			if(null == str) throw ExceptionBecause.ArgumentNull(() => str);
+
 			// The logic of this method is based heavily on that of System.Globalization.StringInfo::GetNextTextElement(string,int):string,
 			// modified to create a much more flexible method.
 			// It makes use of System.Globalization.CharUnicodeInfo::InternalGetUnicodeCategory(string, int, out int):UnicodeCategory, an
 			// internal method, in order to be able to retrieve the length and category of a character at a specified index in a single
 			// operation.
 
-			var i = index;
-
 			// Category is determined entirely by the first element
-			UnicodeCategory category = CharUnicodeInfo_InternalGetUnicodeCategory(str, i, out length);
-			i += length;
+			var category = CharUnicodeInfo_InternalGetUnicodeCategory(str, index, out length);
 		
 			// Can we add combining marks to the initial character?
 			if(
@@ -65,11 +64,16 @@ namespace pegleg.cs.Utils {
 				&& UnicodeCategory.Surrogate != category
 			) {
 				// Read any combining marks following the initial character.
-				var strLength = str.Length;
-				while(strLength != i && IsCombiningCategory(CharUnicodeInfo_InternalGetUnicodeCategory(str, i, out length)))
-					i += length;
+				int currentCharLength;
+				int currentIndex = index + length;
+				int strLength = str.Length;
+				if(strLength != currentIndex && IsCombiningCategory(CharUnicodeInfo_InternalGetUnicodeCategory(str, currentIndex, out currentCharLength))) {
+					while(strLength != currentIndex && IsCombiningCategory(CharUnicodeInfo_InternalGetUnicodeCategory(str, currentIndex, out currentCharLength)))
+						currentIndex += currentCharLength;
 
-				length = i - index;
+					// Update length now that we have consumed combining marks
+					length = currentIndex - index;
+				}
 			}
 
 			return category;
