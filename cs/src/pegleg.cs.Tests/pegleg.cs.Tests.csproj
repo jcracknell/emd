@@ -60,6 +60,7 @@
     <Compile Include="Parsing\Expressions\SequenceProductsTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestExtensions.cs" />
+    <Compile Include="UnicodeCriteriaTests.cs" />
     <Compile Include="Utils\CharUtilsTests.cs" />
     <Compile Include="Utils\StringUtilsTests.cs" />
     <Compile Include="Utils\TrieTests.cs" />
