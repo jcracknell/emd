@@ -3,7 +3,6 @@ using markdom.cs.Nodes;
 using markdom.cs.Utils;
 using pegleg.cs;
 using pegleg.cs.Parsing;
-using pegleg.cs.Unicode;
 using pegleg.cs.Utils;
 using System;
 using System.Collections.Generic;
@@ -254,7 +253,7 @@ namespace markdom.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		UnicodeCharacter =
 			Named(() => UnicodeCharacter,
-				UnicodeParsingExpressions.UnicodeCharacterIn(UnicodeCategories.All));
+				Character(UnicodeCriteria.AnyCharacter));
 
 		#endregion
 	}

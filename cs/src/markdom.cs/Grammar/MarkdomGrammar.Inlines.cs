@@ -250,7 +250,7 @@ namespace markdom.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		NormalChar =
 			Named(() => NormalChar,
-				UnicodeParsingExpressions.UnicodeCharacterNotIn(whitespaceCharValues, specialCharValues));
+				CharacterNotIn(whitespaceCharValues, specialCharValues));
 
 		public static readonly IParsingExpression<SymbolNode>
 		Symbol =

@@ -9,10 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pegleg.cs.Tests", "pegleg.c
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "markdom.cs.Tests", "markdom.cs.Tests\markdom.cs.Tests.csproj", "{87B1B0BE-7CE4-4A1C-A027-7504425D8544}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pegleg.cs.Unicode", "pegleg.cs.Unicode\pegleg.cs.Unicode.csproj", "{10961B7C-4728-42CF-94BB-915CCDF8AEE4}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pegleg.cs.Unicode.Tests", "pegleg.cs.Unicode.Tests\pegleg.cs.Unicode.Tests.csproj", "{DC1784E0-C12F-4AA4-8CDE-9BF3A3627E90}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "markdom.cs.Profile", "markdom.cs.Profile\markdom.cs.Profile.csproj", "{1EC33798-96C9-483C-AFF6-25A26CB015DA}"
 EndProject
 Global
@@ -37,14 +33,6 @@ Global
 		{87B1B0BE-7CE4-4A1C-A027-7504425D8544}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87B1B0BE-7CE4-4A1C-A027-7504425D8544}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87B1B0BE-7CE4-4A1C-A027-7504425D8544}.Release|Any CPU.Build.0 = Release|Any CPU
-		{10961B7C-4728-42CF-94BB-915CCDF8AEE4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{10961B7C-4728-42CF-94BB-915CCDF8AEE4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{10961B7C-4728-42CF-94BB-915CCDF8AEE4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{10961B7C-4728-42CF-94BB-915CCDF8AEE4}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC1784E0-C12F-4AA4-8CDE-9BF3A3627E90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC1784E0-C12F-4AA4-8CDE-9BF3A3627E90}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC1784E0-C12F-4AA4-8CDE-9BF3A3627E90}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC1784E0-C12F-4AA4-8CDE-9BF3A3627E90}.Release|Any CPU.Build.0 = Release|Any CPU
 		{1EC33798-96C9-483C-AFF6-25A26CB015DA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{1EC33798-96C9-483C-AFF6-25A26CB015DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EC33798-96C9-483C-AFF6-25A26CB015DA}.Release|Any CPU.ActiveCfg = Release|Any CPU

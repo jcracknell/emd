@@ -166,10 +166,6 @@
     <Compile Include="Utils\TextUtils.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\pegleg.cs.Unicode\pegleg.cs.Unicode.csproj">
-      <Project>{10961b7c-4728-42cf-94bb-915ccdf8aee4}</Project>
-      <Name>pegleg.cs.Unicode</Name>
-    </ProjectReference>
     <ProjectReference Include="..\pegleg.cs\pegleg.cs.csproj">
       <Project>{22b38652-7706-4151-a2f0-31429e3f832a}</Project>
       <Name>pegleg.cs</Name>

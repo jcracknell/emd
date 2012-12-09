@@ -1,9 +1,9 @@
 ﻿using markdom.cs.Expressions;
 using markdom.cs.Utils;
 using pegleg.cs;
-using pegleg.cs.Unicode;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 
@@ -850,14 +850,16 @@ namespace markdom.cs.Grammar {
 		private static readonly IParsingExpression<Nil>
 		identifierExpressionStart =
 			ChoiceOrdered(
-				UnicodeParsingExpressions.UnicodeCharacterIn(
-					UnicodeCategories.Lu,
-					UnicodeCategories.Ll,
-					UnicodeCategories.Lt,
-					UnicodeCategories.Lm,
-					UnicodeCategories.Nl),
-				Literal("$"),
-				Literal("_"),
+				Character(
+					UnicodeCriteria.NoCharacter
+						.Save(
+							UnicodeCategory.UppercaseLetter,
+							UnicodeCategory.LowercaseLetter,
+							UnicodeCategory.TitlecaseLetter,
+							UnicodeCategory.ModifierLetter,
+							UnicodeCategory.OtherLetter,
+							UnicodeCategory.LetterNumber)
+						.Save('$', '_')),
 				Sequence(Literal("\\"), Reference(() => ExpressionUnicodeEscapeSequence)));
 
 		public static readonly IParsingExpression<Nil>
@@ -865,12 +867,14 @@ namespace markdom.cs.Grammar {
 			Named(() => IdentifierPart,
 				ChoiceOrdered(
 					identifierExpressionStart,
-					UnicodeParsingExpressions.UnicodeCharacterIn(
-						UnicodeCategories.Mn,
-						UnicodeCategories.Mc,
-						UnicodeCategories.Nd,
-						UnicodeCategories.Pc),
-					CharacterIn(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D')));
+					Character(
+						UnicodeCriteria.NoCharacter
+							.Save(
+								UnicodeCategory.NonSpacingMark,
+								UnicodeCategory.SpacingCombiningMark,
+								UnicodeCategory.DecimalDigitNumber,
+								UnicodeCategory.ConnectorPunctuation)
+							.Save(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D'))));
 
 		public static readonly IParsingExpression<IdentifierExpression>
 		IdentifierExpression =
@@ -1199,7 +1203,7 @@ namespace markdom.cs.Grammar {
 						Reference(() => ExpressionUnicodeEscapeSequence),
 						Reference(() => NewLine),
 						Reference(() => UnicodeCharacter))),
-					UnicodeParsingExpressions.UnicodeCharacterNotIn(lineTerminatorCharValues));
+					Character(UnicodeCriteria.AnyCharacter.Save(lineTerminatorCharValues)));
 
 		#endregion
 
