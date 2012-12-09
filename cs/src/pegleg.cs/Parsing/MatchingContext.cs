@@ -147,18 +147,6 @@ namespace pegleg.cs.Parsing {
 			}
 		}
 
-		public bool ConsumesCharacter(bool[] acceptanceMap, int offset) {
-			if(AtEndOfInput) return false;
-
-			var cv = _consumable[_index] - offset;
-			if(0 <= cv && cv < acceptanceMap.Length && acceptanceMap[cv]) {
-				Consume(1);
-				return true;
-			} else {
-				return false;
-			}
-		}
-
 		public bool ConsumesAnyCharacter(out char c) {
 			if(AtEndOfInput) {
 				c = (char)0;
