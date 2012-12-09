@@ -20,9 +20,5 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public abstract T HandleWith<T>(IParsingExpressionHandler<T> handler);
-
-		public override string ToString() {
-			return this.HandleWith(new BackusNaurishExpressionHandler());
-		}
 	}
 }
