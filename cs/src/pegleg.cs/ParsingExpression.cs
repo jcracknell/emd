@@ -63,7 +63,7 @@ namespace pegleg.cs {
 		#endregion
 
 		public static IParsingExpression<Nil> CharacterInRange(char rangeStart, char rangeEnd) {
-			return new CharacterSetParsingExpression(CharUtils.Range(rangeStart, rangeEnd));
+			return CharacterIn(CharUtils.Range(rangeStart, rangeEnd));
 		}
 
 		public static IParsingExpression<Nil> CharacterIn(params char[] chars) {
@@ -71,15 +71,19 @@ namespace pegleg.cs {
 		}
 
 		public static IParsingExpression<Nil> CharacterIn(params IEnumerable<char>[] chars) {
-			return new CharacterSetParsingExpression(chars.SelectMany(c => c));
+			return Character(UnicodeCriteria.NoCharacter.Save(chars));
 		}
 
 		public static IParsingExpression<Nil> CharacterNotIn(params char[] chars) {
-			return CharacterNotIn(chars.AsEnumerable());
+			return Character(UnicodeCriteria.AnyCharacter.Save(chars));
 		}
 
 		public static IParsingExpression<Nil> CharacterNotIn(params IEnumerable<char>[] chars) {
-			return Sequence(NotAhead(CharacterIn(chars)), Wildcard());
+			return Character(UnicodeCriteria.AnyCharacter.Save(chars));
+		}
+
+		public static IParsingExpression<Nil> Character(UnicodeCriteria criteria) {
+			return new CharacterParsingExpression(criteria);
 		}
 
 		public static IParsingExpression<Nil> Wildcard() {

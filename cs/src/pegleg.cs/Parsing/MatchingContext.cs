@@ -131,6 +131,22 @@ namespace pegleg.cs.Parsing {
 			}
 		}
 
+		public bool ConsumesUnicodeCriteria(UnicodeCriteria criteria, out int length) {
+			if(null == criteria) throw ExceptionBecause.ArgumentNull(() => criteria);
+
+			if(AtEndOfInput) {
+				length = 0;
+				return false;
+			}
+
+			if(criteria.Accepts(_consumable, _index, out length)) {
+				Consume(length);
+				return true;
+			} else {
+				return false;
+			}
+		}
+
 		public bool ConsumesCharacter(bool[] acceptanceMap, int offset) {
 			if(AtEndOfInput) return false;
 

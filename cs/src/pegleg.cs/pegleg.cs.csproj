@@ -45,7 +45,7 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Parsing\BaseParsingExpression.cs" />
     <Compile Include="Parsing\CacheingParsingExpression.cs" />
-    <Compile Include="Parsing\Expressions\CharacterSetParsingExpression.cs" />
+    <Compile Include="Parsing\Expressions\CharacterParsingExpression.cs" />
     <Compile Include="Parsing\Expressions\LiteralSetParsingExpression.cs" />
     <Compile Include="Parsing\MatchBuilder.cs" />
     <Compile Include="ParsingExpression.cs" />
