@@ -158,13 +158,6 @@ namespace pegleg.cs.Parsing {
 			}
 		}
 
-		public bool ConsumesAnyCharacter() {
-			if(AtEndOfInput) return false;
-
-			Consume(1);
-			return true;
-		}
-
 		public bool AtEndOfInput { get { return _consumable.Length == _index; } }
 
 		public MatchingContext Clone() {

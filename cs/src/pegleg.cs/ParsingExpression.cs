@@ -86,10 +86,6 @@ namespace pegleg.cs {
 			return new CharacterParsingExpression(criteria);
 		}
 
-		public static IParsingExpression<Nil> Wildcard() {
-			return WildcardParsingExpression.Instance;
-		}
-
 		#region Regex
 
 		private static string FixRegexString(string regex) {
