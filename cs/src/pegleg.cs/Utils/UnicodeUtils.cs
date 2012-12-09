@@ -68,6 +68,8 @@ namespace pegleg.cs.Utils {
 				int currentIndex = index + length;
 				int strLength = str.Length;
 				if(strLength != currentIndex && IsCombiningCategory(CharUnicodeInfo_InternalGetUnicodeCategory(str, currentIndex, out currentCharLength))) {
+					currentIndex += currentCharLength;
+
 					while(strLength != currentIndex && IsCombiningCategory(CharUnicodeInfo_InternalGetUnicodeCategory(str, currentIndex, out currentCharLength)))
 						currentIndex += currentCharLength;
 
@@ -85,10 +87,13 @@ namespace pegleg.cs.Utils {
 				|| UnicodeCategory.EnclosingMark == uc;
 		}
 
-		public static bool IsSingleTextElement(string str) {
+		/// <summary>
+		/// Returns true if the provided <paramref name="str"/> contains a single unicode grapheme starting at index 0.
+		/// </summary>
+		/// <param name="str">A string to be verified as a single unicode grapheme.</param>
+		/// <returns>True if the provided <paramref name="str"/> contains a single unicode grapheme starting at index 0.</returns>
+		public static bool IsSingleGrapheme(string str) {
 			int length;
-			UnicodeCategory unicodeCategory;
-
 			GetGraphemeInfo(str, 0, out length);
 
 			return str.Length == length;
