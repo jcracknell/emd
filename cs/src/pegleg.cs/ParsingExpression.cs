@@ -71,15 +71,15 @@ namespace pegleg.cs {
 		}
 
 		public static IParsingExpression<Nil> CharacterIn(params IEnumerable<char>[] chars) {
-			return Character(UnicodeCriteria.NoCharacter.Save(chars));
+			return Character(UnicodeCriteria.NoCharacter.Except(chars));
 		}
 
 		public static IParsingExpression<Nil> CharacterNotIn(params char[] chars) {
-			return Character(UnicodeCriteria.AnyCharacter.Save(chars));
+			return Character(UnicodeCriteria.AnyCharacter.Except(chars));
 		}
 
 		public static IParsingExpression<Nil> CharacterNotIn(params IEnumerable<char>[] chars) {
-			return Character(UnicodeCriteria.AnyCharacter.Save(chars));
+			return Character(UnicodeCriteria.AnyCharacter.Except(chars));
 		}
 
 		public static IParsingExpression<Nil> Character(UnicodeCriteria criteria) {

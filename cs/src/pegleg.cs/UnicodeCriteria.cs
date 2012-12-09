@@ -27,34 +27,34 @@ namespace pegleg.cs {
 			get { return new UnicodeCriteria(true); }
 		}
 
-		private readonly bool _saved;
-		private readonly bool[] _saveCategories = new bool[MAX_UNICODE_CATEGORY + 1];
-		private int _saveCharactersLength;
-		private int _saveCharactersOffset;
-		private bool[] _saveCharacters = null;
-		private Trie<char, string> _saveGraphemes = null;
+		private readonly bool _excepted;
+		private readonly bool[] _exceptedCategories = new bool[MAX_UNICODE_CATEGORY + 1];
+		private int _exceptedCharactersLength;
+		private int _exceptedCharactersOffset;
+		private bool[] _exceptedCharacters = null;
+		private Trie<char, string> _exceptedGraphemes = null;
 
-		private UnicodeCriteria(bool saved) {
-			_saved = saved;
+		private UnicodeCriteria(bool excepted) {
+			_excepted = excepted;
 		}
 
 		private UnicodeCriteria(UnicodeCriteria prototype) {
-			_saved = prototype._saved;
+			_excepted = prototype._excepted;
 
-			for(var i = 0; i < _saveCategories.Length; i++)
-				_saveCategories[i] = prototype._saveCategories[i];
+			for(var i = 0; i < _exceptedCategories.Length; i++)
+				_exceptedCategories[i] = prototype._exceptedCategories[i];
 
-			if(null != prototype._saveCharacters) {
-				_saveCharactersLength = prototype._saveCharactersLength;
-				_saveCharacters = new bool[prototype._saveCharactersLength];
-				_saveCharactersOffset = prototype._saveCharactersOffset;
+			if(null != prototype._exceptedCharacters) {
+				_exceptedCharactersLength = prototype._exceptedCharactersLength;
+				_exceptedCharacters = new bool[prototype._exceptedCharactersLength];
+				_exceptedCharactersOffset = prototype._exceptedCharactersOffset;
 
-				for(var i = 0; i < _saveCharactersLength; i++)
-					_saveCharacters[i] = prototype._saveCharacters[i];
+				for(var i = 0; i < _exceptedCharactersLength; i++)
+					_exceptedCharacters[i] = prototype._exceptedCharacters[i];
 			}
 
-			if(null != prototype._saveGraphemes)
-				_saveGraphemes = prototype._saveGraphemes.Clone();
+			if(null != prototype._exceptedGraphemes)
+				_exceptedGraphemes = prototype._exceptedGraphemes.Clone();
 		}
 
 		/// <summary>
@@ -69,54 +69,54 @@ namespace pegleg.cs {
 
 			UnicodeCategory category = UnicodeUtils.GetGraphemeInfo(str, index, out length);
 
-			if(_saveCategories[(int)category])
-				return _saved;
+			if(_exceptedCategories[(int)category])
+				return _excepted;
 
 			if(1 == length) {
-				if(null == _saveCharacters)
-					return !_saved;
+				if(null == _exceptedCharacters)
+					return !_excepted;
 
-				var offsetCharValue = str[index] - _saveCharactersOffset;
-				return offsetCharValue < _saveCharactersLength && offsetCharValue >= 0 && _saveCharacters[offsetCharValue]
-					? _saved
-					: !_saved;
+				var offsetCharValue = str[index] - _exceptedCharactersOffset;
+				return offsetCharValue < _exceptedCharactersLength && offsetCharValue >= 0 && _exceptedCharacters[offsetCharValue]
+					? _excepted
+					: !_excepted;
 			} else {
-				if(null == _saveGraphemes)
-					return !_saved;
+				if(null == _exceptedGraphemes)
+					return !_excepted;
 
-				var subTrie = _saveGraphemes;
+				var subTrie = _exceptedGraphemes;
 				var endIndex = index + length;
 				while(index != endIndex)
 					if(!subTrie.TryGetSubtrie(str[index++], out subTrie))
-						return !_saved;
+						return !_excepted;
 
-				return subTrie.HasValue ? _saved : !_saved;
+				return subTrie.HasValue ? _excepted : !_excepted;
 			}
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="UnicodeCriteria"/> excluding the provided <paramref name="characters"/> from the base acceptance criteria.
+		/// Creates a new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.
 		/// </summary>
-		/// <param name="characters">Characters to be excluded from the base acceptance criteria.</param>
-		/// <returns>A new <see cref="UnicodeCriteria"/> excluding the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
-		public UnicodeCriteria Save(params char[] characters) {
+		/// <param name="characters">Characters to be excepted from the base acceptance criteria.</param>
+		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
+		public UnicodeCriteria Except(params char[] characters) {
 			if(null == characters) throw ExceptionBecause.ArgumentNull(() => characters);
 
-			return new UnicodeCriteria(this).SaveInternal(characters);
+			return new UnicodeCriteria(this).ExceptInternal(characters);
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="UnicodeCriteria"/> excluding the provided <paramref name="characters"/> from the base acceptance criteria.
+		/// Creates a new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.
 		/// </summary>
-		/// <param name="characters">Characters to be excluded from the base acceptance criteria.</param>
-		/// <returns>A new <see cref="UnicodeCriteria"/> excluding the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
-		public UnicodeCriteria Save(params IEnumerable<char>[] characters) {
+		/// <param name="characters">Characters to be excepted from the base acceptance criteria.</param>
+		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
+		public UnicodeCriteria Except(params IEnumerable<char>[] characters) {
 			if(null == characters) throw ExceptionBecause.ArgumentNull(() => characters);
 
-			return new UnicodeCriteria(this).SaveInternal(characters.Flatten());
+			return new UnicodeCriteria(this).ExceptInternal(characters.Flatten());
 		}
 
-		private UnicodeCriteria SaveInternal(IEnumerable<char> characters) {
+		private UnicodeCriteria ExceptInternal(IEnumerable<char> characters) {
 			if(!characters.Any()) throw ExceptionBecause.Argument(() => characters, "cannot be empty");
 
 			int min = char.MaxValue;
@@ -126,66 +126,66 @@ namespace pegleg.cs {
 				if(c > max) max = c;
 			}
 
-			if(null == _saveCharacters) {
-				_saveCharactersLength = max - min + 1;
-				_saveCharacters = new bool[_saveCharactersLength];
-				_saveCharactersOffset = min;
+			if(null == _exceptedCharacters) {
+				_exceptedCharactersLength = max - min + 1;
+				_exceptedCharacters = new bool[_exceptedCharactersLength];
+				_exceptedCharactersOffset = min;
 			} else {
-				var oldMax = _saveCharactersOffset + _saveCharacters.Length - 1;
-				if(min < _saveCharactersOffset || max > oldMax) {
-					// _saveCharacters array needs resizing
+				var oldMax = _exceptedCharactersOffset + _exceptedCharacters.Length - 1;
+				if(min < _exceptedCharactersOffset || max > oldMax) {
+					// _exceptedCharacters array needs resizing
 
 					// Calculate the correct min and max values for a replacement saveCharacters array
 					// (min will be the new _saveCharactersOffset)
-					if(_saveCharactersOffset < min) min = _saveCharactersOffset;
+					if(_exceptedCharactersOffset < min) min = _exceptedCharactersOffset;
 					if(oldMax > max) max = oldMax;
 
-					var saveCharactersReplacementLength = max - min + 1;
-					var saveCharactersReplacement = new bool[saveCharactersReplacementLength];
+					var exceptedCharactersReplacementLength = max - min + 1;
+					var exceptedCharactersReplacement = new bool[exceptedCharactersReplacementLength];
 
 					// Calculate the increase in offset required for existing saveCharacters values
-					var translation = _saveCharactersOffset - min;
+					var translation = _exceptedCharactersOffset - min;
 
-					for(var i = 0; i < _saveCharactersLength; i++)
-						saveCharactersReplacement[i + translation] = _saveCharacters[i];
+					for(var i = 0; i < _exceptedCharactersLength; i++)
+						exceptedCharactersReplacement[i + translation] = _exceptedCharacters[i];
 
-					_saveCharactersLength = saveCharactersReplacementLength;
-					_saveCharacters = saveCharactersReplacement;
-					_saveCharactersOffset = min;
+					_exceptedCharactersLength = exceptedCharactersReplacementLength;
+					_exceptedCharacters = exceptedCharactersReplacement;
+					_exceptedCharactersOffset = min;
 				}
 			}
 
 			foreach(var c in characters)
-				_saveCharacters[c - _saveCharactersOffset] = true;
+				_exceptedCharacters[c - _exceptedCharactersOffset] = true;
 
 			return this;
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="UnicodeCriteria"/> excluding the provided <paramref name="characters"/> from the base acceptance criteria.
+		/// Creates a new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.
 		/// Provided <paramref name="characters"/> must be valid single unicode graphemes.
 		/// </summary>
-		/// <param name="characters">Characters to be excluded from the base acceptance criteria.</param>
-		/// <returns>A new <see cref="UnicodeCriteria"/> excluding the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
-		public UnicodeCriteria Save(params string[] characters) {
+		/// <param name="characters">Characters to be excepted from the base acceptance criteria.</param>
+		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
+		public UnicodeCriteria Except(params string[] characters) {
 			if(null == characters) throw ExceptionBecause.ArgumentNull(() => characters);
 
-			return new UnicodeCriteria(this).SaveInternal(characters);
+			return new UnicodeCriteria(this).ExceptInternal(characters);
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="UnicodeCriteria"/> excluding the provided <paramref name="characters"/> from the base acceptance criteria.
+		/// Creates a new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.
 		/// Provided <paramref name="characters"/> must be valid single unicode graphemes.
 		/// </summary>
-		/// <param name="characters">Characters to be excluded from the base acceptance criteria.</param>
-		/// <returns>A new <see cref="UnicodeCriteria"/> excluding the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
-		public UnicodeCriteria Save(params IEnumerable<string>[] characters) {
+		/// <param name="characters">Characters to be excepted from the base acceptance criteria.</param>
+		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
+		public UnicodeCriteria Except(params IEnumerable<string>[] characters) {
 			if(null == characters) throw ExceptionBecause.ArgumentNull(() => characters);
 
-			return new UnicodeCriteria(this).SaveInternal(characters.Flatten());
+			return new UnicodeCriteria(this).ExceptInternal(characters.Flatten());
 		}
 
-		private UnicodeCriteria SaveInternal(IEnumerable<string> characters) {
+		private UnicodeCriteria ExceptInternal(IEnumerable<string> characters) {
 			foreach(var character in characters) {
 				if(null == character) throw ExceptionBecause.Argument(() => characters, "contains null values");
 
@@ -196,44 +196,44 @@ namespace pegleg.cs {
 				if(!UnicodeUtils.IsSingleGrapheme(character))
 					throw ExceptionBecause.Argument(() => characters, "contains value " + StringUtils.LiteralEncode(character) + ", which is not a unicode grapheme");
 
-				if(null == _saveGraphemes)
-					_saveGraphemes = new Trie<char,string>();
+				if(null == _exceptedGraphemes)
+					_exceptedGraphemes = new Trie<char,string>();
 
-				_saveGraphemes.SetValue(character, character);
+				_exceptedGraphemes.SetValue(character, character);
 			}
 
 			var singleCharacters = characters.Where(c => 1 == c.Length).Select(c => c[0]);
 			if(singleCharacters.Any())
-				SaveInternal(singleCharacters);
-
-			return this;
+				return ExceptInternal(singleCharacters);
+			else
+				return this;
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="UnicodeCriteria"/> excluding the provided unicode <paramref name="categories"/> from the base acceptance criteria.
+		/// Creates a new <see cref="UnicodeCriteria"/> excepting the provided unicode <paramref name="categories"/> from the base acceptance criteria.
 		/// </summary>
-		/// <param name="categories">Unicode categories to be excluded from the base acceptance criteria.</param>
-		/// <returns>A new <see cref="UnicodeCriteria"/> excluding the provided unicode <paramref name="categories"/> from the base acceptance criteria.</returns>
-		public UnicodeCriteria Save(params UnicodeCategory[] categories) {
+		/// <param name="categories">Unicode categories to be excepted from the base acceptance criteria.</param>
+		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided unicode <paramref name="categories"/> from the base acceptance criteria.</returns>
+		public UnicodeCriteria Except(params UnicodeCategory[] categories) {
 			if(null == categories) throw ExceptionBecause.ArgumentNull(() => categories);
 
-			return Save(categories.AsEnumerable());
+			return new UnicodeCriteria(this).ExceptInternal(categories);
 		}
 
 		/// <summary>
-		/// Creates a new <see cref="UnicodeCriteria"/> excluding the provided unicode <paramref name="categories"/> from the base acceptance criteria.
+		/// Creates a new <see cref="UnicodeCriteria"/> excepting the provided unicode <paramref name="categories"/> from the base acceptance criteria.
 		/// </summary>
-		/// <param name="categories">Unicode categories to be excluded from the base acceptance criteria.</param>
-		/// <returns>A new <see cref="UnicodeCriteria"/> excluding the provided unicode <paramref name="categories"/> from the base acceptance criteria.</returns>
-		public UnicodeCriteria Save(params IEnumerable<UnicodeCategory>[] categories) {
+		/// <param name="categories">Unicode categories to be excepted from the base acceptance criteria.</param>
+		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided unicode <paramref name="categories"/> from the base acceptance criteria.</returns>
+		public UnicodeCriteria Except(params IEnumerable<UnicodeCategory>[] categories) {
 			if(null == categories) throw ExceptionBecause.ArgumentNull(() => categories);
 
-			return new UnicodeCriteria(this).SaveInternal(categories.Flatten());
+			return new UnicodeCriteria(this).ExceptInternal(categories.Flatten());
 		}
 
-		private UnicodeCriteria SaveInternal(IEnumerable<UnicodeCategory> categories) {
+		private UnicodeCriteria ExceptInternal(IEnumerable<UnicodeCategory> categories) {
 			foreach(var category in categories)
-				_saveCategories[(int)category] = true;
+				_exceptedCategories[(int)category] = true;
 
 			return this;
 		}

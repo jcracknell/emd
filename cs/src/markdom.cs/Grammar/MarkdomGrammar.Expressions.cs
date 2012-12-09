@@ -852,14 +852,14 @@ namespace markdom.cs.Grammar {
 			ChoiceOrdered(
 				Character(
 					UnicodeCriteria.NoCharacter
-						.Save(
+						.Except(
 							UnicodeCategory.UppercaseLetter,
 							UnicodeCategory.LowercaseLetter,
 							UnicodeCategory.TitlecaseLetter,
 							UnicodeCategory.ModifierLetter,
 							UnicodeCategory.OtherLetter,
 							UnicodeCategory.LetterNumber)
-						.Save('$', '_')),
+						.Except('$', '_')),
 				Sequence(Literal("\\"), Reference(() => ExpressionUnicodeEscapeSequence)));
 
 		public static readonly IParsingExpression<Nil>
@@ -869,12 +869,12 @@ namespace markdom.cs.Grammar {
 					identifierExpressionStart,
 					Character(
 						UnicodeCriteria.NoCharacter
-							.Save(
+							.Except(
 								UnicodeCategory.NonSpacingMark,
 								UnicodeCategory.SpacingCombiningMark,
 								UnicodeCategory.DecimalDigitNumber,
 								UnicodeCategory.ConnectorPunctuation)
-							.Save(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D'))));
+							.Except(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D'))));
 
 		public static readonly IParsingExpression<IdentifierExpression>
 		IdentifierExpression =
@@ -1203,7 +1203,7 @@ namespace markdom.cs.Grammar {
 						Reference(() => ExpressionUnicodeEscapeSequence),
 						Reference(() => NewLine),
 						Reference(() => UnicodeCharacter))),
-					Character(UnicodeCriteria.AnyCharacter.Save(lineTerminatorCharValues)));
+					Character(UnicodeCriteria.AnyCharacter.Except(lineTerminatorCharValues)));
 
 		#endregion
 

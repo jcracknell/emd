@@ -28,16 +28,16 @@ namespace pegleg.cs {
 			}
 		}
 
-		[Fact] public void UnicodeCriteria_NoCharacter_Save_a_should_accept_a() {
-			var criteria = UnicodeCriteria.NoCharacter.Save('a');
+		[Fact] public void UnicodeCriteria_NoCharacter_Except_a_should_accept_a() {
+			var criteria = UnicodeCriteria.NoCharacter.Except('a');
 
 			int length;
 			criteria.Accepts("a", 0, out length).Should().BeTrue();
 			length.Should().Be(1);
 		}
 
-		[Fact] public void UnicodeCriteria_NoCharacter_Save_b_Save_a_should_accept_a_and_b() {
-			var criteria = UnicodeCriteria.NoCharacter.Save('b').Save('a');
+		[Fact] public void UnicodeCriteria_NoCharacter_Except_b_Except_a_should_accept_a_and_b() {
+			var criteria = UnicodeCriteria.NoCharacter.Except('b').Except('a');
 
 			int length;
 			criteria.Accepts("b", 0, out length).Should().BeTrue();
@@ -46,8 +46,8 @@ namespace pegleg.cs {
 			length.Should().Be(1);
 		}
 
-		[Fact] public void UnicodeCriteria_NoCharacter_Save_a_combining_ring_should_only_match_a_combining_ring() {
-			var criteria = UnicodeCriteria.NoCharacter.Save("a\u030a");
+		[Fact] public void UnicodeCriteria_NoCharacter_Except_a_combining_ring_should_only_match_a_combining_ring() {
+			var criteria = UnicodeCriteria.NoCharacter.Except("a\u030a");
 
 			int length;
 			criteria.Accepts("a\u030a", 0, out length).Should().BeTrue();
@@ -56,19 +56,19 @@ namespace pegleg.cs {
 			criteria.Accepts("a\u030a", 1, out length).Should().BeFalse();
 		}
 
-		[Fact] public void UnicodeCriteria_NoCharacter_Save_a_should_not_accept_a_combining_ring() {
+		[Fact] public void UnicodeCriteria_NoCharacter_Except_a_should_not_accept_a_combining_ring() {
 			int length;
-			UnicodeCriteria.NoCharacter.Save('a').Accepts("a\u030a", 0, out length).Should().BeFalse("because this is a multi-char grapheme");
+			UnicodeCriteria.NoCharacter.Except('a').Accepts("a\u030a", 0, out length).Should().BeFalse("because this is a multi-char grapheme");
 		}
 
 		/*
-		[Fact] public void UnicodeCriteria_NoCharacter_Save_ab_should_throw_exception() {
+		[Fact] public void UnicodeCriteria_NoCharacter_Except_ab_should_throw_exception() {
 			UnicodeCriteria.NoCharacter.Invoking(c => c.Save("ab")).ShouldThrow<ArgumentException>();
 		}
 		*/
 
-		[Fact] public void UnicodeCriteria_NoCharacter_Save_LowercaseLetter_should_accept_lowercase_letters() {
-			var criteria = UnicodeCriteria.NoCharacter.Save(UnicodeCategory.LowercaseLetter);
+		[Fact] public void UnicodeCriteria_NoCharacter_Except_LowercaseLetter_should_accept_lowercase_letters() {
+			var criteria = UnicodeCriteria.NoCharacter.Except(UnicodeCategory.LowercaseLetter);
 
 			int length;
 			int acceptedCount = 0;
@@ -86,8 +86,8 @@ namespace pegleg.cs {
 			acceptedCount.Should().Be(lowercaseLetterCount, "because this is the number of lowercase letter charaters which were tested");
 		}
 
-		[Fact] public void UnicodeCriteria_AnyCharacter_Save_LowercaseLetter_should_not_accept_lowercase_letters() {
-			var criteria = UnicodeCriteria.AnyCharacter.Save(UnicodeCategory.LowercaseLetter);
+		[Fact] public void UnicodeCriteria_AnyCharacter_Except_LowercaseLetter_should_not_accept_lowercase_letters() {
+			var criteria = UnicodeCriteria.AnyCharacter.Except(UnicodeCategory.LowercaseLetter);
 
 			int length;
 			int rejectedCount = 0;
@@ -105,8 +105,8 @@ namespace pegleg.cs {
 			rejectedCount.Should().Be(lowercaseLetterCount, "because this is the number of lowercase letter charaters which were tested");
 		}
 
-		[Fact] public void UnicodeCriteria_NoCharacter_Save_LowercaseLetter_Save_A_should_accept_lowercase_letters_and_A() {
-			var criteria = UnicodeCriteria.NoCharacter.Save(UnicodeCategory.LowercaseLetter).Save('A');
+		[Fact] public void UnicodeCriteria_NoCharacter_Except_LowercaseLetter_Except_A_should_accept_lowercase_letters_and_A() {
+			var criteria = UnicodeCriteria.NoCharacter.Except(UnicodeCategory.LowercaseLetter).Except('A');
 
 			int length;
 			int acceptedCount = 0;
