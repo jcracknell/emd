@@ -1,0 +1,141 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{87B1B0BE-7CE4-4A1C-A027-7504425D8544}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>emd.cs.Profile</RootNamespace>
+    <AssemblyName>emd.cs.Profile</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="FluentAssertions">
+      <HintPath>..\..\lib\FluentAssertions.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.XML" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="xunit">
+      <HintPath>..\..\lib\xunit.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
+      </ItemGroup>
+    </When>
+    <Otherwise />
+  </Choose>
+  <ItemGroup>
+    <Compile Include="Conversion\Html\HtmlConversionTests.cs" />
+    <Compile Include="Utils\EntityInfoTests.cs" />
+    <Compile Include="Grammar\AdditiveExpressionTests.cs" />
+    <Compile Include="Grammar\ArrayLiteralTests.cs" />
+    <Compile Include="Grammar\AutoLinkTests.cs" />
+    <Compile Include="Grammar\BitwiseAndExpressionTests.cs" />
+    <Compile Include="Grammar\BitwiseOrExpressionTests.cs" />
+    <Compile Include="Grammar\BitwiseXOrExpressionTests.cs" />
+    <Compile Include="Grammar\BooleanLiteralExpressionTests.cs" />
+    <Compile Include="Grammar\CodeTests.cs" />
+    <Compile Include="Grammar\ConditionalExpressionTests.cs" />
+    <Compile Include="Grammar\EmphasisTests.cs" />
+    <Compile Include="Grammar\EntityTests.cs" />
+    <Compile Include="Grammar\EqualityExpressionTests.cs" />
+    <Compile Include="Grammar\ExpressionBlockTests.cs" />
+    <Compile Include="Grammar\IdentifierExpressionTests.cs" />
+    <Compile Include="Grammar\LineBreakTests.cs" />
+    <Compile Include="Grammar\LinkTests.cs" />
+    <Compile Include="Grammar\LiteralExpressionTests.cs" />
+    <Compile Include="Grammar\LeftHandSideExpressionTests.cs" />
+    <Compile Include="Grammar\LogicalAndExpressionTests.cs" />
+    <Compile Include="Grammar\LogicalOrExpressionTests.cs" />
+    <Compile Include="Grammar\MultiplicativeExpressionTests.cs" />
+    <Compile Include="Grammar\NullLiteralExpressionTests.cs" />
+    <Compile Include="Grammar\NumericLiteralExpressionTests.cs" />
+    <Compile Include="Grammar\ObjectLiteralExpressionTests.cs" />
+    <Compile Include="Grammar\PostfixExpressionTests.cs" />
+    <Compile Include="Grammar\QuotedTests.cs" />
+    <Compile Include="Grammar\RelationalExpressionTests.cs" />
+    <Compile Include="Grammar\ShiftExpressionTests.cs" />
+    <Compile Include="Grammar\SingleLineCommentTests.cs" />
+    <Compile Include="Grammar\SpaceTests.cs" />
+    <Compile Include="Grammar\StringLiteralExpressionTests.cs" />
+    <Compile Include="Grammar\StrongTests.cs" />
+    <Compile Include="Grammar\SymbolTests.cs" />
+    <Compile Include="Grammar\UnaryExpressionTests.cs" />
+    <Compile Include="Grammar\UriExpressionTests.cs" />
+    <Compile Include="Utils\JavaScriptUtilsTests.cs" />
+    <Compile Include="Utils\NumeralUtilTests.cs" />
+    <Compile Include="Grammar\OrderedListTests.cs" />
+    <Compile Include="Grammar\GrammarTestFixture.cs" />
+    <Compile Include="Grammar\RuleTestingExtensionMethods.cs" />
+    <Compile Include="Model\Nodes\ImplementationTests.cs" />
+    <Compile Include="Model\Nodes\ReflectionHelpers.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\emd.cs\emd.cs.csproj">
+      <Project>{bef04599-e482-49f9-a48a-145a0321acfa}</Project>
+      <Name>emd.cs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\pegleg.cs\pegleg.cs.csproj">
+      <Project>{22b38652-7706-4151-a2f0-31429e3f832a}</Project>
+      <Name>pegleg.cs</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Choose>
+    <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
+      <ItemGroup>
+        <Reference Include="Microsoft.VisualStudio.QualityTools.CodedUITestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Common, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITest.Extension, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+        <Reference Include="Microsoft.VisualStudio.TestTools.UITesting, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+          <Private>False</Private>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

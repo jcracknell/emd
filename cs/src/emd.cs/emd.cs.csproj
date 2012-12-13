@@ -1,0 +1,185 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BEF04599-E482-49F9-A48A-145A0321ACFA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>emd.cs</RootNamespace>
+    <AssemblyName>emd.cs</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\emd.cs.xml</DocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ExceptionBecause.cs" />
+    <Compile Include="Conversion\Html\HtmlConverter.cs" />
+    <Compile Include="Conversion\ReferenceCollection.cs" />
+    <Compile Include="Conversion\ReferenceExtractingNodeHandler.cs" />
+    <Compile Include="Conversion\Html\XmlWritingNodeHandler.cs" />
+    <Compile Include="Expressions\AdditionExpression.cs" />
+    <Compile Include="Expressions\ArrayLiteralExpression.cs" />
+    <Compile Include="Expressions\BinaryExpression.cs" />
+    <Compile Include="Expressions\BitwiseAndExpression.cs" />
+    <Compile Include="Expressions\BitwiseNotExpression.cs" />
+    <Compile Include="Expressions\BitwiseOrExpression.cs" />
+    <Compile Include="Expressions\BitwiseXOrExpression.cs" />
+    <Compile Include="Expressions\ConditionalExpression.cs" />
+    <Compile Include="Expressions\DeleteExpression.cs" />
+    <Compile Include="Expressions\DivisionExpression.cs" />
+    <Compile Include="Expressions\LogicalAndExpression.cs" />
+    <Compile Include="Expressions\LogicalOrExpression.cs" />
+    <Compile Include="Expressions\NotEqualsExpression.cs" />
+    <Compile Include="Expressions\EqualsExpression.cs" />
+    <Compile Include="Expressions\Evaluation\BooleanValue.cs" />
+    <Compile Include="Expressions\Evaluation\IValue.cs" />
+    <Compile Include="Expressions\Evaluation\IValueHandler.cs" />
+    <Compile Include="Expressions\Evaluation\NullValue.cs" />
+    <Compile Include="Expressions\Evaluation\NumberValue.cs" />
+    <Compile Include="Expressions\Evaluation\ObjectValue.cs" />
+    <Compile Include="Expressions\Evaluation\StringValue.cs" />
+    <Compile Include="Expressions\Evaluation\UndefinedValue.cs" />
+    <Compile Include="Expressions\Expression.cs" />
+    <Compile Include="Expressions\GreaterThanExpression.cs" />
+    <Compile Include="Expressions\GreaterThanOrEqualToExpression.cs" />
+    <Compile Include="Expressions\InExpression.cs" />
+    <Compile Include="Expressions\InstanceOfExpression.cs" />
+    <Compile Include="Expressions\LeftShiftExpression.cs" />
+    <Compile Include="Expressions\LessThanExpression.cs" />
+    <Compile Include="Expressions\LessThanOrEqualToExpression.cs" />
+    <Compile Include="Expressions\LogicalNotExpression.cs" />
+    <Compile Include="Expressions\ModuloExpression.cs" />
+    <Compile Include="Expressions\MultiplicationExpression.cs" />
+    <Compile Include="Expressions\NegativeExpression.cs" />
+    <Compile Include="Expressions\PositiveExpression.cs" />
+    <Compile Include="Expressions\PostfixDecrementExpression.cs" />
+    <Compile Include="Expressions\PostfixIncrementExpression.cs" />
+    <Compile Include="Expressions\PrefixDecrementExpression.cs" />
+    <Compile Include="Expressions\PrefixIncrementExpression.cs" />
+    <Compile Include="Expressions\RightShiftExpression.cs" />
+    <Compile Include="Expressions\StrictEqualsExpression.cs" />
+    <Compile Include="Expressions\StrictNotEqualsExpression.cs" />
+    <Compile Include="Expressions\SubtractionExpression.cs" />
+    <Compile Include="Expressions\Translation\JavaScriptTranslatingExpressionHandler.cs" />
+    <Compile Include="Expressions\TypeofExpression.cs" />
+    <Compile Include="Expressions\UnaryExpression.cs" />
+    <Compile Include="Expressions\UnsignedRightShiftExpression.cs" />
+    <Compile Include="Expressions\VoidExpression.cs" />
+    <Compile Include="Grammar\BinaryOperatorDefinition.cs" />
+    <Compile Include="Grammar\BlockLineInfo.cs" />
+    <Compile Include="Grammar\EnumeratorCounterStyleDefinition.cs" />
+    <Compile Include="Grammar\EnumeratorCounterStyleInfo.cs" />
+    <Compile Include="Grammar\EnumeratorInfo.cs" />
+    <Compile Include="Grammar\EnumeratorStyleDefinition.cs" />
+    <Compile Include="Grammar\EnumeratorStyleDefinitionCounter.cs" />
+    <Compile Include="Grammar\MarkdomGrammar.Blocks.cs" />
+    <Compile Include="Grammar\MarkdomGrammar.Expressions.cs" />
+    <Compile Include="Grammar\MarkdomGrammar.Inlines.cs" />
+    <Compile Include="Grammar\OrderedListItemLineInfo.cs" />
+    <Compile Include="Grammar\EnumeratorSeparatorStyleDefinition.cs" />
+    <Compile Include="Grammar\LineInfo.cs" />
+    <Compile Include="Grammar\TableCellSpanningInfo.cs" />
+    <Compile Include="Expressions\BooleanLiteralExpression.cs" />
+    <Compile Include="Expressions\CallExpression.cs" />
+    <Compile Include="Expressions\DocumentLiteralExpression.cs" />
+    <Compile Include="Expressions\IdentifierExpression.cs" />
+    <Compile Include="Expressions\DynamicPropertyExpression.cs" />
+    <Compile Include="Expressions\StaticPropertyExpression.cs" />
+    <Compile Include="Expressions\NullLiteralExpression.cs" />
+    <Compile Include="Expressions\NumericLiteralExpression.cs" />
+    <Compile Include="Expressions\UriLiteralExpression.cs" />
+    <Compile Include="Expressions\IExpressionHandler.cs" />
+    <Compile Include="Nodes\CodeNode.cs" />
+    <Compile Include="Nodes\ExpressionBlockNode.cs" />
+    <Compile Include="Nodes\INode.cs" />
+    <Compile Include="Nodes\AutoLinkNode.cs" />
+    <Compile Include="Nodes\BlockquoteNode.cs" />
+    <Compile Include="Nodes\EmphasisNode.cs" />
+    <Compile Include="Nodes\EntityNode.cs" />
+    <Compile Include="Expressions\IExpression.cs" />
+    <Compile Include="Expressions\ObjectLiteralExpression.cs" />
+    <Compile Include="Expressions\PropertyAssignment.cs" />
+    <Compile Include="Expressions\StringLiteralExpression.cs" />
+    <Compile Include="Nodes\HeadingNode.cs" />
+    <Compile Include="Nodes\IBlockNode.cs" />
+    <Compile Include="Nodes\IInlineNode.cs" />
+    <Compile Include="Nodes\INodeHandler.cs" />
+    <Compile Include="Nodes\MarkdomDocumentNode.cs" />
+    <Compile Include="Nodes\InlineExpressionNode.cs" />
+    <Compile Include="Nodes\LineBreakNode.cs" />
+    <Compile Include="Nodes\LinkNode.cs" />
+    <Compile Include="Nodes\OrderedListItemNode.cs" />
+    <Compile Include="Nodes\OrderedListNode.cs" />
+    <Compile Include="Nodes\OrderedListCounterStyle.cs" />
+    <Compile Include="Nodes\OrderedListSeparatorStyle.cs" />
+    <Compile Include="Nodes\ParagraphNode.cs" />
+    <Compile Include="Nodes\QuotedNode.cs" />
+    <Compile Include="Nodes\ReferenceId.cs" />
+    <Compile Include="Nodes\ReferenceNode.cs" />
+    <Compile Include="Nodes\SpaceNode.cs" />
+    <Compile Include="Nodes\StrongNode.cs" />
+    <Compile Include="Nodes\SymbolNode.cs" />
+    <Compile Include="Nodes\TableCellNode.cs" />
+    <Compile Include="Nodes\TableDataCellNode.cs" />
+    <Compile Include="Nodes\TableHeaderCellNode.cs" />
+    <Compile Include="Nodes\TableNode.cs" />
+    <Compile Include="Nodes\TableRowNode.cs" />
+    <Compile Include="Nodes\TextNode.cs" />
+    <Compile Include="Nodes\UnorderedListItemNode.cs" />
+    <Compile Include="Nodes\UnorderedListNode.cs" />
+    <Compile Include="Grammar\MarkdomGrammar.cs" />
+    <Compile Include="HashCodeBuilder.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utils\EntityInfo.cs" />
+    <Compile Include="Utils\JavaScriptUtils.cs" />
+    <Compile Include="Utils\NumeralUtils.cs" />
+    <Compile Include="Utils\TextUtils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\pegleg.cs\pegleg.cs.csproj">
+      <Project>{22b38652-7706-4151-a2f0-31429e3f832a}</Project>
+      <Name>pegleg.cs</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Utils\EntityInfo.bin" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
