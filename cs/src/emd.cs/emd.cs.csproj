@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Emd.cs" />
     <Compile Include="ExceptionBecause.cs" />
     <Compile Include="Conversion\Html\HtmlConverter.cs" />
     <Compile Include="Conversion\ReferenceCollection.cs" />
