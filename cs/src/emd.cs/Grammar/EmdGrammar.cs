@@ -11,7 +11,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace emd.cs.Grammar {
-	public partial class EmdGrammar : ParsingExpression {
+	public partial class EmdGrammar : ParsingExpressions {
 		private static readonly EmdGrammar _instance = new EmdGrammar();
 
 		public static EmdGrammar Instance { get { return _instance; } }

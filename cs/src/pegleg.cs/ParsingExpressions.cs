@@ -10,7 +10,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace pegleg.cs {
-	public class ParsingExpression {
+	public class ParsingExpressions {
 		public const RegexOptions DefaultRegexOptions = RegexOptions.Compiled | RegexOptions.Singleline;
 
 		private static IMatch<TProduct> ShadowMatchProduct<TProduct>(IMatch match, TProduct product) {
