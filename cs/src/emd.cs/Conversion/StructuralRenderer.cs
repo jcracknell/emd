@@ -7,15 +7,18 @@ using System.Text;
 
 namespace emd.cs.Conversion {
 	public class StructuralRenderer : IRenderer {
+		private const string INDENT = "\t";
+
 		public void Render(INode node, Stream ostream) {
 			if(null == node) throw ExceptionBecause.ArgumentNull(() => node);
 
-			using(var writer = new StreamWriter(ostream, Encoding.UTF8))
+			using(var writer = new StreamWriter(ostream, new System.Text.UTF8Encoding(false)))
 				node.HandleWith(new Handler(writer));
 		}
 
 		public class Handler : INodeHandler, IExpressionHandler {
 			private readonly TextWriter _writer;
+			private int _indentLevel = 0;
 
 			public Handler(TextWriter writer) {
 				if(null == writer) throw new ArgumentNullException("writer");
@@ -23,16 +26,37 @@ namespace emd.cs.Conversion {
 				_writer = writer;
 			}
 
+			private void WriteIndent() {
+				for(var i = 0; i < _indentLevel; i++)
+					_writer.Write(INDENT);
+			}
+
+			private void WriteType(object o) {
+				var typeName = o.GetType().Name;
+				if(typeName.EndsWith("Node")) {
+					_writer.Write(typeName.Substring(0, typeName.Length - "Node".Length));
+				} else if(typeName.EndsWith("Expression")) {
+					_writer.Write(typeName.Substring(0, typeName.Length - "Expression".Length));
+				} else {
+					_writer.Write(typeName);
+				}
+			}
+
 			private void WriteStart(object node, params object[] values) {
-				_writer.Write("+");
-				_writer.Write(node.GetType().Name);
+				WriteIndent();
+				_writer.Write("\\");
+				WriteType(node);
 				WriteNodeValues(values);
 				_writer.WriteLine();
+				_indentLevel++;
 			}
 
 			private void WriteEnd(object node) {
-				_writer.Write("-");
-				_writer.WriteLine(node.GetType().Name);
+				_indentLevel--;
+				WriteIndent();
+				_writer.Write("/");
+				WriteType(node);
+				_writer.WriteLine();
 			}
 
 			private void WriteNodeValues(object[] values) {
@@ -47,8 +71,8 @@ namespace emd.cs.Conversion {
 			}
 
 			private void WriteValue(object node, params object[] values) {
-				_writer.Write(":");
-				_writer.Write(node.GetType().Name);
+				WriteIndent();
+				WriteType(node);
 				WriteNodeValues(values);
 				_writer.WriteLine();
 			}

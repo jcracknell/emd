@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "emd.cs.Tests", "emd.cs.Test
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "emd.cs.Profile", "emd.cs.Profile\emd.cs.Profile.csproj", "{1EC33798-96C9-483C-AFF6-25A26CB015DA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "remd", "remd\remd.csproj", "{7D8FCF33-71A4-4942-8123-C8415FA2042E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,10 @@ Global
 		{1EC33798-96C9-483C-AFF6-25A26CB015DA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1EC33798-96C9-483C-AFF6-25A26CB015DA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1EC33798-96C9-483C-AFF6-25A26CB015DA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7D8FCF33-71A4-4942-8123-C8415FA2042E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7D8FCF33-71A4-4942-8123-C8415FA2042E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7D8FCF33-71A4-4942-8123-C8415FA2042E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7D8FCF33-71A4-4942-8123-C8415FA2042E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
