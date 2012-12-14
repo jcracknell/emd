@@ -19,6 +19,7 @@ namespace emd.cs.Expressions {
 		void Handle(DivisionExpression expression);
 		void Handle(DocumentLiteralExpression expression);
 		void Handle(DynamicPropertyExpression expression);
+		void Handle(ElidedExpression expression);
 		void Handle(EqualsExpression expression);
 		void Handle(GreaterThanExpression expression);
 		void Handle(GreaterThanOrEqualToExpression expression);
@@ -69,6 +70,7 @@ namespace emd.cs.Expressions {
 		T Handle(DivisionExpression expression);
 		T Handle(DocumentLiteralExpression expression);
 		T Handle(DynamicPropertyExpression expression);
+		T Handle(ElidedExpression expression);
 		T Handle(EqualsExpression expression);
 		T Handle(GreaterThanExpression expression);
 		T Handle(GreaterThanOrEqualToExpression expression);

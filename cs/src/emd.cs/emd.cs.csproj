@@ -56,6 +56,7 @@
     <Compile Include="Expressions\ConditionalExpression.cs" />
     <Compile Include="Expressions\DeleteExpression.cs" />
     <Compile Include="Expressions\DivisionExpression.cs" />
+    <Compile Include="Expressions\ElidedExpression.cs" />
     <Compile Include="Expressions\LogicalAndExpression.cs" />
     <Compile Include="Expressions\LogicalOrExpression.cs" />
     <Compile Include="Expressions\NotEqualsExpression.cs" />

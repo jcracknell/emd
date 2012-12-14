@@ -1,6 +1,7 @@
 ﻿using emd.cs.Expressions;
 using emd.cs.Utils;
 using pegleg.cs;
+using pegleg.cs.Parsing;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -911,14 +912,11 @@ namespace emd.cs.Grammar {
 		arrayElementSeparator =
 			Sequence(
 				Reference(() => ExpressionWhitespace),
-				Literal(","),
-				Reference(() => ExpressionWhitespace));
+				Literal(","));
 
-		public static readonly IParsingExpression<IEnumerable<IExpression>>
+		public static readonly IParsingExpression<IEnumerable<ElidedExpression>>
 		elidedElements =
-			AtLeast(0,
-				arrayElementSeparator,
-				match => match.Product.Select(elided => (IExpression)null));
+			AtLeast(0, Reference(() => arrayElementSeparator, match => new ElidedExpression(match.SourceRange.Position())));
 
 			// A non-elided array element preceded by any number of elided elements
 		public static readonly IParsingExpression<IEnumerable<IExpression>>
@@ -926,8 +924,9 @@ namespace emd.cs.Grammar {
 			Sequence(
 				arrayElementSeparator,
 				elidedElements,
+				Reference(() => ExpressionWhitespace),
 				Reference(() => Expression),
-				match => match.Product.Of2.Concat(match.Product.Of3.InEnumerable()));
+				match => match.Product.Of2.Concat(match.Product.Of4.InEnumerable()));
 
 		public static readonly IParsingExpression<IEnumerable<IExpression>>
 		arrayElements =
@@ -935,13 +934,14 @@ namespace emd.cs.Grammar {
 				ChoiceOrdered(
 					// initial element non-elided
 					Sequence(
+						Reference(() => ExpressionWhitespace),
 						Reference(() => Expression),
 						AtLeast(0, subsequentArrayElement),
-						match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2.Flatten())),
+						match => match.Product.Of2.InEnumerable().Concat(match.Product.Of3.Flatten())),
 					// initial element elided
 					AtLeast(1,
 						subsequentArrayElement,
-						match => ((IExpression)null).InEnumerable().Concat(match.Product.Flatten())),
+						match => (new ElidedExpression(match.SourceRange.Position())).InEnumerable().Concat(match.Product.Flatten())),
 					// all elements elided
 					Reference(() => elidedElements, match => Enumerable.Empty<IExpression>())),
 				elidedElements, // trailing elided elements discarded
@@ -951,10 +951,10 @@ namespace emd.cs.Grammar {
 		ArrayLiteralExpression =
 			Named(() => ArrayLiteralExpression,
 				Sequence(
-					Literal("["), Reference(() => ExpressionWhitespace),
+					Literal("["),
 					arrayElements,
 					Reference(() => ExpressionWhitespace), Literal("]"),
-					match => new ArrayLiteralExpression(match.Product.Of3.ToArray(), match.SourceRange)));
+					match => new ArrayLiteralExpression(match.Product.Of2.ToArray(), match.SourceRange)));
 
 		#endregion
 

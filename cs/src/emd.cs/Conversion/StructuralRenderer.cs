@@ -287,6 +287,10 @@ namespace emd.cs.Conversion {
 				WriteEnd(expression);
 			}
 
+			public void Handle(ElidedExpression expression) {
+				WriteValue(expression);
+			}
+
 			public void Handle(EqualsExpression expression) {
 				WriteBinaryExpression(expression);
 			}

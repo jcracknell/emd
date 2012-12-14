@@ -18,9 +18,7 @@ namespace emd.cs.Expressions.Translation {
 
 			var elementEnumerator = expression.Elements.GetEnumerator();
 			if(elementEnumerator.MoveNext()) do {
-				// Elided (empty) array elements are represented by null expressions
-				if(null != elementEnumerator.Current)
-					elementEnumerator.Current.HandleWith(this);
+				elementEnumerator.Current.HandleWith(this);
 
 				if(!elementEnumerator.MoveNext())
 					break;
@@ -58,6 +56,9 @@ namespace emd.cs.Expressions.Translation {
 
 		public void Handle(DocumentLiteralExpression expression) {
 			throw new NotImplementedException();
+		}
+
+		public void Handle(ElidedExpression expression) {
 		}
 
 		public void Handle(IdentifierExpression expression) {

@@ -12,6 +12,7 @@ namespace emd.cs.Expressions {
 		public ArrayLiteralExpression(IExpression[] elements, SourceRange sourceRange) {
 			if(null == elements) throw ExceptionBecause.ArgumentNull(() => elements);
 			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
+			if(elements.Any(element => null == element)) throw ExceptionBecause.Argument(() => elements, "contains null entries");
 
 			_elements = elements;
 			_sourceRange = sourceRange;
