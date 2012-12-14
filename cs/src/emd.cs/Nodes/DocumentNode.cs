@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Nodes {
-	public class MarkdomDocumentNode : INode {
+	public class DocumentNode : INode {
 		private readonly IBlockNode[] _content;
 		private readonly SourceRange _sourceRange;
 
-		public MarkdomDocumentNode(IBlockNode[] content, SourceRange sourceRange) {
+		public DocumentNode(IBlockNode[] content, SourceRange sourceRange) {
 			if(null == content) throw ExceptionBecause.ArgumentNull(() => content);
 
 			_content = content;

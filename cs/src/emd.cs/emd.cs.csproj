@@ -134,7 +134,7 @@
     <Compile Include="Nodes\IBlockNode.cs" />
     <Compile Include="Nodes\IInlineNode.cs" />
     <Compile Include="Nodes\INodeHandler.cs" />
-    <Compile Include="Nodes\MarkdomDocumentNode.cs" />
+    <Compile Include="Nodes\DocumentNode.cs" />
     <Compile Include="Nodes\InlineExpressionNode.cs" />
     <Compile Include="Nodes\LineBreakNode.cs" />
     <Compile Include="Nodes\LinkNode.cs" />

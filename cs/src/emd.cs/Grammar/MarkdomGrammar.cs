@@ -76,10 +76,10 @@ namespace emd.cs.Grammar {
 
 		#endregion
 
-		public static readonly IParsingExpression<MarkdomDocumentNode>
+		public static readonly IParsingExpression<DocumentNode>
 		Document =
 			Named(() => Document,
-				Reference(() => Blocks, match => new MarkdomDocumentNode(match.Product.ToArray(), match.SourceRange)));
+				Reference(() => Blocks, match => new DocumentNode(match.Product.ToArray(), match.SourceRange)));
 
 		#region Comments
 

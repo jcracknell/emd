@@ -8,7 +8,7 @@ using System.Xml;
 
 namespace emd.cs.Conversion.Html {
 	public static class HtmlConverter {
-		public static void Convert(MarkdomDocumentNode document, Stream ostream) {
+		public static void Convert(DocumentNode document, Stream ostream) {
 			if(null == document) throw ExceptionBecause.ArgumentNull(() => document);
 
 			var references = new ReferenceCollection(document);

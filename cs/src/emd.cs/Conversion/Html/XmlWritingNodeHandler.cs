@@ -127,7 +127,7 @@ namespace emd.cs.Conversion.Html {
 			});
 		}
 
-		public void Handle(MarkdomDocumentNode node) {
+		public void Handle(DocumentNode node) {
 			node.Content.Each(c => c.HandleWith(this));
 		}
 

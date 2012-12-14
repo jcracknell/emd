@@ -9,7 +9,7 @@ namespace emd.cs.Conversion {
 	public class ReferenceCollection {
 		IDictionary<ReferenceId, IEnumerable<IExpression>> _references;
 
-		public ReferenceCollection(MarkdomDocumentNode document) {
+		public ReferenceCollection(DocumentNode document) {
 			_references = new Dictionary<ReferenceId, IEnumerable<IExpression>>();
 
 			var handler = new ReferenceExtractingNodeHandler();

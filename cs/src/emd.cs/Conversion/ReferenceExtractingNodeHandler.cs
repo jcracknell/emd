@@ -38,7 +38,7 @@ namespace emd.cs.Conversion {
 			return node.Children.SelectMany(child => child.HandleWith(this));
 		}
 
-		public IEnumerable<ReferenceNode> Handle(MarkdomDocumentNode node) {
+		public IEnumerable<ReferenceNode> Handle(DocumentNode node) {
 			return node.Content.SelectMany(content => content.HandleWith(this));
 		}
 

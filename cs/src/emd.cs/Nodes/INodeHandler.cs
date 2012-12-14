@@ -9,6 +9,7 @@ namespace emd.cs.Nodes{
 		void Handle(AutoLinkNode node);
 		void Handle(BlockquoteNode node);
 		void Handle(CodeNode node);
+		void Handle(DocumentNode node);
 		void Handle(EmphasisNode node);
 		void Handle(EntityNode node);
 		void Handle(ExpressionBlockNode node);
@@ -16,7 +17,6 @@ namespace emd.cs.Nodes{
 		void Handle(InlineExpressionNode node);
 		void Handle(LineBreakNode node);
 		void Handle(LinkNode node);
-		void Handle(MarkdomDocumentNode node);
 		void Handle(OrderedListNode node);
 		void Handle(OrderedListItemNode node);
 		void Handle(ParagraphNode node);
@@ -38,6 +38,7 @@ namespace emd.cs.Nodes{
 		T Handle(AutoLinkNode node);
 		T Handle(BlockquoteNode node);
 		T Handle(CodeNode node);
+		T Handle(DocumentNode node);
 		T Handle(EmphasisNode node);
 		T Handle(EntityNode node);
 		T Handle(ExpressionBlockNode node);
@@ -45,7 +46,6 @@ namespace emd.cs.Nodes{
 		T Handle(InlineExpressionNode node);
 		T Handle(LineBreakNode node);
 		T Handle(LinkNode node);
-		T Handle(MarkdomDocumentNode node);
 		T Handle(OrderedListNode node);
 		T Handle(OrderedListItemNode node);
 		T Handle(ParagraphNode node);

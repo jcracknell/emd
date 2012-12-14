@@ -120,7 +120,7 @@ namespace emd.cs.Conversion {
 				WriteEnd(node);
 			}
 
-			public void Handle(MarkdomDocumentNode node) {
+			public void Handle(DocumentNode node) {
 				WriteStart(node);
 				node.Content.Each(child => child.HandleWith(this));
 				WriteEnd(node);
