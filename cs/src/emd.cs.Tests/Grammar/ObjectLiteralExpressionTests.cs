@@ -79,5 +79,18 @@ namespace emd.cs.Grammar {
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
+
+		[Fact] public void ObjectLiteralExpression_should_match_object_literal_with_trailing_comma() {
+			var match = MarkdomGrammar.ObjectLiteralExpression.ShouldMatch("{a:'a',}");
+
+			match.Product.ShouldBeEquivalentTo(
+				new ObjectLiteralExpression(
+					new PropertyAssignment[] {
+						new PropertyAssignment("a", new StringLiteralExpression("a", new SourceRange(3,3,1,3)), new SourceRange(1,5,1,1))
+					},
+					new SourceRange(0,8,1,0)
+				)
+			);
+		}
 	}
 }

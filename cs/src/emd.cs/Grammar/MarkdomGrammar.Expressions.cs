@@ -979,6 +979,7 @@ namespace emd.cs.Grammar {
 				Sequence(
 					objectPropertyAssignment,
 					AtLeast(0, Sequence(argumentSeparator, objectPropertyAssignment, match => match.Product.Of2)),
+					Optional(argumentSeparator),
 					match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2)),
 				match => match.Product,
 				noMatch => Enumerable.Empty<PropertyAssignment>());
