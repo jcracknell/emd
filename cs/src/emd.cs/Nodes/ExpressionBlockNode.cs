@@ -20,6 +20,8 @@ namespace emd.cs.Nodes {
 
 		public SourceRange SourceRange { get { return _sourceRange; } }
 
+		public IExpression Expression { get { return _expression; } }
+
 		public void HandleWith(INodeHandler handler) {
 			handler.Handle(this);
 		}
