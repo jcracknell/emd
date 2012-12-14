@@ -9,157 +9,157 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class OrderedListTests : GrammarTestFixture {
 		[Fact] public void EnumeratorishAhead_matches_decimal_dot() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("42.");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("42.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_decimal_dot() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("42.");
+			var match = EmdGrammar.Enumerator.ShouldMatch("42.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_dot_with_value() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("42@43.");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("42@43.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_decimal_dot_with_value() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("42@43.");
+			var match = EmdGrammar.Enumerator.ShouldMatch("42@43.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_lower_roman_dot() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("ix.");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("ix.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_lower_roman_dot() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("ix.");
+			var match = EmdGrammar.Enumerator.ShouldMatch("ix.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_upper_roman_dot() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("XVIII.");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("XVIII.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_upper_roman_dot() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("XVIII.");
+			var match = EmdGrammar.Enumerator.ShouldMatch("XVIII.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_lower_alpha_dot() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("abc.");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("abc.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_lower_alpha_dot() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("abc.");
+			var match = EmdGrammar.Enumerator.ShouldMatch("abc.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_upper_alpha_dot() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("ABC.");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("ABC.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_upper_alpha_dot() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("ABC.");
+			var match = EmdGrammar.Enumerator.ShouldMatch("ABC.");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_dash() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("42-");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("42-");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_dash_with_optional_space() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("42 -");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("42 -");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_decimal_dash() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("42-");
+			var match = EmdGrammar.Enumerator.ShouldMatch("42-");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_decimal_dash_with_optional_space() {
-			var match =MarkdomGrammar.Enumerator.ShouldMatch("42 -");
+			var match =EmdGrammar.Enumerator.ShouldMatch("42 -");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_parenthesis() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("42)");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("42)");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_decimal_parenthesis() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("42)");
+			var match = EmdGrammar.Enumerator.ShouldMatch("42)");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_alpha_parethesis_with_value() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("a@42)");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("a@42)");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_alpha_parenthesis_with_value() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("a@42)");
+			var match = EmdGrammar.Enumerator.ShouldMatch("a@42)");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAheah_matches_decimal_parentheses() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("(42)");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("(42)");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_decimal_parentheses() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("(42)");
+			var match = EmdGrammar.Enumerator.ShouldMatch("(42)");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_bracketed() {
-			var match = MarkdomGrammar.EnumeratorishAhead.ShouldMatch("[42]");
+			var match = EmdGrammar.EnumeratorishAhead.ShouldMatch("[42]");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void Enumerator_matches_decimal_bracketed() {
-			var match = MarkdomGrammar.Enumerator.ShouldMatch("[42]");
+			var match = EmdGrammar.Enumerator.ShouldMatch("[42]");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorValue_matches_base_case() {
-			var match = MarkdomGrammar.EnumeratorValue.ShouldMatch("@123");
+			var match = EmdGrammar.EnumeratorValue.ShouldMatch("@123");
 
 			match.Succeeded.Should().BeTrue();
 		}
 
 		[Fact] public void EnumeratorValue_matches_0() {
-			var match = MarkdomGrammar.EnumeratorValue.ShouldMatch("@0");
+			var match = EmdGrammar.EnumeratorValue.ShouldMatch("@0");
 
 			match.Succeeded.Should().BeTrue();
 		}

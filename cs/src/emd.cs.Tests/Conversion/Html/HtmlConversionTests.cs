@@ -12,7 +12,7 @@ namespace emd.cs.Conversion.Html {
 			var stopwatch = new System.Diagnostics.Stopwatch();
 			stopwatch.Start();
 
-			var match = MarkdomGrammar.Document.ShouldMatch(
+			var match = EmdGrammar.Document.ShouldMatch(
 				"# Heading 1\n",
 				"\n",
 				"@toc({style:float-right})\n",

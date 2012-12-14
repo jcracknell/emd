@@ -102,9 +102,9 @@
     <Compile Include="Grammar\EnumeratorInfo.cs" />
     <Compile Include="Grammar\EnumeratorStyleDefinition.cs" />
     <Compile Include="Grammar\EnumeratorStyleDefinitionCounter.cs" />
-    <Compile Include="Grammar\MarkdomGrammar.Blocks.cs" />
-    <Compile Include="Grammar\MarkdomGrammar.Expressions.cs" />
-    <Compile Include="Grammar\MarkdomGrammar.Inlines.cs" />
+    <Compile Include="Grammar\EmdGrammar.Blocks.cs" />
+    <Compile Include="Grammar\EmdGrammar.Expressions.cs" />
+    <Compile Include="Grammar\EmdGrammar.Inlines.cs" />
     <Compile Include="Grammar\OrderedListItemLineInfo.cs" />
     <Compile Include="Grammar\EnumeratorSeparatorStyleDefinition.cs" />
     <Compile Include="Grammar\LineInfo.cs" />
@@ -157,7 +157,7 @@
     <Compile Include="Nodes\TextNode.cs" />
     <Compile Include="Nodes\UnorderedListItemNode.cs" />
     <Compile Include="Nodes\UnorderedListNode.cs" />
-    <Compile Include="Grammar\MarkdomGrammar.cs" />
+    <Compile Include="Grammar\EmdGrammar.cs" />
     <Compile Include="HashCodeBuilder.cs" />
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

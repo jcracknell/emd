@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class PostfixExpressionTests : GrammarTestFixture {
 		[Fact] public void PostfixExpression_should_match_identifier_increment() {
-			var match = MarkdomGrammar.PostfixExpression.ShouldMatch("@a++");
+			var match = EmdGrammar.PostfixExpression.ShouldMatch("@a++");
 
 			match.Product.ShouldBeEquivalentTo(
 				new PostfixIncrementExpression(
@@ -21,7 +21,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void PostfixExperssion_should_match_member_expression_increment_separated_by_space() {
-			var match = MarkdomGrammar.PostfixExpression.ShouldMatch("@foo.bar ++");
+			var match = EmdGrammar.PostfixExpression.ShouldMatch("@foo.bar ++");
 
 			match.Product.ShouldBeEquivalentTo(
 				new PostfixIncrementExpression(
@@ -36,7 +36,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void PostfixExpression_should_match_identifier_decrement() {
-			var match = MarkdomGrammar.PostfixExpression.ShouldMatch("@foo--");
+			var match = EmdGrammar.PostfixExpression.ShouldMatch("@foo--");
 
 			match.Product.ShouldBeEquivalentTo(
 				new PostfixDecrementExpression(
@@ -47,7 +47,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void PostfixExpression_should_match_string_literal_decrement_separated_by_space() {
-			var match = MarkdomGrammar.PostfixExpression.ShouldMatch("'foo' --");
+			var match = EmdGrammar.PostfixExpression.ShouldMatch("'foo' --");
 
 			match.Product.ShouldBeEquivalentTo(
 				new PostfixDecrementExpression(

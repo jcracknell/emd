@@ -12,14 +12,14 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class LinkTests : GrammarTestFixture {
 		[Fact] public void Link_matches_explicit_link() {
-			var matchResult = MarkdomGrammar.Link.ShouldMatch("[Slashdot: News for nerds, stuff that matters](http://slashdot.org)");
+			var matchResult = EmdGrammar.Link.ShouldMatch("[Slashdot: News for nerds, stuff that matters](http://slashdot.org)");
 
 			matchResult.Succeeded.Should().BeTrue();
 			matchResult.Product.Arguments.Should().NotBeEmpty();
 		}
 
 		[Fact] public void Link_matches_hybrid_link() {
-			var match = MarkdomGrammar.Link.ShouldMatch(
+			var match = EmdGrammar.Link.ShouldMatch(
 				"[Slashdot: News for nerds, stuff that matters][slashdot.org](http://slashdot.org)");
 
 			match.Succeeded.Should().BeTrue();
@@ -29,7 +29,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Link_matches_reference_link() {
-			var match = MarkdomGrammar.Link.ShouldMatch(
+			var match = EmdGrammar.Link.ShouldMatch(
 				"[Slashdot: News for nerds, stuff that matters][slashdot.org]");
 
 			match.Succeeded.Should().BeTrue();
@@ -39,7 +39,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Link_matches_short_reference_link() {
-			var match = MarkdomGrammar.Link.ShouldMatch("[google]");
+			var match = EmdGrammar.Link.ShouldMatch("[google]");
 
 			match.Product.ShouldBeEquivalentTo(
 				new LinkNode(
@@ -53,7 +53,7 @@ namespace emd.cs.Grammar {
 
 		// This behavior seems intuitive per https://github.com/jgm/peg-markdown/commit/1a629de5e2bc62c308be4250e22bacd19e86f6c1
 		[Fact] public void Link_should_match_short_label_space_argument_list_as_reference_only() {
-			var match = MarkdomGrammar.Link.ShouldMatch("[foo] (baz)");
+			var match = EmdGrammar.Link.ShouldMatch("[foo] (baz)");
 
 			match.Product.ShouldBeEquivalentTo(
 				new LinkNode(
@@ -66,7 +66,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Link_should_match_label_space_reference_as_label_only() {
-			var match = MarkdomGrammar.Link.ShouldMatch("[foo] [baz]");
+			var match = EmdGrammar.Link.ShouldMatch("[foo] [baz]");
 
 			match.Product.ShouldBeEquivalentTo(
 				new LinkNode(

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Grammar {
-	public partial class MarkdomGrammar {
+	public partial class EmdGrammar {
 		#region Block Rules
 
 		public static readonly IParsingExpression<IEnumerable<IBlockNode>>

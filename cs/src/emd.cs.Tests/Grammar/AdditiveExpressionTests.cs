@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class AdditiveExpressionTests : GrammarTestFixture {
 		[Fact] public void AdditiveExpression_should_match_numeric_literal_addition() {
-			var match = MarkdomGrammar.AdditiveExpression.ShouldMatch("42+42");
+			var match = EmdGrammar.AdditiveExpression.ShouldMatch("42+42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new AdditionExpression(
@@ -22,7 +22,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void AdditiveExpression_should_match_numeric_literal_addition_with_spaces() {
-			var match = MarkdomGrammar.AdditiveExpression.ShouldMatch("42 + 42");
+			var match = EmdGrammar.AdditiveExpression.ShouldMatch("42 + 42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new AdditionExpression(
@@ -34,7 +34,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void AdditiveExpression_should_match_numeric_literal_subtraction() {
-			var match = MarkdomGrammar.AdditiveExpression.ShouldMatch("42-42");
+			var match = EmdGrammar.AdditiveExpression.ShouldMatch("42-42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new SubtractionExpression(
@@ -46,7 +46,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void AdditiveExpression_should_match_numeric_literal_subtraction_with_spaces() {
-			var match = MarkdomGrammar.AdditiveExpression.ShouldMatch("42 - 42");
+			var match = EmdGrammar.AdditiveExpression.ShouldMatch("42 - 42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new SubtractionExpression(

@@ -61,13 +61,13 @@ namespace emd.cs.Profile {
 				"    With a second paragraph.\n"
 			);
 
-			emd.cs.Grammar.MarkdomGrammar.Document.Matches(new pegleg.cs.Parsing.MatchingContext(input));
+			emd.cs.Grammar.EmdGrammar.Document.Matches(new pegleg.cs.Parsing.MatchingContext(input));
 
 			var stopwatch = new System.Diagnostics.Stopwatch();
 			stopwatch.Start();
 
 			for(var i = 0; i < 100; i++) {
-				emd.cs.Grammar.MarkdomGrammar.Document.Matches(new pegleg.cs.Parsing.MatchingContext(input));
+				emd.cs.Grammar.EmdGrammar.Document.Matches(new pegleg.cs.Parsing.MatchingContext(input));
 				Console.Write(".");
 			}
 

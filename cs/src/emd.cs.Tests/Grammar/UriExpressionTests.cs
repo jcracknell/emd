@@ -9,17 +9,17 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class UriExpressionTests : GrammarTestFixture {
 		[Fact] public void UriExpression_matches_remote_uri() {
-			MarkdomGrammar.UriLiteralExpression.ShouldMatch("http://www.google.com");
+			EmdGrammar.UriLiteralExpression.ShouldMatch("http://www.google.com");
 		}
 
 		[Fact] public void UriExpression_matches_uri_with_balanced_parentheses() {
-			var match = MarkdomGrammar.UriLiteralExpression.ShouldMatch("http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx");
+			var match = EmdGrammar.UriLiteralExpression.ShouldMatch("http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx");
 
 			match.Product.Value.Should().Be("http://msdn.microsoft.com/en-us/library/a6td98xe(v=vs.71).aspx");
 		}
 
 		[Fact] public void UriExpression_discards_characters_following_unbalanced_parentheses() {
-			var match = MarkdomGrammar.UriLiteralExpression.ShouldMatch("http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71).aspx");
+			var match = EmdGrammar.UriLiteralExpression.ShouldMatch("http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71).aspx");
 
 			match.Product.Value.Should().Be("http://msdn.microsoft.com/en-us/library/a6td98xev=vs.71");
 		}

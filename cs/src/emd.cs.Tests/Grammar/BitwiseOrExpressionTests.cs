@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class BitwiseOrExpressionTests {
 		[Fact] public void BitwiseOrExpression_should_match_identifier_or_numeric_literal() {
-			var match = MarkdomGrammar.BitwiseOrExpression.ShouldMatch("@foo | 1");
+			var match = EmdGrammar.BitwiseOrExpression.ShouldMatch("@foo | 1");
 
 			match.Product.GetType().Should().Be(typeof(BitwiseOrExpression));
 			match.Product.ShouldBeEquivalentTo(

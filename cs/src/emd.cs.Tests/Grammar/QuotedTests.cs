@@ -16,7 +16,7 @@ namespace emd.cs.Grammar {
 				new IInlineNode[] { new TextNode("text", new SourceRange(1, 4, 1, 1)) },
 				new SourceRange(0, 6, 1, 0));
 
-			var match = MarkdomGrammar.Quoted.ShouldMatch("'text'");
+			var match = EmdGrammar.Quoted.ShouldMatch("'text'");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}

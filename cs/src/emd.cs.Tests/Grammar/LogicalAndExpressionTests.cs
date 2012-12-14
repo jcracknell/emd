@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class LogicalAndExpressionTests {
 		[Fact] public void LogicalAndExpression_should_match_identifier_and_identifier() {
-			var match = MarkdomGrammar.LogicalAndExpression.ShouldMatch("@foo && @bar");
+			var match = EmdGrammar.LogicalAndExpression.ShouldMatch("@foo && @bar");
 
 			match.Product.GetType().Should().Be(typeof(LogicalAndExpression));
 			match.Product.ShouldBeEquivalentTo(

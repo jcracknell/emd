@@ -11,10 +11,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace emd.cs.Grammar {
-	public partial class MarkdomGrammar : ParsingExpression {
-		private static readonly MarkdomGrammar _instance = new MarkdomGrammar();
+	public partial class EmdGrammar : ParsingExpression {
+		private static readonly EmdGrammar _instance = new EmdGrammar();
 
-		public static MarkdomGrammar Instance { get { return _instance; } }
+		public static EmdGrammar Instance { get { return _instance; } }
 
 		private static int _parseLinesCount = 0;
 		protected static T ParseLinesAs<T>(IParsingExpression<T> expression, IEnumerable<LineInfo> lines) {

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Grammar {
-	public partial class MarkdomGrammar {
+	public partial class EmdGrammar {
 		#region Inline Rules
 
 		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
