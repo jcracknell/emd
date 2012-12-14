@@ -32,6 +32,14 @@ namespace pegleg.cs.Parsing {
 			return new SourceRange(Index, end.Index - Index + end.Length, Line, LineIndex);
 		}
 
+		/// <summary>
+		/// Create a new <see cref="SourceRange"/> at the position of the current value with length 0.
+		/// </summary>
+		/// <returns>A new <see cref="SourceRange"/> at the position of the current value with length 0.</returns>
+		public SourceRange Position() {
+			return new SourceRange(Index, 0, Line, LineIndex);
+		}
+
 		public override int GetHashCode() {
 			return ((Index << 16) | (Index >> 16))
 				^ Length
