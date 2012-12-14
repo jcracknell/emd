@@ -1,0 +1,26 @@
+#! emd.cs.Conversion.StructuralRenderer, emd.cs
+\Document
+	\Paragraph
+		Text "Paragraph"
+		Space
+		Text "continues."
+	/Paragraph
+	\Paragraph
+		Text "Paragraph"
+		Space
+		Text "continues."
+	/Paragraph
+	\Paragraph
+		Text "Paragraph"
+	/Paragraph
+	\Paragraph
+		Text "Ends."
+	/Paragraph
+	\Paragraph
+		Text "Paragraph"
+	/Paragraph
+	\Paragraph
+		Text "Ends."
+	/Paragraph
+/Document
+		

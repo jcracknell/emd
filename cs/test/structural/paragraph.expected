@@ -1,0 +1,12 @@
+#! emd.cs.Conversion.StructuralRenderer, emd.cs
+\Document
+	\Paragraph
+		Text "This"
+		Space
+		Text "is"
+		Space
+		Text "a"
+		Space
+		Text "paragraph."
+	/Paragraph
+/Document
