@@ -1,0 +1,69 @@
+#! emd.cs.Conversion.StructuralRenderer, emd.cs
+(Document
+	(Blockquote
+		(Paragraph
+			(Text "line")
+			(Space)
+			(Text "1")
+			(Space)
+			(Text "line")
+			(Space)
+			(Text "2")
+		)	
+	)
+	(Paragraph
+		(Text "Unannounced")
+		(Space)
+		(Text "line:")
+	)	
+	(Blockquote
+		(Paragraph
+			(Text "line")
+			(Space)
+			(Text "1")
+			(Space)
+			(Text "line")
+			(Space)
+			(Text "2")
+		)	
+	)
+	(Paragraph
+		(Text "Multiple")
+		(Space)
+		(Text "paragraphs:")
+	)	
+	(Blockquote
+		(Paragraph
+			(Text "paragraph")
+			(Space)
+			(Text "1")
+		)
+		(Paragraph
+			(Text "paragraph")
+			(Space)
+			(Text "2")
+		)	
+	)
+	(Paragraph
+		(Text "Nesting:")
+	)	
+	(Blockquote
+		(Paragraph
+			(Text "level")
+			(Space)
+			(Text "1")
+		)
+		(Blockquote
+			(Paragraph
+				(Text "level")
+				(Space)
+				(Text "2")
+			)
+		)	
+		(Paragraph
+			(Text "level")
+			(Space)
+			(Text "1")
+		)
+	)
+)

@@ -1,0 +1,14 @@
+*emphasized text*
+
+emphasized *across
+lines*
+
+no*space*
+
+missing *end
+
+nested **strong *emphasis***
+
+mismatched *emphasis **strong* end**
+
+mismatched **strong *emphasis** end*

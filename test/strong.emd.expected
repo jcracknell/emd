@@ -1,0 +1,32 @@
+#! emd.cs.Conversion.StructuralRenderer, emd.cs
+(Document
+	(Paragraph
+		(Strong
+			(Text "strong")
+			(Space)
+			(Text "text")
+		)
+	)
+	(Paragraph
+		(Text "strong")
+		(Space)
+		(Strong
+			(Text "across")
+			(Space)
+			(Text "lines")
+		)
+	)		
+	(Paragraph
+		(Text "no")
+		(Strong
+			(Text "space")
+		)
+	)
+	(Paragraph
+		(Text "missing")
+		(Space)
+		(Strong
+			(Text "end")
+		)
+	)	
+)
