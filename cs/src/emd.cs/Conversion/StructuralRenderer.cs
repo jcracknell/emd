@@ -26,9 +26,59 @@ namespace emd.cs.Conversion {
 				_writer = writer;
 			}
 
+			#region Helpers
+
 			private void WriteIndent() {
 				for(var i = 0; i < _indentLevel; i++)
 					_writer.Write(INDENT);
+			}
+
+			private void WriteComposite(object o, object[] attrs, Action content) {
+				if(null == o) throw ExceptionBecause.ArgumentNull(() => o);
+				if(null == attrs) throw ExceptionBecause.ArgumentNull(() => attrs);
+				if(null == content) throw ExceptionBecause.ArgumentNull(() => content);
+
+				WriteIndent();
+				_writer.Write("(");
+				WriteType(o);
+				WriteAttrs(attrs);
+				_writer.WriteLine();
+				_indentLevel++;
+				content();
+				_indentLevel--;
+				WriteIndent();
+				_writer.WriteLine(")");
+			}
+
+			private void WriteComposite(object o, Action content) {
+				WriteComposite(o, new object[0], content);
+			}
+
+			private void WriteComposite(object o, object attr1, Action content) {
+				WriteComposite(o, new object[] { attr1 }, content);
+			}
+
+			private void WriteComposite(object o, object attr1, object attr2, Action content) {
+				WriteComposite(o, new object[] { attr1, attr2 }, content);
+			}
+
+			private void WriteComposite(object o, object attr1, object attr2, object attr3, Action content) {
+				WriteComposite(o, new object[] { attr1, attr2, attr3 }, content);
+			}
+
+			private void WriteComposite(object o, object attr1, object attr2, object attr3, object attr4, Action content) {
+				WriteComposite(o, new object[] { attr1, attr2, attr3, attr4 }, content);
+			}
+
+			private void WriteAtomic(object o, params object[] attrs) {
+				if(null == o) throw ExceptionBecause.ArgumentNull(() => o);
+				if(null == attrs) throw ExceptionBecause.ArgumentNull(() => attrs);
+
+				WriteIndent();
+				_writer.Write("(");
+				WriteType(o);
+				WriteAttrs(attrs);
+				_writer.WriteLine(")");
 			}
 
 			private void WriteType(object o) {
@@ -42,23 +92,7 @@ namespace emd.cs.Conversion {
 				}
 			}
 
-			private void WriteStart(object node, params object[] values) {
-				WriteIndent();
-				_writer.Write("(");
-				WriteType(node);
-				WriteNodeValues(values);
-				_writer.WriteLine();
-				_indentLevel++;
-			}
-
-			private void WriteEnd(object node) {
-				_indentLevel--;
-				WriteIndent();
-				_writer.Write(")");
-				_writer.WriteLine();
-			}
-
-			private void WriteNodeValues(object[] values) {
+			private void WriteAttrs(object[] values) {
 				foreach(var value in values) {
 					_writer.Write(" ");
 					_writer.Write(
@@ -69,169 +103,163 @@ namespace emd.cs.Conversion {
 				}
 			}
 
-			private void WriteValue(object node, params object[] values) {
-				WriteIndent();
-				_writer.Write("(");
-				WriteType(node);
-				WriteNodeValues(values);
-				_writer.WriteLine(")");
-			}
-
 			private void WriteBinaryExpression(BinaryExpression expression) {
-				WriteStart(expression);
-				expression.Left.HandleWith(this);
-				expression.Right.HandleWith(this);
-				WriteEnd(expression);
+				WriteComposite(expression, () => {
+					expression.Left.HandleWith(this);
+					expression.Right.HandleWith(this);
+				});
 			}
 
 			private void WriteUnaryExpression(UnaryExpression expression) {
-				WriteStart(expression);
-				expression.Body.HandleWith(this);
-				WriteEnd(expression);
+				WriteComposite(expression, () => {
+					expression.Body.HandleWith(this);
+				});
 			}
+
+			#endregion
 
 			#region INodeHandler members
 
 			public void Handle(AutoLinkNode node) {
-				WriteStart(node, node.Uri);
-				node.Arguments.Each(argument => argument.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, node.Uri, () => {
+					node.Arguments.Each(argument => argument.HandleWith(this));
+				});
 			}
 
 			public void Handle(BlockquoteNode node) {
-				WriteStart(node);
-				node.Children.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
 			}
 
 			public void Handle(CodeNode node) {
-				WriteValue(node, node.Text);
+				WriteAtomic(node, node.Text);
 			}
 
 			public void Handle(EmphasisNode node) {
-				WriteStart(node);
-				node.Children.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
 			}
 
 			public void Handle(EntityNode node) {
-				WriteValue(node, node.Value);
+				WriteAtomic(node, node.Value);
 			}
 
 			public void Handle(ExpressionBlockNode node) {
-				WriteStart(node);
-				node.Expression.HandleWith(this);
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Expression.HandleWith(this);
+				});
 			}
 
 			public void Handle(HeadingNode node) {
-				WriteValue(node, node.Level, node.Text);
+				WriteAtomic(node, node.Level, node.Text);
 			}
 
 			public void Handle(InlineExpressionNode node) {
-				WriteStart(node);
-				node.Expression.HandleWith(this);
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Expression.HandleWith(this);
+				});
 			}
 
 			public void Handle(LineBreakNode node) {
-				WriteValue(node);
+				WriteAtomic(node);
 			}
 
 			public void Handle(LinkNode node) {
-				WriteStart(node, node.ReferenceId);
-				node.Children.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, node.ReferenceId, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
 			}
 
 			public void Handle(DocumentNode node) {
-				WriteStart(node);
-				node.Content.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Content.Each(child => child.HandleWith(this));
+				});
 			}
 
 			public void Handle(OrderedListNode node) {
-				WriteStart(node, node.CounterStyle, node.Start, node.SeparatorStyle);
-				node.Items.Each(item => item.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, node.CounterStyle, node.Start, node.SeparatorStyle, () => {
+					node.Items.Each(item => item.HandleWith(this));
+				});
 			}
 
 			public void Handle(OrderedListItemNode node) {
-				WriteStart(node);
-				node.Children.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
 			}
 
 			public void Handle(ParagraphNode node) {
-				WriteStart(node);
-				node.Children.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
 			}
 
 			public void Handle(QuotedNode node) {
-				WriteStart(node);
-				node.Children.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
 			}
 
 			public void Handle(ReferenceNode node) {
-				WriteStart(node, node.ReferenceId.Value);
-				node.Arguments.Each(argument => argument.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, node.ReferenceId.Value, () => {
+					node.Arguments.Each(argument => argument.HandleWith(this));
+				});
 			}
 
 			public void Handle(SpaceNode node) {
-				WriteValue(node);
+				WriteAtomic(node);
 			}
 
 			public void Handle(StrongNode node) {
-				WriteStart(node);
-				node.Children.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
 			}
 
 			public void Handle(SymbolNode node) {
-				WriteValue(node, node.Symbol);
+				WriteAtomic(node, node.Symbol);
 			}
 
 			public void Handle(TableNode node) {
-				WriteStart(node);
-				node.Rows.Each(row => row.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Rows.Each(row => row.HandleWith(this));
+				});
 			}
 
 			public void Handle(TableDataCellNode node) {
-				WriteStart(node, node.ColumnSpan, node.RowSpan);
-				node.Children.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, node.ColumnSpan, node.RowSpan, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
 			}
 
 			public void Handle(TableHeaderCellNode node) {
-				WriteStart(node, node.ColumnSpan, node.RowSpan);
-				node.Children.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, node.ColumnSpan, node.RowSpan, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
 			}
 
 			public void Handle(TableRowNode node) {
-				WriteStart(node);
-				node.Cells.Each(cell => cell.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Cells.Each(cell => cell.HandleWith(this));
+				});
 			}
 
 			public void Handle(TextNode node) {
-				WriteValue(node, node.Text);
+				WriteAtomic(node, node.Text);
 			}
 
 			public void Handle(UnorderedListNode node) {
-				WriteStart(node);
-				node.Items.Each(item => item.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Items.Each(item => item.HandleWith(this));
+				});
 			}
 
 			public void Handle(UnorderedListItemNode node) {
-				WriteStart(node);
-				node.Children.Each(child => child.HandleWith(this));
-				WriteEnd(node);
+				WriteComposite(node, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
 			}
 
 			#endregion
@@ -243,16 +271,9 @@ namespace emd.cs.Conversion {
 			}
 
 			public void Handle(ArrayLiteralExpression expression) {
-				WriteStart(expression);
-
-				expression.Elements.Each(element => {
-					if(null == element)
-						_writer.WriteLine(":ElidedExpression");
-					else
-						element.HandleWith(this);
+				WriteComposite(expression, () => {
+					expression.Elements.Each(element => element.HandleWith(this));
 				});
-
-				WriteEnd(expression);
 			}
 
 			public void Handle(BitwiseAndExpression expression) {
@@ -272,22 +293,22 @@ namespace emd.cs.Conversion {
 			}
 
 			public void Handle(BooleanLiteralExpression expression) {
-				WriteValue(expression, expression.Value);
+				WriteAtomic(expression, expression.Value);
 			}
 
 			public void Handle(CallExpression expression) {
-				WriteStart(expression);
-				expression.Body.HandleWith(this);
-				expression.Arguments.Each(argument => argument.HandleWith(this));
-				WriteEnd(expression);
+				WriteComposite(expression, () => {
+					expression.Body.HandleWith(this);
+					expression.Arguments.Each(argument => argument.HandleWith(this));
+				});
 			}
 
 			public void Handle(ConditionalExpression expression) {
-				WriteStart(expression);
-				expression.Condition.HandleWith(this);
-				expression.TrueExpression.HandleWith(this);
-				expression.FalseExpression.HandleWith(this);
-				WriteEnd(expression);
+				WriteComposite(expression, () => {
+					expression.Condition.HandleWith(this);
+					expression.TrueExpression.HandleWith(this);
+					expression.FalseExpression.HandleWith(this);
+				});
 			}
 
 			public void Handle(DeleteExpression expression) {
@@ -299,20 +320,20 @@ namespace emd.cs.Conversion {
 			}
 
 			public void Handle(DocumentLiteralExpression expression) {
-				WriteStart(expression);
-				expression.Content.Each(node => node.HandleWith(this));
-				WriteEnd(expression);
+				WriteComposite(expression, () => {
+					expression.Content.Each(node => node.HandleWith(this));
+				});
 			}
 
 			public void Handle(DynamicPropertyExpression expression) {
-				WriteStart(expression);
-				expression.Body.HandleWith(this);
-				expression.MemberName.HandleWith(this);
-				WriteEnd(expression);
+				WriteComposite(expression, () => {
+					expression.Body.HandleWith(this);
+					expression.MemberName.HandleWith(this);
+				});
 			}
 
 			public void Handle(ElidedExpression expression) {
-				WriteValue(expression);
+				WriteAtomic(expression);
 			}
 
 			public void Handle(EqualsExpression expression) {
@@ -328,7 +349,7 @@ namespace emd.cs.Conversion {
 			}
 
 			public void Handle(IdentifierExpression expression) {
-				WriteValue(expression, expression.Name);
+				WriteAtomic(expression, expression.Name);
 			}
 
 			public void Handle(InExpression expression) {
@@ -380,21 +401,21 @@ namespace emd.cs.Conversion {
 			}
 
 			public void Handle(NullLiteralExpression expression) {
-				WriteValue(expression);
+				WriteAtomic(expression);
 			}
 
 			public void Handle(NumericLiteralExpression expression) {
-				WriteValue(expression, expression.Value);
+				WriteAtomic(expression, expression.Value);
 			}
 
 			public void Handle(ObjectLiteralExpression expression) {
-				WriteStart(expression);
-				expression.PropertyAssignments.Each(propertyAssignment => {
-					WriteStart(propertyAssignment, propertyAssignment.PropertyName);
-					propertyAssignment.PropertyValue.HandleWith(this);
-					WriteEnd(propertyAssignment);
+				WriteComposite(expression, () => {
+					expression.PropertyAssignments.Each(propertyAssignment => {
+						WriteComposite(propertyAssignment, propertyAssignment.PropertyName, () => {
+							propertyAssignment.PropertyValue.HandleWith(this);
+						});
+					});
 				});
-				WriteEnd(expression);
 			}
 
 			public void Handle(PositiveExpression expression) {
@@ -422,9 +443,9 @@ namespace emd.cs.Conversion {
 			}
 
 			public void Handle(StaticPropertyExpression expression) {
-				WriteStart(expression, expression.MemberName);
-				expression.Body.HandleWith(this);
-				WriteEnd(expression);
+				WriteComposite(expression, expression.MemberName, () => {
+					expression.Body.HandleWith(this);
+				});
 			}
 
 			public void Handle(StrictEqualsExpression expression) {
@@ -436,7 +457,7 @@ namespace emd.cs.Conversion {
 			}
 
 			public void Handle(StringLiteralExpression expression) {
-				WriteValue(expression, expression.Value);
+				WriteAtomic(expression, expression.Value);
 			}
 
 			public void Handle(SubtractionExpression expression) {
@@ -452,7 +473,7 @@ namespace emd.cs.Conversion {
 			}
 
 			public void Handle(UriLiteralExpression expression) {
-				WriteValue(expression, expression.Value);
+				WriteAtomic(expression, expression.Value);
 			}
 
 			public void Handle(VoidExpression expression) {
