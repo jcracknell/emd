@@ -44,7 +44,7 @@ namespace emd.cs.Conversion {
 
 			private void WriteStart(object node, params object[] values) {
 				WriteIndent();
-				_writer.Write("\\");
+				_writer.Write("(");
 				WriteType(node);
 				WriteNodeValues(values);
 				_writer.WriteLine();
@@ -54,8 +54,7 @@ namespace emd.cs.Conversion {
 			private void WriteEnd(object node) {
 				_indentLevel--;
 				WriteIndent();
-				_writer.Write("/");
-				WriteType(node);
+				_writer.Write(")");
 				_writer.WriteLine();
 			}
 
@@ -72,9 +71,10 @@ namespace emd.cs.Conversion {
 
 			private void WriteValue(object node, params object[] values) {
 				WriteIndent();
+				_writer.Write("(");
 				WriteType(node);
 				WriteNodeValues(values);
-				_writer.WriteLine();
+				_writer.WriteLine(")");
 			}
 
 			private void WriteBinaryExpression(BinaryExpression expression) {
