@@ -21,7 +21,7 @@ TESTS_FOLDER="$(dirname "$0")/structural";
 find "$TESTS_FOLDER" -type f | grep -E '\.emd$' | while read test; do
 	echo -n "[$test] ";
 
-	expected="$(dirname "$test")/$(basename "$test" .emd).expected";
+	expected="$test.expected";
 	if [ ! -f "$expected" ]; then
 		echo $FAIL;
 		echo -e "\tNot found: \"$expected\".";
