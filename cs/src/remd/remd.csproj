@@ -45,9 +45,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\emd.cs\emd.cs.csproj">
       <Project>{bef04599-e482-49f9-a48a-145a0321acfa}</Project>
       <Name>emd.cs</Name>
