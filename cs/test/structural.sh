@@ -36,7 +36,7 @@ find "$TESTS_FOLDER" -type f | grep -E '\.emd$' | while read test; do
 	fi
 
 	differences="$(
-		cat "$test" | "$REMD" -r "$renderer" - - \
+		"$REMD" "$test" - \
 		| diff --ignore-matching-lines='^\s*#' --ignore-all-space \
 			--old-line-format="E%3dn|%L" --new-line-format="A%3dn|%L" --unchanged-line-format=" %3dn|%L" \
 			"$expected" - \
