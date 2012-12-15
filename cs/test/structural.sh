@@ -8,6 +8,7 @@ done
 
 if [ ! -f "$REMD" ]; then
 	echo "Unable to locate remd.exe - have you built the solution?";
+	exit 1;
 fi
 
 echo "# remd.exe is \"$REMD\"";
