@@ -38,14 +38,19 @@ namespace emd.cs.Conversion {
 				if(null == attrs) throw ExceptionBecause.ArgumentNull(() => attrs);
 				if(null == content) throw ExceptionBecause.ArgumentNull(() => content);
 
+				if(o is INode) WriteSourceRange((o as INode).SourceRange);
+				if(o is IExpression) WriteSourceRange((o as IExpression).SourceRange);
+
 				WriteIndent();
 				_writer.Write("(");
 				WriteType(o);
 				WriteAttrs(attrs);
 				_writer.WriteLine();
+
 				_indentLevel++;
 				content();
 				_indentLevel--;
+
 				WriteIndent();
 				_writer.WriteLine(")");
 			}
@@ -101,6 +106,14 @@ namespace emd.cs.Conversion {
 						value.ToString()
 					);
 				}
+			}
+
+			private void WriteSourceRange(pegleg.cs.Parsing.SourceRange sourceRange) {
+				WriteIndent();
+				_writer.Write("# Line:");
+				_writer.Write(sourceRange.Line);
+				_writer.Write(" Character:");
+				_writer.WriteLine(sourceRange.LineIndex);
 			}
 
 			private void WriteBinaryExpression(BinaryExpression expression) {

@@ -41,7 +41,7 @@
 
 		differences="$(
 			RENDER "$renderer" "$test" \
-			| diff --ignore-matching-lines='^\s*#' --ignore-all-space \
+			| diff --ignore-matching-lines='^[ 	]*#' --ignore-all-space \
 				--old-line-format="E%3dn|%L" --new-line-format="A%3dn|%L" --unchanged-line-format=" %3dn|%L" \
 				"$expected" - \
 			| grep -2 -E '^[AE]' \
