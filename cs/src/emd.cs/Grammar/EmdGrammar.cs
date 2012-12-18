@@ -200,9 +200,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		NewLine =
 			Named(() => NewLine,
-				ChoiceUnordered(
-					CharacterIn('\n', '\u2028', '\u2029'),
-					Sequence(CharacterIn('\r'), Optional(CharacterIn('\n')))));
+				LiteralIn("\n", "\u2028", "\u2029", "\r", "\r\n"));
 
 		/// <summary>
 		/// A whitespace character; space, tab or newline.
