@@ -109,21 +109,6 @@ namespace emd.cs.Grammar {
 
 		#region Text, Character Classes, etc
 
-		public static readonly IParsingExpression<Nil>
-		OptionalBlockWhitespace =
-			Named(() => OptionalBlockWhitespace,
-				Optional(Reference(() => BlockWhitespace)));
-
-		public static readonly IParsingExpression<Nil>
-		BlockWhitespace =
-			Named(() => BlockWhitespace,
-				Sequence(
-					Ahead(Reference(() => Whitespace)),
-					Reference(() => SpaceChars),
-					Optional(Reference(() => NewLine)),
-					Reference(() => SpaceChars),
-					NotAhead(Reference(() => BlankLine))));
-
 		/// <summary>
 		/// A raw line of input, including the newline character.
 		/// </summary>

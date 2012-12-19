@@ -6,8 +6,8 @@
     <ProjectGuid>{87B1B0BE-7CE4-4A1C-A027-7504425D8544}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>emd.cs.Profile</RootNamespace>
-    <AssemblyName>emd.cs.Profile</AssemblyName>
+    <RootNamespace>emd.cs</RootNamespace>
+    <AssemblyName>emd.cs.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -56,6 +56,7 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Conversion\Html\HtmlConversionTests.cs" />
+    <Compile Include="Grammar\BlockWhitespaceTests.cs" />
     <Compile Include="Utils\EntityInfoTests.cs" />
     <Compile Include="Grammar\AdditiveExpressionTests.cs" />
     <Compile Include="Grammar\ArrayLiteralTests.cs" />

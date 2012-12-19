@@ -12,9 +12,20 @@ namespace emd.cs.Grammar {
 		#region Inline Rules
 
 		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
-		Inlines =
-			Named(() => Inlines,
-				AtLeast(0, Reference(() => Inline)));
+		BlockInlinesOptional =
+			Sequence(
+				Optional(Reference(() => BlockWhitespaceOrComments)),
+				AtLeast(0, Reference(() => Inline)),
+				Optional(Reference(() => BlockWhitespaceOrComments)),
+				match => match.Product.Of2);
+
+		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
+		BlockInlinesRequired =
+			Sequence(
+				Optional(Reference(() => BlockWhitespaceOrComments)),
+				AtLeast(1, Reference(() => Inline)),
+				Optional(Reference(() => BlockWhitespaceOrComments)),
+				match => match.Product.Of2);
 
 		public static readonly IParsingExpression<IInlineNode>
 		Inline =
@@ -146,10 +157,10 @@ namespace emd.cs.Grammar {
 		LineBreak =
 			Named(() => LineBreak,
 				Sequence(
-					Optional(Reference(() => InlineSpace)),
+					Optional(Reference(() => BlockWhitespaceOrComments)),
 					Literal("\\"),
 					Ahead(Reference(() => BlankLine)),
-					Optional(Reference(() => InlineSpace)),
+					Optional(Reference(() => BlockWhitespaceOrComments)),
 					match => new LineBreakNode(match.SourceRange)));
 
 
@@ -166,16 +177,15 @@ namespace emd.cs.Grammar {
 						.Select(ticks =>
 							Sequence(
 								ticks,
-								Reference(() => OptionalBlockWhitespace),
+								Optional(Reference(() => BlockWhitespace)),
 								AtLeast(0,
 									Sequence(
-										Reference(() => OptionalBlockWhitespace),
 										AtLeast(1,
 											Sequence(
 												NotAhead(ChoiceUnordered(ticks, Reference(() => Whitespace))),
-												Reference(() => UnicodeCharacter)))),
+												Reference(() => UnicodeCharacter))),
+										Optional(Reference(() => BlockWhitespace))),
 									match => match.String),
-								Reference(() => OptionalBlockWhitespace),
 								ticks,
 								match => new CodeNode(match.Product.Of3, match.SourceRange)))),
 					match => match.Product.Of2));
@@ -227,25 +237,55 @@ namespace emd.cs.Grammar {
 					Reference(() => NormalChar),
 					match => new TextNode(match.String, match.SourceRange)));
 
+		/// <summary>
+		/// Any non-empty combination of comments and whitespace not at the end of a block.
+		/// </summary>
 		public static readonly IParsingExpression<SpaceNode>
 		Space =
 			Named(() => Space,
-				Reference(() => InlineSpace, match => new SpaceNode(match.SourceRange)));
+				Sequence(
+					Reference(() => BlockWhitespaceOrComments),
+					NotAhead(Reference(() => BlankLine)), // No match at end of block.
+					match => new SpaceNode(match.SourceRange)));
 
+		/// <summary>
+		/// Any non-empty combination of comments and whitespace not traversing a blank line (not leaving the current block).
+		/// </summary>
 		public static readonly IParsingExpression<Nil>
-		InlineSpace =
-			Named(() => InlineSpace,
+		BlockWhitespaceOrComments =
+			Named(() => BlockWhitespaceOrComments,
 				ChoiceOrdered(
-					// At least one comment interleaved with whitespace in any combination
+					// whitespace followed by any number of comments interleaved with whitespace
 					Sequence(
-						Reference(() => OptionalBlockWhitespace),
-						AtLeast(1,
+						Reference(() => BlockWhitespace),
+						AtLeast(0,
 							Sequence(
 								Reference(() => Comment),
-								Reference(() => OptionalBlockWhitespace))),
-						NotAhead(Reference(() => BlankLine))),
-					// Or just one chunk of whitespace
-					Reference(() => BlockWhitespace)));
+								Optional(Reference(() => BlockWhitespace))))),
+					// at least one comment optionally interleaved with whitespace
+					AtLeast(1,
+						Sequence(
+							Reference(() => Comment),
+							Optional(Reference(() => BlockWhitespace))))));
+
+		/// <summary>
+		/// Any non-empty amount of whitespace not traversing a blank line (not leaving the current block).
+		/// </summary>
+		public static readonly IParsingExpression<Nil>
+		BlockWhitespace =
+			Named(() => BlockWhitespace,
+				ChoiceOrdered(
+					Sequence(
+						AtLeast(1, Reference(() => SpaceChar)),
+						Optional(
+							Sequence(
+								Reference(() => NewLine),
+								Reference(() => SpaceChars),
+								NotAhead(Reference(() => BlankLine))))),
+					Sequence(
+						Reference(() => NewLine),
+						Reference(() => SpaceChars),
+						NotAhead(Reference(() => BlankLine)))));
 
 		public static readonly IParsingExpression<Nil>
 		NormalChar =

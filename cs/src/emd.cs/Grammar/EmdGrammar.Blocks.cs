@@ -290,7 +290,7 @@ namespace emd.cs.Grammar {
 										NotAhead(orderedListContinuesLoose),
 										match => {
 											var items = match.Product.Of1.InEnumerable().Concat(match.Product.Of2)
-												.Select(i => new OrderedListItemNode(ParseLinesAs(Inlines, i.Lines).ToArray(), i.SourceRange))
+												.Select(i => new OrderedListItemNode(ParseLinesAs(BlockInlinesOptional, i.Lines).ToArray(), i.SourceRange))
 												.ToArray();
 											return new OrderedListNode(
 												csd.CounterStyle, ssd.SeparatorStyle,
@@ -394,7 +394,7 @@ namespace emd.cs.Grammar {
 					NotAhead(unorderedListContinuesLoose),
 					match => {
 						var items = match.Product.Of1
-							.Select(i => new UnorderedListItemNode(ParseLinesAs(Inlines, i.Lines.ToArray()).ToArray(), i.SourceRange))
+							.Select(i => new UnorderedListItemNode(ParseLinesAs(BlockInlinesOptional, i.Lines.ToArray()).ToArray(), i.SourceRange))
 							.ToArray();
 						return new UnorderedListNode(items, match.SourceRange);
 					}));
@@ -499,11 +499,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<ParagraphNode>
 		Paragraph =
 			Named(() => Paragraph,
-				Sequence(
-					Reference(() => SpaceChars),
-					AtLeast(1, Reference(() => Inline)),
-					Reference(() => BlankLine),
-					match => new ParagraphNode(match.Product.Of2.ToArray(), match.SourceRange)));
+				Reference(() => BlockInlinesRequired, match => new ParagraphNode(match.Product.ToArray(), match.SourceRange)));
 
 		#endregion
 
@@ -607,7 +603,7 @@ namespace emd.cs.Grammar {
 					new TableHeaderCellNode(
 						match.Product.Of1.ColumnSpan,
 						match.Product.Of1.RowSpan,
-						ParseLinesAs(Inlines, match.Product.Of2.InEnumerable()).ToArray(),
+						ParseLinesAs(BlockInlinesOptional, match.Product.Of2.InEnumerable()).ToArray(),
 						match.SourceRange));
 
 		private static readonly IParsingExpression<TableDataCellNode>
@@ -618,7 +614,7 @@ namespace emd.cs.Grammar {
 				match => new TableDataCellNode(
 					match.Product.Of1.ColumnSpan,
 					match.Product.Of1.RowSpan,
-					ParseLinesAs(Inlines, match.Product.Of2.InEnumerable()).ToArray(),
+					ParseLinesAs(BlockInlinesOptional, match.Product.Of2.InEnumerable()).ToArray(),
 					match.SourceRange));
 
 		private static readonly IParsingExpression<Nil>
