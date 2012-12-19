@@ -102,9 +102,6 @@ namespace emd.cs.Grammar {
 		private static readonly IParsingExpression<Nil>
 		enumeratorCounterStyleUpperRomanChar = CharacterIn(enumeratorCounterStyleUpperRomanCharValues);
 
-		private static readonly IParsingExpression<Nil>
-		enumeratorCounterStyleRomanChar = CharacterIn(enumeratorCounterStyleLowerRomanCharValues.Concat(enumeratorCounterStyleUpperRomanCharValues));
-
 		public static readonly IParsingExpression<int?>
 		EnumeratorValue =
 			Named(() => EnumeratorValue,
@@ -127,25 +124,25 @@ namespace emd.cs.Grammar {
 				OrderedListCounterStyle.LowerRoman,
 				Sequence(
 					enumeratorCounterStyleLowerRomanChar,
-					AtLeast(0, enumeratorCounterStyleRomanChar),
+					AtLeast(0, enumeratorCounterStyleLowerRomanChar),
 					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerRoman, NumeralUtils.ParseRomanNumeral(match.String)))),
 			new EnumeratorCounterStyleDefinition(
 				OrderedListCounterStyle.UpperRoman,
 				Sequence(
 					enumeratorCounterStyleUpperRomanChar,
-					AtLeast(0, enumeratorCounterStyleRomanChar),
+					AtLeast(0, enumeratorCounterStyleUpperRomanChar),
 					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperRoman, NumeralUtils.ParseRomanNumeral(match.String)))),
 			new EnumeratorCounterStyleDefinition(
 				OrderedListCounterStyle.LowerAlpha,
 				Sequence(
 					Reference(() => EnglishLowerAlpha),
-					AtLeast(0, Reference(() => EnglishAlpha)),
+					AtLeast(0, Reference(() => EnglishLowerAlpha)),
 					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerAlpha, NumeralUtils.ParseAlphaNumeral(match.String)))),
 			new EnumeratorCounterStyleDefinition(
 				OrderedListCounterStyle.UpperAlpha,
 				Sequence(
 					Reference(() => EnglishUpperAlpha),
-					AtLeast(0, Reference(() => EnglishAlpha)),
+					AtLeast(0, Reference(() => EnglishUpperAlpha)),
 					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperAlpha, NumeralUtils.ParseAlphaNumeral(match.String))))
 		};
 
@@ -215,7 +212,7 @@ namespace emd.cs.Grammar {
 		EnumeratorishAhead =
 			Named(() => EnumeratorishAhead,
 				Ahead(
-					Regex(@"\ {0,3}(\(|\[)?([0-9]+|[a-zA-Z]+)(@[0-9]+)?(\.|(\ *-)|\)|\])")));
+					Regex(@"\ {0,3}(\(|\[)?([0-9]+|[a-z]+|[A-Z]+)(@[0-9]+)?(\.|(\ *-)|\)|\])")));
 
 		public static readonly IParsingExpression<LineInfo>
 		orderedListBlockLine =

@@ -38,10 +38,18 @@ namespace emd.cs.Grammar {
 			match.Succeeded.Should().BeTrue();
 		}
 
+		[Fact] public void EnumeratorishAhead_should_not_match_lower_roman_upper_roman_dot() {
+			EmdGrammar.EnumeratorishAhead.ShouldNotMatch("iX.");
+		}
+
 		[Fact] public void Enumerator_matches_lower_roman_dot() {
 			var match = EmdGrammar.Enumerator.ShouldMatch("ix.");
 
 			match.Succeeded.Should().BeTrue();
+		}
+
+		[Fact] public void Enumerator_should_not_match_lower_roman_upper_roman_dot() {
+			EmdGrammar.Enumerator.ShouldNotMatch("iX.");
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_upper_roman_dot() {
@@ -50,10 +58,18 @@ namespace emd.cs.Grammar {
 			match.Succeeded.Should().BeTrue();
 		}
 
+		[Fact] public void EnumeratorishAhead_should_not_match_upper_roman_lower_roman_dot() {
+			EmdGrammar.EnumeratorishAhead.ShouldNotMatch("Xviii.");
+		}
+
 		[Fact] public void Enumerator_matches_upper_roman_dot() {
 			var match = EmdGrammar.Enumerator.ShouldMatch("XVIII.");
 
 			match.Succeeded.Should().BeTrue();
+		}
+
+		[Fact] public void Enumerator_should_not_match_upper_roman_lower_roman_dot() {
+			EmdGrammar.Enumerator.ShouldNotMatch("Xv.");
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_lower_alpha_dot() {
@@ -62,10 +78,18 @@ namespace emd.cs.Grammar {
 			match.Succeeded.Should().BeTrue();
 		}
 
+		[Fact] public void EnumeratorishAhead_should_not_match_lower_alpha_upper_alpha_dot() {
+			EmdGrammar.EnumeratorishAhead.ShouldNotMatch("aBC.");
+		}
+
 		[Fact] public void Enumerator_matches_lower_alpha_dot() {
 			var match = EmdGrammar.Enumerator.ShouldMatch("abc.");
 
 			match.Succeeded.Should().BeTrue();
+		}
+
+		[Fact] public void Enumerator_should_not_match_lower_alpha_upper_alpha_dot() {
+			EmdGrammar.Enumerator.ShouldNotMatch("aB.");
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_upper_alpha_dot() {
@@ -74,10 +98,18 @@ namespace emd.cs.Grammar {
 			match.Succeeded.Should().BeTrue();
 		}
 
+		[Fact] public void EnumeratorishAhead_should_not_match_upper_alpha_lower_alpha_dot() {
+			EmdGrammar.EnumeratorishAhead.ShouldNotMatch("Ab.");
+		}
+
 		[Fact] public void Enumerator_matches_upper_alpha_dot() {
 			var match = EmdGrammar.Enumerator.ShouldMatch("ABC.");
 
 			match.Succeeded.Should().BeTrue();
+		}
+
+		[Fact] public void Enumerator_should_not_match_upper_alpha_lower_alpha_dot() {
+			EmdGrammar.Enumerator.ShouldNotMatch("Ab.");
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_dash() {
