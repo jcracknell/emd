@@ -122,27 +122,23 @@ namespace emd.cs.Grammar {
 					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.Decimal, match.String.ParseDefault(1)))),
 			new EnumeratorCounterStyleDefinition(
 				OrderedListCounterStyle.LowerRoman,
-				Sequence(
+				AtLeast(1,
 					enumeratorCounterStyleLowerRomanChar,
-					AtLeast(0, enumeratorCounterStyleLowerRomanChar),
 					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerRoman, NumeralUtils.ParseRomanNumeral(match.String)))),
 			new EnumeratorCounterStyleDefinition(
 				OrderedListCounterStyle.UpperRoman,
-				Sequence(
+				AtLeast(1,
 					enumeratorCounterStyleUpperRomanChar,
-					AtLeast(0, enumeratorCounterStyleUpperRomanChar),
 					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperRoman, NumeralUtils.ParseRomanNumeral(match.String)))),
 			new EnumeratorCounterStyleDefinition(
 				OrderedListCounterStyle.LowerAlpha,
-				Sequence(
+				AtLeast(1,
 					Reference(() => EnglishLowerAlpha),
-					AtLeast(0, Reference(() => EnglishLowerAlpha)),
 					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.LowerAlpha, NumeralUtils.ParseAlphaNumeral(match.String)))),
 			new EnumeratorCounterStyleDefinition(
 				OrderedListCounterStyle.UpperAlpha,
-				Sequence(
+				AtLeast(1,
 					Reference(() => EnglishUpperAlpha),
-					AtLeast(0, Reference(() => EnglishUpperAlpha)),
 					match => new EnumeratorCounterStyleInfo(OrderedListCounterStyle.UpperAlpha, NumeralUtils.ParseAlphaNumeral(match.String))))
 		};
 
