@@ -22,7 +22,7 @@ namespace emd.cs.Utils {
 			var readBuffer = new byte[64];
 			var embeddedResourceName = typeof(EntityInfo).Namespace + ".EntityInfo.bin";
 			using(var stream = typeof(EntityInfo).Assembly.GetManifestResourceStream(embeddedResourceName))
-			do {
+			for(;;) {
 				// Read the number of 8-bit characters in the entity name
 				var entityNameLength = stream.ReadByte();
 				if(-1 == entityNameLength) break;
@@ -44,7 +44,7 @@ namespace emd.cs.Utils {
 				_codepointsByEntityName.Add(entityName, entityCodepoints);
 				if(1 == numCodepoints)
 					_entityNameByCodepoint[entityCodepoints[0]] = entityName;
-			} while(true);
+			}
 		}
 
 		public static IEnumerable<string> EntityNames { get { return _codepointsByEntityName.Keys; } }

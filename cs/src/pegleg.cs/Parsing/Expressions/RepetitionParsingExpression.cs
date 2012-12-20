@@ -40,7 +40,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			uint iterationCount = 0;
 			var iterationProducts = new LinkedList<TBody>();
 			var iterationContext = context.Clone();
-			while(true) {
+			for(;;) {
 				var iterationResult = _body.Matches(iterationContext);
 
 				if(iterationResult.Succeeded) {
@@ -77,7 +77,7 @@ namespace pegleg.cs.Parsing.Expressions {
 			
 			uint iterationCount = 0;
 			var iterationProducts = new LinkedList<TBody>();
-			while(true) {
+			for(;;) {
 				var iterationContext = context.Clone();
 				var iterationResult = _body.Matches(iterationContext);
 

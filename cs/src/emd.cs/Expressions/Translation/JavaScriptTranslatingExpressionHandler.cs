@@ -17,14 +17,14 @@ namespace emd.cs.Expressions.Translation {
 			_writer.Write("[");
 
 			var elementEnumerator = expression.Elements.GetEnumerator();
-			if(elementEnumerator.MoveNext()) do {
+			if(elementEnumerator.MoveNext()) for(;;) {
 				elementEnumerator.Current.HandleWith(this);
 
 				if(!elementEnumerator.MoveNext())
 					break;
 
 				_writer.Write(",");
-			} while(true);
+			}
 
 			_writer.Write("]");
 		}
@@ -42,14 +42,14 @@ namespace emd.cs.Expressions.Translation {
 			_writer.Write("(");
 
 			var argumentEnumerator = expression.Arguments.GetEnumerator();
-			if(argumentEnumerator.MoveNext()) do {
+			if(argumentEnumerator.MoveNext()) for(;;) {
 				argumentEnumerator.Current.HandleWith(this);
 
 				if(!argumentEnumerator.MoveNext())
 					break;
 
 				_writer.Write(", ");
-			} while(true);
+			}
 
 			_writer.Write(")");
 		}
@@ -90,7 +90,7 @@ namespace emd.cs.Expressions.Translation {
 			_writer.Write("{");
 
 			var propertyAssignmentEnumerator = expression.PropertyAssignments.GetEnumerator();
-			if(propertyAssignmentEnumerator.MoveNext()) do {
+			if(propertyAssignmentEnumerator.MoveNext()) for(;;) {
 				_writer.Write("'");
 				_writer.Write(JavaScriptUtils.StringEncode(propertyAssignmentEnumerator.Current.PropertyName));
 				_writer.Write("'");
@@ -102,7 +102,7 @@ namespace emd.cs.Expressions.Translation {
 					break;
 
 				_writer.Write(",");
-			} while(true);
+			}
 
 			_writer.Write("}");
 		}
