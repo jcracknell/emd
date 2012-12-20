@@ -79,6 +79,29 @@ namespace emd.cs.Conversion.Html {
 			});
 		}
 
+		public void Handle(DefinitionListDefinitionNode node) {
+			Write("dd", () => {
+				node.Children.Each(c => c.HandleWith(this));
+			});
+		}
+
+		public void Handle(DefinitionListItemNode node) {
+			node.Term.HandleWith(this);
+			node.Definitions.Each(d => d.HandleWith(this));
+		}
+
+		public void Handle(DefinitionListNode node) {
+			Write("dl", () => {
+				node.Items.Each(i => i.HandleWith(this));
+			});
+		}
+
+		public void Handle(DefinitionListTermNode node) {
+			Write("dt", () => {
+				node.Children.Each(c => c.HandleWith(this));
+			});
+		}
+
 		public void Handle(EmphasisNode node) {
 			Write("em", () => {
 				node.Children.Each(c => c.HandleWith(this));

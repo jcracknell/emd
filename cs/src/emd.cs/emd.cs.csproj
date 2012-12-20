@@ -121,6 +121,10 @@
     <Compile Include="Expressions\UriLiteralExpression.cs" />
     <Compile Include="Expressions\IExpressionHandler.cs" />
     <Compile Include="Nodes\CodeNode.cs" />
+    <Compile Include="Nodes\DefinitionListDefinitionNode.cs" />
+    <Compile Include="Nodes\DefinitionListItemNode.cs" />
+    <Compile Include="Nodes\DefinitionListNode.cs" />
+    <Compile Include="Nodes\DefinitionListTermNode.cs" />
     <Compile Include="Nodes\ExpressionBlockNode.cs" />
     <Compile Include="Nodes\INode.cs" />
     <Compile Include="Nodes\AutoLinkNode.cs" />

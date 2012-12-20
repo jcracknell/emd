@@ -149,6 +149,31 @@ namespace emd.cs.Conversion {
 				WriteAtomic(node, node.Text);
 			}
 
+			public void Handle(DefinitionListDefinitionNode node) {
+				WriteComposite(node, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
+			}
+
+			public void Handle(DefinitionListItemNode node) {
+				WriteComposite(node, () => {
+					node.Term.HandleWith(this);
+					node.Definitions.Each(d => d.HandleWith(this));
+				});
+			}
+
+			public void Handle(DefinitionListNode node) {
+				WriteComposite(node, () => {
+					node.Items.Each(child => child.HandleWith(this));
+				});
+			}
+
+			public void Handle(DefinitionListTermNode node) {
+				WriteComposite(node, () => {
+					node.Children.Each(child => child.HandleWith(this));
+				});
+			}
+
 			public void Handle(EmphasisNode node) {
 				WriteComposite(node, () => {
 					node.Children.Each(child => child.HandleWith(this));

@@ -110,5 +110,21 @@ namespace emd.cs.Conversion {
 		public IEnumerable<ReferenceNode> Handle(ExpressionBlockNode node) {
 			return Enumerable.Empty<ReferenceNode>();
 		}
+
+		public IEnumerable<ReferenceNode> Handle(DefinitionListDefinitionNode node) {
+			return Enumerable.Empty<ReferenceNode>();
+		}
+
+		public IEnumerable<ReferenceNode> Handle(DefinitionListItemNode node) {
+			return Enumerable.Empty<ReferenceNode>();
+		}
+
+		public IEnumerable<ReferenceNode> Handle(DefinitionListNode node) {
+			return Enumerable.Empty<ReferenceNode>();
+		}
+
+		public IEnumerable<ReferenceNode> Handle(DefinitionListTermNode node) {
+			return Enumerable.Empty<ReferenceNode>();
+		}
 	}
 }

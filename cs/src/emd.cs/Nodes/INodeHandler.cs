@@ -9,6 +9,10 @@ namespace emd.cs.Nodes{
 		void Handle(AutoLinkNode node);
 		void Handle(BlockquoteNode node);
 		void Handle(CodeNode node);
+		void Handle(DefinitionListDefinitionNode node);
+		void Handle(DefinitionListItemNode node);
+		void Handle(DefinitionListNode node);
+		void Handle(DefinitionListTermNode node);
 		void Handle(DocumentNode node);
 		void Handle(EmphasisNode node);
 		void Handle(EntityNode node);
@@ -38,6 +42,10 @@ namespace emd.cs.Nodes{
 		T Handle(AutoLinkNode node);
 		T Handle(BlockquoteNode node);
 		T Handle(CodeNode node);
+		T Handle(DefinitionListDefinitionNode node);
+		T Handle(DefinitionListItemNode node);
+		T Handle(DefinitionListNode node);
+		T Handle(DefinitionListTermNode node);
 		T Handle(DocumentNode node);
 		T Handle(EmphasisNode node);
 		T Handle(EntityNode node);
