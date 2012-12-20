@@ -48,4 +48,11 @@
 			)
 		)
 	)
+	(Paragraph
+		(Emphasis
+			(Text "emphasized")
+			(Space)
+			(Text "text")
+		)
+	)
 )

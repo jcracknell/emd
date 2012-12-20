@@ -159,7 +159,7 @@ namespace emd.cs.Grammar {
 		enumeratorStyleDefinitions =
 			enumeratorSeparatorStyleDefinitions.Select(sd => {
 				var enumeratorPreamble = Sequence(Reference(() => NonIndentSpace), sd.Preceding);
-				var enumeratorPostamble = Sequence(sd.Following, Reference(() => SpaceChars));
+				var enumeratorPostamble = Sequence(sd.Following, AtLeast(1, Reference(() => SpaceChar)));
 				return new EnumeratorStyleDefinition {
 					SeparatorStyle = sd.SeparatorStyle,
 					Preceding = sd.Preceding,
@@ -208,7 +208,7 @@ namespace emd.cs.Grammar {
 		EnumeratorishAhead =
 			Named(() => EnumeratorishAhead,
 				Ahead(
-					Regex(@"\ {0,3}(\(|\[)?([0-9]+|[a-z]+|[A-Z]+)(@[0-9]+)?(\.|(\ *-)|\)|\])")));
+					Regex(@"\ {0,3}(\(|\[)?([0-9]+|[a-z]+|[A-Z]+)(@[0-9]+)?(\.|(\ *-)|\)|\])\s")));
 
 		public static readonly IParsingExpression<LineInfo>
 		orderedListBlockLine =

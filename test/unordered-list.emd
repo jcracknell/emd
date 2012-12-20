@@ -15,3 +15,6 @@ lines
 * item
 
     continues
+
+// asterix with no trailing space is emphasis at paragraph start
+*emphasized text
