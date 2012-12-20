@@ -141,6 +141,7 @@
     <Compile Include="Nodes\INodeHandler.cs" />
     <Compile Include="Nodes\DocumentNode.cs" />
     <Compile Include="Nodes\InlineExpressionNode.cs" />
+    <Compile Include="Nodes\INodelike.cs" />
     <Compile Include="Nodes\LineBreakNode.cs" />
     <Compile Include="Nodes\LinkNode.cs" />
     <Compile Include="Nodes\OrderedListItemNode.cs" />
@@ -154,9 +155,8 @@
     <Compile Include="Nodes\SpaceNode.cs" />
     <Compile Include="Nodes\StrongNode.cs" />
     <Compile Include="Nodes\SymbolNode.cs" />
+    <Compile Include="Nodes\TableCellKind.cs" />
     <Compile Include="Nodes\TableCellNode.cs" />
-    <Compile Include="Nodes\TableDataCellNode.cs" />
-    <Compile Include="Nodes\TableHeaderCellNode.cs" />
     <Compile Include="Nodes\TableNode.cs" />
     <Compile Include="Nodes\TableRowNode.cs" />
     <Compile Include="Nodes\TextNode.cs" />

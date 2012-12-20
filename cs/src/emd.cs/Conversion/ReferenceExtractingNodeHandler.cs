@@ -14,6 +14,13 @@ namespace emd.cs.Conversion {
 			return Enumerable.Empty<ReferenceNode>();
 		}
 
+		public IEnumerable<ReferenceNode> Handle(DefinitionListNode node) {
+			return node.Items.SelectMany(item =>
+				item.Term.Children.SelectMany(c => c.HandleWith(this))
+				.Concat(item.Definitions.SelectMany(d => d.Children.SelectMany(c => c.HandleWith(this))))
+			);
+		}
+
 		public IEnumerable<ReferenceNode> Handle(EmphasisNode node) {
 			return node.Children.SelectMany(child => child.HandleWith(this));
 		}
@@ -43,11 +50,7 @@ namespace emd.cs.Conversion {
 		}
 
 		public IEnumerable<ReferenceNode> Handle(OrderedListNode node) {
-			return node.Items.SelectMany(item => item.HandleWith(this));
-		}
-
-		public IEnumerable<ReferenceNode> Handle(OrderedListItemNode node) {
-			return node.Children.SelectMany(child => child.HandleWith(this));
+			return node.Items.SelectMany(item => item.Children.SelectMany(c => c.HandleWith(this)));
 		}
 
 		public IEnumerable<ReferenceNode> Handle(ParagraphNode node) {
@@ -68,7 +71,6 @@ namespace emd.cs.Conversion {
 
 		public IEnumerable<ReferenceNode> Handle(StrongNode node) {
 			return node.Children.SelectMany(child => child.HandleWith(this));
-			throw new NotImplementedException();
 		}
 
 		public IEnumerable<ReferenceNode> Handle(SymbolNode node) {
@@ -76,19 +78,7 @@ namespace emd.cs.Conversion {
 		}
 
 		public IEnumerable<ReferenceNode> Handle(TableNode node) {
-			return node.Rows.SelectMany(row => row.HandleWith(this));
-		}
-
-		public IEnumerable<ReferenceNode> Handle(TableDataCellNode node) {
-			return node.Children.SelectMany(child => child.HandleWith(this));
-		}
-
-		public IEnumerable<ReferenceNode> Handle(TableHeaderCellNode node) {
-			return node.Children.SelectMany(child => child.HandleWith(this));
-		}
-
-		public IEnumerable<ReferenceNode> Handle(TableRowNode node) {
-			return node.Cells.SelectMany(cell => cell.HandleWith(this));
+			return node.Rows.SelectMany(r => r.Cells.SelectMany(c => c.Children.SelectMany(x => x.HandleWith(this))));
 		}
 
 		public IEnumerable<ReferenceNode> Handle(TextNode node) {
@@ -96,11 +86,7 @@ namespace emd.cs.Conversion {
 		}
 
 		public IEnumerable<ReferenceNode> Handle(UnorderedListNode node) {
-			return node.Items.SelectMany(item => item.HandleWith(this));
-		}
-
-		public IEnumerable<ReferenceNode> Handle(UnorderedListItemNode node) {
-			return node.Children.SelectMany(item => item.HandleWith(this));
+			return node.Items.SelectMany(i => i.Children.SelectMany(c => c.HandleWith(this)));
 		}
 
 		public IEnumerable<ReferenceNode> Handle(BlockquoteNode node) {
@@ -108,22 +94,6 @@ namespace emd.cs.Conversion {
 		}
 
 		public IEnumerable<ReferenceNode> Handle(ExpressionBlockNode node) {
-			return Enumerable.Empty<ReferenceNode>();
-		}
-
-		public IEnumerable<ReferenceNode> Handle(DefinitionListDefinitionNode node) {
-			return Enumerable.Empty<ReferenceNode>();
-		}
-
-		public IEnumerable<ReferenceNode> Handle(DefinitionListItemNode node) {
-			return Enumerable.Empty<ReferenceNode>();
-		}
-
-		public IEnumerable<ReferenceNode> Handle(DefinitionListNode node) {
-			return Enumerable.Empty<ReferenceNode>();
-		}
-
-		public IEnumerable<ReferenceNode> Handle(DefinitionListTermNode node) {
 			return Enumerable.Empty<ReferenceNode>();
 		}
 	}

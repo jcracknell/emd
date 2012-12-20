@@ -4,13 +4,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace emd.cs.Nodes{
-	public class UnorderedListItemNode : INodelike {
+namespace emd.cs.Nodes {
+	public class DefinitionListDefinitionNode : INodelike {
 		private readonly INode[] _children;
 		private readonly SourceRange _sourceRange;
 
-		public UnorderedListItemNode(INode[] children, SourceRange sourceRange) {
+		public DefinitionListDefinitionNode(INode[] children, SourceRange sourceRange) {
 			if(null == children) throw ExceptionBecause.ArgumentNull(() => children);
+			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
 
 			_children = children;
 			_sourceRange = sourceRange;

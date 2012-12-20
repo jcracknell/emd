@@ -587,24 +587,26 @@ namespace emd.cs.Grammar {
 				Reference(() => SpaceChars),
 				match => match.Product.Of1);
 
-		private static readonly IParsingExpression<TableHeaderCellNode>
+		private static readonly IParsingExpression<TableCellNode>
 		tableHeaderCell =
 			Sequence(
 				tableHeaderCellAnnouncement,
 				tableCellContents,
 				match =>
-					new TableHeaderCellNode(
+					new TableCellNode(
+						TableCellKind.Header,
 						match.Product.Of1.ColumnSpan,
 						match.Product.Of1.RowSpan,
 						ParseLinesAs(BlockInlinesOptional, match.Product.Of2.InEnumerable()).ToArray(),
 						match.SourceRange));
 
-		private static readonly IParsingExpression<TableDataCellNode>
+		private static readonly IParsingExpression<TableCellNode>
 		tableDataCell =
 			Sequence(
 				tableDataCellAnnouncement,
 				tableCellContents,
-				match => new TableDataCellNode(
+				match => new TableCellNode(
+					TableCellKind.Data,
 					match.Product.Of1.ColumnSpan,
 					match.Product.Of1.RowSpan,
 					ParseLinesAs(BlockInlinesOptional, match.Product.Of2.InEnumerable()).ToArray(),

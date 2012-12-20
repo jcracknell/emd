@@ -155,22 +155,20 @@ namespace emd.cs.Conversion {
 				});
 			}
 
-			public void Handle(DefinitionListItemNode node) {
-				WriteComposite(node, () => {
-					node.Term.HandleWith(this);
-					node.Definitions.Each(d => d.HandleWith(this));
-				});
-			}
-
 			public void Handle(DefinitionListNode node) {
 				WriteComposite(node, () => {
-					node.Items.Each(child => child.HandleWith(this));
-				});
-			}
-
-			public void Handle(DefinitionListTermNode node) {
-				WriteComposite(node, () => {
-					node.Children.Each(child => child.HandleWith(this));
+					node.Items.Each(item => {
+						WriteComposite(item, () => {
+							WriteComposite(item.Term, () => {
+								item.Term.Children.Each(c => c.HandleWith(this));
+							});
+							item.Definitions.Each(def => {
+								WriteComposite(def, () => {
+									def.Children.Each(c => c.HandleWith(this));
+								});
+							});
+						});
+					});
 				});
 			}
 
@@ -218,13 +216,11 @@ namespace emd.cs.Conversion {
 
 			public void Handle(OrderedListNode node) {
 				WriteComposite(node, node.CounterStyle, node.Start, node.SeparatorStyle, () => {
-					node.Items.Each(item => item.HandleWith(this));
-				});
-			}
-
-			public void Handle(OrderedListItemNode node) {
-				WriteComposite(node, () => {
-					node.Children.Each(child => child.HandleWith(this));
+					node.Items.Each(item => {
+						WriteComposite(item, () => {
+							item.Children.Each(c => c.HandleWith(this));
+						});
+					});
 				});
 			}
 
@@ -262,25 +258,15 @@ namespace emd.cs.Conversion {
 
 			public void Handle(TableNode node) {
 				WriteComposite(node, () => {
-					node.Rows.Each(row => row.HandleWith(this));
-				});
-			}
-
-			public void Handle(TableDataCellNode node) {
-				WriteComposite(node, node.ColumnSpan, node.RowSpan, () => {
-					node.Children.Each(child => child.HandleWith(this));
-				});
-			}
-
-			public void Handle(TableHeaderCellNode node) {
-				WriteComposite(node, node.ColumnSpan, node.RowSpan, () => {
-					node.Children.Each(child => child.HandleWith(this));
-				});
-			}
-
-			public void Handle(TableRowNode node) {
-				WriteComposite(node, () => {
-					node.Cells.Each(cell => cell.HandleWith(this));
+					node.Rows.Each(row => {
+						WriteComposite(row, () => {
+							row.Cells.Each(cell => {
+								WriteComposite(cell, cell.Kind, cell.ColumnSpan, cell.RowSpan, () => {
+									cell.Children.Each(c => c.HandleWith(this));
+								});
+							});
+						});
+					});
 				});
 			}
 
@@ -290,13 +276,11 @@ namespace emd.cs.Conversion {
 
 			public void Handle(UnorderedListNode node) {
 				WriteComposite(node, () => {
-					node.Items.Each(item => item.HandleWith(this));
-				});
-			}
-
-			public void Handle(UnorderedListItemNode node) {
-				WriteComposite(node, () => {
-					node.Children.Each(child => child.HandleWith(this));
+					node.Items.Each(item => {
+						WriteComposite(item, () => {
+							item.Children.Each(c => c.HandleWith(this));
+						});
+					});
 				});
 			}
 

@@ -9,10 +9,7 @@ namespace emd.cs.Nodes{
 		void Handle(AutoLinkNode node);
 		void Handle(BlockquoteNode node);
 		void Handle(CodeNode node);
-		void Handle(DefinitionListDefinitionNode node);
-		void Handle(DefinitionListItemNode node);
 		void Handle(DefinitionListNode node);
-		void Handle(DefinitionListTermNode node);
 		void Handle(DocumentNode node);
 		void Handle(EmphasisNode node);
 		void Handle(EntityNode node);
@@ -22,7 +19,6 @@ namespace emd.cs.Nodes{
 		void Handle(LineBreakNode node);
 		void Handle(LinkNode node);
 		void Handle(OrderedListNode node);
-		void Handle(OrderedListItemNode node);
 		void Handle(ParagraphNode node);
 		void Handle(QuotedNode node);
 		void Handle(ReferenceNode node);
@@ -30,22 +26,15 @@ namespace emd.cs.Nodes{
 		void Handle(StrongNode node);
 		void Handle(SymbolNode node);
 		void Handle(TableNode node);
-		void Handle(TableDataCellNode node);
-		void Handle(TableHeaderCellNode node);
-		void Handle(TableRowNode node);
 		void Handle(TextNode node);
 		void Handle(UnorderedListNode node);
-		void Handle(UnorderedListItemNode node);
 	}
 
 	public interface INodeHandler<T> {
 		T Handle(AutoLinkNode node);
 		T Handle(BlockquoteNode node);
 		T Handle(CodeNode node);
-		T Handle(DefinitionListDefinitionNode node);
-		T Handle(DefinitionListItemNode node);
 		T Handle(DefinitionListNode node);
-		T Handle(DefinitionListTermNode node);
 		T Handle(DocumentNode node);
 		T Handle(EmphasisNode node);
 		T Handle(EntityNode node);
@@ -55,7 +44,6 @@ namespace emd.cs.Nodes{
 		T Handle(LineBreakNode node);
 		T Handle(LinkNode node);
 		T Handle(OrderedListNode node);
-		T Handle(OrderedListItemNode node);
 		T Handle(ParagraphNode node);
 		T Handle(QuotedNode node);
 		T Handle(ReferenceNode node);
@@ -63,11 +51,7 @@ namespace emd.cs.Nodes{
 		T Handle(StrongNode node);
 		T Handle(SymbolNode node);
 		T Handle(TableNode node);
-		T Handle(TableDataCellNode node);
-		T Handle(TableHeaderCellNode node);
-		T Handle(TableRowNode node);
 		T Handle(TextNode node);
 		T Handle(UnorderedListNode node);
-		T Handle(UnorderedListItemNode node);
 	}
 }

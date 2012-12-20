@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Nodes{
-	public class TableRowNode : INode {
+	public class TableRowNode : INodelike {
 		private readonly TableCellNode[] _cells;
 		private readonly SourceRange _sourceRange;
 
@@ -19,13 +19,5 @@ namespace emd.cs.Nodes{
 		public IEnumerable<TableCellNode> Cells { get { return _cells; } }
 
 		public SourceRange SourceRange { get { return _sourceRange; } }
-
-		public void HandleWith(INodeHandler handler) {
-			handler.Handle(this);
-		}
-
-		public T HandleWith<T>(INodeHandler<T> handler) {
-			return handler.Handle(this);
-		}
 	}
 }

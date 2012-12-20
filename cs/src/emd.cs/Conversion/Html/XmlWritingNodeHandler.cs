@@ -79,26 +79,18 @@ namespace emd.cs.Conversion.Html {
 			});
 		}
 
-		public void Handle(DefinitionListDefinitionNode node) {
-			Write("dd", () => {
-				node.Children.Each(c => c.HandleWith(this));
-			});
-		}
-
-		public void Handle(DefinitionListItemNode node) {
-			node.Term.HandleWith(this);
-			node.Definitions.Each(d => d.HandleWith(this));
-		}
-
 		public void Handle(DefinitionListNode node) {
 			Write("dl", () => {
-				node.Items.Each(i => i.HandleWith(this));
-			});
-		}
-
-		public void Handle(DefinitionListTermNode node) {
-			Write("dt", () => {
-				node.Children.Each(c => c.HandleWith(this));
+				node.Items.Each(item => {
+					Write("dt", () => {
+						item.Term.Children.Each(c => c.HandleWith(this));
+					});
+					item.Definitions.Each(def => {
+						Write("dd", () => {
+							def.Children.Each(c => c.HandleWith(this));
+						});
+					});
+				});
 			});
 		}
 
@@ -156,7 +148,9 @@ namespace emd.cs.Conversion.Html {
 
 		public void Handle(OrderedListNode node) {
 			Write("ol", new { start = node.Start }, () => {
-				node.Items.Each(i => i.HandleWith(this));
+				node.Items.Each(item => {
+					item.Children.Each(c => c.HandleWith(this));
+				});
 			});
 		}
 
@@ -196,25 +190,13 @@ namespace emd.cs.Conversion.Html {
 
 		public void Handle(TableNode node) {
 			Write("table", () => {
-				node.Rows.Each(r => r.HandleWith(this));
-			});
-		}
-
-		public void Handle(TableDataCellNode node) {
-			Write("td", new { colspan = node.ColumnSpan, rowspan = node.RowSpan }, () => {
-				node.Children.Each(c => c.HandleWith(this));
-			});
-		}
-
-		public void Handle(TableHeaderCellNode node) {
-			Write("th", new { colspan = node.ColumnSpan, rowspan = node.RowSpan }, () => {
-				node.Children.Each(c => c.HandleWith(this));
-			});
-		}
-
-		public void Handle(TableRowNode node) {
-			Write("tr", () => {
-				node.Cells.Each(c => c.HandleWith(this));
+				node.Rows.Each(row => {
+					row.Cells.Each(cell => {
+						Write(TableCellKind.Data == cell.Kind ? "td" : "th", new { colspan = cell.ColumnSpan, rowspan = cell.RowSpan }, () => {
+							cell.Children.Each(c => c.HandleWith(this));
+						});
+					});
+				});
 			});
 		}
 
@@ -224,7 +206,9 @@ namespace emd.cs.Conversion.Html {
 
 		public void Handle(UnorderedListNode node) {
 			Write("ul", () => {
-				node.Items.Each(i => i.HandleWith(this));
+				node.Items.Each(item => {
+					item.Children.Each(c => c.HandleWith(this));
+				});
 			});
 		}
 

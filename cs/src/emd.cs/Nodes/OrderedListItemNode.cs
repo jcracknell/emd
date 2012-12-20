@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Nodes{
-	public class OrderedListItemNode : INode {
+	public class OrderedListItemNode : INodelike {
 		private readonly INode[] _children;
 		private readonly SourceRange _sourceRange;
 
@@ -19,13 +19,5 @@ namespace emd.cs.Nodes{
 		public IEnumerable<INode> Children { get { return _children; } }
 
 		public SourceRange SourceRange { get { return _sourceRange; } }
-
-		public void HandleWith(INodeHandler handler) {
-			handler.Handle(this);
-		}
-
-		public T HandleWith<T>(INodeHandler<T> handler) {
-			return handler.Handle(this);
-		}
 	}
 }
