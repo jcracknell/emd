@@ -12,8 +12,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly IParsingExpression<TBody> _body;
 
 		public RepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression<TBody> body) {
-			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
-			if(!(UNBOUNDED == maxOccurs || maxOccurs >= minOccurs)) throw ExceptionBecause.Argument(() => maxOccurs, "must be greater than or equal to minOccurs");
+			if(null == body) throw Xception.Because.ArgumentNull(() => body);
+			if(!(UNBOUNDED == maxOccurs || maxOccurs >= minOccurs)) throw Xception.Because.Argument(() => maxOccurs, "must be greater than or equal to minOccurs");
 
 			_minOccurs = minOccurs;
 			_maxOccurs = maxOccurs;
@@ -67,7 +67,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public CapturingRepetitionParsingExpression(uint minOccurs, uint maxOccurs, IParsingExpression<TBody> body, Func<IMatch<IEnumerable<TBody>>, TProduct> matchAction)
 			: base(minOccurs, maxOccurs, body)
 		{
-			if(null == matchAction) throw ExceptionBecause.ArgumentNull(() => matchAction);
+			if(null == matchAction) throw Xception.Because.ArgumentNull(() => matchAction);
 
 			_matchAction = matchAction;	
 		}

@@ -10,7 +10,7 @@ namespace emd.cs.Conversion {
 		private const string INDENT = "\t";
 
 		public void Render(INode node, Stream ostream) {
-			if(null == node) throw ExceptionBecause.ArgumentNull(() => node);
+			if(null == node) throw Xception.Because.ArgumentNull(() => node);
 
 			using(var writer = new StreamWriter(ostream, new System.Text.UTF8Encoding(false)))
 				node.HandleWith(new Handler(writer));
@@ -34,9 +34,9 @@ namespace emd.cs.Conversion {
 			}
 
 			private void WriteComposite(object o, object[] attrs, Action content) {
-				if(null == o) throw ExceptionBecause.ArgumentNull(() => o);
-				if(null == attrs) throw ExceptionBecause.ArgumentNull(() => attrs);
-				if(null == content) throw ExceptionBecause.ArgumentNull(() => content);
+				if(null == o) throw Xception.Because.ArgumentNull(() => o);
+				if(null == attrs) throw Xception.Because.ArgumentNull(() => attrs);
+				if(null == content) throw Xception.Because.ArgumentNull(() => content);
 
 				if(o is INode) WriteSourceRange((o as INode).SourceRange);
 				if(o is IExpression) WriteSourceRange((o as IExpression).SourceRange);
@@ -76,8 +76,8 @@ namespace emd.cs.Conversion {
 			}
 
 			private void WriteAtomic(object o, params object[] attrs) {
-				if(null == o) throw ExceptionBecause.ArgumentNull(() => o);
-				if(null == attrs) throw ExceptionBecause.ArgumentNull(() => attrs);
+				if(null == o) throw Xception.Because.ArgumentNull(() => o);
+				if(null == attrs) throw Xception.Because.ArgumentNull(() => attrs);
 
 				WriteIndent();
 				_writer.Write("(");

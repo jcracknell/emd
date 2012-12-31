@@ -11,9 +11,9 @@ namespace emd.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public CallExpression(IExpression body, IExpression[] arguments, SourceRange sourceRange) {
-			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
-			if(null == arguments) throw ExceptionBecause.ArgumentNull(() => arguments);
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
+			if(null == body) throw Xception.Because.ArgumentNull(() => body);
+			if(null == arguments) throw Xception.Because.ArgumentNull(() => arguments);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
 
 			_body = body;
 			_arguments = arguments;

@@ -8,8 +8,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly IParsingExpression[] _sequence;
 
 		public SequenceParsingExpression(IParsingExpression[] sequence) {
-			if(null == sequence) throw ExceptionBecause.ArgumentNull(() => sequence);
-			if(!(sequence.Length >= 2)) throw ExceptionBecause.Argument(() => sequence, "must have length of at least two");
+			if(null == sequence) throw Xception.Because.ArgumentNull(() => sequence);
+			if(!(sequence.Length >= 2)) throw Xception.Because.Argument(() => sequence, "must have length of at least two");
 
 			_sequence = sequence;
 		}
@@ -45,7 +45,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public CapturingSequenceParsingExpression(IParsingExpression[] sequence, Func<IMatch<SequenceProducts>, TProduct> matchAction)
 			: base(sequence)
 		{
-			if(null == matchAction) throw ExceptionBecause.ArgumentNull(() => matchAction);
+			if(null == matchAction) throw Xception.Because.ArgumentNull(() => matchAction);
 
 			_matchAction = matchAction;
 		}

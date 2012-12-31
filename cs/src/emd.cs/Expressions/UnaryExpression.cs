@@ -11,7 +11,7 @@ namespace emd.cs.Expressions {
 		public UnaryExpression(IExpression body, SourceRange sourceRange)
 			: base(sourceRange)
 		{
-			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
+			if(null == body) throw Xception.Because.ArgumentNull(() => body);
 
 			_body = body;
 		}

@@ -42,7 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Emd.cs" />
-    <Compile Include="ExceptionBecause.cs" />
     <Compile Include="Conversion\Html\HtmlConverter.cs" />
     <Compile Include="Conversion\ReferenceCollection.cs" />
     <Compile Include="Conversion\ReferenceExtractingNodeHandler.cs" />
@@ -172,6 +171,7 @@
     <Compile Include="Utils\JavaScriptUtils.cs" />
     <Compile Include="Utils\NumeralUtils.cs" />
     <Compile Include="Utils\TextUtils.cs" />
+    <Compile Include="..\..\lib\Xception.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\pegleg.cs\pegleg.cs.csproj">

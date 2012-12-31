@@ -12,8 +12,8 @@ namespace emd.cs.Nodes{
 
 		public HeadingNode(string text, int level, SourceRange sourceRange)
 		{
-			if(null == text) throw ExceptionBecause.ArgumentNull(() => text);
-			if(!(level >= 0)) throw ExceptionBecause.Argument(() => level, "must be a non-negative integer");
+			if(null == text) throw Xception.Because.ArgumentNull(() => text);
+			if(!(level >= 0)) throw Xception.Because.Argument(() => level, "must be a non-negative integer");
 
 			_text = text;
 			_level = level;

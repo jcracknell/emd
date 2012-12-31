@@ -11,8 +11,8 @@ namespace emd.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public ExpressionBlockNode(IExpression expression, SourceRange sourceRange) {
-			if(null == expression) throw ExceptionBecause.ArgumentNull(() => expression);
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
+			if(null == expression) throw Xception.Because.ArgumentNull(() => expression);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
 
 			_expression = expression;
 			_sourceRange = sourceRange;

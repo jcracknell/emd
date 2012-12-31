@@ -8,7 +8,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		private readonly Func<IParsingExpression<TProduct>> _expression;
 
 		public DynamicParsingExpression(Func<IParsingExpression<TProduct>> expression) {
-			if(null == expression) throw ExceptionBecause.ArgumentNull(() => expression);
+			if(null == expression) throw Xception.Because.ArgumentNull(() => expression);
 
 			_expression = expression;
 		}

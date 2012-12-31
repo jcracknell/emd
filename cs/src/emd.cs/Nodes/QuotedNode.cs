@@ -16,7 +16,7 @@ namespace emd.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public QuotedNode(QuoteType quoteType, IInlineNode[] children, SourceRange sourceRange) {
-			if(null == children) throw ExceptionBecause.ArgumentNull(() => children);
+			if(null == children) throw Xception.Because.ArgumentNull(() => children);
 
 			_quoteType = quoteType;
 			_children = children;

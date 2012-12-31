@@ -9,7 +9,7 @@ using System.Xml;
 namespace emd.cs.Conversion.Html {
 	public static class HtmlConverter {
 		public static void Convert(DocumentNode document, Stream ostream) {
-			if(null == document) throw ExceptionBecause.ArgumentNull(() => document);
+			if(null == document) throw Xception.Because.ArgumentNull(() => document);
 
 			var references = new ReferenceCollection(document);
 

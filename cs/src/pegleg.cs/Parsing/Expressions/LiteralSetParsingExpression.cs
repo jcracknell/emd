@@ -9,8 +9,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly Trie<char, string> _trie;
 
 		public LiteralSetParsingExpression(IEnumerable<string> literals) {
-			if(null == literals) throw ExceptionBecause.ArgumentNull(() => literals);
-			if(!literals.Any()) throw ExceptionBecause.Argument(() => literals, "cannot be empty");
+			if(null == literals) throw Xception.Because.ArgumentNull(() => literals);
+			if(!literals.Any()) throw Xception.Because.Argument(() => literals, "cannot be empty");
 
 			_trie = new Trie<char, string>();
 			foreach(var literal in literals)
@@ -55,7 +55,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public CapturingLiteralSetParsingExpression(IEnumerable<string> literals, Func<IMatch<string>, TProduct> matchAction)
 			: base(literals)
 		{
-			if(null == matchAction) throw ExceptionBecause.ArgumentNull(() => matchAction);
+			if(null == matchAction) throw Xception.Because.ArgumentNull(() => matchAction);
 
 			_matchAction = matchAction;
 		}

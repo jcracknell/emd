@@ -11,10 +11,10 @@ namespace emd.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public DefinitionListItemNode(DefinitionListTermNode term, DefinitionListDefinitionNode[] definitions, SourceRange sourceRange) {
-			if(null == term) throw ExceptionBecause.ArgumentNull(() => term);
-			if(null == definitions) throw ExceptionBecause.ArgumentNull(() => definitions);
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
-			if(!definitions.Any()) throw ExceptionBecause.Argument(() => definitions, "cannot be empty");
+			if(null == term) throw Xception.Because.ArgumentNull(() => term);
+			if(null == definitions) throw Xception.Because.ArgumentNull(() => definitions);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
+			if(!definitions.Any()) throw Xception.Because.Argument(() => definitions, "cannot be empty");
 
 			_term = term;
 			_definitions = definitions;

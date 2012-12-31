@@ -11,10 +11,10 @@ namespace emd.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public StaticPropertyExpression(IExpression body, string memberName, SourceRange sourceRange) {
-			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
-			if(null == memberName) throw ExceptionBecause.ArgumentNull(() => memberName);
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
-			if(!(0 != memberName.Length)) throw ExceptionBecause.Argument(() => memberName, "cannot be empty");
+			if(null == body) throw Xception.Because.ArgumentNull(() => body);
+			if(null == memberName) throw Xception.Because.ArgumentNull(() => memberName);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
+			if(!(0 != memberName.Length)) throw Xception.Because.Argument(() => memberName, "cannot be empty");
 
 			_body = body;
 			_memberName = memberName;

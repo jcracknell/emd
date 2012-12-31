@@ -10,8 +10,8 @@ namespace emd.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public IdentifierExpression(string name, SourceRange sourceRange) {
-			if(null == name) throw ExceptionBecause.ArgumentNull(() => name);
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
+			if(null == name) throw Xception.Because.ArgumentNull(() => name);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
 
 			_name = name;
 			_sourceRange = sourceRange;

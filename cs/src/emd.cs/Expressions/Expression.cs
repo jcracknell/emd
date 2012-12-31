@@ -9,7 +9,7 @@ namespace emd.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public Expression(SourceRange sourceRange) {
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
 
 			_sourceRange = sourceRange;
 		}

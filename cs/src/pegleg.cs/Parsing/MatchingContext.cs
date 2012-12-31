@@ -21,8 +21,8 @@ namespace pegleg.cs.Parsing {
 		{ }
 
 		public MatchingContext(string source, SourceRange[] parts) {
-			if(null == source) throw ExceptionBecause.ArgumentNull(() => source);
-			if(null == parts) throw ExceptionBecause.ArgumentNull(() => parts);
+			if(null == source) throw Xception.Because.ArgumentNull(() => source);
+			if(null == parts) throw Xception.Because.ArgumentNull(() => parts);
 
 			_consumable = source;
 			_parts = parts;
@@ -92,7 +92,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public bool ConsumesMatching(string literal) {
-			if(null == literal) throw ExceptionBecause.ArgumentNull(() => literal);
+			if(null == literal) throw Xception.Because.ArgumentNull(() => literal);
 			
 			var len = literal.Length;
 			if(len > _consumable.Length - _index)
@@ -107,7 +107,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public bool ConsumesMatching(Regex regex) {
-			if(null == regex) throw ExceptionBecause.ArgumentNull(() => regex);
+			if(null == regex) throw Xception.Because.ArgumentNull(() => regex);
 
 			var match = regex.Match(_consumable, _index);
 			if(match.Success && match.Index == _index) {
@@ -119,7 +119,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public bool ConsumesMatching(Regex regex, out Match match) {
-			if(null == regex) throw ExceptionBecause.ArgumentNull(() => regex);
+			if(null == regex) throw Xception.Because.ArgumentNull(() => regex);
 
 			match = regex.Match(_consumable, _index);
 			if(match.Success && match.Index == _index) {
@@ -132,7 +132,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public bool ConsumesUnicodeCriteria(UnicodeCriteria criteria, out int length) {
-			if(null == criteria) throw ExceptionBecause.ArgumentNull(() => criteria);
+			if(null == criteria) throw Xception.Because.ArgumentNull(() => criteria);
 
 			if(AtEndOfInput) {
 				length = 0;

@@ -12,8 +12,8 @@ namespace emd.cs.Expressions {
 		public BinaryExpression(IExpression left, IExpression right, SourceRange sourceRange)
 			: base(sourceRange)
 		{ 
-			if(null == left) throw ExceptionBecause.ArgumentNull(() => left);
-			if(null == right) throw ExceptionBecause.ArgumentNull(() => right);
+			if(null == left) throw Xception.Because.ArgumentNull(() => left);
+			if(null == right) throw Xception.Because.ArgumentNull(() => right);
 
 			_left = left;
 			_right = right;

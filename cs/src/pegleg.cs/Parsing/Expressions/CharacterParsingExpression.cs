@@ -8,7 +8,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		private readonly UnicodeCriteria _criteria;
 
 		public CharacterParsingExpression(UnicodeCriteria criteria) {
-			if(null == criteria) throw ExceptionBecause.ArgumentNull(() => criteria);
+			if(null == criteria) throw Xception.Because.ArgumentNull(() => criteria);
 
 			_criteria = criteria;
 		}

@@ -9,8 +9,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		protected readonly IParsingExpression<TProduct> _named;
 
 		public NamedParsingExpression(string name, IParsingExpression<TProduct> named) {
-			if(null == name) throw ExceptionBecause.ArgumentNull(() => name);
-			if(null == named) throw ExceptionBecause.ArgumentNull(() => named);
+			if(null == name) throw Xception.Because.ArgumentNull(() => name);
+			if(null == named) throw Xception.Because.ArgumentNull(() => named);
 			
 			_name = name;
 			_named = named;	

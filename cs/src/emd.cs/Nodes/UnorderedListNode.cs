@@ -10,7 +10,7 @@ namespace emd.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public UnorderedListNode(UnorderedListItemNode[] items, SourceRange sourceRange) {
-			if(null == items) throw ExceptionBecause.ArgumentNull(() => items);
+			if(null == items) throw Xception.Because.ArgumentNull(() => items);
 
 			_items = items;
 			_sourceRange = sourceRange;

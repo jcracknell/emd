@@ -11,8 +11,8 @@ namespace emd.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public DocumentLiteralExpression(INode[] content, SourceRange sourceRange) {
-			if(null == content) throw ExceptionBecause.ArgumentNull(() => content);
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
+			if(null == content) throw Xception.Because.ArgumentNull(() => content);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
 
 			_content = content;
 			_sourceRange = sourceRange;

@@ -10,7 +10,7 @@ namespace emd.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public ObjectLiteralExpression(PropertyAssignment[] propertyAssignments, SourceRange sourceRange) {
-			if(null == propertyAssignments) throw ExceptionBecause.ArgumentNull(() => propertyAssignments);
+			if(null == propertyAssignments) throw Xception.Because.ArgumentNull(() => propertyAssignments);
 
 			_propertyAssignments = propertyAssignments;
 			_sourceRange = sourceRange;

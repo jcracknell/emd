@@ -11,7 +11,7 @@ namespace emd.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public InlineExpressionNode(IExpression expression, SourceRange sourceRange) {
-			if(null == expression) throw ExceptionBecause.ArgumentNull(() => expression);
+			if(null == expression) throw Xception.Because.ArgumentNull(() => expression);
 
 			_expression = expression;
 			_sourceRange = sourceRange;

@@ -65,7 +65,7 @@ namespace pegleg.cs {
 		/// <param name="length">Assigned the length of the grapheme which was accepted or rejected at <paramref name="index"/>.</param>
 		/// <returns><code>true</code> if the unicode grapheme at <paramref name="index"/> in <paramref name="str"/> is accepted, <code>false</code> otherwise.</returns>
 		public bool Accepts(string str, int index, out int length) {
-			if(null == str) throw ExceptionBecause.ArgumentNull(() => str);
+			if(null == str) throw Xception.Because.ArgumentNull(() => str);
 
 			UnicodeCategory category = UnicodeUtils.GetGraphemeInfo(str, index, out length);
 
@@ -100,7 +100,7 @@ namespace pegleg.cs {
 		/// <param name="characters">Characters to be excepted from the base acceptance criteria.</param>
 		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
 		public UnicodeCriteria Except(params char[] characters) {
-			if(null == characters) throw ExceptionBecause.ArgumentNull(() => characters);
+			if(null == characters) throw Xception.Because.ArgumentNull(() => characters);
 
 			return new UnicodeCriteria(this).ExceptInternal(characters);
 		}
@@ -111,13 +111,13 @@ namespace pegleg.cs {
 		/// <param name="characters">Characters to be excepted from the base acceptance criteria.</param>
 		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
 		public UnicodeCriteria Except(params IEnumerable<char>[] characters) {
-			if(null == characters) throw ExceptionBecause.ArgumentNull(() => characters);
+			if(null == characters) throw Xception.Because.ArgumentNull(() => characters);
 
 			return new UnicodeCriteria(this).ExceptInternal(characters.Flatten());
 		}
 
 		private UnicodeCriteria ExceptInternal(IEnumerable<char> characters) {
-			if(!characters.Any()) throw ExceptionBecause.Argument(() => characters, "cannot be empty");
+			if(!characters.Any()) throw Xception.Because.Argument(() => characters, "cannot be empty");
 
 			int min = char.MaxValue;
 			int max = char.MinValue;
@@ -168,7 +168,7 @@ namespace pegleg.cs {
 		/// <param name="characters">Characters to be excepted from the base acceptance criteria.</param>
 		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
 		public UnicodeCriteria Except(params string[] characters) {
-			if(null == characters) throw ExceptionBecause.ArgumentNull(() => characters);
+			if(null == characters) throw Xception.Because.ArgumentNull(() => characters);
 
 			return new UnicodeCriteria(this).ExceptInternal(characters);
 		}
@@ -180,21 +180,21 @@ namespace pegleg.cs {
 		/// <param name="characters">Characters to be excepted from the base acceptance criteria.</param>
 		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided <paramref name="characters"/> from the base acceptance criteria.</returns>
 		public UnicodeCriteria Except(params IEnumerable<string>[] characters) {
-			if(null == characters) throw ExceptionBecause.ArgumentNull(() => characters);
+			if(null == characters) throw Xception.Because.ArgumentNull(() => characters);
 
 			return new UnicodeCriteria(this).ExceptInternal(characters.Flatten());
 		}
 
 		private UnicodeCriteria ExceptInternal(IEnumerable<string> characters) {
 			foreach(var character in characters) {
-				if(null == character) throw ExceptionBecause.Argument(() => characters, "contains null values");
+				if(null == character) throw Xception.Because.Argument(() => characters, "contains null values");
 
 				var charLen = character.Length;
 				if(1 == charLen) continue;
-				if(0 == charLen) throw ExceptionBecause.Argument(() => characters, "contains empty values");
+				if(0 == charLen) throw Xception.Because.Argument(() => characters, "contains empty values");
 
 				if(!UnicodeUtils.IsSingleGrapheme(character))
-					throw ExceptionBecause.Argument(() => characters, "contains value " + StringUtils.LiteralEncode(character) + ", which is not a unicode grapheme");
+					throw Xception.Because.Argument(() => characters, "contains value " + StringUtils.LiteralEncode(character) + ", which is not a unicode grapheme");
 
 				if(null == _exceptedGraphemes)
 					_exceptedGraphemes = new Trie<char,string>();
@@ -215,7 +215,7 @@ namespace pegleg.cs {
 		/// <param name="categories">Unicode categories to be excepted from the base acceptance criteria.</param>
 		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided unicode <paramref name="categories"/> from the base acceptance criteria.</returns>
 		public UnicodeCriteria Except(params UnicodeCategory[] categories) {
-			if(null == categories) throw ExceptionBecause.ArgumentNull(() => categories);
+			if(null == categories) throw Xception.Because.ArgumentNull(() => categories);
 
 			return new UnicodeCriteria(this).ExceptInternal(categories);
 		}
@@ -226,7 +226,7 @@ namespace pegleg.cs {
 		/// <param name="categories">Unicode categories to be excepted from the base acceptance criteria.</param>
 		/// <returns>A new <see cref="UnicodeCriteria"/> excepting the provided unicode <paramref name="categories"/> from the base acceptance criteria.</returns>
 		public UnicodeCriteria Except(params IEnumerable<UnicodeCategory>[] categories) {
-			if(null == categories) throw ExceptionBecause.ArgumentNull(() => categories);
+			if(null == categories) throw Xception.Because.ArgumentNull(() => categories);
 
 			return new UnicodeCriteria(this).ExceptInternal(categories.Flatten());
 		}

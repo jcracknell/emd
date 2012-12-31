@@ -11,8 +11,8 @@ namespace pegleg.cs.Parsing.Expressions {
 		private readonly uint[] _choiceHits;
 
 		public UnorderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices) {
-			if(null == choices) throw ExceptionBecause.ArgumentNull(() => choices);
-			if(!(choices.Length >= 2)) throw ExceptionBecause.Argument(() => choices, "must have length of at least two");
+			if(null == choices) throw Xception.Because.ArgumentNull(() => choices);
+			if(!(choices.Length >= 2)) throw Xception.Because.Argument(() => choices, "must have length of at least two");
 	
 			_choices = choices;
 			_choiceCount = choices.Length;
@@ -109,7 +109,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public CapturingUnorderedChoiceParsingExpression(IParsingExpression<TChoice>[] choices, Func<IMatch<TChoice>, TProduct> matchAction)
 			: base(choices)	
 		{
-			if(null == matchAction) throw ExceptionBecause.ArgumentNull(() => matchAction);
+			if(null == matchAction) throw Xception.Because.ArgumentNull(() => matchAction);
 
 			_matchAction = matchAction;
 		}

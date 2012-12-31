@@ -13,9 +13,9 @@ namespace emd.cs.Expressions {
 		public ConditionalExpression(IExpression condition, IExpression trueExpression, IExpression falseExpression, SourceRange sourceRange)
 			: base(sourceRange)
 		{
-			if(null == condition) throw ExceptionBecause.ArgumentNull(() => condition);
-			if(null == trueExpression) throw ExceptionBecause.ArgumentNull(() => trueExpression);
-			if(null == falseExpression) throw ExceptionBecause.ArgumentNull(() => falseExpression);
+			if(null == condition) throw Xception.Because.ArgumentNull(() => condition);
+			if(null == trueExpression) throw Xception.Because.ArgumentNull(() => trueExpression);
+			if(null == falseExpression) throw Xception.Because.ArgumentNull(() => falseExpression);
 
 			_condition = condition;
 			_trueExpression = trueExpression;

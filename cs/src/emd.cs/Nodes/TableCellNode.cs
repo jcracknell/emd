@@ -14,9 +14,9 @@ namespace emd.cs.Nodes{
 
 		public TableCellNode(TableCellKind kind, int columnSpan, int rowSpan, IInlineNode[] children, SourceRange sourceRange)
 		{
-			if(null == children) throw ExceptionBecause.ArgumentNull(() => children);
-			if(!(rowSpan > 0)) throw ExceptionBecause.Argument(() => rowSpan, "must be a positive integer");
-			if(!(columnSpan > 0)) throw ExceptionBecause.Argument(() => columnSpan, "must be a positive integer");
+			if(null == children) throw Xception.Because.ArgumentNull(() => children);
+			if(!(rowSpan > 0)) throw Xception.Because.Argument(() => rowSpan, "must be a positive integer");
+			if(!(columnSpan > 0)) throw Xception.Because.Argument(() => columnSpan, "must be a positive integer");
 
 			_kind = kind;
 			_rowSpan = rowSpan;

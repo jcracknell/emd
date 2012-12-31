@@ -10,8 +10,8 @@ namespace emd.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 		
 		public CodeNode(string text, SourceRange sourceRange) {
-			if(null == text) throw ExceptionBecause.ArgumentNull(() => text);
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
+			if(null == text) throw Xception.Because.ArgumentNull(() => text);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
 
 			_text = text;
 			_sourceRange = sourceRange;

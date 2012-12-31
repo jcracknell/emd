@@ -9,7 +9,7 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public AheadParsingExpression(IParsingExpression<TBody> body)
 		{
-			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
+			if(null == body) throw Xception.Because.ArgumentNull(() => body);
 
 			_body = body;
 		}
@@ -37,7 +37,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		public CapturingAheadParsingExpression(IParsingExpression<TBody> body, Func<IMatch<TBody>, TProduct> matchAction)
 			: base(body)
 		{
-			if(null == matchAction) throw ExceptionBecause.ArgumentNull(() => matchAction);
+			if(null == matchAction) throw Xception.Because.ArgumentNull(() => matchAction);
 			
 			_matchAction = matchAction;
 		}

@@ -13,7 +13,7 @@ namespace emd.cs.Nodes{
 		private readonly IExpression[] _arguments;
 
 		public LinkNode(IInlineNode[] children, ReferenceId referenceId, IExpression[] arguments, SourceRange sourceRange) {
-			if(null == children) throw ExceptionBecause.ArgumentNull(() => children);
+			if(null == children) throw Xception.Because.ArgumentNull(() => children);
 
 			_children = children;
 			_referenceId = referenceId;

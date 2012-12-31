@@ -11,9 +11,9 @@ namespace emd.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public PropertyAssignment(string propertyName, IExpression propertyValue, SourceRange sourceRange) {
-			if(null == propertyName) throw ExceptionBecause.ArgumentNull(() => propertyName);
-			if(!(0 != propertyName.Length)) throw ExceptionBecause.Argument(() => propertyName, "cannot be empty");
-			if(null == propertyValue) throw ExceptionBecause.ArgumentNull(() => propertyValue);
+			if(null == propertyName) throw Xception.Because.ArgumentNull(() => propertyName);
+			if(!(0 != propertyName.Length)) throw Xception.Because.Argument(() => propertyName, "cannot be empty");
+			if(null == propertyValue) throw Xception.Because.ArgumentNull(() => propertyValue);
 
 			_propertyName = propertyName;
 			_propertyValue = propertyValue;

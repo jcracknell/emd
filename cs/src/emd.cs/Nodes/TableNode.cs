@@ -10,8 +10,8 @@ namespace emd.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public TableNode(TableRowNode[] rows, SourceRange sourceRange) {
-			if(null == rows) throw ExceptionBecause.ArgumentNull(() => rows);
-			if(!(rows.Length > 0)) throw ExceptionBecause.Argument(() => rows, "cannot be empty");
+			if(null == rows) throw Xception.Because.ArgumentNull(() => rows);
+			if(!(rows.Length > 0)) throw Xception.Because.Argument(() => rows, "cannot be empty");
 
 			_rows = rows;
 			_sourceRange = sourceRange;

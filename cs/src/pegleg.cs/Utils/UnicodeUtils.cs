@@ -44,7 +44,7 @@ namespace pegleg.cs.Utils {
 		/// <param name="index">The start position in <paramref name="str"/> from which grapheme information should be retrieved.</param>
 		/// <param name="length">The length of the grapheme starting at <paramref name="index"/> in <paramref name="str"/>.</param>
 		public static UnicodeCategory GetGraphemeInfo(string str, int index, out int length) {
-			if(null == str) throw ExceptionBecause.ArgumentNull(() => str);
+			if(null == str) throw Xception.Because.ArgumentNull(() => str);
 
 			// The logic of this method is based heavily on that of System.Globalization.StringInfo::GetNextTextElement(string,int):string,
 			// modified to create a much more flexible method.

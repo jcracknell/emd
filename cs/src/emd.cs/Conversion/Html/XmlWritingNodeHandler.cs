@@ -12,8 +12,8 @@ namespace emd.cs.Conversion.Html {
 		private readonly ReferenceCollection _references;
 
 		public XmlWritingNodeHandler(XmlWriter writer, ReferenceCollection references) {
-			if(null == writer) throw ExceptionBecause.ArgumentNull(() => writer);
-			if(null == references) throw ExceptionBecause.ArgumentNull(() => references);
+			if(null == writer) throw Xception.Because.ArgumentNull(() => writer);
+			if(null == references) throw Xception.Because.ArgumentNull(() => references);
 
 			_writer = writer;
 			_references = references;

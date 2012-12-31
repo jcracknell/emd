@@ -13,8 +13,8 @@ namespace emd.cs.Nodes{
 
 		public AutoLinkNode(string uri, IExpression[] arguments, SourceRange sourceRange)
 		{
-			if(null == uri) throw ExceptionBecause.ArgumentNull(() => uri);
-			if(null == arguments) throw ExceptionBecause.ArgumentNull(() => arguments);
+			if(null == uri) throw Xception.Because.ArgumentNull(() => uri);
+			if(null == arguments) throw Xception.Because.ArgumentNull(() => arguments);
 			
 			_uri = uri;
 			_arguments = arguments;	

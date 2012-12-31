@@ -8,7 +8,7 @@ namespace emd.cs.Expressions.Evaluation {
 		private readonly string _value;
 
 		public StringValue(string value) {
-			if(null == value) throw ExceptionBecause.ArgumentNull(() => value);
+			if(null == value) throw Xception.Because.ArgumentNull(() => value);
 
 			_value = value;
 		}

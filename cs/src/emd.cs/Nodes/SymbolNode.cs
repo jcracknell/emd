@@ -10,8 +10,8 @@ namespace emd.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public SymbolNode(string symbol, SourceRange sourceRange) {
-			if(null == symbol) throw ExceptionBecause.ArgumentNull(() => symbol);
-			if(string.IsNullOrEmpty(symbol)) throw ExceptionBecause.Argument(() => symbol, "cannot be empty");
+			if(null == symbol) throw Xception.Because.ArgumentNull(() => symbol);
+			if(string.IsNullOrEmpty(symbol)) throw Xception.Because.Argument(() => symbol, "cannot be empty");
 
 			_symbol = symbol;
 			_sourceRange = sourceRange;

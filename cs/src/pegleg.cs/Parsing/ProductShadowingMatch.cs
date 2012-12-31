@@ -13,7 +13,7 @@ namespace pegleg.cs.Parsing {
 		}
 
 		public ProductShadowingMatch(IMatch shadowed, TProduct product) {
-			if(null == shadowed) throw ExceptionBecause.ArgumentNull(() => shadowed);
+			if(null == shadowed) throw Xception.Because.ArgumentNull(() => shadowed);
 
 			_shadowed = shadowed;
 			_product = product;

@@ -10,8 +10,8 @@ namespace emd.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public DefinitionListDefinitionNode(INode[] children, SourceRange sourceRange) {
-			if(null == children) throw ExceptionBecause.ArgumentNull(() => children);
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
+			if(null == children) throw Xception.Because.ArgumentNull(() => children);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
 
 			_children = children;
 			_sourceRange = sourceRange;

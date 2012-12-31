@@ -10,9 +10,9 @@ namespace emd.cs.Expressions {
 		private SourceRange _sourceRange;
 
 		public ArrayLiteralExpression(IExpression[] elements, SourceRange sourceRange) {
-			if(null == elements) throw ExceptionBecause.ArgumentNull(() => elements);
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
-			if(elements.Any(element => null == element)) throw ExceptionBecause.Argument(() => elements, "contains null entries");
+			if(null == elements) throw Xception.Because.ArgumentNull(() => elements);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
+			if(elements.Any(element => null == element)) throw Xception.Because.Argument(() => elements, "contains null entries");
 
 			_elements = elements;
 			_sourceRange = sourceRange;

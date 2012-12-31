@@ -11,7 +11,7 @@ namespace emd.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public DocumentNode(IBlockNode[] content, SourceRange sourceRange) {
-			if(null == content) throw ExceptionBecause.ArgumentNull(() => content);
+			if(null == content) throw Xception.Because.ArgumentNull(() => content);
 
 			_content = content;
 			_sourceRange = sourceRange;

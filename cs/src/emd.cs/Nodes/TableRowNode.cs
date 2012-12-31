@@ -10,7 +10,7 @@ namespace emd.cs.Nodes{
 		private readonly SourceRange _sourceRange;
 
 		public TableRowNode(TableCellNode[] cells, SourceRange sourceRange) {
-			if(null == cells) throw ExceptionBecause.ArgumentNull(() => cells);
+			if(null == cells) throw Xception.Because.ArgumentNull(() => cells);
 
 			_cells = cells;
 			_sourceRange = sourceRange;

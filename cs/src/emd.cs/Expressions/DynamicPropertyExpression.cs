@@ -11,9 +11,9 @@ namespace emd.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public DynamicPropertyExpression(IExpression body, IExpression memberName, SourceRange sourceRange) {
-			if(null == body) throw ExceptionBecause.ArgumentNull(() => body);
-			if(null == memberName) throw ExceptionBecause.ArgumentNull(() => memberName);
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
+			if(null == body) throw Xception.Because.ArgumentNull(() => body);
+			if(null == memberName) throw Xception.Because.ArgumentNull(() => memberName);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
 
 			_body = body;
 			_memberName = memberName;

@@ -10,7 +10,7 @@ namespace emd.cs.Expressions {
 		private readonly SourceRange _sourceRange;
 
 		public BooleanLiteralExpression(bool value, SourceRange sourceRange) {
-			if(null == sourceRange) throw ExceptionBecause.ArgumentNull(() => sourceRange);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
 
 			_value = value;
 			_sourceRange = sourceRange;

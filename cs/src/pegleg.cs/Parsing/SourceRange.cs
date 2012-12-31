@@ -11,11 +11,11 @@ namespace pegleg.cs.Parsing {
 		public readonly int Length;
 
 		public SourceRange(int index, int length, int line, int lineIndex) {
-			if(index < 0) throw ExceptionBecause.Argument(() => index, "must be a non-negative integer");
-			if(length < 0) throw ExceptionBecause.Argument(() => length, "must be non-negative integer");
-			if(line < 1) throw ExceptionBecause.Argument(() => line, "must be a positive integer");
-			if(lineIndex < 0) throw ExceptionBecause.Argument(() => lineIndex, "must be a non-negative integer");
-			if(lineIndex > index) throw ExceptionBecause.Argument(() => lineIndex, "must be less than index");
+			if(index < 0) throw Xception.Because.Argument(() => index, "must be a non-negative integer");
+			if(length < 0) throw Xception.Because.Argument(() => length, "must be non-negative integer");
+			if(line < 1) throw Xception.Because.Argument(() => line, "must be a positive integer");
+			if(lineIndex < 0) throw Xception.Because.Argument(() => lineIndex, "must be a non-negative integer");
+			if(lineIndex > index) throw Xception.Because.Argument(() => lineIndex, "must be less than index");
 
 			Index = index;
 			Line = line;
@@ -29,7 +29,7 @@ namespace pegleg.cs.Parsing {
 		/// <param name="end">The ending <see cref="SourceRange"/> used to calculate the extent of the resulting <see cref="SourceRange"/>.</param>
 		/// <returns>A new <see cref="SourceRange"/> at the current value's position extending throught the provided <paramref name="end"/>.</returns>
 		public SourceRange Through(SourceRange end) {
-			if(null == end) throw ExceptionBecause.ArgumentNull(() => end);
+			if(null == end) throw Xception.Because.ArgumentNull(() => end);
 
 			return new SourceRange(Index, end.Index - Index + end.Length, Line, LineIndex);
 		}

@@ -12,7 +12,7 @@ namespace emd.cs.Nodes {
 		private readonly SourceRange _sourceRange;
 
 		public ReferenceNode(ReferenceId referenceId, IExpression[] arguments, SourceRange sourceRange) {
-			if(null == arguments) throw ExceptionBecause.ArgumentNull(() => arguments);
+			if(null == arguments) throw Xception.Because.ArgumentNull(() => arguments);
 
 			_referenceId = referenceId;
 			_arguments = arguments;
