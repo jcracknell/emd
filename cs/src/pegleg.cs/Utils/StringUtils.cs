@@ -34,35 +34,20 @@ namespace pegleg.cs.Utils {
 		public static string LiteralEncode(string s) {
 			if(null == s) return "null";
 
-			if(!(int.MaxValue / 6 > s.Length)) throw Xception.Because.Argument(() => s, "string is too long");
-
-			var buffer = new char[s.Length * 6];
-			buffer[0] = '"';
-
-			var wp = 1;
-			var rp = 0;
-			while(rp < s.Length) {
+			var len = s.Length;
+			var sb = new StringBuilder("\"", len * 2 + 2);
+			for(var rp = 0; rp < len; rp++) {
 				var c = s[rp++];
 				if(c < LITERALENCODE_ESCAPE_CHARS.Length && 0 != LITERALENCODE_ESCAPE_CHARS[c]) {
-					buffer[wp++] = '\\';
-					buffer[wp++] = LITERALENCODE_ESCAPE_CHARS[c];
+					sb.Append('\\').Append(LITERALENCODE_ESCAPE_CHARS[c]);
 				} else if(' ' <= c && c <= '~' || char.IsLetter(c)) {
-					buffer[wp++] = c;
+					sb.Append(c);
 				} else {
-					buffer[wp++] = '\\';
-					buffer[wp++] = 'x';
-
-					var hex = CharUtils.AsHex(c);
-					buffer[wp++] = hex[0];
-					buffer[wp++] = hex[1];
-					buffer[wp++] = hex[2];
-					buffer[wp++] = hex[3];
+					sb.Append(@"\x").Append(CharUtils.AsHex(c));
 				}
 			}
 			
-			buffer[wp++] = '"';
-
-			return new string(buffer, 0, wp);
+			return sb.Append("\"").ToString();
 		}
 	}
 }
