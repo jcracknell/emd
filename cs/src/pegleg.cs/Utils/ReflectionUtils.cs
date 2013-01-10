@@ -23,5 +23,15 @@ namespace pegleg.cs.Utils {
 
 			return memberExpression.Member;
 		}
+
+		/// <summary>
+		/// Retrieves an array containing all reflectable members for the provided <paramref name="type"/>.
+		/// </summary>
+		/// <param name="type">The <see cref="Type"/> for which all members should be retrieved.</param>
+		public static MemberInfo[] GetAllMembers(Type type) {
+			if(null == type) throw Xception.Because.ArgumentNull(() => type);
+
+			return type.GetMembers(BindingFlags.FlattenHierarchy | BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+		}
 	}
 }
