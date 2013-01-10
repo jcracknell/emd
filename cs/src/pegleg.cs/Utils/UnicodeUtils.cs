@@ -28,7 +28,7 @@ namespace pegleg.cs.Utils {
 		
 		/// <summary>
 		/// <para>
-		/// Retrieve the <see cref="UnicodeCategory"/> and length of the UTF-16 grapheme at the specified
+		/// Retrieve the <see cref="UnicodeCategory"/> and <paramref name="length"/> of the UTF-16 grapheme at the specified
 		/// <paramref name="index"/> in <paramref name="str"/>.
 		/// </para>
 		/// <para>
@@ -79,6 +79,19 @@ namespace pegleg.cs.Utils {
 			}
 
 			return category;
+		}
+
+		/// <summary>
+		/// Retrieve the <see cref="UnicodeCategory"/> and <paramref name="length"/> of the UTF-16 code point at the specified
+		/// <paramref name="index"/> in <paramref name="str"/>.
+		/// </summary>
+		/// <param name="str">The <see cref="string"/> from which code point information should be retrieved.</param>
+		/// <param name="index">The start position in <paramref name="str"/> from which code point information should be retrieved.</param>
+		/// <param name="length">The length of the code point starting at <paramref name="index"/> in <paramref name="str"/>.</param>
+		public static UnicodeCategory GetCodePointInfo(string str, int index, out int length) {
+			if(null == str) throw Xception.Because.ArgumentNull(() => str);
+
+			return CharUnicodeInfo_InternalGetUnicodeCategory(str, index, out length);
 		}
 
 		private static bool IsCombiningCategory(UnicodeCategory uc) {
