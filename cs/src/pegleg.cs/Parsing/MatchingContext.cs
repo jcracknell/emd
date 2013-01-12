@@ -1,4 +1,5 @@
-﻿using System;
+﻿using pegleg.cs.Unicode.Criteria;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -131,7 +132,7 @@ namespace pegleg.cs.Parsing {
 			}
 		}
 
-		public bool ConsumesUnicodeCriteria(UnicodeCriteria criteria, out int length) {
+		public bool ConsumesUnicodeCriteria(IUnicodeCriteria criteria, out int length) {
 			if(null == criteria) throw Xception.Because.ArgumentNull(() => criteria);
 
 			if(AtEndOfInput) {
@@ -139,7 +140,7 @@ namespace pegleg.cs.Parsing {
 				return false;
 			}
 
-			if(criteria.Accepts(_consumable, _index, out length)) {
+			if(criteria.AreSatisfiedBy(_consumable, _index, out length)) {
 				Consume(length);
 				return true;
 			} else {

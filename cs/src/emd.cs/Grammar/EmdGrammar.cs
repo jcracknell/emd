@@ -3,6 +3,7 @@ using emd.cs.Nodes;
 using emd.cs.Utils;
 using pegleg.cs;
 using pegleg.cs.Parsing;
+using pegleg.cs.Unicode.Criteria;
 using pegleg.cs.Utils;
 using System;
 using System.Collections.Generic;
@@ -236,7 +237,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		UnicodeCharacter =
 			Named(() => UnicodeCharacter,
-				Character(UnicodeCriteria.AnyCharacter));
+				Character(UnicodeCriteria.All.Graphemes));
 
 		#endregion
 	}

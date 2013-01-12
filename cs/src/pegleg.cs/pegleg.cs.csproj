@@ -76,14 +76,25 @@
     <Compile Include="Parsing\SourceRange.cs" />
     <Compile Include="Nil.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="UnicodeCriteria.cs" />
+    <Compile Include="Unicode\Criteria\CodePointInCategoriesCriterion.cs" />
+    <Compile Include="Unicode\Criteria\CodePointCriteria.cs" />
+    <Compile Include="Unicode\Criteria\GraphemeCodePointsCriterion.cs" />
+    <Compile Include="Unicode\Criteria\CodePointInRangeCriterion.cs" />
+    <Compile Include="Unicode\Criteria\CodePointInValuesCriterion.cs" />
+    <Compile Include="Unicode\Criteria\GraphemeInCategoriesCriterion.cs" />
+    <Compile Include="Unicode\Criteria\GraphemeCriteria.cs" />
+    <Compile Include="Unicode\Criteria\GraphemeInValuesCriterion.cs" />
+    <Compile Include="Unicode\Criteria\ICodePointCriterion.cs" />
+    <Compile Include="Unicode\Criteria\IGraphemeCriterion.cs" />
+    <Compile Include="Unicode\Criteria\IUnicodeCriteria.cs" />
+    <Compile Include="Unicode\Criteria\UnicodeCriteria.cs" />
     <Compile Include="Utils\ReflectionUtils.cs" />
     <Compile Include="Utils\StringUtils.cs" />
     <Compile Include="Parsing\SuccessfulMatchingResult.cs" />
     <Compile Include="Parsing\UnsuccessfulMatchingResult.cs" />
     <Compile Include="Utils\CharacterRange.cs" />
     <Compile Include="Utils\CharUtils.cs" />
-    <Compile Include="Utils\UnicodeUtils.cs" />
+    <Compile Include="Unicode\UnicodeUtils.cs" />
     <Compile Include="Utils\Trie.cs" />
     <Compile Include="..\..\lib\Xception.cs" />
   </ItemGroup>

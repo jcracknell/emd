@@ -2,6 +2,7 @@
 using emd.cs.Utils;
 using pegleg.cs;
 using pegleg.cs.Parsing;
+using pegleg.cs.Unicode.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -852,15 +853,15 @@ namespace emd.cs.Grammar {
 		identifierExpressionStart =
 			ChoiceOrdered(
 				Character(
-					UnicodeCriteria.NoCharacter
-						.Except(
+					UnicodeCriteria.No.Graphemes
+						.Excluding(
 							UnicodeCategory.UppercaseLetter,
 							UnicodeCategory.LowercaseLetter,
 							UnicodeCategory.TitlecaseLetter,
 							UnicodeCategory.ModifierLetter,
 							UnicodeCategory.OtherLetter,
 							UnicodeCategory.LetterNumber)
-						.Except('$', '_')),
+						.Excluding('$', '_')),
 				Sequence(Literal("\\"), Reference(() => ExpressionUnicodeEscapeSequence)));
 
 		public static readonly IParsingExpression<Nil>
@@ -869,13 +870,13 @@ namespace emd.cs.Grammar {
 				ChoiceOrdered(
 					identifierExpressionStart,
 					Character(
-						UnicodeCriteria.NoCharacter
-							.Except(
+						UnicodeCriteria.No.Graphemes
+							.Excluding(
 								UnicodeCategory.NonSpacingMark,
 								UnicodeCategory.SpacingCombiningMark,
 								UnicodeCategory.DecimalDigitNumber,
 								UnicodeCategory.ConnectorPunctuation)
-							.Except(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D'))));
+							.Excluding(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D'))));
 
 		public static readonly IParsingExpression<IdentifierExpression>
 		IdentifierExpression =
@@ -1204,7 +1205,7 @@ namespace emd.cs.Grammar {
 						Reference(() => ExpressionUnicodeEscapeSequence),
 						Reference(() => NewLine),
 						Reference(() => UnicodeCharacter))),
-					Character(UnicodeCriteria.AnyCharacter.Except(lineTerminatorCharValues)));
+					Character(UnicodeCriteria.All.Graphemes.Excluding(lineTerminatorCharValues)));
 
 		#endregion
 

@@ -1,5 +1,6 @@
 ﻿using pegleg.cs.Parsing;
 using pegleg.cs.Parsing.Expressions;
+using pegleg.cs.Unicode.Criteria;
 using pegleg.cs.Utils;
 using System;
 using System.Collections.Generic;
@@ -71,18 +72,18 @@ namespace pegleg.cs {
 		}
 
 		public static IParsingExpression<Nil> CharacterIn(params IEnumerable<char>[] chars) {
-			return Character(UnicodeCriteria.NoCharacter.Except(chars));
+			return Character(UnicodeCriteria.No.Graphemes.Excluding(chars));
 		}
 
 		public static IParsingExpression<Nil> CharacterNotIn(params char[] chars) {
-			return Character(UnicodeCriteria.AnyCharacter.Except(chars));
+			return Character(UnicodeCriteria.All.Graphemes.Excluding(chars));
 		}
 
 		public static IParsingExpression<Nil> CharacterNotIn(params IEnumerable<char>[] chars) {
-			return Character(UnicodeCriteria.AnyCharacter.Except(chars));
+			return Character(UnicodeCriteria.All.Graphemes.Excluding(chars));
 		}
 
-		public static IParsingExpression<Nil> Character(UnicodeCriteria criteria) {
+		public static IParsingExpression<Nil> Character(IUnicodeCriteria criteria) {
 			return new CharacterParsingExpression(criteria);
 		}
 

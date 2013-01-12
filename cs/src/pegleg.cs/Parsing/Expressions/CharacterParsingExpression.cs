@@ -1,13 +1,14 @@
-﻿using System;
+﻿using pegleg.cs.Unicode.Criteria;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
 	public class CharacterParsingExpression : BaseParsingExpression<Nil> {
-		private readonly UnicodeCriteria _criteria;
+		private readonly IUnicodeCriteria _criteria;
 
-		public CharacterParsingExpression(UnicodeCriteria criteria) {
+		public CharacterParsingExpression(IUnicodeCriteria criteria) {
 			if(null == criteria) throw Xception.Because.ArgumentNull(() => criteria);
 
 			_criteria = criteria;
