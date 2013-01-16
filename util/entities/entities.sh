@@ -8,11 +8,13 @@
 # 3. 8 bits denoting the number of codepoints in the entity value
 # 4. A sequence of 32 bit UTF32 codepoints, the entity value
 
-if [ -f entities.json ]; then
-	cat entities.json
-else
-	curl -s 'http://dev.w3.org/html5/spec/entities.json'
-fi \
+data="$(dirname "$0")/entities.json";
+
+if [ ! -f "$data" ]; then
+	curl -s 'http://dev.w3.org/html5/spec/entities.json' > "$data";
+fi
+
+cat "$data" \
 | grep ';' \
 | sed -r 's/,\s*"characters"\s*:.*$//' \
 | sed -r 's/"codepoints":/,/' \
