@@ -19,21 +19,66 @@ namespace pegleg.cs.Unicode {
 		/// </summary>
 		public const int MaxCodePoint =  0x10FFFF;
 
-		private delegate UnicodeCategory MCharUnicodeInfo_InternalGetUnicodeCategory(int ch);
-		private static readonly MCharUnicodeInfo_InternalGetUnicodeCategory
-		CharUnicodeInfo_InternalGetUnicodeCategory = (MCharUnicodeInfo_InternalGetUnicodeCategory)
-			Delegate.CreateDelegate(
-				typeof(MCharUnicodeInfo_InternalGetUnicodeCategory),
-				ReflectionUtils.GetAllMethods(typeof(CharUnicodeInfo))
-				.Single(m =>
-					"InternalGetUnicodeCategory".Equals(m.Name)
-					&& m.GetParameters().Select(p => p.ParameterType)
-						.SequenceEqual(
-							typeof(MCharUnicodeInfo_InternalGetUnicodeCategory)
-							.GetMethod("Invoke").GetParameters().Select(p => p.ParameterType)
-						)
-				)
-			);
+		public const int MinHighSurrogate = 0xD800;
+		public const int MaxHighSurrogate = 0xDBFF;
+		public const int MinLowSurrogate = 0xDC00;
+		public const int MaxLowSurrogate = 0xDFFF;
+
+		private const int
+			CATEGORY_HI_MASK = 0x01FF, // 2^9 = 512
+			CATEGORY_LO_MASK = 0x0FFF, // 2^12 = 4096
+			CATEGORY_LO_BITS = 12;
+
+		private static readonly byte[][] _categoryMap;
+
+		#region Category Map Initialization
+
+		static UnicodeUtils() {
+			// Initialize category map with default values
+			_categoryMap = new byte[CATEGORY_HI_MASK + 1][];
+			for(var i = 0; i <= CATEGORY_HI_MASK; i++) {
+				_categoryMap[i] = new byte[CATEGORY_LO_MASK + 1];
+				for(var j = 0; j <= CATEGORY_LO_MASK; j++)
+					_categoryMap[i][j] = (byte)UnicodeCategory.OtherNotAssigned;
+			}
+
+			using(var stream = typeof(UnicodeUtils).Assembly.GetManifestResourceStream(typeof(UnicodeUtils).Namespace + ".UnicodeCategoryInfo.bin"))
+			while(stream.Position < stream.Length) {
+				// 3 bytes containing the 21-bit codePoint
+				uint codePoint = (uint)stream.ReadByte();
+				codePoint = (codePoint << 8) | (uint)stream.ReadByte();
+				codePoint = (codePoint << 8) | (uint)stream.ReadByte();
+
+				if(0x800000 == (codePoint & 0x800000)) {
+					// This is a range of codepoints, indicated by the presence of the high bit
+					codePoint = codePoint & 0x7FFFFF;
+
+					uint endCodePoint = (uint)stream.ReadByte();
+					endCodePoint = (endCodePoint << 8) | (uint)stream.ReadByte();
+					endCodePoint = (endCodePoint << 8) | (uint)stream.ReadByte();
+
+					byte category = (byte)stream.ReadByte();
+
+					for(; codePoint <= endCodePoint; codePoint++)
+						_categoryMap[(codePoint >> CATEGORY_LO_BITS) & CATEGORY_HI_MASK][codePoint & CATEGORY_LO_MASK] = category;
+				} else {
+					// This is a single codepoint
+					_categoryMap[(codePoint >> CATEGORY_LO_BITS) & CATEGORY_HI_MASK][codePoint & CATEGORY_LO_MASK] = (byte)stream.ReadByte();
+				}
+			}
+		}
+
+		#endregion
+
+		/// <summary>
+		/// Returns the <see cref="UnicodeCategory"/> for the provided <paramref name="codePoint"/>.
+		/// </summary>
+		public static UnicodeCategory GetCategory(int codePoint) {
+			if(codePoint < MinCodePoint || MaxCodePoint < codePoint)
+				return UnicodeCategory.OtherNotAssigned;
+
+			return (UnicodeCategory)_categoryMap[(codePoint >> CATEGORY_LO_BITS) & CATEGORY_HI_MASK][codePoint & CATEGORY_LO_MASK];
+		}
 
 		/// <summary>
 		/// <para>
@@ -103,8 +148,9 @@ namespace pegleg.cs.Unicode {
 			if(null == str) throw Xception.Because.ArgumentNull(() => str);
 
 			codePoint = GetCodePoint(str, index, out length);
-			return CharUnicodeInfo_InternalGetUnicodeCategory(codePoint);
+			return GetCategory(codePoint);
 		}
+
 
 		/// <summary>
 		/// Retrieve the UTF-32 code point at the specified <paramref name="index"/> in <paramref name="str"/>.
@@ -113,12 +159,12 @@ namespace pegleg.cs.Unicode {
 		public static int GetCodePoint(string str, int index, out int length) {
 			int value = (int)str[index];
 
-			if(0xD800 <= value && value <= 0xDBFF && str.Length - 1 > index) {
+			if(MinHighSurrogate <= value && value <= MaxHighSurrogate && str.Length - 1 > index) {
 				int lowSurrogate = (int)str[index + 1];
 
-				if(0xDC00 <= lowSurrogate && lowSurrogate <= 0xDFFF) {
+				if(MinLowSurrogate <= lowSurrogate && lowSurrogate <= MaxLowSurrogate) {
 					length = 2;
-					return 0x10000 + (((value - 0xD800) << 10) | (lowSurrogate - 0xDC00));
+					return 0x10000 + (((value - MinHighSurrogate) << 10) | (lowSurrogate - MinLowSurrogate));
 				}
 			}
 
@@ -131,15 +177,6 @@ namespace pegleg.cs.Unicode {
 		/// </summary>
 		public static bool IsValidCodePoint(int value) {
 			return value <= MaxCodePoint && MinCodePoint <= value;
-		}
-
-		/// <summary>
-		/// Returns the <see cref="UnicodeCategory"/> for the provided <paramref name="codePoint"/>.
-		/// </summary>
-		public static UnicodeCategory GetCategory(int codePoint) {
-			// This method is useful because it is possible to determine the code point without knowing its category,
-			// but not the opposite.
-			return CharUnicodeInfo_InternalGetUnicodeCategory(codePoint);
 		}
 	}
 }

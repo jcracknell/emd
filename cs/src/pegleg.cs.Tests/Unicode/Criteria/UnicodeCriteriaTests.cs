@@ -69,11 +69,11 @@ namespace pegleg.cs.Unicode.Criteria {
 			int lowercaseLetterCount = 0;
 			foreach(var c in CharUtils.Range(char.MinValue, char.MaxValue)) {
 				if(criteria.AreSatisfiedBy(c.ToString(), 0, out length)) {
-					Char.GetUnicodeCategory(c).Should().Be(UnicodeCategory.LowercaseLetter);
+					UnicodeUtils.GetCategory(c).Should().Be(UnicodeCategory.LowercaseLetter);
 					acceptedCount++;
 				}
 
-				if(UnicodeCategory.LowercaseLetter == Char.GetUnicodeCategory(c))
+				if(UnicodeCategory.LowercaseLetter == UnicodeUtils.GetCategory(c))
 					lowercaseLetterCount++;
 			}
 
@@ -88,11 +88,11 @@ namespace pegleg.cs.Unicode.Criteria {
 			int lowercaseLetterCount = 0;
 			foreach(var c in CharUtils.Range(char.MinValue, char.MaxValue)) {
 				if(!criteria.AreSatisfiedBy(c.ToString(), 0, out length)) {
-					Char.GetUnicodeCategory(c).Should().Be(UnicodeCategory.LowercaseLetter);
+					UnicodeUtils.GetCategory(c).Should().Be(UnicodeCategory.LowercaseLetter);
 					rejectedCount++;
 				}
 
-				if(UnicodeCategory.LowercaseLetter == Char.GetUnicodeCategory(c))
+				if(UnicodeCategory.LowercaseLetter == UnicodeUtils.GetCategory(c))
 					lowercaseLetterCount++;
 			}
 
@@ -107,13 +107,13 @@ namespace pegleg.cs.Unicode.Criteria {
 			int lowercaseLetterCount = 0;
 			foreach(var c in CharUtils.Range(char.MinValue, char.MaxValue)) {
 				if(criteria.AreSatisfiedBy(c.ToString(), 0, out length)) {
-					if(UnicodeCategory.LowercaseLetter != Char.GetUnicodeCategory(c))
+					if(UnicodeCategory.LowercaseLetter != UnicodeUtils.GetCategory(c))
 						c.Should().Be('A');
 
 					acceptedCount++;
 				}
 
-				if(UnicodeCategory.LowercaseLetter == Char.GetUnicodeCategory(c)) {
+				if(UnicodeCategory.LowercaseLetter == UnicodeUtils.GetCategory(c)) {
 					lowercaseLetterCount++;
 				}
 			}
