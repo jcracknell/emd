@@ -37,7 +37,7 @@ namespace pegleg.cs.Utils {
 			var len = s.Length;
 			var sb = new StringBuilder("\"", len * 2 + 2);
 			for(var rp = 0; rp < len; rp++) {
-				var c = s[rp++];
+				var c = s[rp];
 				if(c < LITERALENCODE_ESCAPE_CHARS.Length && 0 != LITERALENCODE_ESCAPE_CHARS[c]) {
 					sb.Append('\\').Append(LITERALENCODE_ESCAPE_CHARS[c]);
 				} else if(' ' <= c && c <= '~' || char.IsLetter(c)) {
