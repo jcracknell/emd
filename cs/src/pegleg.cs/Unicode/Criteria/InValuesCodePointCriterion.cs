@@ -8,7 +8,7 @@ namespace pegleg.cs.Unicode.Criteria {
 	/// <summary>
 	/// Criterion which is satisfied by code points present in a provided set of code points.
 	/// </summary>
-	public class CodePointInValuesCriterion : ICodePointCriterion {
+	public class InValuesCodePointCriterion : ICodePointCriteria {
 		// Here we map each possible code point to a bit.
 		// Per the UTF standard, the maximum value for a code point is 0x10FFFF, expressible in
 		// 21 = 5 * 4 + 1 bits.
@@ -28,7 +28,7 @@ namespace pegleg.cs.Unicode.Criteria {
 		/// Create a criterion satisfied by code points present in the provided set of <paramref name="codePoints"/>.
 		/// </summary>
 		/// <param name="codePoints">The set of code points which will satisfy the criterion.</param>
-		public CodePointInValuesCriterion(IEnumerable<int> codePoints) {
+		public InValuesCodePointCriterion(IEnumerable<int> codePoints) {
 			if(null == codePoints) throw Xception.Because.ArgumentNull(() => codePoints);
 			if(!codePoints.Any()) throw Xception.Because.Argument(() => codePoints, "cannot be empty");
 
@@ -47,7 +47,7 @@ namespace pegleg.cs.Unicode.Criteria {
 			}
 		}
 
-		public bool IsSatisfiedBy(int codePoint) {
+		public bool SatisfiedBy(int codePoint) {
 			if(!UnicodeUtils.IsValidCodePoint(codePoint)) return false;
 
 			uint[] l1 = _acceptanceMap[(codePoint >> L1_SHIFT) & L1_MASK];

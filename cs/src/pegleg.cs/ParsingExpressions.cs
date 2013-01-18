@@ -1,5 +1,6 @@
 ﻿using pegleg.cs.Parsing;
 using pegleg.cs.Parsing.Expressions;
+using pegleg.cs.Unicode;
 using pegleg.cs.Unicode.Criteria;
 using pegleg.cs.Utils;
 using System;
@@ -63,28 +64,40 @@ namespace pegleg.cs {
 
 		#endregion
 
-		public static IParsingExpression<Nil> CharacterInRange(char rangeStart, char rangeEnd) {
-			return CharacterIn(CharUtils.Range(rangeStart, rangeEnd));
+		public static IParsingExpression<Nil> GraphemeInRange(char rangeStart, char rangeEnd) {
+			return GraphemeIn(CharUtils.Range(rangeStart, rangeEnd));
 		}
 
-		public static IParsingExpression<Nil> CharacterIn(params char[] chars) {
-			return CharacterIn(chars.AsEnumerable());
+		public static IParsingExpression<Nil> GraphemeIn(params char[] chars) {
+			return GraphemeIn(chars.AsEnumerable());
 		}
 
-		public static IParsingExpression<Nil> CharacterIn(params IEnumerable<char>[] chars) {
-			return Character(UnicodeCriteria.No.Graphemes.Excluding(chars));
+		public static IParsingExpression<Nil> GraphemeIn(params IEnumerable<char>[] chars) {
+			return Grapheme(GraphemeCriteria.SingleCodePoint(CodePointCriteria.In(chars)));
 		}
 
-		public static IParsingExpression<Nil> CharacterNotIn(params char[] chars) {
-			return Character(UnicodeCriteria.All.Graphemes.Excluding(chars));
+		public static IParsingExpression<Nil> GraphemeNotIn(params char[] chars) {
+			return GraphemeNotIn(chars.AsEnumerable());
 		}
 
-		public static IParsingExpression<Nil> CharacterNotIn(params IEnumerable<char>[] chars) {
-			return Character(UnicodeCriteria.All.Graphemes.Excluding(chars));
+		public static IParsingExpression<Nil> GraphemeNotIn(params IEnumerable<char>[] chars) {
+			return Grapheme(GraphemeCriteria.Not(GraphemeCriteria.SingleCodePoint(CodePointCriteria.In(chars))));
 		}
 
-		public static IParsingExpression<Nil> Character(IUnicodeCriteria criteria) {
-			return new CharacterParsingExpression(criteria);
+		public static IParsingExpression<Nil> Grapheme() {
+			return new GraphemeParsingExpression(SatisfiedGraphemeCriterion.Instance);
+		}
+
+		public static IParsingExpression<Nil> Grapheme(IGraphemeCriteria criteria) {
+			return new GraphemeParsingExpression(criteria);
+		}
+
+		public static IParsingExpression<Nil> CodePoint() {
+			return new CodePointParsingExpression(SatisfiedCodePointCriterion.Instance);
+		}
+
+		public static IParsingExpression<Nil> CodePoint(ICodePointCriteria criteria) {
+			return new CodePointParsingExpression(criteria);
 		}
 
 		#region Regex

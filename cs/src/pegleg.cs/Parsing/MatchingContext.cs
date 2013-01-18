@@ -1,4 +1,5 @@
-﻿using pegleg.cs.Unicode.Criteria;
+﻿using pegleg.cs.Unicode;
+using pegleg.cs.Unicode.Criteria;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -132,15 +133,31 @@ namespace pegleg.cs.Parsing {
 			}
 		}
 
-		public bool ConsumesUnicodeCriteria(IUnicodeCriteria criteria, out int length) {
-			if(null == criteria) throw Xception.Because.ArgumentNull(() => criteria);
-
+		public bool ConsumesGraphemeCriteria(IGraphemeCriteria criteria, out int length) {
 			if(AtEndOfInput) {
 				length = 0;
 				return false;
 			}
 
-			if(criteria.AreSatisfiedBy(_consumable, _index, out length)) {
+			var category = UnicodeUtils.GetGraphemeInfo(_consumable, _index, out length);
+
+			if(criteria.SatisfiedBy(_consumable, _index, length, category)) {
+				Consume(length);
+				return true;
+			} else {
+				return false;
+			}
+		}
+
+		public bool ConsumesCodePointCriteria(ICodePointCriteria criteria, out int length) {
+			if(AtEndOfInput) {
+				length = 0;
+				return false;
+			}
+
+			var codePoint = UnicodeUtils.GetCodePoint(_consumable, _index, out length);
+			
+			if(criteria.SatisfiedBy(codePoint)) {
 				Consume(length);
 				return true;
 			} else {

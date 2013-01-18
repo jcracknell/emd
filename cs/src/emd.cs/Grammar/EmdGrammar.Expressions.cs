@@ -2,7 +2,7 @@
 using emd.cs.Utils;
 using pegleg.cs;
 using pegleg.cs.Parsing;
-using pegleg.cs.Unicode.Criteria;
+using pegleg.cs.Unicode;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -227,7 +227,7 @@ namespace emd.cs.Grammar {
 		BitwiseOrOperator =
 			Sequence(
 				Literal("|"),
-				NotAhead(CharacterIn('|', '=')));
+				NotAhead(GraphemeIn('|', '=')));
 
 		#endregion
 
@@ -319,7 +319,7 @@ namespace emd.cs.Grammar {
 		BitwiseAndOperator =
 			Sequence(
 				Literal("&"),
-				NotAhead(CharacterIn('&', '=')));
+				NotAhead(GraphemeIn('&', '=')));
 
 		#endregion
 
@@ -852,16 +852,16 @@ namespace emd.cs.Grammar {
 		private static readonly IParsingExpression<Nil>
 		identifierExpressionStart =
 			ChoiceOrdered(
-				Character(
-					UnicodeCriteria.No.Graphemes
-						.Excluding(
+				Grapheme(
+					GraphemeCriteria.Or(
+						GraphemeCriteria.In(
 							UnicodeCategory.UppercaseLetter,
 							UnicodeCategory.LowercaseLetter,
 							UnicodeCategory.TitlecaseLetter,
 							UnicodeCategory.ModifierLetter,
 							UnicodeCategory.OtherLetter,
-							UnicodeCategory.LetterNumber)
-						.Excluding('$', '_')),
+							UnicodeCategory.LetterNumber ),
+						GraphemeCriteria.In("$", "_"))),
 				Sequence(Literal("\\"), Reference(() => ExpressionUnicodeEscapeSequence)));
 
 		public static readonly IParsingExpression<Nil>
@@ -869,14 +869,14 @@ namespace emd.cs.Grammar {
 			Named(() => IdentifierPart,
 				ChoiceOrdered(
 					identifierExpressionStart,
-					Character(
-						UnicodeCriteria.No.Graphemes
-							.Excluding(
+					Grapheme(
+						GraphemeCriteria.Or(
+							GraphemeCriteria.In(
 								UnicodeCategory.NonSpacingMark,
 								UnicodeCategory.SpacingCombiningMark,
 								UnicodeCategory.DecimalDigitNumber,
-								UnicodeCategory.ConnectorPunctuation)
-							.Excluding(/*ZWNJ*/'\u200C', /*ZWJ*/'\u200D'))));
+								UnicodeCategory.ConnectorPunctuation),
+							GraphemeCriteria.In(/*ZWNJ*/"\u200C", /*ZWJ*/"\u200D")))));
 
 		public static readonly IParsingExpression<IdentifierExpression>
 		IdentifierExpression =
@@ -1205,7 +1205,7 @@ namespace emd.cs.Grammar {
 						Reference(() => ExpressionUnicodeEscapeSequence),
 						Reference(() => NewLine),
 						Reference(() => UnicodeCharacter))),
-					Character(UnicodeCriteria.All.Graphemes.Excluding(lineTerminatorCharValues)));
+					Grapheme(GraphemeCriteria.Not(GraphemeCriteria.In(lineTerminatorCharValues.Select(c => c.ToString())))));
 
 		#endregion
 
@@ -1221,7 +1221,7 @@ namespace emd.cs.Grammar {
 		uriExpressionRegularPart =
 			AtLeast(1, 
 				ChoiceUnordered(
-					CharacterIn(
+					GraphemeIn(
 						englishAlphaCharValues,
 						digitCharValues,
 						new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' }),

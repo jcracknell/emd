@@ -1,14 +1,14 @@
-﻿using pegleg.cs.Unicode.Criteria;
+﻿using pegleg.cs.Unicode;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public class CharacterParsingExpression : BaseParsingExpression<Nil> {
-		private readonly IUnicodeCriteria _criteria;
+	public class CodePointParsingExpression : BaseParsingExpression<Nil> {
+		private readonly ICodePointCriteria _criteria;
 
-		public CharacterParsingExpression(IUnicodeCriteria criteria) {
+		public CodePointParsingExpression(ICodePointCriteria criteria) {
 			if(null == criteria) throw Xception.Because.ArgumentNull(() => criteria);
 
 			_criteria = criteria;
@@ -16,8 +16,9 @@ namespace pegleg.cs.Parsing.Expressions {
 
 		public override IMatchingResult<Nil> Matches(MatchingContext context) {
 			int length;
-			if(context.ConsumesUnicodeCriteria(_criteria, out length))
+			if(context.ConsumesCodePointCriteria(_criteria, out length))
 				return SuccessfulMatchingResult.Create(Nil.Value, length);
+
 			return UnsuccessfulMatchingResult.Create(this);
 		}
 

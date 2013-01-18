@@ -1,5 +1,4 @@
-﻿using pegleg.cs.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -7,16 +6,16 @@ using System.Text;
 
 namespace pegleg.cs.Unicode.Criteria {
 	/// <summary>
-	/// Criterion which is satisfied by code points in a specified set of <see cref="UnicodeCategory"/> values.
+	/// Criterion which is satisfied by graphemes in a specified set of <see cref="UnicodeCategory"/> values.
 	/// </summary>
-	public class CodePointInCategoriesCriterion : ICodePointCriterion {
+	public class InCategoriesGraphemeCriterion : IGraphemeCriteria {
 		private static readonly int MAX_UNICODE_CATEGORY = Enum.GetValues(typeof(UnicodeCategory)).Cast<int>().Max();
 		private readonly bool[] _acceptanceMap;
 
 		/// <summary>
-		/// Create a criterion which is satisfied by code points in the provided <paramref name="categories"/>.
+		/// Create a criterion which is satisfied by graphemes in the provided <paramref name="categories"/>.
 		/// </summary>
-		public CodePointInCategoriesCriterion(IEnumerable<UnicodeCategory> categories) {
+		public InCategoriesGraphemeCriterion(IEnumerable<UnicodeCategory> categories) {
 			if(null == categories) throw Xception.Because.ArgumentNull(() => categories);
 			if(!categories.Any()) throw Xception.Because.Argument(() => categories, "cannot be empty");
 
@@ -25,10 +24,8 @@ namespace pegleg.cs.Unicode.Criteria {
 				_acceptanceMap[(int)category] = true;
 		}
 
-		public bool IsSatisfiedBy(int codePoint) {
-			var category = (int)UnicodeUtils.GetCategory(codePoint);
-
-			return _acceptanceMap[category];
+		public bool SatisfiedBy(string str, int index, int length, UnicodeCategory category) {
+			return _acceptanceMap[(int)category];
 		}
 	}
 }
