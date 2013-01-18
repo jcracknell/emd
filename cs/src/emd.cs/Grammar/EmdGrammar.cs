@@ -3,6 +3,7 @@ using emd.cs.Nodes;
 using emd.cs.Utils;
 using pegleg.cs;
 using pegleg.cs.Parsing;
+using pegleg.cs.Unicode;
 using pegleg.cs.Unicode.Criteria;
 using pegleg.cs.Utils;
 using System;
@@ -170,7 +171,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		SpaceChar =
 			Named(() => SpaceChar,
-				GraphemeIn(spaceCharValues));
+				Grapheme(GraphemeCriteria.In(spaceCharValues)));
 
 		/// <summary>
 		/// Any number of tabs or spaces.
@@ -202,37 +203,37 @@ namespace emd.cs.Grammar {
 		Whitespaces =
 			Named(() => Whitespaces,
 				AtLeast(0,
-					GraphemeIn(whitespaceCharValues)));
+					Grapheme(GraphemeCriteria.In(whitespaceCharValues))));
 
 		public static readonly IParsingExpression<Nil>
 		Digit =
 			Named(() => Digit,
-				GraphemeInRange('0', '9'));
+				Grapheme(GraphemeCriteria.SingleCodePoint(CodePointCriteria.InRange('0', '9'))));
 
 		public static readonly IParsingExpression<Nil>
 		NonZeroDigit =
 			Named(() => NonZeroDigit,
-				GraphemeInRange('1', '9'));
+				Grapheme(GraphemeCriteria.SingleCodePoint(CodePointCriteria.InRange('1', '9'))));
 
 		public static readonly IParsingExpression<Nil>
 		HexDigit =
 			Named(() => HexDigit,
-				GraphemeIn(hexadecimalCharValues));
+				Grapheme(GraphemeCriteria.In(hexadecimalCharValues)));
 
 		public static readonly IParsingExpression<Nil>
 		EnglishLowerAlpha =
 			Named(() => EnglishLowerAlpha,
-				GraphemeInRange('a', 'z'));
+				Grapheme(GraphemeCriteria.SingleCodePoint(CodePointCriteria.InRange('a', 'z'))));
 
 		public static readonly IParsingExpression<Nil>
 		EnglishUpperAlpha =
 			Named(() => EnglishUpperAlpha,
-				GraphemeInRange('A', 'Z'));
+				Grapheme(GraphemeCriteria.SingleCodePoint(CodePointCriteria.InRange('A', 'Z'))));
 
 		public static readonly IParsingExpression<Nil>
 		EnglishAlpha =
 			Named(() => EnglishAlpha,
-				GraphemeIn(englishAlphaCharValues));
+				Grapheme(GraphemeCriteria.In(englishAlphaCharValues)));
 
 		public static readonly IParsingExpression<Nil>
 		UnicodeCharacter =

@@ -64,26 +64,6 @@ namespace pegleg.cs {
 
 		#endregion
 
-		public static IParsingExpression<Nil> GraphemeInRange(char rangeStart, char rangeEnd) {
-			return GraphemeIn(CharUtils.Range(rangeStart, rangeEnd));
-		}
-
-		public static IParsingExpression<Nil> GraphemeIn(params char[] chars) {
-			return GraphemeIn(chars.AsEnumerable());
-		}
-
-		public static IParsingExpression<Nil> GraphemeIn(params IEnumerable<char>[] chars) {
-			return Grapheme(GraphemeCriteria.SingleCodePoint(CodePointCriteria.In(chars)));
-		}
-
-		public static IParsingExpression<Nil> GraphemeNotIn(params char[] chars) {
-			return GraphemeNotIn(chars.AsEnumerable());
-		}
-
-		public static IParsingExpression<Nil> GraphemeNotIn(params IEnumerable<char>[] chars) {
-			return Grapheme(GraphemeCriteria.Not(GraphemeCriteria.SingleCodePoint(CodePointCriteria.In(chars))));
-		}
-
 		public static IParsingExpression<Nil> Grapheme() {
 			return new GraphemeParsingExpression(SatisfiedGraphemeCriterion.Instance);
 		}

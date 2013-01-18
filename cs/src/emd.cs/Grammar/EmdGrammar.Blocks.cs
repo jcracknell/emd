@@ -1,6 +1,7 @@
 ﻿using emd.cs.Nodes;
 using emd.cs.Utils;
 using pegleg.cs;
+using pegleg.cs.Unicode;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -97,10 +98,10 @@ namespace emd.cs.Grammar {
 		enumeratorCounterStyleUpperRomanCharValues = enumeratorCounterStyleLowerRomanCharValues.Select(char.ToUpper);
 
 		private static readonly IParsingExpression<Nil>
-		enumeratorCounterStyleLowerRomanChar = GraphemeIn(enumeratorCounterStyleLowerRomanCharValues);
+		enumeratorCounterStyleLowerRomanChar = Grapheme(GraphemeCriteria.In(enumeratorCounterStyleLowerRomanCharValues));
 
 		private static readonly IParsingExpression<Nil>
-		enumeratorCounterStyleUpperRomanChar = GraphemeIn(enumeratorCounterStyleUpperRomanCharValues);
+		enumeratorCounterStyleUpperRomanChar = Grapheme(GraphemeCriteria.In(enumeratorCounterStyleUpperRomanCharValues));
 
 		public static readonly IParsingExpression<int?>
 		EnumeratorValue =
@@ -340,7 +341,7 @@ namespace emd.cs.Grammar {
 			Named(() => Bullet,
 				Sequence(
 					Reference(() => NonIndentSpace),
-					GraphemeIn(new char[] { '*', '-', '+' }),
+					Grapheme(GraphemeCriteria.In("*", "-", "+")),
 					AtLeast(1, Reference(() => SpaceChar))));
 
 		public static readonly IParsingExpression<LineInfo>
@@ -524,7 +525,7 @@ namespace emd.cs.Grammar {
 		Atomic =
 			Named(() => Atomic,
 				ChoiceOrdered(
-					Sequence(NotAhead(GraphemeIn(specialCharValues)), Reference(() => UnicodeCharacter)),
+					Sequence(NotAhead(Grapheme(GraphemeCriteria.In(specialCharValues))), Reference(() => UnicodeCharacter)),
 					ChoiceUnordered(
 						Reference(() => InlineExpression),
 						Reference(() => Comment),
