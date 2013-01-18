@@ -178,5 +178,18 @@ namespace pegleg.cs.Unicode {
 		public static bool IsValidCodePoint(int value) {
 			return value <= MaxCodePoint && MinCodePoint <= value;
 		}
+
+		/// <summary>
+		/// Returns true if <paramref name="str"/> contains a single code point.
+		/// </summary>
+		public static bool IsSingleCodePoint(string str) {
+			if(null == str) throw Xception.Because.ArgumentNull(() => str);
+			if(0 == str.Length) throw Xception.Because.Argument(() => str, "cannot be empty");
+
+			int codePointLength;
+			GetCodePoint(str, 0, out codePointLength);
+
+			return str.Length == codePointLength;
+		}
 	}
 }

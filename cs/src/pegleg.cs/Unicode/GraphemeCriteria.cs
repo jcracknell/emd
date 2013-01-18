@@ -30,14 +30,20 @@ namespace pegleg.cs.Unicode {
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
 		/// </summary>
 		public static IGraphemeCriteria In(params IEnumerable<char>[] graphemes) {
-			return In(graphemes.Flatten().Select(c => c.ToString()));
+			// As all chars are single code points we can optimize this case
+			return SingleCodePoint(CodePointCriteria.In(graphemes));
 		}
 
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
 		/// </summary>
 		public static IGraphemeCriteria In(params IEnumerable<string>[] graphemes) {
-			return new InValuesGraphemeCriterion(graphemes.Flatten());
+			if(graphemes.Flatten().All(UnicodeUtils.IsSingleCodePoint)) {
+				int length;
+				return SingleCodePoint(CodePointCriteria.In(graphemes.Flatten().Select(g => UnicodeUtils.GetCodePoint(g, 0, out length))));
+			} else {
+				return new InValuesGraphemeCriterion(graphemes.Flatten());
+			}
 		}
 
 		/// <summary>
