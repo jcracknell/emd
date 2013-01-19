@@ -85,7 +85,7 @@ namespace emd.cs.Grammar {
 					Literal("["),
 					AtLeast(0, 
 						Sequence(
-							NotAhead(Grapheme(GraphemeCriteria.In(']', '\n', '\r'))),
+							NotAhead(GraphemeIn(']', '\n', '\r')),
 							Reference(() => UnicodeCharacter)),
 						match => match.String),
 					Literal("]"),
@@ -224,7 +224,7 @@ namespace emd.cs.Grammar {
 		HexadecimalEntity = Named(() => HexadecimalEntity,
 			Sequence(
 				Optional(Literal("#")),
-				Grapheme(GraphemeCriteria.In('u','x')),
+				GraphemeIn('u','x'),
 				Between(1, 6, Reference(() => HexDigit), match => match.String),
 				match => char.ConvertFromUtf32(Convert.ToInt32(match.Product.Of3, 16)))
 		);
@@ -301,7 +301,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		SpecialChar =
 			Named(() => SpecialChar,
-				Grapheme(GraphemeCriteria.In(specialCharValues)));
+				GraphemeIn(specialCharValues));
 
 		#endregion
 	}

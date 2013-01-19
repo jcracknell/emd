@@ -227,7 +227,7 @@ namespace emd.cs.Grammar {
 		BitwiseOrOperator =
 			Sequence(
 				Literal("|"),
-				NotAhead(Grapheme(GraphemeCriteria.In('|', '='))));
+				NotAhead(GraphemeIn('|', '=')));
 
 		#endregion
 
@@ -319,7 +319,7 @@ namespace emd.cs.Grammar {
 		BitwiseAndOperator =
 			Sequence(
 				Literal("&"),
-				NotAhead(Grapheme(GraphemeCriteria.In('&', '='))));
+				NotAhead(GraphemeIn('&', '=')));
 
 		#endregion
 
@@ -1221,10 +1221,10 @@ namespace emd.cs.Grammar {
 		uriExpressionRegularPart =
 			AtLeast(1, 
 				ChoiceUnordered(
-					Grapheme(GraphemeCriteria.In(
+					GraphemeIn(
 						englishAlphaCharValues,
 						digitCharValues,
-						new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' })),
+						new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' }),
 					Sequence(
 						Literal("%"),
 						Exactly(2, Reference(() => HexDigit)))));

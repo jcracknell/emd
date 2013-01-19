@@ -171,7 +171,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		SpaceChar =
 			Named(() => SpaceChar,
-				Grapheme(GraphemeCriteria.In(spaceCharValues)));
+				GraphemeIn(spaceCharValues));
 
 		/// <summary>
 		/// Any number of tabs or spaces.
@@ -203,7 +203,7 @@ namespace emd.cs.Grammar {
 		Whitespaces =
 			Named(() => Whitespaces,
 				AtLeast(0,
-					Grapheme(GraphemeCriteria.In(whitespaceCharValues))));
+					GraphemeIn(whitespaceCharValues)));
 
 		public static readonly IParsingExpression<Nil>
 		Digit =
@@ -218,7 +218,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		HexDigit =
 			Named(() => HexDigit,
-				Grapheme(GraphemeCriteria.In(hexadecimalCharValues)));
+				GraphemeIn(hexadecimalCharValues));
 
 		public static readonly IParsingExpression<Nil>
 		EnglishLowerAlpha =
@@ -233,7 +233,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		EnglishAlpha =
 			Named(() => EnglishAlpha,
-				Grapheme(GraphemeCriteria.In(englishAlphaCharValues)));
+				GraphemeIn(englishAlphaCharValues));
 
 		public static readonly IParsingExpression<Nil>
 		UnicodeCharacter =

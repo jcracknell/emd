@@ -98,10 +98,10 @@ namespace emd.cs.Grammar {
 		enumeratorCounterStyleUpperRomanCharValues = enumeratorCounterStyleLowerRomanCharValues.Select(char.ToUpper);
 
 		private static readonly IParsingExpression<Nil>
-		enumeratorCounterStyleLowerRomanChar = Grapheme(GraphemeCriteria.In(enumeratorCounterStyleLowerRomanCharValues));
+		enumeratorCounterStyleLowerRomanChar = GraphemeIn(enumeratorCounterStyleLowerRomanCharValues);
 
 		private static readonly IParsingExpression<Nil>
-		enumeratorCounterStyleUpperRomanChar = Grapheme(GraphemeCriteria.In(enumeratorCounterStyleUpperRomanCharValues));
+		enumeratorCounterStyleUpperRomanChar = GraphemeIn(enumeratorCounterStyleUpperRomanCharValues);
 
 		public static readonly IParsingExpression<int?>
 		EnumeratorValue =
@@ -341,7 +341,7 @@ namespace emd.cs.Grammar {
 			Named(() => Bullet,
 				Sequence(
 					Reference(() => NonIndentSpace),
-					Grapheme(GraphemeCriteria.In("*", "-", "+")),
+					GraphemeIn("*", "-", "+"),
 					AtLeast(1, Reference(() => SpaceChar))));
 
 		public static readonly IParsingExpression<LineInfo>
@@ -525,7 +525,7 @@ namespace emd.cs.Grammar {
 		Atomic =
 			Named(() => Atomic,
 				ChoiceOrdered(
-					Sequence(NotAhead(Grapheme(GraphemeCriteria.In(specialCharValues))), Reference(() => UnicodeCharacter)),
+					Sequence(NotAhead(GraphemeIn(specialCharValues)), Reference(() => UnicodeCharacter)),
 					ChoiceUnordered(
 						Reference(() => InlineExpression),
 						Reference(() => Comment),
