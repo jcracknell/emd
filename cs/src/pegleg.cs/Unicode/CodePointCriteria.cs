@@ -27,9 +27,10 @@ namespace pegleg.cs.Unicode {
 
 		/// <summary>
 		/// Create an <see cref="ICodePointCriteria"/> satisfied by any of the provided <paramref name="codePoints"/>.
+		/// <paramref name="codePoints"/> must contain string representations of single code points.
 		/// </summary>
-		public static ICodePointCriteria In(params IEnumerable<int>[] codePoints) {
-			return new InValuesCodePointCriterion(codePoints.Flatten());
+		public static ICodePointCriteria In(params string[] codePoints) {
+			return In(codePoints.AsEnumerable());
 		}
 
 		/// <summary>
@@ -37,6 +38,26 @@ namespace pegleg.cs.Unicode {
 		/// </summary>
 		public static ICodePointCriteria In(params IEnumerable<char>[] codePoints) {
 			return new InValuesCodePointCriterion(codePoints.Flatten().Select(c => (int)c));
+		}
+
+		/// <summary>
+		/// Create an <see cref="ICodePointCriteria"/> satisfied by any of the provided <paramref name="codePoints"/>.
+		/// <paramref name="codePoints"/> must contain string representations of single code points.
+		/// </summary>
+		public static ICodePointCriteria In(params IEnumerable<string>[] codePoints) {
+			foreach(var codePoint in codePoints.Flatten())
+				if(!UnicodeUtils.IsSingleCodePoint(codePoint))
+					throw Xception.Because.Argument(() => codePoints, string.Concat("contains value ", StringUtils.LiteralEncode(codePoint), " which is not a valid code point"));
+
+			int length;
+			return In(codePoints.Flatten().Select(s => UnicodeUtils.GetCodePoint(s, 0, out length)));
+		}
+
+		/// <summary>
+		/// Create an <see cref="ICodePointCriteria"/> satisfied by any of the provided <paramref name="codePoints"/>.
+		/// </summary>
+		public static ICodePointCriteria In(params IEnumerable<int>[] codePoints) {
+			return new InValuesCodePointCriterion(codePoints.Flatten());
 		}
 
 		/// <summary>

@@ -78,12 +78,20 @@ namespace pegleg.cs {
 			return GraphemeIn(graphemes.AsEnumerable());
 		}
 
+		public static IParsingExpression<Nil> GraphemeIn(params int[] graphemes) {
+			return GraphemeIn(graphemes.AsEnumerable());
+		}
+
 		public static IParsingExpression<Nil> GraphemeIn(params string[] graphemes) {
 			return GraphemeIn(graphemes.AsEnumerable());
 		}
 
 		public static IParsingExpression<Nil> GraphemeIn(params IEnumerable<char>[] graphemes) {
-			return GraphemeIn(graphemes.Flatten().Select(g => g.ToString()));
+			return Grapheme(GraphemeCriteria.In(graphemes));
+		}
+
+		public static IParsingExpression<Nil> GraphemeIn(params IEnumerable<int>[] graphemes) {
+			return Grapheme(GraphemeCriteria.In(graphemes));
 		}
 
 		public static IParsingExpression<Nil> GraphemeIn(params IEnumerable<string>[] graphemes) {
@@ -106,16 +114,24 @@ namespace pegleg.cs {
 			return CodePointIn(codePoints.AsEnumerable());
 		}
 
+		public static IParsingExpression<Nil> CodePointIn(params string[] codePoints) {
+			return CodePointIn(codePoints.AsEnumerable());
+		}
+
 		public static IParsingExpression<Nil> CodePointIn(params int[] codePoints) {
 			return CodePointIn(codePoints.AsEnumerable());
 		}
 
 		public static IParsingExpression<Nil> CodePointIn(params IEnumerable<char>[] codePoints) {
-			return CodePointIn(codePoints.Flatten().Select(c => (int)c));
+			return CodePoint(CodePointCriteria.In(codePoints));
+		}
+
+		public static IParsingExpression<Nil> CodePointIn(params IEnumerable<string>[] codePoints) {
+			return CodePoint(CodePointCriteria.In(codePoints));
 		}
 
 		public static IParsingExpression<Nil> CodePointIn(params IEnumerable<int>[] codePoints) {
-			return CodePoint(CodePointCriteria.In(codePoints.Flatten()));
+			return CodePoint(CodePointCriteria.In(codePoints));
 		}
 
 		#endregion

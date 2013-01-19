@@ -22,6 +22,13 @@ namespace pegleg.cs.Unicode {
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
 		/// </summary>
+		public static IGraphemeCriteria In(params int[] graphemes) {
+			return In(graphemes.AsEnumerable());
+		}
+
+		/// <summary>
+		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
+		/// </summary>
 		public static IGraphemeCriteria In(params string[] graphemes) {
 			return In(graphemes.AsEnumerable());
 		}
@@ -31,6 +38,13 @@ namespace pegleg.cs.Unicode {
 		/// </summary>
 		public static IGraphemeCriteria In(params IEnumerable<char>[] graphemes) {
 			// As all chars are single code points we can optimize this case
+			return SingleCodePoint(CodePointCriteria.In(graphemes));
+		}
+
+		/// <summary>
+		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
+		/// </summary>
+		public static IGraphemeCriteria In(params IEnumerable<int>[] graphemes) {
 			return SingleCodePoint(CodePointCriteria.In(graphemes));
 		}
 
