@@ -85,28 +85,14 @@ namespace pegleg.cs.Unicode {
 		/// Create an <see cref="IGraphemeCriteria"/> which is satisfied if any of the provided <paramref name="criteria"/> are satisfied (logical OR).
 		/// </summary>
 		public static IGraphemeCriteria Or(params IGraphemeCriteria[] criteria) {
-			return Or(criteria.AsEnumerable());
-		}
-
-		/// <summary>
-		/// Create an <see cref="IGraphemeCriteria"/> which is satisfied if any of the provided <paramref name="criteria"/> are satisfied (logical OR).
-		/// </summary>
-		public static IGraphemeCriteria Or(params IEnumerable<IGraphemeCriteria>[] criteria) {
-			return new DisjunctGraphemeCriteria(criteria.Flatten().ToArray());
+			return new DisjunctGraphemeCriteria(criteria);
 		}
 
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> which is satisfied if all of the provided <paramref name="criteria"/> are satisfied (logical AND).
 		/// </summary>
 		public static IGraphemeCriteria And(params IGraphemeCriteria[] criteria) {
-			return And(criteria.AsEnumerable());
-		}
-
-		/// <summary>
-		/// Create an <see cref="IGraphemeCriteria"/> which is satisfied if all of the provided <paramref name="criteria"/> are satisfied (logical AND).
-		/// </summary>
-		public static IGraphemeCriteria And(params IEnumerable<IGraphemeCriteria>[] criteria) {
-			return new ConjunctGraphemeCriteria(criteria.Flatten().ToArray());
+			return new ConjunctGraphemeCriteria(criteria);
 		}
 	}
 }

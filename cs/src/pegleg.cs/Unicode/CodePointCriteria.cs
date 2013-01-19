@@ -76,28 +76,14 @@ namespace pegleg.cs.Unicode {
 		/// Create an <see cref="ICodePointCriteria"/> which is satisfied if any of the provided <paramref name="criteria"/> are satisfied (logical OR).
 		/// </summary>
 		public static ICodePointCriteria Or(params ICodePointCriteria[] criteria) {
-			return Or(criteria.AsEnumerable());
-		}
-
-		/// <summary>
-		/// Create an <see cref="ICodePointCriteria"/> which is satisfied if any of the provided <paramref name="criteria"/> are satisfied (logical OR).
-		/// </summary>
-		public static ICodePointCriteria Or(params IEnumerable<ICodePointCriteria>[] criteria) {
-			return new DisjunctCodePointCriteria(criteria.Flatten().ToArray());
+			return new DisjunctCodePointCriteria(criteria);
 		}
 
 		/// <summary>
 		/// Create an <see cref="ICodePointCriteria"/> which is satisfied if all of the provided <paramref name="criteria"/> are satisfied (logical AND).
 		/// </summary>
 		public static ICodePointCriteria And(params ICodePointCriteria[] criteria) {
-			return And(criteria.AsEnumerable());
-		}
-
-		/// <summary>
-		/// Create an <see cref="ICodePointCriteria"/> which is satisfied if all of the provided <paramref name="criteria"/> are satisfied (logical AND).
-		/// </summary>
-		public static ICodePointCriteria And(params IEnumerable<ICodePointCriteria>[] criteria) {
-			return new ConjunctCodePointCriteria(criteria.Flatten().ToArray());
+			return new ConjunctCodePointCriteria(criteria);
 		}
 	}
 }
