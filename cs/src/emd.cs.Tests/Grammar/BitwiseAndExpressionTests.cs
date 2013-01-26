@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class BitwiseAndExpressionTests {
 		[Fact] public void BitwiseAndExpression_should_match_identifier_and_hex_literal() {
-			var match = EmdGrammar.BitwiseAndExpression.ShouldMatch("@foo & 0x01");
+			var match = EmdGrammar.BitwiseAndExpression.ShouldMatchAllOf("@foo & 0x01");
 
 			match.Product.GetType().Should().Be(typeof(BitwiseAndExpression));
 			match.Product.ShouldBeEquivalentTo(

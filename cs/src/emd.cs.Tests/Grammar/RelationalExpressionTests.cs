@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class RelationalExpressionTests {
 		[Fact] public void RelationalExpression_should_match_numeric_literal_greater_than_or_equal_to_numeric_literal() {
-			var match = EmdGrammar.RelationalExpression.ShouldMatch("42 >= 7");
+			var match = EmdGrammar.RelationalExpression.ShouldMatchAllOf("42 >= 7");
 
 			match.Product.GetType().Should().Be(typeof(GreaterThanOrEqualToExpression));
 			match.Product.ShouldBeEquivalentTo(
@@ -23,7 +23,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void RelationalExpression_should_match_numeric_literal_less_than_or_equal_to_numeric_literal() {
-			var match = EmdGrammar.RelationalExpression.ShouldMatch("42 <= 7");
+			var match = EmdGrammar.RelationalExpression.ShouldMatchAllOf("42 <= 7");
 
 			match.Product.GetType().Should().Be(typeof(LessThanOrEqualToExpression));
 			match.Product.ShouldBeEquivalentTo(
@@ -36,7 +36,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void RelationalExpression_should_match_numeric_literal_greater_than_numeric_literal() {
-			var match = EmdGrammar.RelationalExpression.ShouldMatch("42>7");
+			var match = EmdGrammar.RelationalExpression.ShouldMatchAllOf("42>7");
 
 			match.Product.GetType().Should().Be(typeof(GreaterThanExpression));
 			match.Product.ShouldBeEquivalentTo(
@@ -49,7 +49,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void RelationalExpression_should_match_numeric_literal_less_than_numeric_literal() {
-			var match = EmdGrammar.RelationalExpression.ShouldMatch("42<7");
+			var match = EmdGrammar.RelationalExpression.ShouldMatchAllOf("42<7");
 
 			match.Product.GetType().Should().Be(typeof(LessThanExpression));
 			match.Product.ShouldBeEquivalentTo(
@@ -62,7 +62,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void RelationalExpression_should_match_identifier_instanceof_identifier() {
-			var match = EmdGrammar.RelationalExpression.ShouldMatch(
+			var match = EmdGrammar.RelationalExpression.ShouldMatchAllOf(
 				//0....:....0....:....0....:....0....:....0....:....0....:....0
 				@"@foo instanceof @SomePrototype");
 
@@ -77,7 +77,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void RelationalExpression_should_match_string_literal_in_object_literal() {
-			var match = EmdGrammar.RelationalExpression.ShouldMatch(
+			var match = EmdGrammar.RelationalExpression.ShouldMatchAllOf(
 				//0....:....0....:....0....:....0....:....0....:....0....:....0
 				@"'foo' in { foo: true, bar: false }");
 

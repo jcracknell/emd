@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class LogicalOrExpressionTests {
 		[Fact] public void LogicalOrExpression_should_match_static_member_or_string_literal() {
-			var match = EmdGrammar.LogicalOrExpression.ShouldMatch("@foo.bar || 'baz'");
+			var match = EmdGrammar.LogicalOrExpression.ShouldMatchAllOf("@foo.bar || 'baz'");
 
 			match.Product.GetType().Should().Be(typeof(LogicalOrExpression));
 			match.Product.ShouldBeEquivalentTo(

@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class ShiftExpressionTests {
 		[Fact] public void ShiftExpression_should_match_left_shift_numeric_literals() {
-			var match = EmdGrammar.ShiftExpression.ShouldMatch("1<<1");
+			var match = EmdGrammar.ShiftExpression.ShouldMatchAllOf("1<<1");
 
 			match.Product.GetType().Should().Be(typeof(LeftShiftExpression));
 			match.Product.ShouldBeEquivalentTo(
@@ -23,7 +23,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void ShiftExpression_should_match_right_shift_numeric_literals() {
-			var match = EmdGrammar.ShiftExpression.ShouldMatch("1>>1");
+			var match = EmdGrammar.ShiftExpression.ShouldMatchAllOf("1>>1");
 
 			match.Product.GetType().Should().Be(typeof(RightShiftExpression));
 			match.Product.ShouldBeEquivalentTo(
@@ -36,7 +36,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void ShiftExpression_should_match_unsigned_right_shift_numeric_literals() {
-			var match = EmdGrammar.ShiftExpression.ShouldMatch("42>>>2");
+			var match = EmdGrammar.ShiftExpression.ShouldMatchAllOf("42>>>2");
 
 			match.Product.GetType().Should().Be(typeof(UnsignedRightShiftExpression));
 			match.Product.ShouldBeEquivalentTo(

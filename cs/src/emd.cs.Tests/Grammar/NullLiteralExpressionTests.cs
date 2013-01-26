@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class NullLiteralExpressionTests : GrammarTestFixture {
 		[Fact] public void NullLiteralExpression_matches_null() {
-			var match = EmdGrammar.NullLiteralExpression.ShouldMatch("null");
+			var match = EmdGrammar.NullLiteralExpression.ShouldMatchAllOf("null");
 		}
 
 		[Fact] public void NullLiteralExpression_does_not_match_NULL() {

@@ -15,7 +15,7 @@ namespace emd.cs.Grammar {
 				new IInlineNode[] { new TextNode("text", new SourceRange(2, 4, 1, 2)) },
 				new SourceRange(0, 8, 1, 0));
 
-			var match = EmdGrammar.Strong.ShouldMatch("**text**");
+			var match = EmdGrammar.Strong.ShouldMatchAllOf("**text**");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}

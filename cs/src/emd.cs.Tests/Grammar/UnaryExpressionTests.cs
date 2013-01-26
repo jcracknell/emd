@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class UnaryExpressionTests : GrammarTestFixture {
 		[Fact] public void UnaryExpression_should_match_delete_identifier() {
-			var match = EmdGrammar.UnaryExpression.ShouldMatch("delete @foo");
+			var match = EmdGrammar.UnaryExpression.ShouldMatchAllOf("delete @foo");
 
 			match.Product.ShouldBeEquivalentTo(
 				new DeleteExpression(
@@ -21,7 +21,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_void_call() {
-			var match = EmdGrammar.UnaryExpression.ShouldMatch("void @foo()");
+			var match = EmdGrammar.UnaryExpression.ShouldMatchAllOf("void @foo()");
 
 			match.Product.ShouldBeEquivalentTo(
 				new DeleteExpression(
@@ -36,7 +36,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_typeof_string_literal() {
-			var match = EmdGrammar.UnaryExpression.ShouldMatch("typeof 'foo'");
+			var match = EmdGrammar.UnaryExpression.ShouldMatchAllOf("typeof 'foo'");
 
 			match.Product.ShouldBeEquivalentTo(
 				new TypeofExpression(
@@ -47,7 +47,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_prefix_increment_identifier() {
-			var match = EmdGrammar.UnaryExpression.ShouldMatch("++@foo");
+			var match = EmdGrammar.UnaryExpression.ShouldMatchAllOf("++@foo");
 
 			match.Product.ShouldBeEquivalentTo(
 				new PrefixIncrementExpression(
@@ -58,7 +58,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_prefix_decrement_dynamic_member() {
-			var match = EmdGrammar.UnaryExpression.ShouldMatch("--@foo['bar']");
+			var match = EmdGrammar.UnaryExpression.ShouldMatchAllOf("--@foo['bar']");
 
 			match.Product.ShouldBeEquivalentTo(
 				new PrefixDecrementExpression(
@@ -73,7 +73,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_positive_numeric_literal() {
-			var match = EmdGrammar.UnaryExpression.ShouldMatch("+42");
+			var match = EmdGrammar.UnaryExpression.ShouldMatchAllOf("+42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new PositiveExpression(
@@ -84,7 +84,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_negative_numeric_literal() {
-			var match = EmdGrammar.UnaryExpression.ShouldMatch("-42");
+			var match = EmdGrammar.UnaryExpression.ShouldMatchAllOf("-42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new NegativeExpression(
@@ -95,7 +95,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_bitwise_not_numeric_literal() {
-			var match = EmdGrammar.UnaryExpression.ShouldMatch("~42");
+			var match = EmdGrammar.UnaryExpression.ShouldMatchAllOf("~42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new BitwiseNotExpression(
@@ -106,7 +106,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void UnaryExpression_should_match_logical_not_of_numeric_literal() {
-			var match = EmdGrammar.UnaryExpression.ShouldMatch("!42");
+			var match = EmdGrammar.UnaryExpression.ShouldMatchAllOf("!42");
 
 			match.Product.ShouldBeEquivalentTo(
 				new LogicalNotExpression(

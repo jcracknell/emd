@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class LineBreakTests : GrammarTestFixture {
 		[Fact] public void LineBreak_should_match_symbol_followed_by_block_text() {
-			var match = EmdGrammar.LineBreak.ShouldMatch(
+			var match = EmdGrammar.LineBreak.ShouldMatchSomeOf(
 				/* block text */"\\\n",
 				"block text"
 			);
@@ -18,20 +18,24 @@ namespace emd.cs.Grammar {
 			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,2,1,0)));
 		}
 
-		[Fact] public void LineBreak_should_match_at_end_of_input() {
-			var match = EmdGrammar.LineBreak.ShouldMatch("\\");
-
-			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,1,1,0)));
+		[Fact] public void LineBreak_should_not_match_at_end_of_input() {
+			EmdGrammar.LineBreak.ShouldNotMatch("\\");
 		}
 
-		[Fact] public void LineBreak_should_match_no_following_content() {
-			var match = EmdGrammar.LineBreak.ShouldMatch("\\\n");
+		[Fact] public void LineBreak_should_not_match_at_end_of_input_with_newline() {
+			EmdGrammar.LineBreak.ShouldNotMatch("\\\n");
+		}
 
-			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,1,1,0)));
+		[Fact] public void LineBreak_should_not_match_at_end_of_block() {
+			EmdGrammar.LineBreak.ShouldNotMatch(
+				"\\\n",
+				"\n",
+				"next block"
+			);
 		}
 
 		[Fact] public void LineBreak_should_match_spaces_on_following_line() {
-			var match = EmdGrammar.LineBreak.ShouldMatch(
+			var match = EmdGrammar.LineBreak.ShouldMatchSomeOf(
 				/* block text */"\\\n",
 				"   block text"
 			);
@@ -40,7 +44,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void LineBreak_should_match_with_spaces_preceding_newline() {
-			var match = EmdGrammar.LineBreak.ShouldMatch(
+			var match = EmdGrammar.LineBreak.ShouldMatchSomeOf(
 				/* block text */"\\  \n",
 				"block text"
 			);
@@ -53,7 +57,7 @@ namespace emd.cs.Grammar {
 			// definition, and it would be very difficult to prevent (as it would be a combination of
 			// linebreaks and spaces)
 
-			var match = EmdGrammar.LineBreak.ShouldMatch(
+			var match = EmdGrammar.LineBreak.ShouldMatchSomeOf(
 				/* block text */"\n",
 				"\\\n",
 				"block text"
@@ -63,28 +67,33 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void LineBreak_should_match_following_single_line_comment() {
-			var match = EmdGrammar.LineBreak.ShouldMatch(
+			var match = EmdGrammar.LineBreak.ShouldMatchSomeOf(
 				"// comment\n",
-				"\\\n"
+				"\\\n",
+				"block continues"
+			);
+
+			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,13,1,0)));
+		}
+
+		[Fact] public void LineBreak_should_match_following_multiple_single_line_comments() {
+			var match = EmdGrammar.LineBreak.ShouldMatchSomeOf(
+				"// 1\n",
+				"// 2\n",
+				"\\\n",
+				"block continues"
 			);
 
 			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,12,1,0)));
 		}
 
-		[Fact] public void LineBreak_should_match_following_multiple_single_line_comments() {
-			var match = EmdGrammar.LineBreak.ShouldMatch(
-				"// 1\n",
-				"// 2\n",
-				"\\\n"
+		[Fact] public void LineBreak_should_match_following_multi_line_comment() {
+			var match = EmdGrammar.LineBreak.ShouldMatchSomeOf(
+				"/* comment */\\\n",
+				"text"
 			);
 
-			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,11,1,0)));
-		}
-
-		[Fact] public void LineBreak_should_match_following_multi_line_comment() {
-			var match = EmdGrammar.LineBreak.ShouldMatch("/* comment */\\\n");
-
-			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,14,1,0)));
+			match.Product.ShouldBeEquivalentTo(new LineBreakNode(new SourceRange(0,15,1,0)));
 		}
 
 		[Fact] public void LineBreak_should_not_match_with_block_text_on_same_line() {

@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class BitwiseXOrExpressionTests {
 		[Fact] public void BitwiseXOrExpression_should_match_identifier_xor_numeric_literal() {
-			var match = EmdGrammar.BitwiseXOrExpression.ShouldMatch("@foo ^ 4");
+			var match = EmdGrammar.BitwiseXOrExpression.ShouldMatchAllOf("@foo ^ 4");
 
 			match.Product.GetType().Should().Be(typeof(BitwiseXOrExpression));
 			match.Product.ShouldBeEquivalentTo(

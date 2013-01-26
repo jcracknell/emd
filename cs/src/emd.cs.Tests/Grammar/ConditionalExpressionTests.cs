@@ -10,7 +10,7 @@ using emd.cs.Expressions;
 namespace emd.cs.Grammar {
 	public class ConditionalExpressionTests {
 		[Fact] public void ConditionalExpression_should_match_identifier_numeric_literal_numeric_literal() {
-			var match = EmdGrammar.ConditionalExpression.ShouldMatch("@foo ? 1 : 2");
+			var match = EmdGrammar.ConditionalExpression.ShouldMatchAllOf("@foo ? 1 : 2");
 
 			match.Product.GetType().Should().Be(typeof(ConditionalExpression));
 			match.Product.ShouldBeEquivalentTo(
@@ -24,7 +24,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void ConditionalExpression_should_match_nested_conditional_expression() {
-			var match = EmdGrammar.ConditionalExpression.ShouldMatch(
+			var match = EmdGrammar.ConditionalExpression.ShouldMatchAllOf(
 				"@foo ? 'bar' :\n",
 				"@fiz ? 'buz' :\n",
 				"'bop'"

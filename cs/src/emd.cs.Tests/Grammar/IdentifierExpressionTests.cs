@@ -8,13 +8,13 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class IdentifierExpressionTests : GrammarTestFixture {
 		[Fact] public void IdentifierExpression_matches_ascii() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatch("foo");
+			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("foo");
 
 			match.Product.Name.Should().Be("foo");
 		}
 
 		[Fact] public void IdentifierExpression_matches_ascii_and_numbers() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatch("foo12");
+			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("foo12");
 
 			match.Product.Name.Should().Be("foo12");
 		}
@@ -24,19 +24,19 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void IdentifierExpression_matches_dollar_sign() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatch("$");
+			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("$");
 
 			match.Product.Name.Should().Be("$");
 		}
 
 		[Fact] public void IdentifierExpression_matches_underscore() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatch("_");
+			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("_");
 
 			match.Product.Name.Should().Be("_");
 		}
 
 		[Fact] public void IdentifierExpression_should_match_unicode_escape_sequence() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatch(@"\u0061");
+			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf(@"\u0061");
 
 			match.Product.Name.Should().Be("a");
 		}
@@ -46,13 +46,13 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void IdentifierExpression_should_match_true_keyword_followed_by_identifier_part() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatch("trueish");
+			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("trueish");
 
 			match.Product.Name.Should().Be("trueish");
 		}
 
 		[Fact] public void IdentifierExpression_matches_unicode_lowercase_omega() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatch("ω");
+			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("ω");
 		}
 	}
 }

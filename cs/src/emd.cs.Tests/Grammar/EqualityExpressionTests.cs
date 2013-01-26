@@ -10,7 +10,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class EqualityExpressionTests {
 		[Fact] public void EqualityExpression_should_match_relational_expression_equals_identifier() {
-			var match = EmdGrammar.EqualityExpression.ShouldMatch("42 >= @a == @foo");
+			var match = EmdGrammar.EqualityExpression.ShouldMatchAllOf("42 >= @a == @foo");
 
 			match.Product.GetType().Should().Be(typeof(EqualsExpression));
 			match.Product.ShouldBeEquivalentTo(
@@ -27,7 +27,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void EqualityExpression_should_match_numeric_literal_not_equals_identifier() {
-			var match = EmdGrammar.EqualityExpression.ShouldMatch("0 != @bar");
+			var match = EmdGrammar.EqualityExpression.ShouldMatchAllOf("0 != @bar");
 
 			match.Product.GetType().Should().Be(typeof(NotEqualsExpression));
 			match.Product.ShouldBeEquivalentTo(
@@ -40,7 +40,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void EqualityExpression_should_match_boolean_literal_strict_equals_identifier() {
-			var match = EmdGrammar.EqualityExpression.ShouldMatch("true === @foo");
+			var match = EmdGrammar.EqualityExpression.ShouldMatchAllOf("true === @foo");
 
 			match.Product.GetType().Should().Be(typeof(StrictEqualsExpression));
 			match.Product.ShouldBeEquivalentTo(
@@ -53,7 +53,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void EqualityExpression_should_match_null_literal_strict_not_equals_bla() {
-			var match = EmdGrammar.EqualityExpression.ShouldMatch(
+			var match = EmdGrammar.EqualityExpression.ShouldMatchAllOf(
 				//0....:....0....:....0....:....0....:....0....:....0....:....0
 				@"null !== @foo.bar()");
 

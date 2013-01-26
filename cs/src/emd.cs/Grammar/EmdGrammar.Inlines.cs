@@ -161,9 +161,8 @@ namespace emd.cs.Grammar {
 					Optional(Reference(() => BlockWhitespaceOrComments)),
 					Literal("\\"),
 					Ahead(Reference(() => BlankLine)),
-					Optional(Reference(() => BlockWhitespaceOrComments)),
+					Reference(() => BlockWhitespaceOrComments),
 					match => new LineBreakNode(match.SourceRange)));
-
 
 		#region Code
 

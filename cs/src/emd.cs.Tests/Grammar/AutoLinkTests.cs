@@ -18,7 +18,7 @@ namespace emd.cs.Grammar
 				new IExpression[0],
 				new SourceRange(0, 23, 1, 0));
 
-			var match = EmdGrammar.AutoLink.ShouldMatch(
+			var match = EmdGrammar.AutoLink.ShouldMatchAllOf(
 					//0....:....0....:....0....:....0....:....0....:....0....:....0
 					@"<http://www.google.com>");
 
@@ -33,7 +33,7 @@ namespace emd.cs.Grammar
 				new IExpression[] { new StringLiteralExpression("title", new SourceRange(22, 7, 1, 22)) },
 				new SourceRange(0, 30, 1, 0));
 
-			var match = EmdGrammar.AutoLink.ShouldMatch(
+			var match = EmdGrammar.AutoLink.ShouldMatchAllOf(
 				//0....:....0....:....0....:....0....:....0....:....0....:....0
 					@"<http://slashdot.org>('title')");
 

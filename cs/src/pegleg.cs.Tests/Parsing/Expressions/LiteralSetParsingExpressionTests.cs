@@ -10,7 +10,7 @@ namespace pegleg.cs.Parsing.Expressions {
 		[Fact] public void NonCapturingLiteralSetParsingExpression_Matches_should_be_greedy() {
 			var parsingExpression = new NonCapturingLiteralSetParsingExpression(new string[] { "in", "interface" });
 
-			var match = parsingExpression.ShouldMatch("interface");
+			var match = parsingExpression.ShouldMatchAllOf("interface");
 			match.Length.Should().Be("interface".Length);
 		}
 	}

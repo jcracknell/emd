@@ -10,13 +10,13 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class SpaceTests : GrammarTestFixture {
 		[Fact] public void Space_should_match_space() {
-			var match = EmdGrammar.Space.ShouldMatch(" block text");
+			var match = EmdGrammar.Space.ShouldMatchSomeOf(" block text");
 
 			match.Product.ShouldBeEquivalentTo(new SpaceNode(new SourceRange(0,1,1,0)));
 		}
 
 		[Fact] public void Space_should_match_newline() {
-			var match = EmdGrammar.Space.ShouldMatch(
+			var match = EmdGrammar.Space.ShouldMatchSomeOf(
 				/* block text */"\n",
 				"block continuing on next line"
 			);
@@ -25,7 +25,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Space_should_match_spaces_and_newlines() {
-			var match = EmdGrammar.Space.ShouldMatch(
+			var match = EmdGrammar.Space.ShouldMatchSomeOf(
 				/* block text */"  \n",
 				"   block continues with leading spaces"
 			);
@@ -66,7 +66,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Space_should_match_single_line_comment() {
-			var match = EmdGrammar.Space.ShouldMatch(
+			var match = EmdGrammar.Space.ShouldMatchSomeOf(
 				"// comment\n",
 				"block continues"
 			);
@@ -83,7 +83,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Space_should_match_multi_line_comment() {
-			var match = EmdGrammar.Space.ShouldMatch("/* comment */text");
+			var match = EmdGrammar.Space.ShouldMatchSomeOf("/* comment */text");
 
 			match.Product.ShouldBeEquivalentTo(new SpaceNode(new SourceRange(0,13,1,0)));
 		}

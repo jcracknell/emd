@@ -9,11 +9,11 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class SingleLineCommentTests : GrammarTestFixture {
 		[Fact] public void SingleLineComment_matches_base_case() {
-			EmdGrammar.SingleLineComment.ShouldMatch("// text");
+			EmdGrammar.SingleLineComment.ShouldMatchAllOf("// text");
 		}
 
 		[Fact] public void SingleLineComment_should_match_with_no_comment_text() {
-			EmdGrammar.SingleLineComment.ShouldMatch("//");
+			EmdGrammar.SingleLineComment.ShouldMatchAllOf("//");
 		}
 
 		[Fact] public void SingleLineComment_should_not_match_trailing_newline() {

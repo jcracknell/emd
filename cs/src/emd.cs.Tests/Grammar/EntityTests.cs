@@ -12,7 +12,7 @@ namespace emd.cs.Grammar
 {
 	public class EntityTests : GrammarTestFixture {
 		[Fact] public void Entity_matches_decimal_entity() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\#233;");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\#233;");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u00e9", new SourceRange(0, 6, 1, 0))
@@ -20,7 +20,7 @@ namespace emd.cs.Grammar
 		}
 
 		[Fact] public void Entity_matches_u_hexadecimal_entity() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\uE9");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\uE9");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u00e9", new SourceRange(0,4,1,0))
@@ -28,7 +28,7 @@ namespace emd.cs.Grammar
 		}
 
 		[Fact] public void Entity_matches_u_hexadecimal_entity_with_optional_leading_hash() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\#uE9");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\#uE9");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u00e9", new SourceRange(0,5,1,0))
@@ -36,7 +36,7 @@ namespace emd.cs.Grammar
 		}
 
 		[Fact] public void Entity_matches_u_hexadecimal_entity_with_optional_trailing_semicolon() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\uE9;");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\uE9;");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u00e9", new SourceRange(0,5,1,0))
@@ -44,7 +44,7 @@ namespace emd.cs.Grammar
 		}
 
 		[Fact] public void Entity_matches_x_hexadecimal_entity() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\xE9");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\xE9");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u00e9", new SourceRange(0,4,1,0))
@@ -52,7 +52,7 @@ namespace emd.cs.Grammar
 		}
 
 		[Fact] public void Entity_matches_x_hexadecimal_entity_with_optional_leading_hash() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\#xE9");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\#xE9");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u00e9", new SourceRange(0,5,1,0))
@@ -60,7 +60,7 @@ namespace emd.cs.Grammar
 		}
 
 		[Fact] public void Entity_matches_x_hexadecimal_entity_with_optional_trailing_semicolon() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\xE9;");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\xE9;");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u00e9", new SourceRange(0,5,1,0))
@@ -68,7 +68,7 @@ namespace emd.cs.Grammar
 		}
 
 		[Fact] public void Entity_matches_named_entity() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\eacute");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\eacute");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u00e9", new SourceRange(0,7,1,0))
@@ -76,7 +76,7 @@ namespace emd.cs.Grammar
 		}
 
 		[Fact] public void Entity_matches_named_entity_with_optional_trailing_semicolon() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\eacute;");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\eacute;");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u00e9", new SourceRange(0,8,1,0))
@@ -84,7 +84,7 @@ namespace emd.cs.Grammar
 		}
 
 		[Fact] public void Entity_matches_named_entity_beginning_with_u() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\uring");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\uring");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u016f", new SourceRange(0,6,1,0))
@@ -92,7 +92,7 @@ namespace emd.cs.Grammar
 		}
 
 		[Fact] public void Entity_matches_named_entity_beginning_with_x() {
-			var match = EmdGrammar.Entity.ShouldMatch(@"\xi");
+			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\xi");
 
 			match.Product.ShouldBeEquivalentTo(
 				new EntityNode("\u03be", new SourceRange(0,3,1,0))

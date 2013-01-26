@@ -9,7 +9,7 @@ using Xunit;
 namespace emd.cs.Grammar {
 	public class OrderedListTests : GrammarTestFixture {
 		[Fact] public void EnumeratorishAhead_matches_decimal_dot() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("42. ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("42. ");
 		}
 
 		[Fact] public void EnumeratorishAhead_should_not_match_decimal_dot_with_no_trailing_space() {
@@ -17,7 +17,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Enumerator_matches_decimal_dot() {
-			EmdGrammar.Enumerator.ShouldMatch("42. ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("42. ");
 		}
 
 		[Fact] public void Enumerator_should_not_match_decimal_dot_with_no_trailing_space() {
@@ -25,15 +25,15 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_dot_with_value() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("42@43. ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("42@43. ");
 		}
 
 		[Fact] public void Enumerator_matches_decimal_dot_with_value() {
-			EmdGrammar.Enumerator.ShouldMatch("42@43. ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("42@43. ");
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_lower_roman_dot() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("ix. ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("ix. ");
 		}
 
 		[Fact] public void EnumeratorishAhead_should_not_match_lower_roman_upper_roman_dot() {
@@ -41,7 +41,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Enumerator_matches_lower_roman_dot() {
-			EmdGrammar.Enumerator.ShouldMatch("ix. ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("ix. ");
 		}
 
 		[Fact] public void Enumerator_should_not_match_lower_roman_upper_roman_dot() {
@@ -49,7 +49,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_upper_roman_dot() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("XVIII. ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("XVIII. ");
 		}
 
 		[Fact] public void EnumeratorishAhead_should_not_match_upper_roman_lower_roman_dot() {
@@ -57,7 +57,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Enumerator_matches_upper_roman_dot() {
-			EmdGrammar.Enumerator.ShouldMatch("XVIII. ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("XVIII. ");
 		}
 
 		[Fact] public void Enumerator_should_not_match_upper_roman_lower_roman_dot() {
@@ -65,7 +65,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_lower_alpha_dot() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("abc. ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("abc. ");
 		}
 
 		[Fact] public void EnumeratorishAhead_should_not_match_lower_alpha_upper_alpha_dot() {
@@ -73,7 +73,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Enumerator_matches_lower_alpha_dot() {
-			EmdGrammar.Enumerator.ShouldMatch("abc. ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("abc. ");
 		}
 
 		[Fact] public void Enumerator_should_not_match_lower_alpha_upper_alpha_dot() {
@@ -81,7 +81,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_upper_alpha_dot() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("ABC. ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("ABC. ");
 		}
 
 		[Fact] public void EnumeratorishAhead_should_not_match_upper_alpha_lower_alpha_dot() {
@@ -89,7 +89,7 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void Enumerator_matches_upper_alpha_dot() {
-			EmdGrammar.Enumerator.ShouldMatch("ABC. ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("ABC. ");
 		}
 
 		[Fact] public void Enumerator_should_not_match_upper_alpha_lower_alpha_dot() {
@@ -97,59 +97,59 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_dash() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("42- ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("42- ");
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_dash_with_optional_space() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("42 - ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("42 - ");
 		}
 
 		[Fact] public void Enumerator_matches_decimal_dash() {
-			EmdGrammar.Enumerator.ShouldMatch("42- ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("42- ");
 		}
 
 		[Fact] public void Enumerator_matches_decimal_dash_with_optional_space() {
-			EmdGrammar.Enumerator.ShouldMatch("42 - ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("42 - ");
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_parenthesis() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("42) ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("42) ");
 		}
 
 		[Fact] public void Enumerator_matches_decimal_parenthesis() {
-			EmdGrammar.Enumerator.ShouldMatch("42) ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("42) ");
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_alpha_parethesis_with_value() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("a@42) ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("a@42) ");
 		}
 
 		[Fact] public void Enumerator_matches_alpha_parenthesis_with_value() {
-			EmdGrammar.Enumerator.ShouldMatch("a@42) ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("a@42) ");
 		}
 
 		[Fact] public void EnumeratorishAheah_matches_decimal_parentheses() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("(42) ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("(42) ");
 		}
 
 		[Fact] public void Enumerator_matches_decimal_parentheses() {
-			EmdGrammar.Enumerator.ShouldMatch("(42) ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("(42) ");
 		}
 
 		[Fact] public void EnumeratorishAhead_matches_decimal_bracketed() {
-			EmdGrammar.EnumeratorishAhead.ShouldMatch("[42] ");
+			EmdGrammar.EnumeratorishAhead.ShouldMatchAllOf("[42] ");
 		}
 
 		[Fact] public void Enumerator_matches_decimal_bracketed() {
-			EmdGrammar.Enumerator.ShouldMatch("[42] ");
+			EmdGrammar.Enumerator.ShouldMatchAllOf("[42] ");
 		}
 
 		[Fact] public void EnumeratorValue_matches_base_case() {
-			EmdGrammar.EnumeratorValue.ShouldMatch("@123");
+			EmdGrammar.EnumeratorValue.ShouldMatchAllOf("@123");
 		}
 
 		[Fact] public void EnumeratorValue_matches_0() {
-			EmdGrammar.EnumeratorValue.ShouldMatch("@0");
+			EmdGrammar.EnumeratorValue.ShouldMatchAllOf("@0");
 		}
 	}
 }
