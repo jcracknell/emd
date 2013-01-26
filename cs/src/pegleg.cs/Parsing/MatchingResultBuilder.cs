@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public class MatchBuilder<TProduct> {
+	public class MatchingResultBuilder<TProduct> {
 		private readonly MatchingContext _matchingContext;
 		private readonly IParsingExpression<TProduct> _expression;
 		private readonly int _index;
@@ -12,7 +12,7 @@ namespace pegleg.cs.Parsing {
 		private readonly int _sourceLine;
 		private readonly int _sourceLineIndex;
 
-		public MatchBuilder(MatchingContext context, IParsingExpression<TProduct> expression) {
+		public MatchingResultBuilder(MatchingContext context, IParsingExpression<TProduct> expression) {
 			_matchingContext = context;
 			_expression = expression;
 			_index = context.Index;

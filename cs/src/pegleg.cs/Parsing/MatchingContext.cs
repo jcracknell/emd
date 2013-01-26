@@ -191,8 +191,8 @@ namespace pegleg.cs.Parsing {
 			_sourceLineIndex = clone._sourceLineIndex;
 		}
 
-		public MatchBuilder<TProduct> GetMatchBuilderFor<TProduct>(IParsingExpression<TProduct> expression) {
-			return new MatchBuilder<TProduct>(this, expression);
+		public MatchingResultBuilder<TProduct> GetMatchBuilderFor<TProduct>(IParsingExpression<TProduct> expression) {
+			return new MatchingResultBuilder<TProduct>(this, expression);
 		}
 
 		public bool ConsumesCachedResultFor<TProduct>(IParsingExpression<TProduct> expression, out IMatchingResult<TProduct> cachedResult) {
