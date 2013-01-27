@@ -92,7 +92,7 @@
     <Compile Include="Grammar\StrongTests.cs" />
     <Compile Include="Grammar\SymbolTests.cs" />
     <Compile Include="Grammar\UnaryExpressionTests.cs" />
-    <Compile Include="Grammar\UriExpressionTests.cs" />
+    <Compile Include="Grammar\IriLiteralExpressionTests.cs" />
     <Compile Include="Utils\JavaScriptUtilsTests.cs" />
     <Compile Include="Utils\NumeralUtilTests.cs" />
     <Compile Include="Grammar\OrderedListTests.cs" />

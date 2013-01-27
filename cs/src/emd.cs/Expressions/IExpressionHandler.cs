@@ -52,7 +52,6 @@ namespace emd.cs.Expressions {
 		void Handle(SubtractionExpression expression);
 		void Handle(TypeofExpression expression);
 		void Handle(UnsignedRightShiftExpression expression);
-		void Handle(UriLiteralExpression expression);
 		void Handle(VoidExpression expression);
 	}
 
@@ -103,7 +102,6 @@ namespace emd.cs.Expressions {
 		T Handle(SubtractionExpression expression);
 		T Handle(TypeofExpression expression);
 		T Handle(UnsignedRightShiftExpression expression);
-		T Handle(UriLiteralExpression expression);
 		T Handle(VoidExpression expression);
 	}
 }

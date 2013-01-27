@@ -113,12 +113,6 @@ namespace emd.cs.Expressions.Translation {
 			_writer.Write("'");
 		}
 
-		public void Handle(UriLiteralExpression expression) {
-			_writer.Write("'");
-			_writer.Write(JavaScriptUtils.StringEncode(expression.Value));
-			_writer.Write("'");
-		}
-
 		public void Handle(DeleteExpression expression) {
 			_writer.Write("delete ");
 			expression.Body.HandleWith(this);

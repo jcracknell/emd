@@ -484,7 +484,7 @@ namespace emd.cs.Grammar {
 					Literal(":"),
 					Reference(() => SpaceChars),
 					ChoiceUnordered(
-						Reference(() => UriLiteralExpression, match => match.Product.InEnumerable()),
+						Reference(() => IriLiteralExpression, match => match.Product.InEnumerable()),
 						Reference(() => ArgumentList)),
 					match => new ReferenceNode(match.Product.Of2, match.Product.Of6.ToArray(), match.SourceRange)));
 

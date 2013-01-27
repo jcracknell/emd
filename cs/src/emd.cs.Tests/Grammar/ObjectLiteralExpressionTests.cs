@@ -81,14 +81,14 @@ namespace emd.cs.Grammar {
 		}
 
 		[Fact] public void ObjectLiteralExpression_should_match_object_literal_with_trailing_comma() {
-			var match = EmdGrammar.ObjectLiteralExpression.ShouldMatchAllOf("{a:'a',}");
+			var match = EmdGrammar.ObjectLiteralExpression.ShouldMatchAllOf("{a: 'a',}");
 
 			match.Product.ShouldBeEquivalentTo(
 				new ObjectLiteralExpression(
 					new PropertyAssignment[] {
-						new PropertyAssignment("a", new StringLiteralExpression("a", new SourceRange(3,3,1,3)), new SourceRange(1,5,1,1))
+						new PropertyAssignment("a", new StringLiteralExpression("a", new SourceRange(4,3,1,4)), new SourceRange(1,6,1,1))
 					},
-					new SourceRange(0,8,1,0)
+					new SourceRange(0,9,1,0)
 				)
 			);
 		}

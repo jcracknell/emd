@@ -494,10 +494,6 @@ namespace emd.cs.Conversion {
 				WriteBinaryExpression(expression);
 			}
 
-			public void Handle(UriLiteralExpression expression) {
-				WriteAtomic(expression, expression.Value);
-			}
-
 			public void Handle(VoidExpression expression) {
 				WriteUnaryExpression(expression);
 			}

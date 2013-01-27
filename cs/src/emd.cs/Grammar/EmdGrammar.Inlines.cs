@@ -56,7 +56,7 @@ namespace emd.cs.Grammar {
 				Sequence(
 					Literal("<"),
 					Reference(() => SpaceChars),
-					Reference(() => UriLiteral),
+					Reference(() => IriLiteral),
 					Reference(() => SpaceChars),
 					Literal(">"),
 					Optional(

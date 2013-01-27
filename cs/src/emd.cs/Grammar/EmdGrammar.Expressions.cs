@@ -441,24 +441,26 @@ namespace emd.cs.Grammar {
 		protected static readonly IParsingExpression<Func<IExpression, IExpression>>
 		instanceOfExpressionPart =
 			Sequence(
-				Reference(() => InstanceOfKeyword),
+				Literal("instanceof"),
+				NotAhead(Reference(() => IdentifierPart)),
 				Reference(() => ExpressionWhitespace),
 				Reference(() => ShiftExpression),
 				match => {
 					Func<IExpression, IExpression> asm = left =>
-						new InstanceOfExpression(left, match.Product.Of3, left.SourceRange.Through(match.Product.Of3.SourceRange));
+						new InstanceOfExpression(left, match.Product.Of4, left.SourceRange.Through(match.Product.Of4.SourceRange));
 					return asm;
 				});
 
 		protected static readonly IParsingExpression<Func<IExpression, IExpression>>
 		inExpressionPart =
 			Sequence(
-				Reference(() => InKeyword),
+				Literal("in"),
+				NotAhead(Reference(() => IdentifierPart)),
 				Reference(() => ExpressionWhitespace),
 				Reference(() => ShiftExpression),
 				match => {
 					Func<IExpression, IExpression> asm = left =>
-						new InExpression(left, match.Product.Of3, left.SourceRange.Through(match.Product.Of3.SourceRange));
+						new InExpression(left, match.Product.Of4, left.SourceRange.Through(match.Product.Of4.SourceRange));
 					return asm;
 				});
 
@@ -620,7 +622,7 @@ namespace emd.cs.Grammar {
 		private static readonly IParsingExpression<DeleteExpression>
 		deleteExpression = 
 			Sequence(
-				Reference(() => DeleteKeyword),
+				Literal("delete"),
 				NotAhead(Reference(() => IdentifierPart)),
 				Reference(() => ExpressionWhitespace),
 				Reference(() => UnaryExpression),
@@ -629,7 +631,7 @@ namespace emd.cs.Grammar {
 		private static readonly IParsingExpression<VoidExpression>
 		voidExpression =
 			Sequence(
-				Reference(() => VoidKeyword),
+				Literal("void"),
 				NotAhead(Reference(() => IdentifierPart)),
 				Reference(() => ExpressionWhitespace),
 				Reference(() => UnaryExpression),
@@ -638,7 +640,7 @@ namespace emd.cs.Grammar {
 		private static readonly IParsingExpression<TypeofExpression>
 		typeofExpression =
 			Sequence(
-				Reference(() => TypeOfKeyword),
+				Literal("typeof"),
 				NotAhead(Reference(() => IdentifierPart)),
 				Reference(() => ExpressionWhitespace),
 				Reference(() => UnaryExpression),
@@ -888,7 +890,10 @@ namespace emd.cs.Grammar {
 		Identifier =
 			Named(() => Identifier,
 				Sequence(
-					NotAhead(Reference(() => ExpressionKeyword)),
+					NotAhead(
+						Sequence(
+							Reference(() => Keyword),
+							NotAhead(Reference(() => IdentifierPart)))),
 					identifierExpressionStart,
 					AtLeast(0, Reference(() => IdentifierPart)),
 					match => JavaScriptUtils.IdentifierDecode(match.String)));
@@ -965,9 +970,9 @@ namespace emd.cs.Grammar {
 		objectPropertyAssignment =
 			Sequence(
 				ChoiceUnordered(
-					Reference(() => Identifier),
 					Reference(() => StringLiteral),
-					Reference(() => NumericLiteral, match => match.Product.ToString())),
+					Reference(() => NumericLiteral, match => match.Product.ToString()),
+					Reference(() => Identifier)),
 				Reference(() => ExpressionWhitespace),
 				Literal(":"),
 				Reference(() => ExpressionWhitespace),
@@ -1031,7 +1036,7 @@ namespace emd.cs.Grammar {
 					Reference(() => BooleanLiteralExpression),
 					Reference(() => NumericLiteralExpression),
 					Reference(() => StringLiteralExpression),
-					Reference(() => UriLiteralExpression)));
+					Reference(() => IriLiteralExpression)));
 
 		#region NullLiteralExpression
 
@@ -1209,115 +1214,21 @@ namespace emd.cs.Grammar {
 
 		#endregion
 
-		#region UriLiteralExpression
+		#region IriLiteralExpression
 
-		public static readonly IParsingExpression<object>
-		UriExpressionPart = Named(() => UriExpressionPart,
-				ChoiceOrdered(
-					Reference(() => uriExpressionRegularPart),
-					Reference(() => uriExpressionParenthesizedPart)));
-
-		private static readonly IParsingExpression<IEnumerable<Nil>>
-		uriExpressionRegularPart =
-			AtLeast(1, 
-				ChoiceUnordered(
-					GraphemeIn(
-						englishAlphaCharValues,
-						digitCharValues,
-						new char[] { '/', '?', ':', '@', '&', '=', '+', '$', '-', '_', '!', '~', '*', '\'', '.', ';' }),
-					Sequence(
-						Literal("%"),
-						Exactly(2, Reference(() => HexDigit)))));
-
-		private static readonly IParsingExpression<Nil>
-		uriExpressionParenthesizedPart =
-			Sequence(
-				Literal("("),
-				AtLeast(0, Reference(() => UriExpressionPart)),
-				Literal(")"));
-
-		public static readonly IParsingExpression<UriLiteralExpression>
-		UriLiteralExpression =
-			Named(() => UriLiteralExpression,
-				Reference(() => UriLiteral, match => new UriLiteralExpression(match.Product, match.SourceRange)));
-
-		public static readonly IParsingExpression<string>
-		UriLiteral =
-			Named(() => UriLiteral,
-				AtLeast(1,
-					ChoiceUnordered(
-						Reference(() => uriExpressionRegularPart),
-						Reference(() => uriExpressionParenthesizedPart)),
-					match => match.String));
+		
 
 		#endregion
 
-		#region ExpressionKeyword
-
 		public static readonly IParsingExpression<Nil>
-		DeleteKeyword =
-			Sequence(Literal("delete"), NotAhead(Reference(() => IdentifierPart)));
-
-		public static readonly IParsingExpression<Nil>
-		InKeyword =
-			Sequence(Literal("in"), NotAhead(Reference(() => IdentifierPart)));
-
-		public static readonly IParsingExpression<Nil>
-		InstanceOfKeyword =
-			Sequence(Literal("instanceof"), NotAhead(Reference(() => IdentifierPart)));
-
-		public static readonly IParsingExpression<Nil>
-		TypeOfKeyword =
-			Sequence(Literal("typeof"), NotAhead(Reference(() => IdentifierPart)));
-
-		public static readonly IParsingExpression<Nil>
-		VoidKeyword =
-			Sequence(Literal("void"), NotAhead(Reference(() => IdentifierPart)));
-
-		public static readonly IParsingExpression<Nil>
-		ExpressionKeyword =
-			Named(() => ExpressionKeyword,
-				Sequence(
-					LiteralIn(
-						"break",
-						"case",
-						"catch",
-						"class",
-						"const",
-						"continue",
-						"debugger",
-						"default",
-						"delete",
-						"do",
-						"else",
-						"enum",
-						"export",
-						"extends",
-						"false",
-						"finally",
-						"for",
-						"function",
-						"if",
-						"import",
-						"instanceof",
-						"in",
-						"new",
-						"null",
-						"return",
-						"super",
-						"switch",
-						"this",
-						"throw",
-						"true",
-						"try",
-						"typeof",
-						"var",
-						"void",
-						"while",
-						"with"),
-					NotAhead(Reference(() => IdentifierPart))));
-
-			#endregion
+		Keyword = 
+			LiteralIn(
+				"break", "case", "catch", "class", "const", "continue",
+				"debugger", "default", "delete", "do", "else", "enum",
+				"export", "extends", "false", "finally", "for", "function",
+				"if", "import", "instanceof", "in", "new", "null",
+				"return", "super", "switch", "this", "throw", "true",
+				"try", "typeof", "var", "void", "while", "with");
 
 		public static readonly IParsingExpression<IEnumerable<Nil>>
 		ExpressionWhitespaceNoNewline =

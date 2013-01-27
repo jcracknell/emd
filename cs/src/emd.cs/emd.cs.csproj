@@ -97,6 +97,7 @@
     <Compile Include="Expressions\VoidExpression.cs" />
     <Compile Include="Grammar\BinaryOperatorDefinition.cs" />
     <Compile Include="Grammar\BlockLineInfo.cs" />
+    <Compile Include="Grammar\EmdGrammar.Expressions.IriLiteral.cs" />
     <Compile Include="Grammar\EnumeratorCounterStyleDefinition.cs" />
     <Compile Include="Grammar\EnumeratorCounterStyleInfo.cs" />
     <Compile Include="Grammar\EnumeratorInfo.cs" />
@@ -117,7 +118,6 @@
     <Compile Include="Expressions\StaticPropertyExpression.cs" />
     <Compile Include="Expressions\NullLiteralExpression.cs" />
     <Compile Include="Expressions\NumericLiteralExpression.cs" />
-    <Compile Include="Expressions\UriLiteralExpression.cs" />
     <Compile Include="Expressions\IExpressionHandler.cs" />
     <Compile Include="Nodes\CodeNode.cs" />
     <Compile Include="Nodes\DefinitionListDefinitionNode.cs" />
