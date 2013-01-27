@@ -72,11 +72,23 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<LinkNode>
 		Link =
 			Named(() => Link,
-				Sequence(
-					Reference(() => Label),
-					Optional(Reference(() => ReferenceLabel)),
-					Optional(Reference(() => ArgumentList, match => match.Product.ToArray())),
-					match => new LinkNode(match.Product.Of1.ToArray(), match.Product.Of2, match.Product.Of3, match.SourceRange)));
+				TLink(Reference(() => Inline)));
+
+		public static IParsingExpression<LinkNode> TLink(IParsingExpression<IInlineNode> recurse) {
+			return Sequence(
+				TLabel(recurse),
+				Optional(Reference(() => ReferenceLabel)),
+				Optional(Reference(() => ArgumentList, match => match.Product.ToArray())),
+				match => new LinkNode(match.Product.Of1.ToArray(), match.Product.Of2, match.Product.Of3, match.SourceRange));
+		}
+
+		public static IParsingExpression<IEnumerable<IInlineNode>> TLabel(IParsingExpression<IInlineNode> recurse) {
+			return Sequence(
+				Literal("["),
+				AtLeast(0, Sequence(NotAhead(Literal("]")), recurse, match => match.Product.Of2)),
+				Literal("]"),
+				match => match.Product.Of2);
+		}
 
 		public static readonly IParsingExpression<ReferenceId>
 		ReferenceLabel =
@@ -90,15 +102,6 @@ namespace emd.cs.Grammar {
 						match => match.String),
 					Literal("]"),
 					match => ReferenceId.FromText(match.Product.Of2)));
-
-		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
-		Label =
-			Named(() => Label,
-				Sequence(
-					Literal("["),
-					AtLeast(0, Sequence(NotAhead(Literal("]")), Reference(() => Inline), match => match.Product.Of2)),
-					Literal("]"),
-					match => match.Product.Of2));
 
 		#endregion
 
