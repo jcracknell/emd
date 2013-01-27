@@ -115,19 +115,35 @@ namespace emd.cs.Grammar {
 		Strong =
 			Named(() => Strong,
 				Sequence(
-					Literal("**"),
-					AtLeast(0, Sequence(NotAhead(Literal("**")), Reference(() => Inline), match => match.Product.Of2)),
-					Optional(Literal("**")),
+					Reference(() => StrongDelimiter),
+					AtLeast(1,
+						Sequence(
+							NotAhead(Reference(() => StrongDelimiter)),
+							Reference(() => Inline),
+							match => match.Product.Of2)),
+					Reference(() => StrongDelimiter),
 					match => new StrongNode(match.Product.Of2.ToArray(), match.SourceRange)));
+
+		public static readonly IParsingExpression<Nil>
+		StrongDelimiter = Literal("**");
 
 		public static readonly IParsingExpression<EmphasisNode>
 		Emphasis =
 			Named(() => Emphasis,
 				Sequence(
-					Literal("*"),
-					AtLeast(0, Sequence(NotAhead(Literal("*")), Reference(() => Inline), match => match.Product.Of2)),
-					Optional(Literal("*")),
+					Reference(() => EmphasisDelimiter),
+					AtLeast(1,
+						ChoiceOrdered(
+							Sequence(
+								NotAhead(Reference(() => EmphasisDelimiter)),
+								Reference(() => Inline),
+								match => match.Product.Of2),
+							Reference(() => Strong))),
+					Reference(() => EmphasisDelimiter),
 					match => new EmphasisNode(match.Product.Of2.ToArray(), match.SourceRange)));
+
+		public static readonly IParsingExpression<Nil>
+		EmphasisDelimiter = Literal("*");
 
 		#region Quoted
 

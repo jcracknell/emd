@@ -19,5 +19,13 @@ namespace emd.cs.Grammar {
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
+
+		[Fact] public void Strong_should_not_match_with_missing_end_delimiter() {
+			EmdGrammar.Strong.ShouldNotMatch("**text");
+		}
+
+		[Fact] public void Strong_should_not_match_when_empty() {
+			EmdGrammar.Strong.ShouldNotMatch("****");
+		}
 	}
 }

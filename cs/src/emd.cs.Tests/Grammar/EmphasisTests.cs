@@ -23,16 +23,12 @@ namespace emd.cs.Grammar
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
 
-		[Fact] public void Emphasis_matches_with_missing_end_delimiter() {
-			var expected = new EmphasisNode(
-				new IInlineNode[] { new TextNode("foo", new SourceRange(1, 3, 1, 1)) },
-				new SourceRange(0, 4, 1, 0)
-			);			
+		[Fact] public void Emphasis_should_not_match_with_missing_end_delimiter() {
+			var match = EmdGrammar.Emphasis.ShouldNotMatch("*foo");
+		}
 
-			var match = EmdGrammar.Emphasis.ShouldMatchAllOf("*foo");
-
-			match.Succeeded.Should().BeTrue();
-			match.Product.ShouldBeEquivalentTo(expected);
+		[Fact] public void Emphasis_should_not_match_when_empty() {
+			EmdGrammar.Emphasis.ShouldNotMatch("**");
 		}
 	}
 }
