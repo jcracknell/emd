@@ -114,15 +114,19 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<StrongNode>
 		Strong =
 			Named(() => Strong,
-				Sequence(
-					Reference(() => StrongDelimiter),
-					AtLeast(1,
-						Sequence(
-							NotAhead(Reference(() => StrongDelimiter)),
-							Reference(() => Inline),
-							match => match.Product.Of2)),
-					Reference(() => StrongDelimiter),
-					match => new StrongNode(match.Product.Of2.ToArray(), match.SourceRange)));
+				TStrong(Reference(() => Inline)));
+
+		public static IParsingExpression<StrongNode> TStrong(IParsingExpression<IInlineNode> recurse) {
+			return Sequence(
+				Reference(() => StrongDelimiter),
+				AtLeast(1,
+					Sequence(
+						NotAhead(Reference(() => StrongDelimiter)),
+						Reference(() => Inline),
+						match => match.Product.Of2)),
+				Reference(() => StrongDelimiter),
+				match => new StrongNode(match.Product.Of2.ToArray(), match.SourceRange));
+		}
 
 		public static readonly IParsingExpression<Nil>
 		StrongDelimiter = Literal("**");
