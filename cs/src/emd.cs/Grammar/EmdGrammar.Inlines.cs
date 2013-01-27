@@ -157,26 +157,24 @@ namespace emd.cs.Grammar {
 
 		#region Quoted
 
-		private static readonly IParsingExpression<QuotedNode>
-		singleQuoted =
-			Sequence(
-				Literal("'"),
-				AtLeast(0, Sequence(NotAhead(Literal("'")), Reference(() => Inline), match => match.Product.Of2)),
-				Literal("'"),
-				match => new QuotedNode(QuoteType.Single, match.Product.Of2.ToArray(), match.SourceRange));
-
-		private static readonly IParsingExpression<QuotedNode>
-		doubleQuoted =
-			Sequence(
-				Literal("\""),
-				AtLeast(0, Sequence(NotAhead(Literal("\"")), Reference(() => Inline), match => match.Product.Of2)),
-				Literal("\""),
-				match => new QuotedNode(QuoteType.Double, match.Product.Of2.ToArray(), match.SourceRange));
-
 		public static readonly IParsingExpression<QuotedNode>
 		Quoted =
 			Named(() => Quoted,
-				ChoiceOrdered(doubleQuoted, singleQuoted));
+				TQuoted(Reference(() => Inline)));
+
+		public static IParsingExpression<QuotedNode> TQuoted(IParsingExpression<IInlineNode> recurse) {
+			return ChoiceOrdered(
+					Sequence(
+						Literal("'"),
+						AtLeast(0, Sequence(NotAhead(Literal("'")), recurse, match => match.Product.Of2)),
+						Literal("'"),
+						match => new QuotedNode(QuoteType.Single, match.Product.Of2.ToArray(), match.SourceRange)),
+					Sequence(
+						Literal("\""),
+						AtLeast(0, Sequence(NotAhead(Literal("\"")), recurse, match => match.Product.Of2)),
+						Literal("\""),
+						match => new QuotedNode(QuoteType.Double, match.Product.Of2.ToArray(), match.SourceRange)));
+		}
 
 		#endregion
 
