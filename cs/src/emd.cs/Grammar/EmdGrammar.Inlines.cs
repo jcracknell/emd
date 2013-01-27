@@ -130,17 +130,23 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<EmphasisNode>
 		Emphasis =
 			Named(() => Emphasis,
-				Sequence(
-					Reference(() => EmphasisDelimiter),
-					AtLeast(1,
-						ChoiceOrdered(
-							Sequence(
-								NotAhead(Reference(() => EmphasisDelimiter)),
-								Reference(() => Inline),
-								match => match.Product.Of2),
-							Reference(() => Strong))),
-					Reference(() => EmphasisDelimiter),
-					match => new EmphasisNode(match.Product.Of2.ToArray(), match.SourceRange)));
+				TEmphasis(
+					Reference(() => Inline),
+					Reference(() => Strong)));
+
+		public static IParsingExpression<EmphasisNode> TEmphasis(IParsingExpression<IInlineNode> recurse, IParsingExpression<IInlineNode> recurseStrong) {
+			return Sequence(
+				Reference(() => EmphasisDelimiter),
+				AtLeast(1,
+					ChoiceOrdered(
+						Sequence(
+							NotAhead(Reference(() => EmphasisDelimiter)),
+							recurse,
+							match => match.Product.Of2),
+						recurseStrong)),
+				Reference(() => EmphasisDelimiter),
+				match => new EmphasisNode(match.Product.Of2.ToArray(), match.SourceRange));
+		}
 
 		public static readonly IParsingExpression<Nil>
 		EmphasisDelimiter = Literal("*");
