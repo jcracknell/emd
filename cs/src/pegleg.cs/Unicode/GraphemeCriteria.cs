@@ -15,46 +15,46 @@ namespace pegleg.cs.Unicode {
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
 		/// </summary>
-		public static IGraphemeCriteria In(params char[] graphemes) {
-			return In(graphemes.AsEnumerable());
+		public static IGraphemeCriteria InValues(params char[] graphemes) {
+			return InValues(graphemes.AsEnumerable());
 		}
 
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
 		/// </summary>
-		public static IGraphemeCriteria In(params int[] graphemes) {
-			return In(graphemes.AsEnumerable());
+		public static IGraphemeCriteria InValues(params int[] graphemes) {
+			return InValues(graphemes.AsEnumerable());
 		}
 
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
 		/// </summary>
-		public static IGraphemeCriteria In(params string[] graphemes) {
-			return In(graphemes.AsEnumerable());
+		public static IGraphemeCriteria InValues(params string[] graphemes) {
+			return InValues(graphemes.AsEnumerable());
 		}
 
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
 		/// </summary>
-		public static IGraphemeCriteria In(params IEnumerable<char>[] graphemes) {
+		public static IGraphemeCriteria InValues(params IEnumerable<char>[] graphemes) {
 			// As all chars are single code points we can optimize this case
-			return SingleCodePoint(CodePointCriteria.In(graphemes));
+			return SingleCodePoint(CodePointCriteria.InValues(graphemes));
 		}
 
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
 		/// </summary>
-		public static IGraphemeCriteria In(params IEnumerable<int>[] graphemes) {
-			return SingleCodePoint(CodePointCriteria.In(graphemes));
+		public static IGraphemeCriteria InValues(params IEnumerable<int>[] graphemes) {
+			return SingleCodePoint(CodePointCriteria.InValues(graphemes));
 		}
 
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by any of the provided <paramref name="graphemes"/>.
 		/// </summary>
-		public static IGraphemeCriteria In(params IEnumerable<string>[] graphemes) {
+		public static IGraphemeCriteria InValues(params IEnumerable<string>[] graphemes) {
 			if(graphemes.Flatten().All(UnicodeUtils.IsSingleCodePoint)) {
 				int length;
-				return SingleCodePoint(CodePointCriteria.In(graphemes.Flatten().Select(g => UnicodeUtils.GetCodePoint(g, 0, out length))));
+				return SingleCodePoint(CodePointCriteria.InValues(graphemes.Flatten().Select(g => UnicodeUtils.GetCodePoint(g, 0, out length))));
 			} else {
 				return new InValuesGraphemeCriterion(graphemes.Flatten());
 			}
@@ -63,14 +63,14 @@ namespace pegleg.cs.Unicode {
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by a grapheme in any of the provided <paramref name="categories"/>.
 		/// </summary>
-		public static IGraphemeCriteria In(params UnicodeCategory[] categories) {
-			return In(categories.AsEnumerable());
+		public static IGraphemeCriteria InCategories(params UnicodeCategory[] categories) {
+			return InCategories(categories.AsEnumerable());
 		}
 
 		/// <summary>
 		/// Create an <see cref="IGraphemeCriteria"/> satisfied by a grapheme in any of the provided <paramref name="categories"/>.
 		/// </summary>
-		public static IGraphemeCriteria In(params IEnumerable<UnicodeCategory>[] categories) {
+		public static IGraphemeCriteria InCategories(params IEnumerable<UnicodeCategory>[] categories) {
 			return new InCategoriesGraphemeCriterion(categories.Flatten());
 		}
 

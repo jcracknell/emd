@@ -87,15 +87,15 @@ namespace pegleg.cs {
 		}
 
 		public static IParsingExpression<Nil> GraphemeIn(params IEnumerable<char>[] graphemes) {
-			return Grapheme(GraphemeCriteria.In(graphemes));
+			return Grapheme(GraphemeCriteria.InValues(graphemes));
 		}
 
 		public static IParsingExpression<Nil> GraphemeIn(params IEnumerable<int>[] graphemes) {
-			return Grapheme(GraphemeCriteria.In(graphemes));
+			return Grapheme(GraphemeCriteria.InValues(graphemes));
 		}
 
 		public static IParsingExpression<Nil> GraphemeIn(params IEnumerable<string>[] graphemes) {
-			return Grapheme(GraphemeCriteria.In(graphemes));
+			return Grapheme(GraphemeCriteria.InValues(graphemes));
 		}
 
 		#endregion
@@ -123,15 +123,15 @@ namespace pegleg.cs {
 		}
 
 		public static IParsingExpression<Nil> CodePointIn(params IEnumerable<char>[] codePoints) {
-			return CodePoint(CodePointCriteria.In(codePoints));
+			return CodePoint(CodePointCriteria.InValues(codePoints));
 		}
 
 		public static IParsingExpression<Nil> CodePointIn(params IEnumerable<string>[] codePoints) {
-			return CodePoint(CodePointCriteria.In(codePoints));
+			return CodePoint(CodePointCriteria.InValues(codePoints));
 		}
 
 		public static IParsingExpression<Nil> CodePointIn(params IEnumerable<int>[] codePoints) {
-			return CodePoint(CodePointCriteria.In(codePoints));
+			return CodePoint(CodePointCriteria.InValues(codePoints));
 		}
 
 		#endregion

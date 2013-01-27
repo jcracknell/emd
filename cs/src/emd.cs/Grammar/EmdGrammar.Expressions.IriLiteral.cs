@@ -42,7 +42,7 @@ namespace emd.cs.Grammar {
 					Reference(() => IriAtom)));
 
 		public static readonly ICodePointCriteria
-		IriIllegalStarCharCriteria = CodePointCriteria.In(
+		IriIllegalStarCharCriteria = CodePointCriteria.InValues(
 			'(', '\'', '@', ',', ';',
 			'0','1','2','3','4','5','6','7','8','9'
 		);
@@ -78,7 +78,7 @@ namespace emd.cs.Grammar {
 		public static readonly ICodePointCriteria
 		IriCharCriteria =
 			CodePointCriteria.Or(
-				CodePointCriteria.In(
+				CodePointCriteria.InValues(
 					'a','b','c','d','e','f','g','h','i','j','k','l','m',
 					'n','o','p','q','r','s','t','u','v','w','x','y','z',
 					'A','B','C','D','E','F','G','H','I','J','K','L','M',
@@ -108,7 +108,7 @@ namespace emd.cs.Grammar {
 				CodePointCriteria.InRange(0xE0000, 0xEFFFD));
 
 		public static readonly ICodePointCriteria
-		IriNonTerminalCharCriteria = CodePointCriteria.In(',', ';', ':');
+		IriNonTerminalCharCriteria = CodePointCriteria.InValues(',', ';', ':');
 
 		public static readonly IParsingExpression<Nil>
 		IriNormalChar = Grapheme(GraphemeCriteria.SingleCodePoint(IriCharCriteria));
@@ -124,7 +124,7 @@ namespace emd.cs.Grammar {
 			Sequence(
 				Literal("v"), AtLeast(1, Reference(() => HexDigit)), Literal("."),
 				AtLeast(1,
-					Grapheme(GraphemeCriteria.SingleCodePoint(CodePointCriteria.In(
+					Grapheme(GraphemeCriteria.SingleCodePoint(CodePointCriteria.InValues(
 						'a','b','c','d','e','f','g','h','i','j','k','l','m',
 						'n','o','p','q','r','s','t','u','v','w','x','y','z',
 						'A','B','C','D','E','F','G','H','I','J','K','L','M',

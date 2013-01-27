@@ -290,7 +290,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		NormalChar =
 			Named(() => NormalChar,
-				Grapheme(GraphemeCriteria.Not(GraphemeCriteria.In(whitespaceCharValues, specialCharValues))));
+				Grapheme(GraphemeCriteria.Not(GraphemeCriteria.InValues(whitespaceCharValues, specialCharValues))));
 
 		public static readonly IParsingExpression<SymbolNode>
 		Symbol =

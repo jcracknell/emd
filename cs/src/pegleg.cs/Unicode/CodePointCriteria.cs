@@ -14,29 +14,29 @@ namespace pegleg.cs.Unicode {
 		/// <summary>
 		/// Create an <see cref="ICodePointCriteria"/> satisfied by any of the provided <paramref name="codePoints"/>.
 		/// </summary>
-		public static ICodePointCriteria In(params char[] codePoints) {
-			return In(codePoints.AsEnumerable());
+		public static ICodePointCriteria InValues(params char[] codePoints) {
+			return InValues(codePoints.AsEnumerable());
 		}
 
 		/// <summary>
 		/// Create an <see cref="ICodePointCriteria"/> satisfied by any of the provided <paramref name="codePoints"/>.
 		/// </summary>
-		public static ICodePointCriteria In(params int[] codePoints) {
-			return In(codePoints.AsEnumerable());
+		public static ICodePointCriteria InValues(params int[] codePoints) {
+			return InValues(codePoints.AsEnumerable());
 		}
 
 		/// <summary>
 		/// Create an <see cref="ICodePointCriteria"/> satisfied by any of the provided <paramref name="codePoints"/>.
 		/// <paramref name="codePoints"/> must contain string representations of single code points.
 		/// </summary>
-		public static ICodePointCriteria In(params string[] codePoints) {
-			return In(codePoints.AsEnumerable());
+		public static ICodePointCriteria InValues(params string[] codePoints) {
+			return InValues(codePoints.AsEnumerable());
 		}
 
 		/// <summary>
 		/// Create an <see cref="ICodePointCriteria"/> satisfied by any of the provided <paramref name="codePoints"/>.
 		/// </summary>
-		public static ICodePointCriteria In(params IEnumerable<char>[] codePoints) {
+		public static ICodePointCriteria InValues(params IEnumerable<char>[] codePoints) {
 			return new InValuesCodePointCriterion(codePoints.Flatten().Select(c => (int)c));
 		}
 
@@ -44,33 +44,33 @@ namespace pegleg.cs.Unicode {
 		/// Create an <see cref="ICodePointCriteria"/> satisfied by any of the provided <paramref name="codePoints"/>.
 		/// <paramref name="codePoints"/> must contain string representations of single code points.
 		/// </summary>
-		public static ICodePointCriteria In(params IEnumerable<string>[] codePoints) {
+		public static ICodePointCriteria InValues(params IEnumerable<string>[] codePoints) {
 			foreach(var codePoint in codePoints.Flatten())
 				if(!UnicodeUtils.IsSingleCodePoint(codePoint))
 					throw Xception.Because.Argument(() => codePoints, string.Concat("contains value ", StringUtils.LiteralEncode(codePoint), " which is not a valid code point"));
 
 			int length;
-			return In(codePoints.Flatten().Select(s => UnicodeUtils.GetCodePoint(s, 0, out length)));
+			return InValues(codePoints.Flatten().Select(s => UnicodeUtils.GetCodePoint(s, 0, out length)));
 		}
 
 		/// <summary>
 		/// Create an <see cref="ICodePointCriteria"/> satisfied by any of the provided <paramref name="codePoints"/>.
 		/// </summary>
-		public static ICodePointCriteria In(params IEnumerable<int>[] codePoints) {
+		public static ICodePointCriteria InValues(params IEnumerable<int>[] codePoints) {
 			return new InValuesCodePointCriterion(codePoints.Flatten());
 		}
 
 		/// <summary>
 		/// Create an <see cref="ICodePointCriteria"/> satisfied by any code point in the provided <paramref name="categories"/>.
 		/// </summary>
-		public static ICodePointCriteria In(params UnicodeCategory[] categories) {
-			return In(categories.AsEnumerable());
+		public static ICodePointCriteria InCategories(params UnicodeCategory[] categories) {
+			return InCategories(categories.AsEnumerable());
 		}
 
 		/// <summary>
 		/// Create an <see cref="ICodePointCriteria"/> satisfied by any code point in the provided <paramref name="categories"/>.
 		/// </summary>
-		public static ICodePointCriteria In(params IEnumerable<UnicodeCategory>[] categories) {
+		public static ICodePointCriteria InCategories(params IEnumerable<UnicodeCategory>[] categories) {
 			return new InCategoriesCodePointCriterion(categories.Flatten());
 		}
 

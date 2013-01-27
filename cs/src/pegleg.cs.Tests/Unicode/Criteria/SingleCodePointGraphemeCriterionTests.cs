@@ -27,13 +27,13 @@ namespace pegleg.cs.Unicode.Criteria {
 		}
 
 		[Fact] public void SingleCodePointGraphemeCriterion_should_be_satisfied_by_grapheme_satisfying_criteria() {
-			new SingleCodePointGraphemeCriterion(CodePointCriteria.In(UnicodeCategory.LowercaseLetter))
+			new SingleCodePointGraphemeCriterion(CodePointCriteria.InCategories(UnicodeCategory.LowercaseLetter))
 			.SatisfiedBy("a", 0, 1, UnicodeCategory.LowercaseLetter)
 			.Should().BeTrue();
 		}
 
 		[Fact] public void SingleCodePointGraphemeCriterion_should_not_be_satisfied_by_grapheme_not_satisfying_criteria() {
-			new SingleCodePointGraphemeCriterion(CodePointCriteria.In(UnicodeCategory.LowercaseLetter))
+			new SingleCodePointGraphemeCriterion(CodePointCriteria.InCategories(UnicodeCategory.LowercaseLetter))
 			.SatisfiedBy("A", 0, 1, UnicodeCategory.UppercaseLetter)
 			.Should().BeFalse();
 		}

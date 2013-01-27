@@ -856,14 +856,14 @@ namespace emd.cs.Grammar {
 			ChoiceOrdered(
 				Grapheme(
 					GraphemeCriteria.Or(
-						GraphemeCriteria.In(
+						GraphemeCriteria.InCategories(
 							UnicodeCategory.UppercaseLetter,
 							UnicodeCategory.LowercaseLetter,
 							UnicodeCategory.TitlecaseLetter,
 							UnicodeCategory.ModifierLetter,
 							UnicodeCategory.OtherLetter,
 							UnicodeCategory.LetterNumber ),
-						GraphemeCriteria.In("$", "_"))),
+						GraphemeCriteria.InValues("$", "_"))),
 				Sequence(Literal("\\"), Reference(() => ExpressionUnicodeEscapeSequence)));
 
 		public static readonly IParsingExpression<Nil>
@@ -873,12 +873,12 @@ namespace emd.cs.Grammar {
 					identifierExpressionStart,
 					Grapheme(
 						GraphemeCriteria.Or(
-							GraphemeCriteria.In(
+							GraphemeCriteria.InCategories(
 								UnicodeCategory.NonSpacingMark,
 								UnicodeCategory.SpacingCombiningMark,
 								UnicodeCategory.DecimalDigitNumber,
 								UnicodeCategory.ConnectorPunctuation),
-							GraphemeCriteria.In(/*ZWNJ*/"\u200C", /*ZWJ*/"\u200D")))));
+							GraphemeCriteria.InValues(/*ZWNJ*/"\u200C", /*ZWJ*/"\u200D")))));
 
 		public static readonly IParsingExpression<IdentifierExpression>
 		IdentifierExpression =
@@ -1210,7 +1210,7 @@ namespace emd.cs.Grammar {
 						Reference(() => ExpressionUnicodeEscapeSequence),
 						Reference(() => NewLine),
 						Reference(() => UnicodeCharacter))),
-					Grapheme(GraphemeCriteria.Not(GraphemeCriteria.In(lineTerminatorCharValues.Select(c => c.ToString())))));
+					Grapheme(GraphemeCriteria.Not(GraphemeCriteria.InValues(lineTerminatorCharValues.Select(c => c.ToString())))));
 
 		#endregion
 
