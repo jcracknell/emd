@@ -12,23 +12,33 @@ namespace emd.cs.Grammar {
 	public partial class EmdGrammar {
 		#region Inline Rules
 
+		public static IParsingExpression<IEnumerable<TInline>> TBlockInlinesOptional<TInline>(IParsingExpression<TInline> inline) {
+			return Sequence(
+				Optional(Reference(() => BlockWhitespaceOrComments)),
+				Optional(
+					Sequence(
+						AtLeast(1, inline),
+						Optional(Reference(() => BlockWhitespaceOrComments)),
+						match => match.Product.Of1),
+					match => match.Product, noMatch => Enumerable.Empty<TInline>()),
+				match => match.Product.Of2);
+		}
+
+		public static IParsingExpression<IEnumerable<TInline>> TBlockInlinesRequired<TInline>(IParsingExpression<TInline> inline) {
+			return Sequence(
+				Optional(Reference(() => BlockWhitespaceOrComments)),
+				AtLeast(1, inline),
+				Optional(Reference(() => BlockWhitespaceOrComments)),
+				match => match.Product.Of2);
+		}
+
 		#region Rich
 
 		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
-		RichBlockInlinesOptional =
-			Sequence(
-				Optional(Reference(() => BlockWhitespaceOrComments)),
-				AtLeast(0, Reference(() => RichInline)),
-				Optional(Reference(() => BlockWhitespaceOrComments)),
-				match => match.Product.Of2);
+		RichBlockInlinesOptional = TBlockInlinesOptional(Reference(() => RichInline));
 
 		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
-		RichBlockInlinesRequired =
-			Sequence(
-				Optional(Reference(() => BlockWhitespaceOrComments)),
-				AtLeast(1, Reference(() => RichInline)),
-				Optional(Reference(() => BlockWhitespaceOrComments)),
-				match => match.Product.Of2);
+		RichBlockInlinesRequired = TBlockInlinesRequired(Reference(() => RichInline));
 
 		public static readonly IParsingExpression<IRichInlineNode>
 		RichInline =
@@ -61,6 +71,12 @@ namespace emd.cs.Grammar {
 
 		#region Formatted
 
+		public static readonly IParsingExpression<IEnumerable<IFormattedInlineNode>>
+		FormattedBlockInlinesOptional = TBlockInlinesOptional(Reference(() => FormattedInline));
+
+		public static readonly IParsingExpression<IEnumerable<IFormattedInlineNode>>
+		FormattedBlockInlinesRequired = TBlockInlinesRequired(Reference(() => FormattedInline));
+
 		public static readonly IParsingExpression<IFormattedInlineNode>
 		FormattedInline =
 			Named(() => FormattedInline,
@@ -83,6 +99,7 @@ namespace emd.cs.Grammar {
 		FormattedEmphasis = TEmphasis(Reference(() => FormattedInline), Reference(() => FormattedStrong));
 
 		#endregion
+
 
 		#region AutoLink
 
