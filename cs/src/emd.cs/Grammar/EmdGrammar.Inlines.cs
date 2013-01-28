@@ -10,7 +10,66 @@ using System.Text;
 
 namespace emd.cs.Grammar {
 	public partial class EmdGrammar {
-		#region Inline Rules
+
+		/// <summary>
+		/// Determines the extent of blocks containing rich inlines.
+		/// A block is composed of atomics and newlines, thus a newline consumed by this production is invisible to the block.
+		/// </summary>
+		public static readonly IParsingExpression<Nil>
+		RichAtomic =
+			Named(() => RichAtomic,
+				ChoiceOrdered(
+					Sequence(NotAhead(GraphemeIn(specialCharValues)), Reference(() => UnicodeCharacter)),
+					ChoiceUnordered(
+						Reference(() => InlineExpression),
+						Reference(() => Comment),
+						Reference(() => RichLink),
+						Reference(() => AutoLink),
+						Reference(() => Code)),
+					Reference(() => UnicodeCharacter)));
+
+		/// <summary>
+		/// Determines the extent of blocks containing formatted inlines.
+		/// A block is composed of atomics and newlines, thus a newline consumed by this production is invisible to the block.
+		/// </summary>
+		public static readonly IParsingExpression<Nil>
+		FormattedAtomic =
+			Named(() => FormattedAtomic,
+				ChoiceOrdered(
+					Sequence(NotAhead(GraphemeIn(specialCharValues)), Reference(() => UnicodeCharacter)),
+					ChoiceUnordered(
+						Reference(() => Comment),
+						Reference(() => Code)),
+					Reference(() => UnicodeCharacter)));
+
+		#region BlockInlines
+
+		// These rules are used to parse block content.
+
+		/// <summary>
+		/// Parses rich inline elements within a block.
+		/// </summary>
+		public static readonly IParsingExpression<IEnumerable<IRichInlineNode>>
+		RichBlockInlines = TBlockInlinesOptional(Reference(() => RichInline));
+
+		/// <summary>
+		/// Parses rich inline elements within a block.
+		/// Only succeeds if at least one inline is matched; this distinction is important in the handling
+		/// of empty blocks - for example paragraphs.
+		/// </summary>
+		public static readonly IParsingExpression<IEnumerable<IRichInlineNode>>
+		RichBlockInlinesRequired =
+			Sequence(
+				Optional(Reference(() => BlockWhitespaceOrComments)),
+				AtLeast(1, Reference(() => RichInline)),
+				Optional(Reference(() => BlockWhitespaceOrComments)),
+				match => match.Product.Of2);
+
+		/// <summary>
+		/// Parses formatted inline elements within a block.
+		/// </summary>
+		public static readonly IParsingExpression<IEnumerable<IFormattedInlineNode>>
+		FormattedBlockInlines = TBlockInlinesOptional(Reference(() => FormattedInline));
 
 		public static IParsingExpression<IEnumerable<TInline>> TBlockInlinesOptional<TInline>(IParsingExpression<TInline> inline) {
 			return Sequence(
@@ -24,21 +83,9 @@ namespace emd.cs.Grammar {
 				match => match.Product.Of2);
 		}
 
-		public static IParsingExpression<IEnumerable<TInline>> TBlockInlinesRequired<TInline>(IParsingExpression<TInline> inline) {
-			return Sequence(
-				Optional(Reference(() => BlockWhitespaceOrComments)),
-				AtLeast(1, inline),
-				Optional(Reference(() => BlockWhitespaceOrComments)),
-				match => match.Product.Of2);
-		}
+		#endregion
 
 		#region Rich
-
-		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
-		RichBlockInlinesOptional = TBlockInlinesOptional(Reference(() => RichInline));
-
-		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
-		RichBlockInlinesRequired = TBlockInlinesRequired(Reference(() => RichInline));
 
 		public static readonly IParsingExpression<IRichInlineNode>
 		RichInline =
@@ -70,12 +117,6 @@ namespace emd.cs.Grammar {
 		#endregion
 
 		#region Formatted
-
-		public static readonly IParsingExpression<IEnumerable<IFormattedInlineNode>>
-		FormattedBlockInlinesOptional = TBlockInlinesOptional(Reference(() => FormattedInline));
-
-		public static readonly IParsingExpression<IEnumerable<IFormattedInlineNode>>
-		FormattedBlockInlinesRequired = TBlockInlinesRequired(Reference(() => FormattedInline));
 
 		public static readonly IParsingExpression<IFormattedInlineNode>
 		FormattedInline =
@@ -364,7 +405,5 @@ namespace emd.cs.Grammar {
 		SpecialChar =
 			Named(() => SpecialChar,
 				GraphemeIn(specialCharValues));
-
-		#endregion
 	}
 }

@@ -9,15 +9,14 @@ using System.Text;
 
 namespace emd.cs.Grammar {
 	public partial class EmdGrammar {
-		#region Block Rules
 
 		public static readonly IParsingExpression<IEnumerable<IBlockNode>>
 		Blocks =
 			Named(() => Blocks,
 				AtLeast(0, Reference(() => Block)));
 
-			// Ordering notes:
-			//   * Paragraph must come last, because it will sweep up just about anything
+		// Ordering notes:
+		//   * Paragraph must come last, because it will sweep up just about anything
 		public static readonly IParsingExpression<IBlockNode>
 		Block =
 			Named(() => Block,
@@ -86,7 +85,7 @@ namespace emd.cs.Grammar {
 		listBlockLine =
 			Sequence(
 				Optional(Reference(() => Indent)),
-				Reference(() => NonEmptyBlockLine),
+				Reference(() => RichBlockLineNonEmpty),
 				match => match.Product.Of2);
 
 		#region Ordered List
@@ -240,7 +239,7 @@ namespace emd.cs.Grammar {
 							ChoiceOrdered(ssd.Counters.Select(csd => {
 								var initialOrderedListItemTight =
 									Sequence(
-										csd.InitialEnumerator, Reference(() => BlockLine),
+										csd.InitialEnumerator, Reference(() => RichBlockLine),
 										orderedListBlockLines,
 										match => new OrderedListItemLineInfo(
 											match.Product.Of1,
@@ -249,7 +248,7 @@ namespace emd.cs.Grammar {
 
 								var subsequentOrderedListItemTight =
 									Sequence(
-										csd.ContinuationEnumerator, Reference(() => BlockLine),
+										csd.ContinuationEnumerator, Reference(() => RichBlockLine),
 										orderedListBlockLines,
 										match => new BlockLineInfo(
 											match.Product.Of2.InEnumerable().Concat(match.Product.Of3),
@@ -284,7 +283,7 @@ namespace emd.cs.Grammar {
 										NotAhead(orderedListContinuesLoose),
 										match => {
 											var items = match.Product.Of1.InEnumerable().Concat(match.Product.Of2)
-												.Select(i => new OrderedListItemNode(ParseLinesAs(RichBlockInlinesOptional, i.Lines).ToArray(), i.SourceRange))
+												.Select(i => new OrderedListItemNode(ParseLinesAs(RichBlockInlines, i.Lines).ToArray(), i.SourceRange))
 												.ToArray();
 											return new OrderedListNode(
 												csd.CounterStyle, ssd.SeparatorStyle,
@@ -356,7 +355,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<BlockLineInfo>
 		unorderedListItemTight =
 			Sequence(
-				Reference(() => Bullet), Reference(() => BlockLine),
+				Reference(() => Bullet), Reference(() => RichBlockLine),
 				unorderedListBlockLines,
 				match => new BlockLineInfo(match.Product.Of2.InEnumerable().Concat(match.Product.Of3), match.SourceRange));
 
@@ -388,7 +387,7 @@ namespace emd.cs.Grammar {
 					NotAhead(unorderedListContinuesLoose),
 					match => {
 						var items = match.Product.Of1
-							.Select(i => new UnorderedListItemNode(ParseLinesAs(RichBlockInlinesOptional, i.Lines.ToArray()).ToArray(), i.SourceRange))
+							.Select(i => new UnorderedListItemNode(ParseLinesAs(RichBlockInlines, i.Lines.ToArray()).ToArray(), i.SourceRange))
 							.ToArray();
 						return new UnorderedListNode(items, match.SourceRange);
 					}));
@@ -422,7 +421,7 @@ namespace emd.cs.Grammar {
 				Sequence(
 					Reference(() => HeadingAnnouncement),
 					Reference(() => SpaceChars),
-					Reference(() => BlockLine),
+					Reference(() => RichBlockLine),
 					match => new HeadingNode(match.Product.Of3.LineString, match.Product.Of1, match.SourceRange)));
 
 		public static readonly IParsingExpression<int>
@@ -445,7 +444,7 @@ namespace emd.cs.Grammar {
 		private static readonly IParsingExpression<LineInfo>
 		blockquoteAnnouncedLine =
 			Sequence(
-				blockquoteAnnouncement, Reference(() => BlockLine),
+				blockquoteAnnouncement, Reference(() => RichBlockLine),
 				match => match.Product.Of2);
 
 		private static readonly IParsingExpression<IEnumerable<LineInfo>>
@@ -455,7 +454,7 @@ namespace emd.cs.Grammar {
 				AtLeast(0,
 					ChoiceOrdered(
 						blockquoteAnnouncedLine,
-						Reference(() => NonEmptyBlockLine))),
+						Reference(() => RichBlockLineNonEmpty))),
 				match => match.Product.Of1.InEnumerable().Concat(match.Product.Of2));
 
 		public static readonly IParsingExpression<BlockquoteNode>
@@ -497,42 +496,6 @@ namespace emd.cs.Grammar {
 
 		#endregion
 
-		public static readonly IParsingExpression<LineInfo>
-		NonEmptyBlockLine =
-			Named(() => NonEmptyBlockLine,
-				Sequence(
-					NotAhead(Reference(() => BlankLine)),
-					Reference(() => BlockLine),
-					match => match.Product.Of2));
-
-		public static readonly IParsingExpression<LineInfo>
-		BlockLine =
-			Named(() => BlockLine,
-				Sequence(
-					AtLeast(0, Reference(() => BlockLineAtomic)),
-					Optional(Reference(() => NewLine)),
-					match => LineInfo.FromMatch(match)));
-
-		public static readonly IParsingExpression<Nil>
-		BlockLineAtomic =
-			Named(() => BlockLineAtomic,
-				Sequence(
-					NotAhead(Reference(() => NewLine)),
-					Reference(() => Atomic)));
-
-		public static readonly IParsingExpression<Nil>
-		Atomic =
-			Named(() => Atomic,
-				ChoiceOrdered(
-					Sequence(NotAhead(GraphemeIn(specialCharValues)), Reference(() => UnicodeCharacter)),
-					ChoiceUnordered(
-						Reference(() => InlineExpression),
-						Reference(() => Comment),
-						Reference(() => RichLink),
-						Reference(() => AutoLink),
-						Reference(() => Code)),
-					Reference(() => UnicodeCharacter)));
-
 		#region Tables
 
 		public static readonly IParsingExpression<TableNode>
@@ -547,7 +510,7 @@ namespace emd.cs.Grammar {
 			AtLeast(0,
 				Sequence(
 					NotAhead(Literal("|")),
-					Reference(() => BlockLineAtomic)),
+					Reference(() => RichBlockLineAtomic)),
 				match => LineInfo.FromMatch(match));
 
 		private static readonly IParsingExpression<string>
@@ -597,7 +560,7 @@ namespace emd.cs.Grammar {
 						TableCellKind.Header,
 						match.Product.Of1.ColumnSpan,
 						match.Product.Of1.RowSpan,
-						ParseLinesAs(RichBlockInlinesOptional, match.Product.Of2.InEnumerable()).ToArray(),
+						ParseLinesAs(RichBlockInlines, match.Product.Of2.InEnumerable()).ToArray(),
 						match.SourceRange));
 
 		private static readonly IParsingExpression<TableCellNode>
@@ -609,7 +572,7 @@ namespace emd.cs.Grammar {
 					TableCellKind.Data,
 					match.Product.Of1.ColumnSpan,
 					match.Product.Of1.RowSpan,
-					ParseLinesAs(RichBlockInlinesOptional, match.Product.Of2.InEnumerable()).ToArray(),
+					ParseLinesAs(RichBlockInlines, match.Product.Of2.InEnumerable()).ToArray(),
 					match.SourceRange));
 
 		private static readonly IParsingExpression<Nil>
@@ -637,6 +600,62 @@ namespace emd.cs.Grammar {
 					match => new TableRowNode(match.Product.Of2.ToArray(), match.SourceRange)));
 
 		#endregion
+
+		#region BlockLines
+
+		/// <summary>
+		/// A non-empty line within a block containing rich inlines.
+		/// </summary>
+		public static readonly IParsingExpression<LineInfo>
+		RichBlockLineNonEmpty =
+			Named(() => RichBlockLineNonEmpty,
+				Sequence(
+					NotAhead(Reference(() => BlankLine)),
+					Reference(() => RichBlockLine),
+					match => match.Product.Of2));
+
+		/// <summary>
+		/// A line within a block containing rich inlines. May be empty.
+		/// </summary>
+		public static readonly IParsingExpression<LineInfo>
+		RichBlockLine =
+			Named(() => RichBlockLine,
+				Sequence(
+					AtLeast(0, Reference(() => RichBlockLineAtomic)),
+					Optional(Reference(() => NewLine)),
+					match => LineInfo.FromMatch(match)));
+
+		public static readonly IParsingExpression<Nil>
+		RichBlockLineAtomic =
+			Named(() => RichBlockLineAtomic,
+				Sequence(
+					NotAhead(Reference(() => NewLine)),
+					Reference(() => RichAtomic)));
+
+		/// <summary>
+		/// A line within a block containing formatted inlines. May be empty.
+		/// </summary>
+		public static readonly IParsingExpression<LineInfo>
+		FormattedBlockLine =
+			Named(() => FormattedBlockLine,
+				Sequence(
+					AtLeast(0,
+						Sequence(
+							NotAhead(Reference(() => NewLine)),
+							Reference(() => FormattedAtomic))),
+					Optional(Reference(() => NewLine)),
+					match => LineInfo.FromMatch(match)));
+
+		/// <summary>
+		/// A non-empty line within a block containing formatted inlines.
+		/// </summary>
+		public static readonly IParsingExpression<LineInfo>
+		FormattedBlockLineNonEmpty =
+			Named(() => FormattedBlockLine,
+				Sequence(
+					NotAhead(Reference(() => BlankLine)),
+					Reference(() => FormattedBlockLine),
+					match => match.Product.Of2));
 
 		#endregion
 	}

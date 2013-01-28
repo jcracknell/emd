@@ -1018,7 +1018,7 @@ namespace emd.cs.Grammar {
 					return Sequence(
 						AtLeast(2, Literal("{"), m => { endBraces = Literal("".PadLeft(m.Length, '}')); return Nil.Value; }),
 						AtLeast(0,
-							Sequence(NotAhead(Reference(() => endBraces)), Reference(() => Atomic)),
+							Sequence(NotAhead(Reference(() => endBraces)), Reference(() => RichAtomic)),
 							match => LineInfo.FromMatch(match)),
 						Reference(() => endBraces),
 						match => new DocumentLiteralExpression(
