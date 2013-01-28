@@ -12,41 +12,77 @@ namespace emd.cs.Grammar {
 	public partial class EmdGrammar {
 		#region Inline Rules
 
+		#region Rich
+
 		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
-		BlockInlinesOptional =
+		RichBlockInlinesOptional =
 			Sequence(
 				Optional(Reference(() => BlockWhitespaceOrComments)),
-				AtLeast(0, Reference(() => Inline)),
+				AtLeast(0, Reference(() => RichInline)),
 				Optional(Reference(() => BlockWhitespaceOrComments)),
 				match => match.Product.Of2);
 
 		public static readonly IParsingExpression<IEnumerable<IInlineNode>>
-		BlockInlinesRequired =
+		RichBlockInlinesRequired =
 			Sequence(
 				Optional(Reference(() => BlockWhitespaceOrComments)),
-				AtLeast(1, Reference(() => Inline)),
+				AtLeast(1, Reference(() => RichInline)),
 				Optional(Reference(() => BlockWhitespaceOrComments)),
 				match => match.Product.Of2);
 
-		public static readonly IParsingExpression<IInlineNode>
-		Inline =
-			Named(() => Inline,
-				ChoiceOrdered<IInlineNode>(
-					ChoiceUnordered<IInlineNode>(
-						Reference(() => Text),
-						ChoiceOrdered<IInlineNode>(
-							Reference(() => LineBreak),
-							Reference(() => Space)),
-						ChoiceOrdered<IInlineNode>(
-							Reference(() => Strong),
-							Reference(() => Emphasis)),
-						Reference(() => Quoted),
-						Reference(() => Link),
-						Reference(() => AutoLink),
-						Reference(() => Entity),
-						Reference(() => Code),
-						Reference(() => InlineExpression)),
+		public static readonly IParsingExpression<IRichInlineNode>
+		RichInline =
+			Named(() => RichInline,
+				ChoiceOrdered<IRichInlineNode>(
+					Reference(() => Text),
+					Reference(() => LineBreak),
+					Reference(() => Space),
+					Reference(() => RichStrong),
+					Reference(() => RichEmphasis),
+					TQuoted(Reference(() => RichInline)),
+					Reference(() => Quoted),
+					Reference(() => RichLink),
+					Reference(() => AutoLink),
+					Reference(() => Code),
+					Reference(() => Entity),
+					Reference(() => InlineExpression),
 					Reference(() => Symbol)));
+
+		public static readonly IParsingExpression<LinkNode>
+		RichLink = TLink(Reference(() => RichInline));
+
+		public static readonly IParsingExpression<StrongNode>
+		RichStrong = TStrong(Reference(() => RichInline));
+
+		public static readonly IParsingExpression<EmphasisNode>
+		RichEmphasis = TEmphasis(Reference(() => RichInline), Reference(() => RichStrong));
+
+		#endregion
+
+		#region Formatted
+
+		public static readonly IParsingExpression<IFormattedInlineNode>
+		FormattedInline =
+			Named(() => FormattedInline,
+				ChoiceOrdered<IFormattedInlineNode>(
+					Reference(() => Text),
+					Reference(() => LineBreak),
+					Reference(() => Space),
+					Reference(() => FormattedStrong),
+					Reference(() => FormattedEmphasis),
+					TQuoted(Reference(() => FormattedInline)),
+					Reference(() => Quoted),
+					Reference(() => Code),
+					Reference(() => Entity),
+					Reference(() => Symbol)));
+
+		public static readonly IParsingExpression<StrongNode>
+		FormattedStrong = TStrong(Reference(() => FormattedInline));
+
+		public static readonly IParsingExpression<EmphasisNode>
+		FormattedEmphasis = TEmphasis(Reference(() => FormattedInline), Reference(() => FormattedStrong));
+
+		#endregion
 
 		#region AutoLink
 
@@ -68,11 +104,6 @@ namespace emd.cs.Grammar {
 		#endregion
 
 		#region Link
-
-		public static readonly IParsingExpression<LinkNode>
-		Link =
-			Named(() => Link,
-				TLink(Reference(() => Inline)));
 
 		public static IParsingExpression<LinkNode> TLink(IParsingExpression<IInlineNode> recurse) {
 			return Sequence(
@@ -114,18 +145,13 @@ namespace emd.cs.Grammar {
 					Optional(Literal(";")),
 					match => new InlineExpressionNode(match.Product.Of2, match.SourceRange)));
 
-		public static readonly IParsingExpression<StrongNode>
-		Strong =
-			Named(() => Strong,
-				TStrong(Reference(() => Inline)));
-
 		public static IParsingExpression<StrongNode> TStrong(IParsingExpression<IInlineNode> recurse) {
 			return Sequence(
 				Reference(() => StrongDelimiter),
 				AtLeast(1,
 					Sequence(
 						NotAhead(Reference(() => StrongDelimiter)),
-						Reference(() => Inline),
+						Reference(() => RichInline),
 						match => match.Product.Of2)),
 				Reference(() => StrongDelimiter),
 				match => new StrongNode(match.Product.Of2.ToArray(), match.SourceRange));
@@ -134,14 +160,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<Nil>
 		StrongDelimiter = Literal("**");
 
-		public static readonly IParsingExpression<EmphasisNode>
-		Emphasis =
-			Named(() => Emphasis,
-				TEmphasis(
-					Reference(() => Inline),
-					Reference(() => Strong)));
-
-		public static IParsingExpression<EmphasisNode> TEmphasis(IParsingExpression<IInlineNode> recurse, IParsingExpression<IInlineNode> recurseStrong) {
+		public static IParsingExpression<EmphasisNode> TEmphasis(IParsingExpression<IInlineNode> recurse, IParsingExpression<StrongNode> recurseStrong) {
 			return Sequence(
 				Reference(() => EmphasisDelimiter),
 				AtLeast(1,
@@ -163,7 +182,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<QuotedNode>
 		Quoted =
 			Named(() => Quoted,
-				TQuoted(Reference(() => Inline)));
+				TQuoted(Reference(() => RichInline)));
 
 		public static IParsingExpression<QuotedNode> TQuoted(IParsingExpression<IInlineNode> recurse) {
 			return ChoiceOrdered(
@@ -217,7 +236,7 @@ namespace emd.cs.Grammar {
 								match => new CodeNode(match.Product.Of3, match.SourceRange)))),
 					match => match.Product.Of2));
 
-			#endregion
+		#endregion
 
 		#region Entities
 

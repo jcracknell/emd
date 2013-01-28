@@ -284,7 +284,7 @@ namespace emd.cs.Grammar {
 										NotAhead(orderedListContinuesLoose),
 										match => {
 											var items = match.Product.Of1.InEnumerable().Concat(match.Product.Of2)
-												.Select(i => new OrderedListItemNode(ParseLinesAs(BlockInlinesOptional, i.Lines).ToArray(), i.SourceRange))
+												.Select(i => new OrderedListItemNode(ParseLinesAs(RichBlockInlinesOptional, i.Lines).ToArray(), i.SourceRange))
 												.ToArray();
 											return new OrderedListNode(
 												csd.CounterStyle, ssd.SeparatorStyle,
@@ -388,7 +388,7 @@ namespace emd.cs.Grammar {
 					NotAhead(unorderedListContinuesLoose),
 					match => {
 						var items = match.Product.Of1
-							.Select(i => new UnorderedListItemNode(ParseLinesAs(BlockInlinesOptional, i.Lines.ToArray()).ToArray(), i.SourceRange))
+							.Select(i => new UnorderedListItemNode(ParseLinesAs(RichBlockInlinesOptional, i.Lines.ToArray()).ToArray(), i.SourceRange))
 							.ToArray();
 						return new UnorderedListNode(items, match.SourceRange);
 					}));
@@ -493,7 +493,7 @@ namespace emd.cs.Grammar {
 		public static readonly IParsingExpression<ParagraphNode>
 		Paragraph =
 			Named(() => Paragraph,
-				Reference(() => BlockInlinesRequired, match => new ParagraphNode(match.Product.ToArray(), match.SourceRange)));
+				Reference(() => RichBlockInlinesRequired, match => new ParagraphNode(match.Product.ToArray(), match.SourceRange)));
 
 		#endregion
 
@@ -520,7 +520,6 @@ namespace emd.cs.Grammar {
 					NotAhead(Reference(() => NewLine)),
 					Reference(() => Atomic)));
 
-
 		public static readonly IParsingExpression<Nil>
 		Atomic =
 			Named(() => Atomic,
@@ -529,7 +528,7 @@ namespace emd.cs.Grammar {
 					ChoiceUnordered(
 						Reference(() => InlineExpression),
 						Reference(() => Comment),
-						Reference(() => Link),
+						Reference(() => RichLink),
 						Reference(() => AutoLink),
 						Reference(() => Code)),
 					Reference(() => UnicodeCharacter)));
@@ -598,7 +597,7 @@ namespace emd.cs.Grammar {
 						TableCellKind.Header,
 						match.Product.Of1.ColumnSpan,
 						match.Product.Of1.RowSpan,
-						ParseLinesAs(BlockInlinesOptional, match.Product.Of2.InEnumerable()).ToArray(),
+						ParseLinesAs(RichBlockInlinesOptional, match.Product.Of2.InEnumerable()).ToArray(),
 						match.SourceRange));
 
 		private static readonly IParsingExpression<TableCellNode>
@@ -610,7 +609,7 @@ namespace emd.cs.Grammar {
 					TableCellKind.Data,
 					match.Product.Of1.ColumnSpan,
 					match.Product.Of1.RowSpan,
-					ParseLinesAs(BlockInlinesOptional, match.Product.Of2.InEnumerable()).ToArray(),
+					ParseLinesAs(RichBlockInlinesOptional, match.Product.Of2.InEnumerable()).ToArray(),
 					match.SourceRange));
 
 		private static readonly IParsingExpression<Nil>

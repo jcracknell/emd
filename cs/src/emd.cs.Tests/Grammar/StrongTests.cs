@@ -15,17 +15,17 @@ namespace emd.cs.Grammar {
 				new IInlineNode[] { new TextNode("text", new SourceRange(2, 4, 1, 2)) },
 				new SourceRange(0, 8, 1, 0));
 
-			var match = EmdGrammar.Strong.ShouldMatchAllOf("**text**");
+			var match = EmdGrammar.RichStrong.ShouldMatchAllOf("**text**");
 
 			match.Product.ShouldBeEquivalentTo(expected);
 		}
 
 		[Fact] public void Strong_should_not_match_with_missing_end_delimiter() {
-			EmdGrammar.Strong.ShouldNotMatch("**text");
+			EmdGrammar.RichStrong.ShouldNotMatch("**text");
 		}
 
 		[Fact] public void Strong_should_not_match_when_empty() {
-			EmdGrammar.Strong.ShouldNotMatch("****");
+			EmdGrammar.RichStrong.ShouldNotMatch("****");
 		}
 	}
 }

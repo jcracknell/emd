@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Nodes{
-	public class LineBreakNode : IFormattedInlineNode {
+	public class LineBreakNode : IPlainInlineNode {
 		private readonly SourceRange _sourceRange;
 		
 		public LineBreakNode(SourceRange sourceRange) {
