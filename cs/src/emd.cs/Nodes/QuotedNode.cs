@@ -17,9 +17,12 @@ namespace emd.cs.Nodes{
 
 		public QuotedNode(QuoteType quoteType, IInlineNode[] children, SourceRange sourceRange) {
 			if(null == children) throw Xception.Because.ArgumentNull(() => children);
+			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
+			if(!children.Any()) throw Xception.Because.Argument(() => children, "cannot be empty");
 
 			_quoteType = quoteType;
 			_children = children;
+			_sourceRange = sourceRange;
 		}
 
 		public QuoteType QuoteType { get { return _quoteType; } }
