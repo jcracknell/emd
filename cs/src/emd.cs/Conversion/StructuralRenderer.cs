@@ -231,7 +231,7 @@ namespace emd.cs.Conversion {
 			}
 
 			public void Handle(QuotedNode node) {
-				WriteComposite(node, () => {
+				WriteComposite(node, node.QuoteType, () => {
 					node.Children.Each(child => child.HandleWith(this));
 				});
 			}
