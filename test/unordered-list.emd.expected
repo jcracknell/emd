@@ -1,58 +1,58 @@
 #! emd.cs.Conversion.StructuralRenderer, emd.cs
 (Document
-	(UnorderedList
-		(UnorderedListItem
-			(Text "tight")
-		)
-		(UnorderedListItem
-			(Text "list")
-		)
-		(UnorderedListItem
-			(Text "items")
-		)
-	)
-	(Paragraph
-		(Text "Loose")
-		(Space)
-		(Text "list:")
-	)
-	(UnorderedList
-		(UnorderedListItem
-			(Paragraph
-				(Text "loose")
-			)
-		)
-		(UnorderedListItem
-			(Paragraph
-				(Text "list")
-			)
-		)
-		(UnorderedListItem
-			(Paragraph
-				(Text "items")
-			)
-		)
-		(UnorderedListItem
-			(Paragraph
-				(Text "multiple")
-				(Space)
-				(Text "lines")
-			)
-		)
-		(UnorderedListItem
-			(Paragraph
-				(Text "item")
-			)
-			(Paragraph
-				(Text "continues")
-			)
-		)
-	)
-	(Paragraph
-		(Emphasis
-			(Text "emphasized")
-			(Space)
-			(Text "text")
-		)
-	)
+  (UnorderedList
+    (UnorderedListItem
+      (Text "tight")
+    )
+    (UnorderedListItem
+      (Text "list")
+    )
+    (UnorderedListItem
+      (Text "items")
+    )
+  )
+  (Paragraph
+    (Text "Loose")
+    (Space)
+    (Text "list:")
+  )
+  (UnorderedList
+    (UnorderedListItem
+      (Paragraph
+        (Text "loose")
+      )
+    )
+    (UnorderedListItem
+      (Paragraph
+        (Text "list")
+      )
+    )
+    (UnorderedListItem
+      (Paragraph
+        (Text "items")
+      )
+    )
+    (UnorderedListItem
+      (Paragraph
+        (Text "multiple")
+        (Space)
+        (Text "lines")
+      )
+    )
+    (UnorderedListItem
+      (Paragraph
+        (Text "item")
+      )
+      (Paragraph
+        (Text "continues")
+      )
+    )
+  )
+  (Paragraph
+    (Emphasis
+      (Text "emphasized")
+      (Space)
+      (Text "text")
+    )
+  )
 )

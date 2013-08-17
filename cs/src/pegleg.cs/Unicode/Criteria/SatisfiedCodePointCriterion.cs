@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Unicode.Criteria {
-	/// <summary>
-	/// <see cref="ICodePointCriteria"/> implementation which is always satisfied.
-	/// </summary>
-	public class SatisfiedCodePointCriterion : ICodePointCriteria {
-		private static readonly SatisfiedCodePointCriterion _instance = new SatisfiedCodePointCriterion();
+  /// <summary>
+  /// <see cref="ICodePointCriteria"/> implementation which is always satisfied.
+  /// </summary>
+  public class SatisfiedCodePointCriterion : ICodePointCriteria {
+    private static readonly SatisfiedCodePointCriterion _instance = new SatisfiedCodePointCriterion();
 
-		public static SatisfiedCodePointCriterion Instance { get { return _instance; } }
+    public static SatisfiedCodePointCriterion Instance { get { return _instance; } }
 
-		private SatisfiedCodePointCriterion() { }
+    private SatisfiedCodePointCriterion() { }
 
-		public bool SatisfiedBy(int codePoint) {
-			return true;
-		}
-	}
+    public bool SatisfiedBy(int codePoint) {
+      return true;
+    }
+  }
 }

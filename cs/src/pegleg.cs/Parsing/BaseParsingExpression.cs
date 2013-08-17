@@ -4,21 +4,21 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing {
-	public abstract class BaseParsingExpression<TProduct> : IParsingExpression<TProduct> {
-		private readonly int _id;
+  public abstract class BaseParsingExpression<TProduct> : IParsingExpression<TProduct> {
+    private readonly int _id;
 
-		public BaseParsingExpression() {
-			_id = ParsingExpressionIdGenerator.GenerateId();
-		}
+    public BaseParsingExpression() {
+      _id = ParsingExpressionIdGenerator.GenerateId();
+    }
 
-		public int Id { get { return _id; } }
+    public int Id { get { return _id; } }
 
-		public abstract IMatchingResult<TProduct> Matches(MatchingContext context);
+    public abstract IMatchingResult<TProduct> Matches(MatchingContext context);
 
-		IMatchingResult IParsingExpression.Matches(MatchingContext context) {
-			return Matches(context);
-		}
+    IMatchingResult IParsingExpression.Matches(MatchingContext context) {
+      return Matches(context);
+    }
 
-		public abstract T HandleWith<T>(IParsingExpressionHandler<T> handler);
-	}
+    public abstract T HandleWith<T>(IParsingExpressionHandler<T> handler);
+  }
 }

@@ -8,50 +8,50 @@ using System.Threading.Tasks;
 using FluentAssertions;
 
 namespace emd.cs.Grammar {
-	public static class RuleTestingExtensionMethods {
-		public static IMatchingResult<TProduct> ShouldMatchAllOf<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
-			var joinedInput = string.Join("", input);
-			var context = new MatchingContext(joinedInput);
-			var match = expression.Matches(context);
+  public static class RuleTestingExtensionMethods {
+    public static IMatchingResult<TProduct> ShouldMatchAllOf<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
+      var joinedInput = string.Join("", input);
+      var context = new MatchingContext(joinedInput);
+      var match = expression.Matches(context);
 
-			if(!match.Succeeded)
-				Fail("Match failed, expected success.");
+      if(!match.Succeeded)
+        Fail("Match failed, expected success.");
 
-			if(match.Length != joinedInput.Length)
-				Fail("Expression did not match all of input, expected full match.");
+      if(match.Length != joinedInput.Length)
+        Fail("Expression did not match all of input, expected full match.");
 
-			return match;
-		}
+      return match;
+    }
 
-		public static IMatchingResult<TProduct> ShouldMatchSomeOf<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
-			var joinedInput = string.Join("", input);
-			var context = new MatchingContext(joinedInput);
-			var match = expression.Matches(context);
+    public static IMatchingResult<TProduct> ShouldMatchSomeOf<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
+      var joinedInput = string.Join("", input);
+      var context = new MatchingContext(joinedInput);
+      var match = expression.Matches(context);
 
-			if(!match.Succeeded)
-				Fail("Match failed, expected success.");
+      if(!match.Succeeded)
+        Fail("Match failed, expected success.");
 
-			if(match.Length == joinedInput.Length)
-				Fail("Expression matched all of input, expected partial match.");
+      if(match.Length == joinedInput.Length)
+        Fail("Expression matched all of input, expected partial match.");
 
-			if(0 == match.Length)
-				Fail("Expresion match reported length 0.");
+      if(0 == match.Length)
+        Fail("Expresion match reported length 0.");
 
-			return match;
-		}
+      return match;
+    }
 
-		public static IMatchingResult<TProduct> ShouldNotMatch<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
-			var context = new MatchingContext(string.Join("", input));
-			var match = expression.Matches(context);
+    public static IMatchingResult<TProduct> ShouldNotMatch<TProduct>(this IParsingExpression<TProduct> expression, params string[] input) {
+      var context = new MatchingContext(string.Join("", input));
+      var match = expression.Matches(context);
 
-			if(match.Succeeded)
-				Fail("Match succeeded, expected failure.");
+      if(match.Succeeded)
+        Fail("Match succeeded, expected failure.");
 
-			return match;
-		}
+      return match;
+    }
 
-		private static Exception Fail(string message) {
-			throw new Xunit.Sdk.AssertException(message);
-		}
-	}
+    private static Exception Fail(string message) {
+      throw new Xunit.Sdk.AssertException(message);
+    }
+  }
 }

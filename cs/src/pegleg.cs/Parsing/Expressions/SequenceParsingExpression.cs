@@ -4,68 +4,68 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Parsing.Expressions {
-	public abstract class SequenceParsingExpression<TProduct> : BaseParsingExpression<TProduct> {
-		protected readonly IParsingExpression[] _sequence;
+  public abstract class SequenceParsingExpression<TProduct> : BaseParsingExpression<TProduct> {
+    protected readonly IParsingExpression[] _sequence;
 
-		public SequenceParsingExpression(IParsingExpression[] sequence) {
-			if(null == sequence) throw Xception.Because.ArgumentNull(() => sequence);
-			if(!(sequence.Length >= 2)) throw Xception.Because.Argument(() => sequence, "must have length of at least two");
+    public SequenceParsingExpression(IParsingExpression[] sequence) {
+      if(null == sequence) throw Xception.Because.ArgumentNull(() => sequence);
+      if(!(sequence.Length >= 2)) throw Xception.Because.Argument(() => sequence, "must have length of at least two");
 
-			_sequence = sequence;
-		}
+      _sequence = sequence;
+    }
 
-		public IEnumerable<IParsingExpression> Sequence { get { return _sequence; } }
+    public IEnumerable<IParsingExpression> Sequence { get { return _sequence; } }
 
-		public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
-			return handler.Handle(this);
-		}
-	}
+    public override T HandleWith<T>(IParsingExpressionHandler<T> handler) {
+      return handler.Handle(this);
+    }
+  }
 
-	public class NonCapturingSequenceParsingExpression : SequenceParsingExpression<Nil> {
-		public NonCapturingSequenceParsingExpression(IParsingExpression[] sequence) : base(sequence) { }
+  public class NonCapturingSequenceParsingExpression : SequenceParsingExpression<Nil> {
+    public NonCapturingSequenceParsingExpression(IParsingExpression[] sequence) : base(sequence) { }
 
-		public override IMatchingResult<Nil> Matches(MatchingContext context) {
-			var matchBuilder = context.GetMatchBuilderFor(this);
+    public override IMatchingResult<Nil> Matches(MatchingContext context) {
+      var matchBuilder = context.GetMatchBuilderFor(this);
 
-			for(int i = 0; i < _sequence.Length; i++) {
-				var currentExpression = _sequence[i];
-				var currentExpressionApplicationResult = currentExpression.Matches(context);
+      for(int i = 0; i < _sequence.Length; i++) {
+        var currentExpression = _sequence[i];
+        var currentExpressionApplicationResult = currentExpression.Matches(context);
 
-				if(!currentExpressionApplicationResult.Succeeded)
-					return UnsuccessfulMatchingResult.Create(this);
-			}
+        if(!currentExpressionApplicationResult.Succeeded)
+          return UnsuccessfulMatchingResult.Create(this);
+      }
 
-			return matchBuilder.Success(Nil.Value);
-		}
-	}
+      return matchBuilder.Success(Nil.Value);
+    }
+  }
 
-	public class CapturingSequenceParsingExpression<TProduct> : SequenceParsingExpression<TProduct> {
-		private readonly Func<IMatch<SequenceProducts>, TProduct> _matchAction;
+  public class CapturingSequenceParsingExpression<TProduct> : SequenceParsingExpression<TProduct> {
+    private readonly Func<IMatch<SequenceProducts>, TProduct> _matchAction;
 
-		public CapturingSequenceParsingExpression(IParsingExpression[] sequence, Func<IMatch<SequenceProducts>, TProduct> matchAction)
-			: base(sequence)
-		{
-			if(null == matchAction) throw Xception.Because.ArgumentNull(() => matchAction);
+    public CapturingSequenceParsingExpression(IParsingExpression[] sequence, Func<IMatch<SequenceProducts>, TProduct> matchAction)
+      : base(sequence)
+    {
+      if(null == matchAction) throw Xception.Because.ArgumentNull(() => matchAction);
 
-			_matchAction = matchAction;
-		}
+      _matchAction = matchAction;
+    }
 
-		public override IMatchingResult<TProduct> Matches(MatchingContext context) {
-			var matchBuilder = context.GetMatchBuilderFor(this);
+    public override IMatchingResult<TProduct> Matches(MatchingContext context) {
+      var matchBuilder = context.GetMatchBuilderFor(this);
 
-			var expressionProducts = new object[_sequence.Length];
-			for(int i = 0; i < _sequence.Length; i++) {
-				var currentExpression = _sequence[i];
+      var expressionProducts = new object[_sequence.Length];
+      for(int i = 0; i < _sequence.Length; i++) {
+        var currentExpression = _sequence[i];
 
-				var currentExpressionApplicationResult = currentExpression.Matches(context);
-				
-				if(!currentExpressionApplicationResult.Succeeded)
-					return UnsuccessfulMatchingResult.Create(this);
+        var currentExpressionApplicationResult = currentExpression.Matches(context);
+        
+        if(!currentExpressionApplicationResult.Succeeded)
+          return UnsuccessfulMatchingResult.Create(this);
 
-				expressionProducts[i] = currentExpressionApplicationResult.Product;
-			}
+        expressionProducts[i] = currentExpressionApplicationResult.Product;
+      }
 
-			return matchBuilder.Success(new SequenceProducts(expressionProducts), _matchAction);
-		}
-	}
+      return matchBuilder.Success(new SequenceProducts(expressionProducts), _matchAction);
+    }
+  }
 }

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Expressions.Evaluation {
-	public interface IValue {
-		T HandleWith<T>(IValueHandler<T> handler);
-	}
+  public interface IValue {
+    T HandleWith<T>(IValueHandler<T> handler);
+  }
 }

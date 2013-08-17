@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Expressions.Evaluation {
-	public class ObjectValue : IValue {
-		private readonly Dictionary<string, IValue> _properties = new Dictionary<string,IValue>();
+  public class ObjectValue : IValue {
+    private readonly Dictionary<string, IValue> _properties = new Dictionary<string,IValue>();
 
-		public ObjectValue() { }
+    public ObjectValue() { }
 
-		public T HandleWith<T>(IValueHandler<T> handler) {
-			return handler.Handle(this);
-		}
-	}
+    public T HandleWith<T>(IValueHandler<T> handler) {
+      return handler.Handle(this);
+    }
+  }
 }

@@ -5,22 +5,22 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs.Unicode.Criteria {
-	public class DisjunctCodePointCriteria : ICodePointCriteria {
-		private ICodePointCriteria[] _criteria;
+  public class DisjunctCodePointCriteria : ICodePointCriteria {
+    private ICodePointCriteria[] _criteria;
 
-		public DisjunctCodePointCriteria(IEnumerable<ICodePointCriteria> criteria) {
-			if(null == criteria) throw Xception.Because.ArgumentNull(() => criteria);
-			if(!criteria.Any()) throw Xception.Because.Argument(() => criteria, "cannot be empty");
+    public DisjunctCodePointCriteria(IEnumerable<ICodePointCriteria> criteria) {
+      if(null == criteria) throw Xception.Because.ArgumentNull(() => criteria);
+      if(!criteria.Any()) throw Xception.Because.Argument(() => criteria, "cannot be empty");
 
-			_criteria = criteria.ToArray();
-		}
+      _criteria = criteria.ToArray();
+    }
 
-		public bool SatisfiedBy(int codePoint) {
-			for(var i = 0; i < _criteria.Length; i++)
-				if(_criteria[i].SatisfiedBy(codePoint))
-					return true;
+    public bool SatisfiedBy(int codePoint) {
+      for(var i = 0; i < _criteria.Length; i++)
+        if(_criteria[i].SatisfiedBy(codePoint))
+          return true;
 
-			return false;
-		}
-	}
+      return false;
+    }
+  }
 }

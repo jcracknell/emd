@@ -5,16 +5,16 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Expressions {
-	public class PositiveExpression : UnaryExpression {
-		public PositiveExpression(IExpression body, SourceRange sourceRange)
-			: base(body, sourceRange) { }
+  public class PositiveExpression : UnaryExpression {
+    public PositiveExpression(IExpression body, SourceRange sourceRange)
+      : base(body, sourceRange) { }
 
-		public override void HandleWith(IExpressionHandler handler) {
-			handler.Handle(this);
-		}
+    public override void HandleWith(IExpressionHandler handler) {
+      handler.Handle(this);
+    }
 
-		public override T HandleWith<T>(IExpressionHandler<T> handler) {
-			return handler.Handle(this);
-		}
-	}
+    public override T HandleWith<T>(IExpressionHandler<T> handler) {
+      return handler.Handle(this);
+    }
+  }
 }

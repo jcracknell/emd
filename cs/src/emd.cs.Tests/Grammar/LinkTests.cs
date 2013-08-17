@@ -10,72 +10,72 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace emd.cs.Grammar {
-	public class LinkTests : GrammarTestFixture {
-		[Fact] public void Link_matches_explicit_link() {
-			var matchResult = EmdGrammar.RichLink.ShouldMatchAllOf("[Slashdot: News for nerds, stuff that matters](http://slashdot.org)");
+  public class LinkTests : GrammarTestFixture {
+    [Fact] public void Link_matches_explicit_link() {
+      var matchResult = EmdGrammar.RichLink.ShouldMatchAllOf("[Slashdot: News for nerds, stuff that matters](http://slashdot.org)");
 
-			matchResult.Succeeded.Should().BeTrue();
-			matchResult.Product.Arguments.Should().NotBeEmpty();
-		}
+      matchResult.Succeeded.Should().BeTrue();
+      matchResult.Product.Arguments.Should().NotBeEmpty();
+    }
 
-		[Fact] public void Link_matches_hybrid_link() {
-			var match = EmdGrammar.RichLink.ShouldMatchAllOf(
-				"[Slashdot: News for nerds, stuff that matters][slashdot.org](http://slashdot.org)");
+    [Fact] public void Link_matches_hybrid_link() {
+      var match = EmdGrammar.RichLink.ShouldMatchAllOf(
+        "[Slashdot: News for nerds, stuff that matters][slashdot.org](http://slashdot.org)");
 
-			match.Succeeded.Should().BeTrue();
-			match.Product.ReferenceId.Should().NotBeNull();
-			match.Product.ReferenceId.Value.Should().Be("slashdot-org");
-			match.Product.Arguments.Should().NotBeEmpty();
-		}
+      match.Succeeded.Should().BeTrue();
+      match.Product.ReferenceId.Should().NotBeNull();
+      match.Product.ReferenceId.Value.Should().Be("slashdot-org");
+      match.Product.Arguments.Should().NotBeEmpty();
+    }
 
-		[Fact] public void Link_matches_reference_link() {
-			var match = EmdGrammar.RichLink.ShouldMatchAllOf(
-				"[Slashdot: News for nerds, stuff that matters][slashdot.org]");
+    [Fact] public void Link_matches_reference_link() {
+      var match = EmdGrammar.RichLink.ShouldMatchAllOf(
+        "[Slashdot: News for nerds, stuff that matters][slashdot.org]");
 
-			match.Succeeded.Should().BeTrue();
-			match.Product.ReferenceId.Should().NotBeNull();
-			match.Product.ReferenceId.Value.Should().Be("slashdot-org");
-			match.Product.Arguments.Should().BeNull();
-		}
+      match.Succeeded.Should().BeTrue();
+      match.Product.ReferenceId.Should().NotBeNull();
+      match.Product.ReferenceId.Value.Should().Be("slashdot-org");
+      match.Product.Arguments.Should().BeNull();
+    }
 
-		[Fact] public void Link_matches_short_reference_link() {
-			var match = EmdGrammar.RichLink.ShouldMatchAllOf("[google]");
+    [Fact] public void Link_matches_short_reference_link() {
+      var match = EmdGrammar.RichLink.ShouldMatchAllOf("[google]");
 
-			match.Product.ShouldBeEquivalentTo(
-				new LinkNode(
-					new IInlineNode[] { new TextNode("google", new SourceRange(1,6,1,1)) },
-					null,
-					null,
-					new SourceRange(0,8,1,0)
-				)
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new LinkNode(
+          new IInlineNode[] { new TextNode("google", new SourceRange(1,6,1,1)) },
+          null,
+          null,
+          new SourceRange(0,8,1,0)
+        )
+      );
+    }
 
-		// This behavior seems intuitive per https://github.com/jgm/peg-markdown/commit/1a629de5e2bc62c308be4250e22bacd19e86f6c1
-		[Fact] public void Link_should_match_short_label_space_argument_list_as_reference_only() {
-			var match = EmdGrammar.RichLink.ShouldMatchSomeOf("[foo] (baz)");
+    // This behavior seems intuitive per https://github.com/jgm/peg-markdown/commit/1a629de5e2bc62c308be4250e22bacd19e86f6c1
+    [Fact] public void Link_should_match_short_label_space_argument_list_as_reference_only() {
+      var match = EmdGrammar.RichLink.ShouldMatchSomeOf("[foo] (baz)");
 
-			match.Product.ShouldBeEquivalentTo(
-				new LinkNode(
-					new IInlineNode[] { new TextNode("foo", new SourceRange(1,3,1,1)) },
-					null,
-					null,
-					new SourceRange(0,5,1,0)
-				)
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new LinkNode(
+          new IInlineNode[] { new TextNode("foo", new SourceRange(1,3,1,1)) },
+          null,
+          null,
+          new SourceRange(0,5,1,0)
+        )
+      );
+    }
 
-		[Fact] public void Link_should_match_label_space_reference_as_label_only() {
-			var match = EmdGrammar.RichLink.ShouldMatchSomeOf("[foo] [baz]");
+    [Fact] public void Link_should_match_label_space_reference_as_label_only() {
+      var match = EmdGrammar.RichLink.ShouldMatchSomeOf("[foo] [baz]");
 
-			match.Product.ShouldBeEquivalentTo(
-				new LinkNode(
-					new IInlineNode[] { new TextNode("foo", new SourceRange(1,3,1,1)) },
-					null,
-					null,
-					new SourceRange(0,5,1,0)
-				)
-			);
-		}
-	}
+      match.Product.ShouldBeEquivalentTo(
+        new LinkNode(
+          new IInlineNode[] { new TextNode("foo", new SourceRange(1,3,1,1)) },
+          null,
+          null,
+          new SourceRange(0,5,1,0)
+        )
+      );
+    }
+  }
 }

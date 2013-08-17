@@ -6,11 +6,11 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs {
-	public static class Emd {
-		public static DocumentNode ParseDocument(string input) {
-			if(null == input) throw Xception.Because.ArgumentNull(() => input);
+  public static class Emd {
+    public static DocumentNode ParseDocument(string input) {
+      if(null == input) throw Xception.Because.ArgumentNull(() => input);
 
-			return EmdGrammar.Document.Matches(new pegleg.cs.Parsing.MatchingContext(input)).Product;
-		}
-	}
+      return EmdGrammar.Document.Matches(new pegleg.cs.Parsing.MatchingContext(input)).Product;
+    }
+  }
 }

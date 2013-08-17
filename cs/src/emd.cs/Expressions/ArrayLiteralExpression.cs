@@ -5,29 +5,29 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Expressions {
-	public class ArrayLiteralExpression : IExpression {
-		private IExpression[] _elements;
-		private SourceRange _sourceRange;
+  public class ArrayLiteralExpression : IExpression {
+    private IExpression[] _elements;
+    private SourceRange _sourceRange;
 
-		public ArrayLiteralExpression(IExpression[] elements, SourceRange sourceRange) {
-			if(null == elements) throw Xception.Because.ArgumentNull(() => elements);
-			if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
-			if(elements.Any(element => null == element)) throw Xception.Because.Argument(() => elements, "contains null entries");
+    public ArrayLiteralExpression(IExpression[] elements, SourceRange sourceRange) {
+      if(null == elements) throw Xception.Because.ArgumentNull(() => elements);
+      if(null == sourceRange) throw Xception.Because.ArgumentNull(() => sourceRange);
+      if(elements.Any(element => null == element)) throw Xception.Because.Argument(() => elements, "contains null entries");
 
-			_elements = elements;
-			_sourceRange = sourceRange;
-		}
+      _elements = elements;
+      _sourceRange = sourceRange;
+    }
 
-		public IEnumerable<IExpression> Elements { get { return _elements; } }
+    public IEnumerable<IExpression> Elements { get { return _elements; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+    public SourceRange SourceRange { get { return _sourceRange; } }
 
-		public void HandleWith(IExpressionHandler handler) {
-			handler.Handle(this);
-		}
+    public void HandleWith(IExpressionHandler handler) {
+      handler.Handle(this);
+    }
 
-		public T HandleWith<T>(IExpressionHandler<T> handler) {
-			return handler.Handle(this);
-		}
-	}
+    public T HandleWith<T>(IExpressionHandler<T> handler) {
+      return handler.Handle(this);
+    }
+  }
 }

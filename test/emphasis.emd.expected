@@ -1,73 +1,73 @@
 #! emd.cs.Conversion.StructuralRenderer, emd.cs
 (Document
-	(Paragraph
-		(Emphasis
-			(Text "emphasized")
-			(Space)
-			(Text "text")
-		)
-	)
-	(Paragraph
-		(Text "emphasized")
-		(Space)
-		(Emphasis
-			(Text "across")
-			(Space)
-			(Text "lines")
-		)
-	)
-	(Paragraph
-		(Text "no")
-		(Emphasis
-			(Text "space")
-		)
-	)
-	(Paragraph
-		(Text "missing")
-		(Space)
-		(Emphasis
-			(Text "end")
-		)
-	)	
-	(Paragraph
-		(Text "nested")
-		(Space)
-		(Strong
-			(Text "strong")
-			(Space)
-			(Emphasis
-				(Text "emphasis")
-			)
-		)
-	)
-	(Paragraph
-		(Text "mismatched")
-		(Space)
-		(Emphasis
-			(Text "emphasis")
-			(Space)
-			(Strong
-				(Text "strong")
-			)
-		)
-		(Space)
-		(Text "end")
-		(Strong
-		)	
-	)
-	(Paragraph
-		(Text "mismatched")
-		(Space)
-		(Strong
-			(Text "strong")
-			(Space)
-			(Emphasis
-				(Text "emphasis")
-			)
-		)
-		(Space)
-		(Text "end")
-		(Emphasis
-		)	
-	)	
+  (Paragraph
+    (Emphasis
+      (Text "emphasized")
+      (Space)
+      (Text "text")
+    )
+  )
+  (Paragraph
+    (Text "emphasized")
+    (Space)
+    (Emphasis
+      (Text "across")
+      (Space)
+      (Text "lines")
+    )
+  )
+  (Paragraph
+    (Text "no")
+    (Emphasis
+      (Text "space")
+    )
+  )
+  (Paragraph
+    (Text "missing")
+    (Space)
+    (Emphasis
+      (Text "end")
+    )
+  )  
+  (Paragraph
+    (Text "nested")
+    (Space)
+    (Strong
+      (Text "strong")
+      (Space)
+      (Emphasis
+        (Text "emphasis")
+      )
+    )
+  )
+  (Paragraph
+    (Text "mismatched")
+    (Space)
+    (Emphasis
+      (Text "emphasis")
+      (Space)
+      (Strong
+        (Text "strong")
+      )
+    )
+    (Space)
+    (Text "end")
+    (Strong
+    )  
+  )
+  (Paragraph
+    (Text "mismatched")
+    (Space)
+    (Strong
+      (Text "strong")
+      (Space)
+      (Emphasis
+        (Text "emphasis")
+      )
+    )
+    (Space)
+    (Text "end")
+    (Emphasis
+    )  
+  )  
 )

@@ -10,93 +10,93 @@ using Xunit;
 
 namespace emd.cs.Grammar
 {
-	public class EntityTests : GrammarTestFixture {
-		[Fact] public void Entity_matches_decimal_entity() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\#233;");
+  public class EntityTests : GrammarTestFixture {
+    [Fact] public void Entity_matches_decimal_entity() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\#233;");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u00e9", new SourceRange(0, 6, 1, 0))
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u00e9", new SourceRange(0, 6, 1, 0))
+      );
+    }
 
-		[Fact] public void Entity_matches_u_hexadecimal_entity() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\uE9");
+    [Fact] public void Entity_matches_u_hexadecimal_entity() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\uE9");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u00e9", new SourceRange(0,4,1,0))
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u00e9", new SourceRange(0,4,1,0))
+      );
+    }
 
-		[Fact] public void Entity_matches_u_hexadecimal_entity_with_optional_leading_hash() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\#uE9");
+    [Fact] public void Entity_matches_u_hexadecimal_entity_with_optional_leading_hash() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\#uE9");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u00e9", new SourceRange(0,5,1,0))
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u00e9", new SourceRange(0,5,1,0))
+      );
+    }
 
-		[Fact] public void Entity_matches_u_hexadecimal_entity_with_optional_trailing_semicolon() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\uE9;");
+    [Fact] public void Entity_matches_u_hexadecimal_entity_with_optional_trailing_semicolon() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\uE9;");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u00e9", new SourceRange(0,5,1,0))
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u00e9", new SourceRange(0,5,1,0))
+      );
+    }
 
-		[Fact] public void Entity_matches_x_hexadecimal_entity() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\xE9");
+    [Fact] public void Entity_matches_x_hexadecimal_entity() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\xE9");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u00e9", new SourceRange(0,4,1,0))
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u00e9", new SourceRange(0,4,1,0))
+      );
+    }
 
-		[Fact] public void Entity_matches_x_hexadecimal_entity_with_optional_leading_hash() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\#xE9");
+    [Fact] public void Entity_matches_x_hexadecimal_entity_with_optional_leading_hash() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\#xE9");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u00e9", new SourceRange(0,5,1,0))
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u00e9", new SourceRange(0,5,1,0))
+      );
+    }
 
-		[Fact] public void Entity_matches_x_hexadecimal_entity_with_optional_trailing_semicolon() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\xE9;");
+    [Fact] public void Entity_matches_x_hexadecimal_entity_with_optional_trailing_semicolon() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\xE9;");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u00e9", new SourceRange(0,5,1,0))
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u00e9", new SourceRange(0,5,1,0))
+      );
+    }
 
-		[Fact] public void Entity_matches_named_entity() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\eacute");
+    [Fact] public void Entity_matches_named_entity() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\eacute");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u00e9", new SourceRange(0,7,1,0))
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u00e9", new SourceRange(0,7,1,0))
+      );
+    }
 
-		[Fact] public void Entity_matches_named_entity_with_optional_trailing_semicolon() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\eacute;");
+    [Fact] public void Entity_matches_named_entity_with_optional_trailing_semicolon() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\eacute;");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u00e9", new SourceRange(0,8,1,0))
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u00e9", new SourceRange(0,8,1,0))
+      );
+    }
 
-		[Fact] public void Entity_matches_named_entity_beginning_with_u() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\uring");
+    [Fact] public void Entity_matches_named_entity_beginning_with_u() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\uring");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u016f", new SourceRange(0,6,1,0))
-			);
-		}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u016f", new SourceRange(0,6,1,0))
+      );
+    }
 
-		[Fact] public void Entity_matches_named_entity_beginning_with_x() {
-			var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\xi");
+    [Fact] public void Entity_matches_named_entity_beginning_with_x() {
+      var match = EmdGrammar.Entity.ShouldMatchAllOf(@"\xi");
 
-			match.Product.ShouldBeEquivalentTo(
-				new EntityNode("\u03be", new SourceRange(0,3,1,0))
-			);
-		}
-	}
+      match.Product.ShouldBeEquivalentTo(
+        new EntityNode("\u03be", new SourceRange(0,3,1,0))
+      );
+    }
+  }
 }

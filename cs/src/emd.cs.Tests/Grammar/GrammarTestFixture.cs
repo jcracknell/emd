@@ -8,6 +8,6 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace emd.cs.Grammar {
-	public abstract class GrammarTestFixture {
-	}
+  public abstract class GrammarTestFixture {
+  }
 }

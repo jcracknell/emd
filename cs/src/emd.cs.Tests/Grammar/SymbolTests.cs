@@ -9,13 +9,13 @@ using System.Threading.Tasks;
 using Xunit;
 
 namespace emd.cs.Grammar {
-	public class SymbolTests : GrammarTestFixture {
-		[Fact] public void Symbol_matches_asterix() {
-			var expected = new SymbolNode("*", new SourceRange(0, 1, 1, 0));
+  public class SymbolTests : GrammarTestFixture {
+    [Fact] public void Symbol_matches_asterix() {
+      var expected = new SymbolNode("*", new SourceRange(0, 1, 1, 0));
 
-			var match = EmdGrammar.Symbol.ShouldMatchAllOf("*");
+      var match = EmdGrammar.Symbol.ShouldMatchAllOf("*");
 
-			match.Product.ShouldBeEquivalentTo(expected);
-		}
-	}
+      match.Product.ShouldBeEquivalentTo(expected);
+    }
+  }
 }

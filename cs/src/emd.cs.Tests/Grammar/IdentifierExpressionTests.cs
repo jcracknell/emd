@@ -6,53 +6,53 @@ using System.Text;
 using Xunit;
 
 namespace emd.cs.Grammar {
-	public class IdentifierExpressionTests : GrammarTestFixture {
-		[Fact] public void IdentifierExpression_matches_ascii() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("foo");
+  public class IdentifierExpressionTests : GrammarTestFixture {
+    [Fact] public void IdentifierExpression_matches_ascii() {
+      var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("foo");
 
-			match.Product.Name.Should().Be("foo");
-		}
+      match.Product.Name.Should().Be("foo");
+    }
 
-		[Fact] public void IdentifierExpression_matches_ascii_and_numbers() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("foo12");
+    [Fact] public void IdentifierExpression_matches_ascii_and_numbers() {
+      var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("foo12");
 
-			match.Product.Name.Should().Be("foo12");
-		}
+      match.Product.Name.Should().Be("foo12");
+    }
 
-		[Fact] public void IdentifierExpression_does_not_match_numbers() {
-			EmdGrammar.IdentifierExpression.ShouldNotMatch("42");
-		}
+    [Fact] public void IdentifierExpression_does_not_match_numbers() {
+      EmdGrammar.IdentifierExpression.ShouldNotMatch("42");
+    }
 
-		[Fact] public void IdentifierExpression_matches_dollar_sign() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("$");
+    [Fact] public void IdentifierExpression_matches_dollar_sign() {
+      var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("$");
 
-			match.Product.Name.Should().Be("$");
-		}
+      match.Product.Name.Should().Be("$");
+    }
 
-		[Fact] public void IdentifierExpression_matches_underscore() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("_");
+    [Fact] public void IdentifierExpression_matches_underscore() {
+      var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("_");
 
-			match.Product.Name.Should().Be("_");
-		}
+      match.Product.Name.Should().Be("_");
+    }
 
-		[Fact] public void IdentifierExpression_should_match_unicode_escape_sequence() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf(@"\u0061");
+    [Fact] public void IdentifierExpression_should_match_unicode_escape_sequence() {
+      var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf(@"\u0061");
 
-			match.Product.Name.Should().Be("a");
-		}
+      match.Product.Name.Should().Be("a");
+    }
 
-		[Fact] public void IdentifierExpression_should_not_match_true_keyword() {
-			EmdGrammar.IdentifierExpression.ShouldNotMatch("true");
-		}
+    [Fact] public void IdentifierExpression_should_not_match_true_keyword() {
+      EmdGrammar.IdentifierExpression.ShouldNotMatch("true");
+    }
 
-		[Fact] public void IdentifierExpression_should_match_true_keyword_followed_by_identifier_part() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("trueish");
+    [Fact] public void IdentifierExpression_should_match_true_keyword_followed_by_identifier_part() {
+      var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("trueish");
 
-			match.Product.Name.Should().Be("trueish");
-		}
+      match.Product.Name.Should().Be("trueish");
+    }
 
-		[Fact] public void IdentifierExpression_matches_unicode_lowercase_omega() {
-			var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("ω");
-		}
-	}
+    [Fact] public void IdentifierExpression_matches_unicode_lowercase_omega() {
+      var match = EmdGrammar.IdentifierExpression.ShouldMatchAllOf("ω");
+    }
+  }
 }

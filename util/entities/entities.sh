@@ -11,7 +11,7 @@
 data="$(dirname "$0")/entities.json";
 
 if [ ! -f "$data" ]; then
-	curl -s 'http://dev.w3.org/html5/spec/entities.json' > "$data";
+  curl -s 'http://dev.w3.org/html5/spec/entities.json' > "$data";
 fi
 
 cat "$data" \
@@ -22,17 +22,17 @@ cat "$data" \
 | sed -r 's/,/\t/g' \
 | sort \
 | while read -a fields; do
-	# 8 bits indicating the number of characters in the entity name
-	echo -ne "\x$(printf '%02X' ${#fields[0]})";
-	# The entity name, as a sequence of 8-bit characters
-	echo -n "${fields[0]}";
-	# 8 bits announcing the number of 32-bit codepoints making up the entity
-	echo -ne "\x$(printf '%02X' $((${#fields[*]} - 1)))";
-	# The 32-bit codepoints represented by the entity
-	for cp in ${fields[@]:1}; do
-		echo -ne "\x$(printf '%02X' $((($cp >> 24) & 0xFF)))";
-		echo -ne "\x$(printf '%02X' $((($cp >> 16) & 0xFF)))";
-		echo -ne "\x$(printf '%02X' $((($cp >> 8) & 0xFF)))";
-		echo -ne "\x$(printf '%02X' $((($cp >> 0) & 0xFF)))";
-	done
+  # 8 bits indicating the number of characters in the entity name
+  echo -ne "\x$(printf '%02X' ${#fields[0]})";
+  # The entity name, as a sequence of 8-bit characters
+  echo -n "${fields[0]}";
+  # 8 bits announcing the number of 32-bit codepoints making up the entity
+  echo -ne "\x$(printf '%02X' $((${#fields[*]} - 1)))";
+  # The 32-bit codepoints represented by the entity
+  for cp in ${fields[@]:1}; do
+    echo -ne "\x$(printf '%02X' $((($cp >> 24) & 0xFF)))";
+    echo -ne "\x$(printf '%02X' $((($cp >> 16) & 0xFF)))";
+    echo -ne "\x$(printf '%02X' $((($cp >> 8) & 0xFF)))";
+    echo -ne "\x$(printf '%02X' $((($cp >> 0) & 0xFF)))";
+  done
 done

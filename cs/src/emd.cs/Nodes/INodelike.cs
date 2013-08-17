@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Nodes {
-	public interface INodelike {
-		SourceRange SourceRange { get; }
-	}
+  public interface INodelike {
+    SourceRange SourceRange { get; }
+  }
 }

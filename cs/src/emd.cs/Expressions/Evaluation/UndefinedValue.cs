@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Expressions.Evaluation {
-	public class UndefinedValue : IValue {
-		private static readonly UndefinedValue _instance = new UndefinedValue();
+  public class UndefinedValue : IValue {
+    private static readonly UndefinedValue _instance = new UndefinedValue();
 
-		public static UndefinedValue Instance { get { return _instance; } }
+    public static UndefinedValue Instance { get { return _instance; } }
 
-		static UndefinedValue() { }
+    static UndefinedValue() { }
 
-		public T HandleWith<T>(IValueHandler<T> handler) {
-			return handler.Handle(this);
-		}
-	}
+    public T HandleWith<T>(IValueHandler<T> handler) {
+      return handler.Handle(this);
+    }
+  }
 }

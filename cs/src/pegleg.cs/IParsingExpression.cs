@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 
 namespace pegleg.cs {
-	public interface IParsingExpression {
-		int Id { get; }
-		T HandleWith<T>(IParsingExpressionHandler<T> handler);
-		IMatchingResult Matches(MatchingContext context);
-	}
+  public interface IParsingExpression {
+    int Id { get; }
+    T HandleWith<T>(IParsingExpressionHandler<T> handler);
+    IMatchingResult Matches(MatchingContext context);
+  }
 
-	public interface IParsingExpression<out TProduct> : IParsingExpression {
-		new IMatchingResult<TProduct> Matches(MatchingContext context);
-	}
+  public interface IParsingExpression<out TProduct> : IParsingExpression {
+    new IMatchingResult<TProduct> Matches(MatchingContext context);
+  }
 }

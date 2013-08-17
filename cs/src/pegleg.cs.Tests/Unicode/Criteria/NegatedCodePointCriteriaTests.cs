@@ -6,11 +6,11 @@ using System.Text;
 using Xunit;
 
 namespace pegleg.cs.Unicode.Criteria {
-	public class NegatedCodePointCriteriaTests {
-		[Fact] public void NegatedCodePointCriterion_should_be_unsatisfiable() {
-			new NegatedCodePointCriteria(SatisfiedCodePointCriterion.Instance)
-			.SatisfiedBy('a')
-			.Should().BeFalse();
-		}
-	}
+  public class NegatedCodePointCriteriaTests {
+    [Fact] public void NegatedCodePointCriterion_should_be_unsatisfiable() {
+      new NegatedCodePointCriteria(SatisfiedCodePointCriterion.Instance)
+      .SatisfiedBy('a')
+      .Should().BeFalse();
+    }
+  }
 }

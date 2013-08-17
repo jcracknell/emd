@@ -7,13 +7,13 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Grammar {
-	public class BinaryOperatorDefinition {
-		public readonly IParsingExpression<object> Operator;
-		public readonly Func<IExpression, IExpression, SourceRange, IExpression> Constructor;
+  public class BinaryOperatorDefinition {
+    public readonly IParsingExpression<object> Operator;
+    public readonly Func<IExpression, IExpression, SourceRange, IExpression> Constructor;
 
-		public BinaryOperatorDefinition(IParsingExpression<object> @operator, Func<IExpression, IExpression, SourceRange, IExpression> constructor) {
-			Operator = @operator;
-			Constructor = constructor;
-		}
-	}
+    public BinaryOperatorDefinition(IParsingExpression<object> @operator, Func<IExpression, IExpression, SourceRange, IExpression> constructor) {
+      Operator = @operator;
+      Constructor = constructor;
+    }
+  }
 }

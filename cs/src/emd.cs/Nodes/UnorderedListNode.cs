@@ -5,27 +5,27 @@ using System.Linq;
 using System.Text;
 
 namespace emd.cs.Nodes{
-	public class UnorderedListNode : IBlockNode {
-		private readonly UnorderedListItemNode[] _items;
-		private readonly SourceRange _sourceRange;
+  public class UnorderedListNode : IBlockNode {
+    private readonly UnorderedListItemNode[] _items;
+    private readonly SourceRange _sourceRange;
 
-		public UnorderedListNode(UnorderedListItemNode[] items, SourceRange sourceRange) {
-			if(null == items) throw Xception.Because.ArgumentNull(() => items);
+    public UnorderedListNode(UnorderedListItemNode[] items, SourceRange sourceRange) {
+      if(null == items) throw Xception.Because.ArgumentNull(() => items);
 
-			_items = items;
-			_sourceRange = sourceRange;
-		}
+      _items = items;
+      _sourceRange = sourceRange;
+    }
 
-		public IEnumerable<UnorderedListItemNode> Items { get { return _items; } }
+    public IEnumerable<UnorderedListItemNode> Items { get { return _items; } }
 
-		public SourceRange SourceRange { get { return _sourceRange; } }
+    public SourceRange SourceRange { get { return _sourceRange; } }
 
-		public void HandleWith(INodeHandler handler) {
-			handler.Handle(this);
-		}
+    public void HandleWith(INodeHandler handler) {
+      handler.Handle(this);
+    }
 
-		public T HandleWith<T>(INodeHandler<T> handler) {
-			return handler.Handle(this);
-		}
-	}
+    public T HandleWith<T>(INodeHandler<T> handler) {
+      return handler.Handle(this);
+    }
+  }
 }

@@ -10,25 +10,25 @@ using Xunit;
 
 namespace emd.cs.Grammar
 {
-	public class EmphasisTests : GrammarTestFixture {
-		[Fact] public void Emphasis_matches_base_case() {
-			var expected = new EmphasisNode(
-				new IInlineNode[] { new TextNode("text", new SourceRange(1, 4, 1, 1)) },
-				new SourceRange(0, 6, 1, 0)
-			);
+  public class EmphasisTests : GrammarTestFixture {
+    [Fact] public void Emphasis_matches_base_case() {
+      var expected = new EmphasisNode(
+        new IInlineNode[] { new TextNode("text", new SourceRange(1, 4, 1, 1)) },
+        new SourceRange(0, 6, 1, 0)
+      );
 
-			var match = EmdGrammar.RichEmphasis.ShouldMatchAllOf("*text*");
-			
-			match.Succeeded.Should().BeTrue();
-			match.Product.ShouldBeEquivalentTo(expected);
-		}
+      var match = EmdGrammar.RichEmphasis.ShouldMatchAllOf("*text*");
+      
+      match.Succeeded.Should().BeTrue();
+      match.Product.ShouldBeEquivalentTo(expected);
+    }
 
-		[Fact] public void Emphasis_should_not_match_with_missing_end_delimiter() {
-			var match = EmdGrammar.RichEmphasis.ShouldNotMatch("*foo");
-		}
+    [Fact] public void Emphasis_should_not_match_with_missing_end_delimiter() {
+      var match = EmdGrammar.RichEmphasis.ShouldNotMatch("*foo");
+    }
 
-		[Fact] public void Emphasis_should_not_match_when_empty() {
-			EmdGrammar.RichEmphasis.ShouldNotMatch("**");
-		}
-	}
+    [Fact] public void Emphasis_should_not_match_when_empty() {
+      EmdGrammar.RichEmphasis.ShouldNotMatch("**");
+    }
+  }
 }
