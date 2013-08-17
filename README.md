@@ -46,7 +46,7 @@ Unfortunately these still represent an enormous amount of work. I have made my w
       * `http://google.com === 'http://google.com`
       * `{{**heredoc**}}.toString() === 'heredoc'`
       * `` `code` === 'code'``
-    * [Footnote-style references](/jcracknell/emd/blob/master/cs/src/emd.cs/Grammar/EmdGrammar.Blocks.cs#L477) are stored argument lists which can be applied to a link's function call.
+    * [Footnote-style references](/cs/src/emd.cs/Grammar/EmdGrammar.Blocks.cs#L477) are stored argument lists which can be applied to a link's function call.
     * Javascript-style comments and escape sequences are valid everywhere. Named HTML entities are reformulated as javascript escape sequences of the form `\copy`/`\gt`/`\lt`.
 
   * **Full unicode support.** All grammar productions are implemented in terms of graphemes instead of characters.
@@ -64,13 +64,13 @@ EMD takes a strong position on certain [ambiguities](http://johnmacfarlane.net/b
 
 Any project of this scope will naturally excrete a number of code artifacts which are most likely of use outside of the original problem domain.  
 
-In the case of EMD, the elephant in the room is undoubtedly the [pegleg.cs](/jcracknell/emd/blob/master/cs/src/pegleg.cs/ParsingExpressions.cs) parsing expression grammar toolkit, which provides a (semi) fluent API for declaring parsing expression grammars in C#.
+In the case of EMD, the elephant in the room is undoubtedly the [pegleg.cs](/cs/src/pegleg.cs/ParsingExpressions.cs) parsing expression grammar toolkit, which provides a (semi) fluent API for declaring parsing expression grammars in C#.
 
 A traditional parser generator such as [IronMeta](http://ironmeta.sourceforge.net) runs a tool against a domain-specific language specifying a grammar, generating methods for parsing each production in the grammar. pegleg.cs provides an API for declaring a grammar within your application in C#, assembling a parser using classes for each parsing expression at runtime. This results in slightly reduced performance, but also has a number of suprisingly compelling benefits - for a start the grammar is fully integrated in your existing workflow, and is also fully refactorable.
 
-Parsing expressions in pegleg.cs are [strongly-typed](/jcracknell/emd/blob/master/cs/src/pegleg.cs/IParsingExpression.cs) - the result of each parsing expression is known, whether it is a string or your own custom data structure. This enables compile-time verification of expression composability. 
+Parsing expressions in pegleg.cs are [strongly-typed](/cs/src/pegleg.cs/IParsingExpression.cs) - the result of each parsing expression is known, whether it is a string or your own custom data structure. This enables compile-time verification of expression composability. 
 
-The provided API makes extensive use of C#'s type inferral, jumping through [hoops](/jcracknell/emd/blob/master/cs/src/pegleg.cs/Parsing/Expressions/SequenceProducts.cs#L28) to improve the author's quality of life. The grammar syntax is relatively concise, and the author's IDE can provide full code completion support and highlight type errors found by the compiler. Consider the parsing expression below for a signed integer-valued double, where the product type of the sign and integer expressions are known and inferred, permitting the wonderful concision of the sequence product:
+The provided API makes extensive use of C#'s type inferral, jumping through [hoops](/cs/src/pegleg.cs/Parsing/Expressions/SequenceProducts.cs#L28) to improve the author's quality of life. The grammar syntax is relatively concise, and the author's IDE can provide full code completion support and highlight type errors found by the compiler. Consider the parsing expression below for a signed integer-valued double, where the product type of the sign and integer expressions are known and inferred, permitting the wonderful concision of the sequence product:
 
 ```cs
 public static readonly IParsingExpression<double>
@@ -116,9 +116,9 @@ VerbatimStringLiteral = Named(() => VerbatimStringLiteral,
 
 Other lesser code artifacts and features which may also be of interest are:
 
-* [The `pegleg.cs.Unicode.GraphemeCriteria` API](/jcracknell/emd/blob/master/cs/src/pegleg.cs/Unicode/GraphemeCriteria.cs) for composable, high-performance matching of unicode graphemes and codepoints.
-* [Auto-optimizing `ChoiceUnordered` expressions](/jcracknell/emd/blob/master/cs/src/pegleg.cs/Parsing/Expressions/UnorderedChoiceParsingExpression.cs#L50), which self-optimize based on the match frequency of choices.
-* [The `pegleg.cs.Unicode.UnicodeUtils` class](/jcracknell/emd/blob/master/cs/src/pegleg.cs/Unicode/UnicodeUtils.cs#L98). This is something of a re-invention of the wheel, but if you need to get both the length and category of a grapheme in a single method call this will get it done (surprisingly this is not possible using `System.Globalization.CharUnicodeInfo`).
+* [The `pegleg.cs.Unicode.GraphemeCriteria` API](/cs/src/pegleg.cs/Unicode/GraphemeCriteria.cs) for composable, high-performance matching of unicode graphemes and codepoints.
+* [Auto-optimizing `ChoiceUnordered` expressions](/cs/src/pegleg.cs/Parsing/Expressions/UnorderedChoiceParsingExpression.cs#L50), which self-optimize based on the match frequency of choices.
+* [The `pegleg.cs.Unicode.UnicodeUtils` class](/cs/src/pegleg.cs/Unicode/UnicodeUtils.cs#L98). This is something of a re-invention of the wheel, but if you need to get both the length and category of a grapheme in a single method call this will get it done (surprisingly this is not possible using `System.Globalization.CharUnicodeInfo`).
 
 ## Acknowledgements
 
